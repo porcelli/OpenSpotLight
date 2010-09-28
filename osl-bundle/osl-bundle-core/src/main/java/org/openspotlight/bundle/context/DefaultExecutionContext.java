@@ -48,231 +48,147 @@
  */
 package org.openspotlight.bundle.context;
 
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.common.DisposingListener;
-import org.openspotlight.common.concurrent.AtomicLazyResource;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
-import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.loader.ConfigurationManager;
-import org.openspotlight.federation.loader.ConfigurationManagerFactoryImpl;
-import org.openspotlight.federation.log.DetailedLoggerProvider;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.GraphReaderpotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.graph.FullGraphSession;
+import org.openspotlight.graph.GraphSessionFactory;
+import org.openspotlight.graph.SimpleGraphSession;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
-import org.openspotlight.storage.domain.node.StorageNode;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.StorageNode;
 
-import java.util.Map;
-
-import static com.google.common.collect.Maps.newHashMap;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
- * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
+ * This class is an {@link ExecutionContext} which initialize all resources in a
+ * lazy way, and also close it in a lazy way also.
  * 
  * @author feu
  */
-public class DefaultExecutionContext implements ExecutionContext, LockContainer {
+public class DefaultExecutionContext implements ExecutionContext {
 
-    protected final SLGraph graph;
+	@Inject
+	public DefaultExecutionContext(
+			Provider<StorageSession> sessionProvider,
+			GraphSessionFactory graphSessionFactory,
+			SimplePersistFactory simplePersistFactory,
+			PersistentArtifactManagerProvider persistentArtifactManagerProvider,
+			ConfigurationManager configurationManager,
+			RepositoryPath repositoryPath) {
+		this.sessionProvider = sessionProvider;
+		this.graphSessionFactory = graphSessionFactory;
+		this.simplePersistFactory = simplePersistFactory;
+		this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
+		this.configurationManager = configurationManager;
+		this.repositoryPath = repositoryPath;
 
-    private final SimplePersistFactory   simplePersistFactory;
+	}
 
-    private final STRepositoryPath       repositoryPath;
+	private final Provider<StorageSession> sessionProvider;
 
-    private final DetailedLoggerProvider detailedLoggerProvider;
+	private final GraphSessionFactory graphSessionFactory;
 
-    private final class LazyConfigurationManagerProvider extends AtomicLazyResource<ConfigurationManager> {
-        private LazyConfigurationManagerProvider(
-                                                  final LockContainer lockContainer ) {
-            super(lockContainer);
-        }
+	private final SimplePersistFactory simplePersistFactory;
 
-        @Override
-        protected ConfigurationManager createReference() {
-            return ConfigurationManagerFactoryImpl.createMutableUsingSession(simplePersistFactory.createSimpRegularPartitionrPartitionrPartition.FEDERATION));
-        }
-    }
+	private final PersistentArtifactManagerProvider persistentArtifactManagerProvider;
 
-    private final class LazyDetailedLoggerProvider extends AtomicLazyResource<DetailedLogger> {
-        private LazyDetailedLoggerProvider(
-                                            final LockContainer lockContainer ) {
-            super(lockContainer);
-        }
+	private SimpleGraphSession openedSimpleGraphSession = null;
 
-        @Override
-        protected DetailedLogger createReference() {
-            return detailedLoggerProvider.get();
-        }
-    }
+	private FullGraphSession openedFullGraphSession = null;
 
-    private final class LazyGraphSessionProvider extends AtomicLazyResource<GraphReadGraphReadGraphReaderProvider(
-                                          final LockContainer lockContainer ) {
-            super(lockContainer);
-        }
+	private final ConfigurationManager configurationManager;
 
-        @Override
-        protected GraphReader createGraphReaderxceptioGraphReaderurn graph.openSession(getUser(), repositoryName);
-        }
-    }
+	private final RepositoryPath repositoryPath;
 
-    private final class LazyJcrConnectionProvider extends AtomicLazyResource<JcrConnectionProvider> {
-        private LazyJcrConnectionProvider(
-                                           final LockContainer lockContainer ) {
-            super(lockContainer);
-        }
+	public static void closeResourcesIfNeeded(Object o) {
+		if (o instanceof Disposable) {
+			((Disposable) o).closeResources();
+		}
+	}
 
-        @Override
-        protected JcrConnectionProvider createReference() {
-            return JcrConnectionProvider.createFromData(descriptor);
-        }
-    }
+	@Override
+	public void closeResources() {
+		closeResourcesIfNeeded(sessionProvider);
+		closeResourcesIfNeeded(graphSessionFactory);
+		closeResourcesIfNeeded(simplePersistFactory);
+		closeResourcesIfNeeded(persistentArtifactManagerProvider);
+		closeResourcesIfNeeded(openedFullGraphSession);
+		closeResourcesIfNeeded(openedSimpleGraphSession);
+		closeResourcesIfNeeded(configurationManager);
 
-    private final class LazyJcrPersistentArtifactManager extends AtomicLazyResource<PersistentArtifactManager> {
-        private LazyJcrPersistentArtifactManager(
-                                                  final LockContainer lockContainer ) {
-            super(lockContainer);
-        }
+	}
 
-        @Override
-        protected PersistentArtifactManager createReference() {
-            return new PersistentArtifactManagerImpl(repository, simplePersistFactory);
-        }
-    }
+	@Override
+	public SimpleGraphSession openSimple() {
+		if (openedSimpleGraphSession == null)
+			openedSimpleGraphSession = graphSessionFactory.openSimple();
+		return openedSimpleGraphSession;
+	}
 
-    private final String                                        username;
-    private final String                                        password;
-    private final JcrConnectionDescriptor                       descriptor;
-    private final String                                        repositoryName;
-    private final Repository                                    repository;
-    private final DisposingListener<DefaultExecutionContext>    listener;
-    private final Lock                                          lock                                     = new Lock();
+	@Override
+	public FullGraphSession openFull() {
+		if (openedFullGraphSession == null)
+			openedFullGraphSession = graphSessionFactory.openFull();
+		return openedFullGraphSession;
+	}
 
-    private final AtomicLazyResource<AuthenticatedUser>         lazyAuthenticatedUserReference           = new AtomicLazyResource<AuthenticatedUser>() {
+	@Override
+	public FullGraphSession openFull(String artifactId)
+			throws IllegalArgumentException {
+		return graphSessionFactory.openFull(artifactId);
+	}
 
-                                                                                                             @Override
-                                                                                                             protected AuthenticatedUser createReference()
-                                                                                                                 throws Exception {
-                                                                                                                 final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-                                                                                                                 final User simpleUser = securityFactory.createUser(username);
-                                                                                                                 final AuthenticatedUser user = securityFactory.createIdentityManager(
-                                                                                                                                                                                      descriptor).authenticate(
-                                                                                                                                                                                                               simpleUser,
-                                                                                                                                                                                                               password);
-                                                                                                                 return user;
-                                                                                                             }
-                                                                                                         };
+	@Override
+	public PersistentArtifactManager getPersistentArtifactManager() {
+		return persistentArtifactManagerProvider.get();
+	}
 
-    private final AtomicLazyResource<JcrConnectionProvider>     lazyConnectionProviderReference          = new LazyJcrConnectionProvider(
-                                                                                                                                         this);
+	@Override
+	public ConfigurationManager getDefaultConfigurationManager() {
+		return configurationManager;
+	}
 
-    private final AtomicLazyResource<PersistentArtifactManager> lazyJcrPersistentArtifactManagerProvider = new LazyJcrPersistentArtifactManager(
-                                                                                                                                                this);
+	@Override
+	public String getPassword() {
+		throw new UnsupportedOperationException();
+	}
 
-    private final AtomicLazyResource<ConfigurationManager>      lazyConfigurationManagerReference        = new LazyConfigurationManagerProvider(
-                                                                                                                                                this);
+	@Override
+	public String getRepository() {
+		return repositoryPath.getRepositoryPathAsString();
+	}
 
-    private final AtomicLazyResource<GraphReader>            lazGraphReaderce              GraphReadersionProvider(
-                                                                                                                                        this);
+	@Override
+	public AuthenticatedUser getUser() {
+		throw new UnsupportedOperationException();
+	}
 
-    private final AtomicLazyResource<DetailedLogger>            lazyDetailedLoggerReference              = new LazyDetailedLoggerProvider(
-                                                                                                                                          this);
+	@Override
+	public String getUserName() {
+		throw new UnsupportedOperationException();
+	}
 
-    DefaultExecutionContext(
-            final String username, final String password, final JcrConnectionDescriptor descriptor,
-            final DisposingListener<DefaultExecutionContext> listener, Repository repository,
-            SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider, SLGraph graph) {
-        this.username = username;
-        this.password = password;
-        this.descriptor = descriptor;
-        this.simplePersistFactory = simplePersistFactory;
-        this.detailedLoggerProvider = detailedLoggerProvider;
-        this.graph = graph;
-        this.repositoryName = repository.getName();
-        this.repository = repository;
-        this.listener = listener;
-        this.repositoryPath = STRepositoryPath.repositoryPath(repository.getName());
-    }
+	@Override
+	public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
+			Partition partition) {
+		return simplePersistFactory.createSimplePersist(partition);
+	}
 
-    public boolean artifactFinderSupportsThisType( final Class<? extends Artifact> type ) {
-        return true;
-    }
+	@Override
+	public RepositoryPath getRepositoryPath() {
+		return repositoryPath;
+	}
 
-    public void closeResources() {
-        synchronized (lock) {
-
-            lazyConfigurationManagerReference.closeResources();
-            lazyDetailedLoggerReference.closeResources();
-            lazyGraphSessionReference.closeResources();
-            lazyConnectionProviderReference.closeResources();
-            listener.didCloseResource(this);
-        }
-    }
-
-    public ConfigurationManager getDefaultConfigurationManager() {
-        return lazyConfigurationManagerReference.get();
-    }
-
-    public JcrConnectionProvider getDefaultConnectionProvider() {
-        return lazyConnectionProviderReference.get();
-    }
-
-    public GraphReader getGraphSession() {
-    GraphReaderSessionReference.get();
- GraphReaderk getLockObject() {
-        return lock;
-    }
-
-    public DetailedLogger getLogger() {
-        return lazyDetailedLoggerReference.get();
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRepository() {
-        return repositoryName;
-    }
-
-    public AuthenticatedUser getUser() {
-        return lazyAuthenticatedUserReference.get();
-    }
-
-    public String getUserName() {
-        return username;
-    }
-
-    private Map<STPartition, SimplePersistCapable<StorageNode, StStStorageSessiondSimplePersists = newHashMap();
-
-    public SimplePersistCapable<StorageNode, StorStorStorageSessionersist( STPartition partition ) {
-        SimplePersistCapable<StorageNode, StoragStoragStorageSessiondSimplePersists.get(partition);
-        if (result == null) {
-            result = simplePersistFactory.createSimplePersist(partition);
-            openedSimplePersists.put(partition, result);
-        }
-        return result;
-    }
-
-    public STRepositoryPath getRepositoryPath() {
-        return repositoryPath;
-    }
-
-    public SimplePersistFactory getSimplePersistFactory() {
-        return simplePersistFactory;
-    }
-
-    public PersistentArtifactManager getPersistentArtifactManager() {
-        return lazyJcrPersistentArtifactManagerProvider.get();
-    }
+	@Override
+	public SimplePersistFactory getSimplePersistFactory() {
+		return simplePersistFactory;
+	}
 
 }

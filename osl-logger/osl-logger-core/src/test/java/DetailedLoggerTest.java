@@ -146,7 +146,7 @@ public class DetailedLoggerTest {
 	@After
 	public void releaseAttributes() throws Exception {
 		loggerProvider.closeResources();
-		graphSession.shutdown();
+		graphSession.dispose();
 		logger = null;
 	}
 

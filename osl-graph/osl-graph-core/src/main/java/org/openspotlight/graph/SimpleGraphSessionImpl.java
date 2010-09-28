@@ -111,7 +111,7 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
     }
 
     @Override
-    public void shutdown() {
+    public void dispose() {
         throw new UnsupportedOperationException();
     }
 

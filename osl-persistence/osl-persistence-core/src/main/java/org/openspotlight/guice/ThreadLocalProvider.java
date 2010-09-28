@@ -21,28 +21,54 @@
 
 package org.openspotlight.guice;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openspotlight.common.Disposable;
+
 import com.google.inject.Provider;
 
 /**
- * This is a Guice provider used for thread locals variables. Is is mandatory to use the {com.google.inject.Singleton} annotation
- * on the class that implement this interface. Also if this provider implementation depends on other Thread locals, inject the
- * provider instead of the instance.
+ * This is a Guice provider used for thread locals variables. Is is mandatory to
+ * use the {com.google.inject.Singleton} annotation on the class that implement
+ * this interface. Also if this provider implementation depends on other Thread
+ * locals, inject the provider instead of the instance.
  * <p/>
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:43:42 PM
  */
-public abstract class ThreadLocalProvider<T> implements Provider<T> {
+public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable {
 
-    private final ThreadLocal<T> threadLocal = new ThreadLocal<T>();
+	private final ThreadLocal<T> threadLocal = new ThreadLocal<T>();
 
-    protected abstract T createInstance();
+	@Override
+	public void closeResources() {
+		List<Disposable> disposables;
+		synchronized (disposableItems) {
+			disposables = new ArrayList<Disposable>(disposableItems);
+			disposableItems.clear();
+		}
+		for (Disposable d : disposables) {
+			d.closeResources();
+		}
+	}
 
-    @Override
-    public T get() {
-        T t = threadLocal.get();
-        if (t == null) {
-            t = createInstance();
-            threadLocal.set(t);
-        }
-        return t;
-    }
+	protected abstract T createInstance();
+
+	private final List<Disposable> disposableItems = new ArrayList<Disposable>();
+
+	@Override
+	public T get() {
+		T t = threadLocal.get();
+		if (t == null) {
+			t = createInstance();
+			threadLocal.set(t);
+			if (t instanceof Disposable) {
+				synchronized (disposableItems) {
+					disposableItems.add((Disposable) t);
+				}
+			}
+		}
+		return t;
+	}
+
 }

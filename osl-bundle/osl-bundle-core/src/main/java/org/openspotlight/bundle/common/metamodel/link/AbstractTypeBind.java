@@ -48,12 +48,15 @@
  */
 package org.openspotlight.bundle.common.metamodel.link;
 
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
+
 
 /**
  * The Interface for a link between Abstract Type Bind. Java Context A2B Java Type
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Abstract Type Bind" )
-public interface AbstractTypeBind extends SLLink {
+@Description( "Abstract Type Bind" )
+public abstract class AbstractTypeBind extends Link {
 }

@@ -53,6 +53,7 @@ import java.util.Set;
 
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.common.Disposable;
 import org.openspotlight.common.exception.ConfigurationException;
 
 /**
@@ -60,12 +61,7 @@ import org.openspotlight.common.exception.ConfigurationException;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public interface ConfigurationManager {
-
-    /**
-     * Close resources.
-     */
-    public void closeResources();
+public interface ConfigurationManager extends Disposable{
 
     Iterable<Repository> getAllRepositories() throws ConfigurationException;
 

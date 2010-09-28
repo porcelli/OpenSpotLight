@@ -49,7 +49,6 @@
 package org.openspotlight.bundle.context;
 
 import org.openspotlight.common.Disposable;
-import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.GraphSessionFactory;
@@ -62,7 +61,6 @@ import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
 
 public interface ExecutionContext extends Disposable, GraphSessionFactory {
-    public boolean artifactFinderSupportsThisType( Class<? extends Artifact> type );
 
     public PersistentArtifactManager getPersistentArtifactManager();
 

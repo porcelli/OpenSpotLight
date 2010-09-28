@@ -61,6 +61,8 @@ import org.openspotlight.storage.domain.key.NodeKey;
  */
 public interface StorageSession {
 
+	public void release();
+	
     public RepositoryPath getRepositoryPath();
 
     PartitionMethods withPartition(Partition partition);

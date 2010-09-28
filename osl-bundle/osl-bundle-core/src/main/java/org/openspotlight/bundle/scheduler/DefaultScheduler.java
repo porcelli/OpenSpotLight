@@ -403,7 +403,7 @@ public enum DefaultScheduler implements SLScheduler {
 
     public void stopScheduler() {
         try {
-            quartzScheduler.shutdown();
+            quartzScheduler.dispose();
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }

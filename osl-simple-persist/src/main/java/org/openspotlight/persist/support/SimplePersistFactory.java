@@ -49,6 +49,7 @@
 
 package org.openspotlight.persist.support;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
@@ -56,6 +57,6 @@ import org.openspotlight.storage.domain.StorageNode;
 /**
  * Created by User: feu - Date: Apr 20, 2010 - Time: 9:56:03 AM
  */
-public interface SimplePersistFactory {
+public interface SimplePersistFactory extends Disposable{
     SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(Partition partition);
 }

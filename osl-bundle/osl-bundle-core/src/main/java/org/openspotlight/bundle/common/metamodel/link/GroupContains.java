@@ -48,8 +48,11 @@
  */
 package org.openspotlight.bundle.common.metamodel.link;
 
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
 
-@SLDescription( "Group Contains" )
-public interface GroupContains extends SLLink {
+
+@Description( "Group Contains" )
+public abstract class GroupContains extends Link {
 
 }

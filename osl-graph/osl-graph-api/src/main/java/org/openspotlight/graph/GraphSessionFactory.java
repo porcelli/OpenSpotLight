@@ -21,6 +21,8 @@
 
 package org.openspotlight.graph;
 
+import org.openspotlight.common.Disposable;
+
 /**
  * The main contract here is the creation of different session instances ({@link SimpleGraphSession} and {@link FullGraphSession}
  * ). Usually an application has a single GraphSessionFactory instance and threads servicing client requests obtain Session
@@ -30,7 +32,7 @@ package org.openspotlight.graph;
  * @author porcelli
  * @author feuteston
  */
-public interface GraphSessionFactory {
+public interface GraphSessionFactory  extends Disposable{
 
     /**
      * Opens a simple graph session.

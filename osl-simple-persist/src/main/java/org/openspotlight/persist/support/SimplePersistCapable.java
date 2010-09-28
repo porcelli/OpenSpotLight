@@ -52,6 +52,7 @@ package org.openspotlight.persist.support;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
@@ -60,9 +61,9 @@ import org.openspotlight.storage.StorageSession;
  * Created by IntelliJ IDEA. User: feuteston Date: 05/04/2010 Time: 12:15:53 To change this template use File | Settings | File
  * Templates.
  */
-public interface SimplePersistCapable<N, S> {
-
-    StorageSession getCurrentSession();
+public interface SimplePersistCapable<N, S> extends Disposable{
+	
+	StorageSession getCurrentSession();
 
     Partition getCurrentPartition();
 
