@@ -50,6 +50,11 @@ package org.openspotlight.bundle.scheduler;
 
 import org.openspotlight.bundle.scheduler.DefaultScheduler.OslInternalSchedulerCommand;
 import org.openspotlight.common.util.Assertions;
+import org.quartz.InterruptableJob;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.StatefulJob;
+import org.quartz.UnableToInterruptJobException;
 
 public class OslQuartzJob implements StatefulJob, InterruptableJob {
 

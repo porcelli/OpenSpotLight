@@ -61,11 +61,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.bundle.domain.Schedulable;
-import org.openspotlight.bundle.domain.Schedulable.SchedulableCommand;
-import org.openspotlight.bundle.domain.Schedulable.SchedulableCommandWithContextFactory;
+import org.openspotlight.bundle.domain.SchedulableCommand;
+import org.openspotlight.bundle.domain.SchedulableCommand.SchedulableCommandWithContextFactory;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -73,6 +75,13 @@ import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.util.RepositorySet;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.TriggerUtils;
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -403,7 +412,7 @@ public enum DefaultScheduler implements SLScheduler {
 
     public void stopScheduler() {
         try {
-            quartzScheduler.dispose();
+            quartzScheduler.closeResources();
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }

@@ -49,6 +49,7 @@
 
 package org.openspotlight.persist.support;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
@@ -63,16 +64,25 @@ import com.google.inject.Singleton;
 @Singleton
 public class SimplePersistFactoryImpl implements SimplePersistFactory {
 
-    private final Provider<StorageSession> sessionProvider;
+	private final Provider<StorageSession> sessionProvider;
 
-    @Inject
-    public SimplePersistFactoryImpl(
-                                     final Provider<StorageSession> sessionProvider) {
-        this.sessionProvider = sessionProvider;
-    }
+	@Inject
+	public SimplePersistFactoryImpl(
+			final Provider<StorageSession> sessionProvider) {
+		this.sessionProvider = sessionProvider;
+	}
 
-    @Override
-    public SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(final Partition partition) {
-        return new SimplePersistImpl(sessionProvider.get(), partition);
-    }
+	@Override
+	public SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(
+			final Partition partition) {
+		return new SimplePersistImpl(sessionProvider.get(), partition);
+	}
+
+	@Override
+	public void closeResources() {
+		if (sessionProvider instanceof Disposable) {
+			((Disposable) sessionProvider).closeResources();
+		}
+
+	}
 }

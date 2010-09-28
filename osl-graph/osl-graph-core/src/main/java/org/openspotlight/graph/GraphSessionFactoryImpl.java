@@ -49,6 +49,10 @@
 
 package org.openspotlight.graph;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openspotlight.common.Disposable;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
 
@@ -57,31 +61,54 @@ import com.google.inject.Provider;
 
 public class GraphSessionFactoryImpl implements GraphSessionFactory {
 
-    @Inject
-    public GraphSessionFactoryImpl(
-                                      final Provider<StorageSession> sessionProvider,
-                                      final PartitionFactory factory) {
-        this.sessionProvider = sessionProvider;
-        this.factory = factory;
-    }
+	@Inject
+	public GraphSessionFactoryImpl(
+			final Provider<StorageSession> sessionProvider,
+			final PartitionFactory factory) {
+		this.sessionProvider = sessionProvider;
+		this.factory = factory;
+	}
 
-    private final PartitionFactory         factory;
+	private final PartitionFactory factory;
 
-    private final Provider<StorageSession> sessionProvider;
+	private final Provider<StorageSession> sessionProvider;
 
-    @Override
-    public FullGraphSession openFull() {
-        return new FullGraphSessionImpl(sessionProvider, null, factory);
-    }
+	@Override
+	public FullGraphSession openFull() {
+		return rememberToClose(new FullGraphSessionImpl(sessionProvider, null,
+				factory));
+	}
 
-    @Override
-    public FullGraphSession openFull(final String artifactId) {
-        return new FullGraphSessionImpl(sessionProvider, artifactId, factory);
-    }
+	@Override
+	public FullGraphSession openFull(final String artifactId) {
+		return rememberToClose(new FullGraphSessionImpl(sessionProvider,
+				artifactId, factory));
+	}
 
-    @Override
-    public SimpleGraphSession openSimple() {
-        return new SimpleGraphSessionImpl(sessionProvider, factory);
-    }
+	@Override
+	public SimpleGraphSession openSimple() {
+		return rememberToClose(new SimpleGraphSessionImpl(sessionProvider,
+				factory));
+	}
+
+	private List<Disposable> resourcesToClose = new ArrayList<Disposable>();
+
+	private <T extends Disposable> T rememberToClose(T t) {
+		synchronized (resourcesToClose) {
+			resourcesToClose.add(t);
+		}
+		return t;
+	}
+
+	@Override
+	public void closeResources() {
+		List<Disposable> copy;
+		synchronized (resourcesToClose) {
+			copy = new ArrayList<Disposable>(resourcesToClose);
+			resourcesToClose.clear();
+		}
+		for (Disposable d : copy)
+			d.closeResources();
+	}
 
 }

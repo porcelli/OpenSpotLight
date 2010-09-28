@@ -48,8 +48,9 @@
  */
 package org.openspotlight.bundle.scheduler;
 
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.bundle.domain.SchedulableCommand;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;

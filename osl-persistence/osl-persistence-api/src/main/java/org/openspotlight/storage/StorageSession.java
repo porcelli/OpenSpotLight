@@ -49,19 +49,18 @@
 
 package org.openspotlight.storage;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
-import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.key.NodeKey;
 
 /**
  * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
  * connection state. This implementation must not be shared between threads.
  */
-public interface StorageSession {
-
-	public void release();
+public interface StorageSession extends Disposable{
 	
     public RepositoryPath getRepositoryPath();
 

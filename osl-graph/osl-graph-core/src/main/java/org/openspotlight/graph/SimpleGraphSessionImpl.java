@@ -52,6 +52,7 @@ package org.openspotlight.graph;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.graph.internal.NodeAndLinkSupport;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphTransientWriter;
@@ -64,55 +65,60 @@ import com.google.inject.Provider;
 
 public class SimpleGraphSessionImpl implements SimpleGraphSession {
 
-    public SimpleGraphSessionImpl(final Provider<StorageSession> sessionProvider,
-                                  final PartitionFactory factory) {
-        transientWriter = new GraphTransientWriterImpl();
-        this.sessionProvider = sessionProvider;
-        this.factory = factory;
-    }
+	public SimpleGraphSessionImpl(
+			final Provider<StorageSession> sessionProvider,
+			final PartitionFactory factory) {
+		transientWriter = new GraphTransientWriterImpl();
+		this.sessionProvider = sessionProvider;
+		this.factory = factory;
+	}
 
-    private final PartitionFactory           factory;
-    private final GraphTransientWriter       transientWriter;
-    protected final Provider<StorageSession> sessionProvider;
+	private final PartitionFactory factory;
+	private final GraphTransientWriter transientWriter;
+	protected final Provider<StorageSession> sessionProvider;
 
-    @Override
-    public void flushChangedProperties(final Node node) {
-        final StorageSession session = sessionProvider.get();
-        final org.openspotlight.storage.domain.StorageNode stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
-                from(GraphLocation.SERVER).getContext(node), node, false);
-        session.flushTransient();
-    }
+	@Override
+	public void flushChangedProperties(final Node node) {
+		final StorageSession session = sessionProvider.get();
+		final org.openspotlight.storage.domain.StorageNode stNode = NodeAndLinkSupport
+				.retrievePreviousNode(factory, session,
+						from(GraphLocation.SERVER).getContext(node), node,
+						false);
+		session.flushTransient();
+	}
 
-    @Override
-    public PolicyEnforcement getPolicyEnforcement() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public PolicyEnforcement getPolicyEnforcement() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public User getUser() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public User getUser() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public GraphTransientWriter toTransient() {
-        return transientWriter;
-    }
+	@Override
+	public GraphTransientWriter toTransient() {
+		return transientWriter;
+	}
 
-    private final Map<GraphLocation, GraphReader> readerCache = new HashMap<GraphLocation, GraphReader>();
+	private final Map<GraphLocation, GraphReader> readerCache = new HashMap<GraphLocation, GraphReader>();
 
-    @Override
-    public GraphReader from(final GraphLocation location) {
-        GraphReader reader = readerCache.get(location);
-        if (reader == null) {
-            reader = new GraphReaderImpl(sessionProvider, location, factory);
-            readerCache.put(location, reader);
-        }
-        return reader;
-    }
+	@Override
+	public GraphReader from(final GraphLocation location) {
+		GraphReader reader = readerCache.get(location);
+		if (reader == null) {
+			reader = new GraphReaderImpl(sessionProvider, location, factory);
+			readerCache.put(location, reader);
+		}
+		return reader;
+	}
 
-    @Override
-    public void dispose() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void closeResources() {
+		if (sessionProvider instanceof Disposable) {
+			((Disposable) sessionProvider).closeResources();
+		}
+	}
 
 }

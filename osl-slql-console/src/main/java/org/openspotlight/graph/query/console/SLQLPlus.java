@@ -283,7 +283,7 @@ public class SLQLPlus {
 					out.println(".");
 				}
 			}
-			loginState.getK2().dispose();
+			loginState.getK2().closeResources();
 		}
 	}
 

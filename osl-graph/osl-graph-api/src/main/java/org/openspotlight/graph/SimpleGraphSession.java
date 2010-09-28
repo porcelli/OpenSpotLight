@@ -85,5 +85,5 @@ public interface SimpleGraphSession extends Disposable {
 	 * prevent memory leaks.
 	 */
 	@DisposeMethod(callOnTimeout = true)
-	void dispose();
+	void closeResources();
 }
