@@ -1,6 +1,8 @@
 package org.openspotlight.bundle.context;
 
+import org.openspotlight.bundle.annotation.ArtifactLoaderRegistry;
 import org.openspotlight.common.Disposable;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.GraphSessionFactory;
@@ -22,15 +24,18 @@ public class ExecutionContextFactory extends
 			SimplePersistFactory simplePersistFactory,
 			PersistentArtifactManagerProvider persistentArtifactManagerProvider,
 			ConfigurationManager configurationManager,
-			RepositoryPath repositoryPath) {
+			RepositoryPath repositoryPath,
+			@ArtifactLoaderRegistry Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
 		this.sessionProvider = sessionProvider;
 		this.graphSessionFactory = graphSessionFactory;
 		this.simplePersistFactory = simplePersistFactory;
 		this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
 		this.configurationManager = configurationManager;
 		this.repositoryPath = repositoryPath;
-
+		this.loaderRegistry = loaderRegistry;
 	}
+
+	private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
 
 	private final Provider<StorageSession> sessionProvider;
 
@@ -65,7 +70,7 @@ public class ExecutionContextFactory extends
 		return new DefaultExecutionContext(sessionProvider,
 				graphSessionFactory, simplePersistFactory,
 				persistentArtifactManagerProvider, configurationManager,
-				repositoryPath);
+				repositoryPath, loaderRegistry);
 	}
 
 }

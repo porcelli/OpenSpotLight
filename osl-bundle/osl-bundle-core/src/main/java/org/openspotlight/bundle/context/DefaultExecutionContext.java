@@ -48,7 +48,9 @@
  */
 package org.openspotlight.bundle.context;
 
+import org.openspotlight.bundle.annotation.ArtifactLoaderRegistry;
 import org.openspotlight.common.Disposable;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.loader.ConfigurationManager;
@@ -74,6 +76,8 @@ import com.google.inject.Provider;
  */
 public class DefaultExecutionContext implements ExecutionContext {
 
+	private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
+
 	@Inject
 	public DefaultExecutionContext(
 			Provider<StorageSession> sessionProvider,
@@ -81,14 +85,21 @@ public class DefaultExecutionContext implements ExecutionContext {
 			SimplePersistFactory simplePersistFactory,
 			PersistentArtifactManagerProvider persistentArtifactManagerProvider,
 			ConfigurationManager configurationManager,
-			RepositoryPath repositoryPath) {
+			RepositoryPath repositoryPath,
+			@ArtifactLoaderRegistry
+			Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
 		this.sessionProvider = sessionProvider;
 		this.graphSessionFactory = graphSessionFactory;
 		this.simplePersistFactory = simplePersistFactory;
 		this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
 		this.configurationManager = configurationManager;
 		this.repositoryPath = repositoryPath;
+		this.loaderRegistry = loaderRegistry;
 
+	}
+
+	public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+		return loaderRegistry;
 	}
 
 	private final Provider<StorageSession> sessionProvider;
