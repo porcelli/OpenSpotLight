@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.template;
 
+import org.antlr.stringtemplate.StringTemplate;
+
 
 /**
  * This class is a "workarround" for setting attributes on a {@link StringTemplate} using vargargs. The behavior is quite the

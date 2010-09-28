@@ -55,6 +55,8 @@ import static org.junit.Assert.assertThat;
 
 import java.util.EnumMap;
 
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;

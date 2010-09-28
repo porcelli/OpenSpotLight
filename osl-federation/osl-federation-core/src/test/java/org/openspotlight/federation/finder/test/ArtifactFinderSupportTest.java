@@ -64,207 +64,261 @@ import org.openspotlight.federation.finder.ArtifactFinderSupport;
 
 public class ArtifactFinderSupportTest {
 
-    @Test
-    public void shouldCleanAllArtifactsMarkedWithExcluded() {
-        final Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final StringArtifact existent1 = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent1.getContent().setTransient(asList("abc"));
-        final StringArtifact existent2 = Artifact.createArtifact(StringArtifact.class, "a/b/d", ChangeType.CHANGED);
-        existent2.getContent().setTransient(asList("def"));
-        existents.add(existent1);
-        existents.add(existent2);
-        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents,null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getContent().get(null), is(not(asList("abc"))));
-    }
+	@Test
+	public void shouldCleanAllArtifactsMarkedWithExcluded() {
+		final Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final StringArtifact existent1 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent1.getContent().setTransient(asList("abc"));
+		final StringArtifact existent2 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/d", ChangeType.CHANGED);
+		existent2.getContent().setTransient(asList("def"));
+		existents.add(existent1);
+		existents.add(existent2);
+		ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents,
+				null);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(not(asList("abc"))));
+	}
 
-    @Test
-    public void shouldFindChangedArtifactsWhenTheExistentExcluded() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("def"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
-        assertThat(existents.iterator().next(), is(newOne));
-        assertThat(existents.iterator().next().getContent().get(null), is(asList("abc")));
-    }
+	@Test
+	public void shouldFindChangedArtifactsWhenTheExistentExcluded() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("def"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.CHANGED));
+		assertThat(existents.iterator().next(), is(newOne));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(asList("abc")));
+	}
 
-    @Test
-    public void shouldFindChangedArtifactsWhenTheExistentIsChanged() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("def"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
-        assertThat(existents.iterator().next(), is(newOne));
-        assertThat(existents.iterator().next().getContent().get(null), is(asList("abc")));
-    }
+	@Test
+	public void shouldFindChangedArtifactsWhenTheExistentIsChanged() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("def"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.CHANGED));
+		assertThat(existents.iterator().next(), is(newOne));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(asList("abc")));
+	}
 
-    @Test
-    public void shouldFindChangedArtifactsWhenTheExistentIsNotChanged() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("def"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
-        assertThat(existents.iterator().next(), is(newOne));
-        assertThat(existents.iterator().next().getContent().get(null), is(asList("abc")));
-    }
+	@Test
+	public void shouldFindChangedArtifactsWhenTheExistentIsNotChanged() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("def"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.CHANGED));
+		assertThat(existents.iterator().next(), is(newOne));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(asList("abc")));
+	}
 
-    @Test
-    public void shouldFindExcludedArtifactsWhenTheExistentIsExcludedWithOtherContent() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("def"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.EXCLUDED));
-        assertThat(existents.iterator().next(), is(newOne));
-    }
+	@Test
+	public void shouldFindExcludedArtifactsWhenTheExistentIsExcludedWithOtherContent() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("def"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.EXCLUDED));
+		assertThat(existents.iterator().next(), is(newOne));
+	}
 
-    @Test
-    public void shouldFindExcludedArtifactsWhenTheExistentIsExcludedWithSameContent() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("abc"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.EXCLUDED));
-        assertThat(existents.iterator().next(), is(newOne));
-    }
+	@Test
+	public void shouldFindExcludedArtifactsWhenTheExistentIsExcludedWithSameContent() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("abc"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.EXCLUDED));
+		assertThat(existents.iterator().next(), is(newOne));
+	}
 
-    @Test
-    public void shouldFindExcludedArtifactsWhenTheresNoOther() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("def"));
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.EXCLUDED));
-        assertThat(existents.iterator().next(), is(existent));
-    }
+	@Test
+	public void shouldFindExcludedArtifactsWhenTheresNoOther() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("def"));
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.EXCLUDED));
+		assertThat(existents.iterator().next(), is(existent));
+	}
 
-    @Test
-    public void shouldFindIncludedArtifacts() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        newOnes.add(newOne);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.INCLUDED));
-        assertThat(existents.iterator().next(), is(newOne));
-    }
+	@Test
+	public void shouldFindIncludedArtifacts() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		newOnes.add(newOne);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.INCLUDED));
+		assertThat(existents.iterator().next(), is(newOne));
+	}
 
-    @Test
-    public void shouldFindIncludedArtifactsWhenTheExistentIsIncluded() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        existent.getContent().setTransient(asList("def"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.INCLUDED));
-        assertThat(existents.iterator().next(), is(newOne));
-        assertThat(existents.iterator().next().getContent().get(null), is(asList("abc")));
+	@Test
+	public void shouldFindIncludedArtifactsWhenTheExistentIsIncluded() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		existent.getContent().setTransient(asList("def"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.INCLUDED));
+		assertThat(existents.iterator().next(), is(newOne));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(asList("abc")));
 
-    }
+	}
 
-    @Test
-    public void shouldFindNotChangedArtifactsWhenTheExistentIsExcluded() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent.getContent().setTransient(asList("abc"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
-        assertThat(existents.iterator().next(), is(newOne));
-    }
+	@Test
+	public void shouldFindNotChangedArtifactsWhenTheExistentIsExcluded() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent.getContent().setTransient(asList("abc"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.CHANGED));
+		assertThat(existents.iterator().next(), is(newOne));
+	}
 
-    @Test
-    public void shouldFindNotChangedArtifactsWhenTheExistentIsNotChanged() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
-        final StringArtifact newOne = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        newOne.getContent().setTransient(asList("abc"));
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.NOT_CHANGED);
-        existent.getContent().setTransient(asList("abc"));
-        newOnes.add(newOne);
-        existents.add(existent);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes, null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.NOT_CHANGED));
-        assertThat(existents.iterator().next(), is(newOne));
-    }
+	@Test
+	public void shouldFindNotChangedArtifactsWhenTheExistentIsNotChanged() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		newOne.getContent().setTransient(asList("abc"));
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.NOT_CHANGED);
+		existent.getContent().setTransient(asList("abc"));
+		newOnes.add(newOne);
+		existents.add(existent);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				newOnes);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.NOT_CHANGED));
+		assertThat(existents.iterator().next(), is(newOne));
+	}
 
-    @Test
-    public void shouldIgnoreArtifactsIncludedAndExcluded() {
-        Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final Set<StringArtifact> excludeds = new HashSet<StringArtifact>();
-        final StringArtifact existent = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        existent.getContent().setTransient(asList("willBeExcluded"));
-        existents.add(existent);
-        final StringArtifact excluded = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        excluded.getContent().setTransient(asList("willBeExcluded"));
-        excludeds.add(excluded);
-        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, excludeds, null);
-        assertThat(existents.size(), is(0));
-    }
+	@Test
+	public void shouldIgnoreArtifactsIncludedAndExcluded() {
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> excludeds = new HashSet<StringArtifact>();
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		existent.getContent().setTransient(asList("willBeExcluded"));
+		existents.add(existent);
+		final StringArtifact excluded = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		excluded.getContent().setTransient(asList("willBeExcluded"));
+		excludeds.add(excluded);
+		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
+				excludeds);
+		assertThat(existents.size(), is(0));
+	}
 
-    @Test
-    public void shouldMarkAllArtifactsWithNotChanged() {
-        final Set<StringArtifact> existents = new HashSet<StringArtifact>();
-        final StringArtifact existent1 = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-        existent1.getContent().setTransient(asList("def"));
-        final StringArtifact existent2 = Artifact.createArtifact(StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-        existent2.getContent().setTransient(asList("abc"));
-        existents.add(existent1);
-        existents.add(existent2);
-        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents,null);
-        assertThat(existents.size(), is(1));
-        assertThat(existents.iterator().next().getContent().get(null), is(asList("def")));
-        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.NOT_CHANGED));
+	@Test
+	public void shouldMarkAllArtifactsWithNotChanged() {
+		final Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final StringArtifact existent1 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		existent1.getContent().setTransient(asList("def"));
+		final StringArtifact existent2 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		existent2.getContent().setTransient(asList("abc"));
+		existents.add(existent1);
+		existents.add(existent2);
+		ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents,
+				null);
+		assertThat(existents.size(), is(1));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(asList("def")));
+		assertThat(existents.iterator().next().getChangeType(),
+				is(ChangeType.NOT_CHANGED));
 
-    }
+	}
 
 }

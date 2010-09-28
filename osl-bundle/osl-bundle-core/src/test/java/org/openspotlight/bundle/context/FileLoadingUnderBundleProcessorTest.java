@@ -1,4 +1,4 @@
-package org.openspotlight.federation.finder.test;
+package org.openspotlight.bundle.context;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

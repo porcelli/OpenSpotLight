@@ -56,7 +56,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;

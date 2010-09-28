@@ -48,20 +48,20 @@
  */
 package org.openspotlight.federation.finder.test;
 
-import org.junit.Test;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Strings.concatPaths;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Strings.concatPaths;
+import org.junit.Test;
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 
 public class FileSystemOriginArtifactLoaderEncodingTest {
 

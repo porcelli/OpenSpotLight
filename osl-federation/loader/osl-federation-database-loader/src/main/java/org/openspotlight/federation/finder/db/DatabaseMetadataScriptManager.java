@@ -77,7 +77,6 @@ import com.thoughtworks.xstream.XStream;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@ThreadSafe
 public enum DatabaseMetadataScriptManager {
 
     /**

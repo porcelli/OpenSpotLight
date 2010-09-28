@@ -64,18 +64,17 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.bundle.scheduler.DefaultScheduler;
-import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
-import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
+import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.task.ExecutorInstance;
 
 import com.google.inject.Guice;
@@ -85,169 +84,173 @@ import com.google.inject.internal.ImmutableList;
 
 public abstract class AbstractFileSystemLoadingStressTest {
 
-    private static ArtifactSource artifactSource;
-    protected Injector injector;
+	private static ArtifactSource artifactSource;
+	protected Injector injector;
 
-    private static class RepositoryData {
-        public final GlobalSettings settings;
-        public final Repository repository;
-        public final Group group;
-        public final ArtifactSource artifactSource;
+	private static class RepositoryData {
+		public final GlobalSettings settings;
+		public final Repository repository;
+		public final Group group;
+		public final ArtifactSource artifactSource;
 
-        public RepositoryData(
-                final GlobalSettings settings, final Repository repository, final Group group,
-                final ArtifactSource artifactSource) {
-            this.settings = settings;
-            this.repository = repository;
-            this.group = group;
-            this.artifactSource = artifactSource;
-        }
-    }
+		public RepositoryData(final GlobalSettings settings,
+				final Repository repository, final Group group,
+				final ArtifactSource artifactSource) {
+			this.settings = settings;
+			this.repository = repository;
+			this.group = group;
+			this.artifactSource = artifactSource;
+		}
+	}
 
-    private static ExecutionContextFactory contextFactory;
-    private static RepositoryData data;
-    private static DefaultScheduler scheduler;
+	private static RepositoryData data;
 
-    @AfterClass
-    public static void closeResources() throws Exception {
-        contextFactory.closeResources();
-    }
+	@AfterClass
+	public static void closeResources() throws Exception {
+		// TODO
+	}
 
-    private static RepositoryData createRepositoryData() {
-        final GlobalSettings settings = new GlobalSettings();
-        settings.setDefaultSleepingIntervalInMilliseconds(300);
+	private static RepositoryData createRepositoryData() {
+		final GlobalSettings settings = new GlobalSettings();
+		settings.setDefaultSleepingIntervalInMilliseconds(300);
 
-        GlobalSettingsSupport.initializeScheduleMap(settings);
-        final Repository repository = new Repository();
-        repository.setName("sampleRepository");
-        repository.setActive(true);
-        final Group group = new Group();
-        group.setName("sampleGroup");
-        group.setRepository(repository);
-        repository.getGroups().add(group);
-        group.setActive(true);
-        artifactSource = new ArtifactSource();
-        repository.getArtifactSources().add(artifactSource);
-        artifactSource.setRepository(repository);
-        artifactSource.setName("lots of files");
-        artifactSource.setActive(true);
-        artifactSource.setBinary(false);
-        artifactSource.setInitialLookup("/Users/feu/much-data");
-        artifactSource.setInitialLookup("./");
-        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-        mapping.setSource(artifactSource);
-        artifactSource.getMappings().add(mapping);
-        mapping.setFrom("files");
-        mapping.setFrom("src");
-        mapping.setTo("OSL");
-        artifactSource.getMappings().add(mapping);
-        mapping.getIncludeds().add("**/*");
-//        mapping.getIncludeds().add("**/XmlConfigurationManagerFactory.java"); //TODO remove this
+		final Repository repository = new Repository();
+		repository.setName("sampleRepository");
+		repository.setActive(true);
+		final Group group = new Group();
+		group.setName("sampleGroup");
+		group.setRepository(repository);
+		repository.getGroups().add(group);
+		group.setActive(true);
+		artifactSource = new ArtifactSource();
+		repository.getArtifactSources().add(artifactSource);
+		artifactSource.setRepository(repository);
+		artifactSource.setName("lots of files");
+		artifactSource.setActive(true);
+		artifactSource.setBinary(false);
+		artifactSource.setInitialLookup("/Users/feu/much-data");
+		artifactSource.setInitialLookup("./");
+		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+		mapping.setSource(artifactSource);
+		artifactSource.getMappings().add(mapping);
+		mapping.setFrom("files");
+		mapping.setFrom("src");
+		mapping.setTo("OSL");
+		artifactSource.getMappings().add(mapping);
+		mapping.getIncludeds().add("**/*");
+		// mapping.getIncludeds().add("**/XmlConfigurationManagerFactory.java");
+		// //TODO remove this
 
-        return new RepositoryData(settings, repository, group, artifactSource);
-    }
+		return new RepositoryData(settings, repository, group, artifactSource);
+	}
 
-    private boolean runned = false;
+	private boolean runned = false;
+	private ConfigurationManager configurationManager;
+	private PersistentArtifactManager persistentArtifactManager;
 
-    @Before
-    public void setupResources() throws Exception {
-        if (!runned) {
-            injector = Guice.createInjector(createStorageModule(repositoryPath("repository")),
-                    new SimplePersistModule(), new DetailedLoggerModule(),
-                    new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-            clearData();
-            data = createRepositoryData();
-            contextFactory = injector.getInstance(ExecutionContextFactory.class);
+	@Before
+	public void setupResources() throws Exception {
+		if (!runned) {
+			injector = Guice.createInjector(createStorageModule(RepositoryPath
+					.repositoryPath("repository")), new SimplePersistModule(),
+					new DetailedLoggerModule());
+			clearData();
+			data = createRepositoryData();
+			configurationManager = injector
+					.getInstance(ConfigurationManager.class);
 
-            final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
-                    DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                    data.repository);
+			configurationManager.saveGlobalSettings(data.settings);
+			configurationManager.saveRepository(data.repository);
+			configurationManager.closeResources();
+			persistentArtifactManager = injector.getInstance(PersistentArtifactManager.class);
+			runned = true;
+		}
 
-            context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
-            context.getDefaultConfigurationManager().saveRepository(data.repository);
-            context.closeResources();
+	}
 
-            scheduler = DefaultScheduler.INSTANCE;
-            scheduler.initializeSettings(contextFactory, "user", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            scheduler.refreshJobs(data.settings, SLCollections.setOf(data.repository));
-            scheduler.startScheduler();
-            runned = true;
-        }
+	protected abstract void clearData() throws Exception;
 
-    }
+	protected abstract Module createStorageModule(RepositoryPath repositoryPath)
+			throws Exception;
 
-    protected abstract void clearData() throws Exception;
+	@After
+	public void closeTestResources() {
+		// TODO
+	}
 
-    protected abstract Module createStorageModule(STRepositoryPath repositoryPath) throws Exception;
+	private void reloadArtifacts() {
+		throw new UnsupportedOperationException();
+	}
 
-    @After
-    public void closeTestResources() {
-        contextFactory.closeResources();
-    }
+	@Test
+	public void shouldProcessJarFile() throws Exception {
+		System.out.println("about to load all items from its origin");
+		reloadArtifacts();
+		System.out.println("finished to load all items from its origin");
 
-    private void reloadArtifacts() {
-        scheduler.fireSchedulable("username", "password", data.artifactSource);
-    }
+		System.out.println("about to load item names from persistent storage");
+		Iterable<String> list = persistentArtifactManager
+				.getInternalMethods().retrieveNames(StringArtifact.class, null);
+		System.out
+				.println("finished to load item names from persistent storage");
 
-    @Test
-    public void shouldProcessJarFile() throws Exception {
-        System.out.println("about to load all items from its origin");
-        reloadArtifacts();
-        System.out.println("finished to load all items from its origin");
+		int size = 50;
+		// size = 1 ;//TODO remove this
+		final AtomicInteger loadedSize = new AtomicInteger(0);
+		final AtomicInteger nullSize = new AtomicInteger(0);
+		final AtomicInteger fileContentNotEqualsSize = new AtomicInteger(0);
+		System.out
+				.println("about to load item contents from persistent storage");
+		List<Callable<Void>> callables = newArrayList();
+		for (final String s : list) {
+			callables.add(new Callable<Void>() {
+				public Void call() throws Exception {
+					StringArtifact file = persistentArtifactManager.findByPath(
+									StringArtifact.class, s);
+					assertThat(file, is(notNullValue()));
+					List<String> lazyLoadedContent = file.getContent().get(
+							persistentArtifactManager
+									.getSimplePersist());
+					if (lazyLoadedContent == null) {
+						nullSize.incrementAndGet();
+						System.out.println(s + " got null content");
+					}
 
-        final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                data.repository);
-        System.out.println("about to load item names from persistent storage");
-        Iterable<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
-        System.out.println("finished to load item names from persistent storage");
+					if (lazyLoadedContent == null
+							|| !lazyLoadedContent
+									.equals(getFileContentAsStringList(file
+											.getOriginalName()))) {
+						fileContentNotEqualsSize.incrementAndGet();
+					}
+					if (lazyLoadedContent != null
+							&& lazyLoadedContent.size() != 0) {
+						loadedSize.incrementAndGet();
+					}
+					return null;
+				}
 
-        int size = 50;
-//        size = 1 ;//TODO remove this
-        final AtomicInteger loadedSize = new AtomicInteger(0);
-        final AtomicInteger nullSize = new AtomicInteger(0);
-        final AtomicInteger fileContentNotEqualsSize = new AtomicInteger(0);
-        System.out.println("about to load item contents from persistent storage");
-        List<Callable<Void>> callables = newArrayList();
-        for (final String s : list) {
-            callables.add(new Callable<Void>() {
-                public Void call() throws Exception {
-                    StringArtifact file = context.getPersistentArtifactManager().findByPath(StringArtifact.class, s);
-                    assertThat(file, is(notNullValue()));
-                    List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
-                    if (lazyLoadedContent == null) {
-                        nullSize.incrementAndGet();
-                        System.out.println( s + " got null content");
-                    }
+			});
 
-                    if (lazyLoadedContent == null || !lazyLoadedContent.equals(getFileContentAsStringList(file.getOriginalName()))) {
-                        fileContentNotEqualsSize.incrementAndGet();
-                    }
-                    if (lazyLoadedContent != null && lazyLoadedContent.size() != 0) {
-                        loadedSize.incrementAndGet();
-                    }
-                    return null;
-                }
+		}
+		ExecutorInstance.INSTANCE.invokeAll(callables);
+		System.out
+				.println("finished to load item contents from persistent storage");
+		assertThat(loadedSize.get() >= size, is(true));
+		assertThat(nullSize.get(), is(0));
+		assertThat(fileContentNotEqualsSize.get(), is(0));
 
-            });
+	}
 
-        }
-        ExecutorInstance.INSTANCE.invokeAll(callables);
-        System.out.println("finished to load item contents from persistent storage");
-        assertThat(loadedSize.get() >= size, is(true));
-        assertThat(nullSize.get(), is(0));
-        assertThat(fileContentNotEqualsSize.get(), is(0));
-
-    }
-
-    private List<String> getFileContentAsStringList(String originalName) throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(originalName));
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            builder.add(line);
-        }
-        reader.close();
-        return builder.build();
-    }
+	private List<String> getFileContentAsStringList(String originalName)
+			throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader(originalName));
+		ImmutableList.Builder<String> builder = ImmutableList.builder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			builder.add(line);
+		}
+		reader.close();
+		return builder.build();
+	}
 
 }

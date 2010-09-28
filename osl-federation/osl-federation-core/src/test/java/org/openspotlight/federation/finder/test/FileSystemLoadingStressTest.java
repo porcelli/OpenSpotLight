@@ -49,188 +49,175 @@
 
 package org.openspotlight.federation.finder.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.internal.ImmutableList;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.federation.scheduler.DefaultScheduler;
-import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
-import org.openspotlight.graph.guice.SLGraphModule;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.redis.guice.JRedisFactory;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
-import org.openspotlight.storage.redis.util.ExampleRedisConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Strings.concatPaths;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Strings.concatPaths;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import org.apache.log4j.varia.ReloadingPropertyConfigurator;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
+import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.internal.ImmutableList;
 
 public class FileSystemLoadingStressTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileSystemLoadingStressTest.class);
-    private static ArtifactSource artifactSource;
+	private static final Logger logger = LoggerFactory
+			.getLogger(FileSystemLoadingStressTest.class);
+	private static ArtifactSource artifactSource;
 
-    private static class RepositoryData {
-        public final GlobalSettings settings;
-        public final Repository repository;
-        public final Group group;
-        public final ArtifactSource artifactSource;
+	private static class RepositoryData {
+		public final GlobalSettings settings;
+		public final Repository repository;
+		public final Group group;
+		public final ArtifactSource artifactSource;
 
-        public RepositoryData(
-                final GlobalSettings settings, final Repository repository, final Group group,
-                final ArtifactSource artifactSource) {
-            this.settings = settings;
-            this.repository = repository;
-            this.group = group;
-            this.artifactSource = artifactSource;
-        }
-    }
+		public RepositoryData(final GlobalSettings settings,
+				final Repository repository, final Group group,
+				final ArtifactSource artifactSource) {
+			this.settings = settings;
+			this.repository = repository;
+			this.group = group;
+			this.artifactSource = artifactSource;
+		}
+	}
 
-    private static ExecutionContextFactory contextFactory;
-    private static RepositoryData data;
-    private static DefaultScheduler scheduler;
+	private static RepositoryData data;
+	private static PersistentArtifactManager persistentManager;
 
-    @AfterClass
-    public static void closeResources() throws Exception {
-        contextFactory.closeResources();
-    }
+	@AfterClass
+	public static void closeResources() throws Exception {
+		// contextFactory.closeResources();
+	}
 
-    private static RepositoryData createRepositoryData() {
-        final GlobalSettings settings = new GlobalSettings();
-        settings.setDefaultSleepingIntervalInMilliseconds(300);
+	private static RepositoryData createRepositoryData() {
+		final GlobalSettings settings = new GlobalSettings();
+		settings.setDefaultSleepingIntervalInMilliseconds(300);
 
-        GlobalSettingsSupport.initializeScheduleMap(settings);
-        final Repository repository = new Repository();
-        repository.setName("sampleRepository");
-        repository.setActive(true);
-        final Group group = new Group();
-        group.setName("sampleGroup");
-        group.setRepository(repository);
-        repository.getGroups().add(group);
-        group.setActive(true);
-        artifactSource = new ArtifactSource();
-        repository.getArtifactSources().add(artifactSource);
-        artifactSource.setRepository(repository);
-        artifactSource.setName("lots of files");
-        artifactSource.setActive(true);
-        artifactSource.setBinary(false);
-        //artifactSource.setInitialLookup("/Users/feu/much-data");
-        artifactSource.setInitialLookup("./");
-        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-        mapping.setSource(artifactSource);
-        artifactSource.getMappings().add(mapping);
-        //mapping.setFrom("files");
-        mapping.setFrom("src");
-        mapping.setTo("OSL");
-        artifactSource.getMappings().add(mapping);
-        mapping.getIncludeds().add("**/*");
+		final Repository repository = new Repository();
+		repository.setName("sampleRepository");
+		repository.setActive(true);
+		final Group group = new Group();
+		group.setName("sampleGroup");
+		group.setRepository(repository);
+		repository.getGroups().add(group);
+		group.setActive(true);
+		artifactSource = new ArtifactSource();
+		repository.getArtifactSources().add(artifactSource);
+		artifactSource.setRepository(repository);
+		artifactSource.setName("lots of files");
+		artifactSource.setActive(true);
+		artifactSource.setBinary(false);
+		// artifactSource.setInitialLookup("/Users/feu/much-data");
+		artifactSource.setInitialLookup("./");
+		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+		mapping.setSource(artifactSource);
+		artifactSource.getMappings().add(mapping);
+		// mapping.setFrom("files");
+		mapping.setFrom("src");
+		mapping.setTo("OSL");
+		artifactSource.getMappings().add(mapping);
+		mapping.getIncludeds().add("**/*");
 
-        return new RepositoryData(settings, repository, group, artifactSource);
-    }
+		return new RepositoryData(settings, repository, group, artifactSource);
+	}
 
-    @BeforeClass
-    public static void setupResources() throws Exception {
+	@BeforeClass
+	public static void setupResources() throws Exception {
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                repositoryPath("repository")),
-                new SimplePersistModule(), new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+		Injector injector = Guice.createInjector(
+				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+						RepositoryPath.repositoryPath("repository")),
+				new SimplePersistModule(), new DetailedLoggerModule());
 
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
-        data = createRepositoryData();
-        contextFactory = injector.getInstance(ExecutionContextFactory.class);
+		injector.getInstance(JRedisFactory.class)
+				.getFrom(RegularPartitions.FEDERATION).flushall();
+		data = createRepositoryData();
+		persistentManager = injector
+				.getInstance(PersistentArtifactManager.class);
+	}
 
-        final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
-                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                data.repository);
+	@After
+	public void closeTestResources() {
 
-        context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
-        context.getDefaultConfigurationManager().saveRepository(data.repository);
-        context.closeResources();
+	}
 
-        scheduler = DefaultScheduler.INSTANCE;
-        scheduler.initializeSettings(contextFactory, "user", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        scheduler.refreshJobs(data.settings, SLCollections.setOf(data.repository));
-        scheduler.startScheduler();
+	private void reloadArtifacts() {
+		throw new UnsupportedOperationException();
+	}
 
-    }
+	@Test
+	public void shouldProcessJarFile() throws Exception {
+		logger.debug("about to load all items from its origin");
+		reloadArtifacts();
+		logger.debug("finished to load all items from its origin");
+		logger.debug("about to load item names from persistent storage");
+		Iterable<String> list = persistentManager.getInternalMethods()
+				.retrieveNames(StringArtifact.class, null);
+		logger.debug("finished to load item names from persistent storage");
 
-    @After
-    public void closeTestResources() {
-        contextFactory.closeResources();
-    }
+		assertThat(SLCollections.iterableToList(list).size() > 50, is(true));
+		int loadedSize = 0;
+		logger.debug("about to load item contents from persistent storage");
+		for (String s : list) {
+			StringArtifact file = persistentManager.findByPath(
+					StringArtifact.class, s);
+			assertThat(file, is(notNullValue()));
+			List<String> lazyLoadedContent = file.getContent().get(
+					persistentManager.getSimplePersist());
+			assertThat(lazyLoadedContent, is(notNullValue()));
+			assertThat(lazyLoadedContent.equals(getFileContentAsStringList(
+					artifactSource, file.getOriginalName())), is(true));
 
-    private void reloadArtifacts() {
-        scheduler.fireSchedulable("username", "password", data.artifactSource);
-    }
+			if (lazyLoadedContent.size() != 0) {
+				loadedSize++;
+			}
+		}
+		logger.debug("finished to load item contents from persistent storage");
+		assertThat(loadedSize > 50, is(true));
 
-    @Test
-    public void shouldProcessJarFile() throws Exception {
-        logger.debug("about to load all items from its origin");
-        reloadArtifacts();
-        logger.debug("finished to load all items from its origin");
+	}
 
-        final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                data.repository);
-        logger.debug("about to load item names from persistent storage");
-        Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
-        logger.debug("finished to load item names from persistent storage");
-
-        assertThat(list.size() > 50, is(true));
-        int loadedSize = 0;
-        logger.debug("about to load item contents from persistent storage");
-        for (String s : list) {
-            StringArtifact file = context.getPersistentArtifactManager().findByPath(StringArtifact.class, s);
-            assertThat(file, is(notNullValue()));
-            List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
-            assertThat(lazyLoadedContent, is(notNullValue()));
-            assertThat(lazyLoadedContent.equals(getFileContentAsStringList(artifactSource, file.getOriginalName())), is(true));
-
-            if (lazyLoadedContent.size() != 0) {
-                loadedSize++;
-            }
-        }
-        logger.debug("finished to load item contents from persistent storage");
-        assertThat(loadedSize > 50, is(true));
-
-    }
-
-    private List<String> getFileContentAsStringList(ArtifactSource artifactSource, String originalName) throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(concatPaths(artifactSource.getInitialLookup(), originalName)));
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            builder.add(line);
-        }
-        reader.close();
-        return builder.build();
-    }
+	private List<String> getFileContentAsStringList(
+			ArtifactSource artifactSource, String originalName)
+			throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader(concatPaths(
+				artifactSource.getInitialLookup(), originalName)));
+		ImmutableList.Builder<String> builder = ImmutableList.builder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			builder.add(line);
+		}
+		reader.close();
+		return builder.build();
+	}
 
 }

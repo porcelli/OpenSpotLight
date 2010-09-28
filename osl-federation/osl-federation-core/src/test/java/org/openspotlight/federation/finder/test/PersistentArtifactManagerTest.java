@@ -46,29 +46,25 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.loader;
+package org.openspotlight.federation.finder.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import org.jredis.JRedis;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
-import org.openspotlight.federation.finder.OriginArtifactLoader;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
+import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
@@ -82,64 +78,92 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class ArtifactLoaderManagerTest {
+public class PersistentArtifactManagerTest {
+	/**
+	 * The provider.
+	 */
 
-	@Test
-	public void shouldLoad() throws Exception {
+	private static ArtifactSource artifactSource;
+
+	private static Repository repository;
+
+	private static PersistentArtifactManagerImpl persistenArtifactManager;
+	private static JRedis jredis;
+
+	/**
+	 * Setup.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@BeforeClass
+	public static void setup() throws Exception {
 		Injector injector = Guice.createInjector(
 				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
 						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-						RepositoryPath.repositoryPath("repository")),
+						RepositoryPath.repositoryPath("name")),
 				new SimplePersistModule(), new DetailedLoggerModule());
-		injector.getInstance(JRedisFactory.class)
-				.getFrom(RegularPartitions.FEDERATION).flushall();
-		final GlobalSettings settings = new GlobalSettings();
-		settings.setDefaultSleepingIntervalInMilliseconds(250);
-		final String initialRawPath = Files
-				.getNormalizedFileName(new File("."));
-		final String initial = initialRawPath.substring(0,
-				initialRawPath.lastIndexOf('/'));
-		final String finalStr = initialRawPath.substring(initial.length());
-		final ArtifactSource source = new ArtifactSource();
-		final Repository repository = new Repository();
-		repository.setName("repository");
-		source.setRepository(repository);
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setFrom(finalStr);
-		mapping.setTo("/sources/java/myProject");
-		mapping.setIncludeds(new HashSet<String>());
-		mapping.setExcludeds(new HashSet<String>());
-		mapping.getIncludeds().add("*.java");
-		mapping.setSource(source);
-		source.setMappings(new HashSet<ArtifactSourceMapping>());
-		source.getMappings().add(mapping);
-		source.setActive(true);
-		source.setBinary(false);
-		source.setInitialLookup(initial);
-		source.setName("sourceName");
-		PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
-				injector.getInstance(SimplePersistFactory.class), repository);
-		List<Class<? extends OriginArtifactLoader>> loaderRegistry = new ArrayList<Class<? extends OriginArtifactLoader>>();
-		loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-		ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
-				provider, loaderRegistry);
-		Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(
-				StringArtifact.class, null);
-		provider.closeResources();
-		boolean hasAny = false;
+		jredis = injector.getInstance(JRedisFactory.class).getFrom(
+				RegularPartitions.FEDERATION);
+		jredis.flushall();
 
-		for (final Artifact a : artifacts) {
-			assertThat(a, is(notNullValue()));
-			assertThat(
-					a.getArtifactCompleteName().startsWith(
-							mapping.getTo() + "/"), is(true));
-			assertThat(
-					a.getArtifactCompleteName().contains(
-							mapping.getFrom() + "/"), is(false));
-			hasAny = true;
+		artifactSource = new ArtifactSource();
+		artifactSource.setName("classpath");
+		artifactSource.setInitialLookup("./src");
+		repository = new Repository();
+		repository.setName("name");
+		artifactSource.setRepository(repository);
+		final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
+		final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
+				StringArtifact.class, artifactSource, null, null);
+		persistenArtifactManager = new PersistentArtifactManagerImpl(
+				repository, injector.getInstance(SimplePersistFactory.class));
+		for (StringArtifact artifact : artifacts) {
+			artifact.setMappedTo("/src");
+			persistenArtifactManager.addTransient(artifact);
 		}
-		assertThat(hasAny, is(true));
-		provider.closeResources();
+		persistenArtifactManager.saveTransientData();
+
+	}
+
+	@AfterClass
+	public static void closeResources() {
+		persistenArtifactManager.closeResources();
+	}
+
+	@Test
+	public void shouldFindArtifacts() throws Exception {
+		final StringArtifact sa = persistenArtifactManager.findByPath(
+				StringArtifact.class,
+				"/test/resources/artifacts/included/folder/file_included2");
+		assertThat(sa, is(notNullValue()));
+		assertThat(sa.getContent(), is(notNullValue()));
+
+	}
+
+	@Test
+	public void shouldListArtifactNames() throws Exception {
+		final Iterable<String> artifacts = persistenArtifactManager
+				.getInternalMethods().retrieveNames(StringArtifact.class, null);
+
+		assertThat(artifacts, is(notNullValue()));
+		assertThat(SLCollections.iterableToList(artifacts).size(), is(not(0)));
+		for (final String s : artifacts) {
+			assertThat(s, is(notNullValue()));
+		}
+	}
+
+	@Test
+	public void shouldListArtifacts() throws Exception {
+		final Iterable<StringArtifact> artifacts = persistenArtifactManager
+				.listByInitialPath(StringArtifact.class, "/src");
+
+		assertThat(artifacts, is(notNullValue()));
+		assertThat(SLCollections.iterableToList(artifacts).size(), is(not(0)));
+		for (final StringArtifact sa : artifacts) {
+			assertThat(sa, is(notNullValue()));
+			assertThat(sa.getContent(), is(notNullValue()));
+		}
 	}
 
 }

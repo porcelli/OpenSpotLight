@@ -56,6 +56,7 @@ import java.sql.ResultSet;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.antlr.stringtemplate.StringTemplate;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 

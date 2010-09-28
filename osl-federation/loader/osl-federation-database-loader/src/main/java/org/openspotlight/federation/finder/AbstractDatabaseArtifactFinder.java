@@ -54,6 +54,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -66,6 +67,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.openspotlight.bundle.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
@@ -316,7 +319,7 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
             final CustomizedStringTemplate contentTemplate = new CustomizedStringTemplate(templateString,
                                                                                           DefaultTemplateLexer.class);
             for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry : columnValues.entrySet()) {
-                contentTemplate.setAttribute(entry.getKey().name(), entry.getValue());
+                contentTemplate.setAttributeArray(entry.getKey().name(), entry.getValue());
             }
             int count = 0;
             boolean hasAnyResult = false;

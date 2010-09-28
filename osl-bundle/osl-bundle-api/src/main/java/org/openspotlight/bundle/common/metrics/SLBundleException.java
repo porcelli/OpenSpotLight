@@ -46,15 +46,50 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.db.metamodel.node;
+package org.openspotlight.bundle.common.metrics;
 
+import org.openspotlight.common.exception.SLRuntimeException;
 
-/**
- * The Interface for node Database Constraint Primary Key Meta Model. {@link Column} should be used as parent.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- */
-@SLDescription( "Database Constraint Primary Key" )
-public interface DatabaseConstraintPrimaryKey extends DatabaseConstraint {
+public class SLBundleException extends SLRuntimeException {
+
+    private static final long serialVersionUID = 3010250675462782477L;
+
+    /**
+     * Default inherited constructor.
+     */
+    public SLBundleException() {
+        super();
+    }
+
+    /**
+     * Default inherited constructor.
+     * 
+     * @param message
+     */
+    public SLBundleException(
+                              final String message ) {
+        super(message);
+    }
+
+    /**
+     * Default inherited constructor.
+     * 
+     * @param message
+     * @param cause
+     */
+    public SLBundleException(
+                              final String message, final Throwable cause ) {
+        super(message, cause);
+    }
+
+    /**
+     * Default inherited constructor.
+     * 
+     * @param cause
+     */
+    public SLBundleException(
+                              final Throwable cause ) {
+        super(cause);
+    }
 
 }

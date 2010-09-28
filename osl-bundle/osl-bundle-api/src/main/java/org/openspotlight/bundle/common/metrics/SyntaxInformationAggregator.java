@@ -1,4 +1,4 @@
-/**
+/*
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -52,18 +52,19 @@ import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformatio
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
-import org.openspotlight.storage.domain.node.StorageNode;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.StorageNode;
 
 public class SyntaxInformationAggregator {
     private final ArtifactWithSyntaxInformation                       artifact;
 
-    private final SimplePersistCapable<StorageNode, StStStorageSessionPersist;
+    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     public SyntaxInformationAggregator(
                                         SimplePersistFactory simplePersistFactory, final ArtifactWithSyntaxInformation artifact ) {
         this.artifact = artifact;
-        this.simplePersist = simplePersistFactory.createSimpRegularPartitionrPartitionrPartition.SYNTAX_HIGHLIGHT);
+        this.simplePersist = simplePersistFactory.createSimplePersist(RegularPartitions.SYNTAX_HIGHLIGHT);
     }
 
     public void addHidden( final int tokenLine,

@@ -52,22 +52,22 @@ import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
-import org.openspotlight.graph.GraphReaderpotlight.log.DetailedLogger;
+import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.StorageNode;
 
-public interface ExecutionContext extends Disposable {
+public interface ExecutionContext extends Disposable, GraphSessionFactory {
     public boolean artifactFinderSupportsThisType( Class<? extends Artifact> type );
 
     public PersistentArtifactManager getPersistentArtifactManager();
 
     public ConfigurationManager getDefaultConfigurationManager();
 
-    public GraphReadGraphReadGraphReaderiledLogger getLogger();
 
     public String getPassword();
 
@@ -77,9 +77,9 @@ public interface ExecutionContext extends Disposable {
 
     public String getUserName();
 
-    public SimplePersistCapable<StorageNode, StStStorageSessionplePersist( STPartition partition );
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist( Partition partition );
 
-    public STRepositoryPath getRepositoryPath();
+    public RepositoryPath getRepositoryPath();
 
     public SimplePersistFactory getSimplePersistFactory();
 }

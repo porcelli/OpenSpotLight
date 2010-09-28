@@ -48,11 +48,15 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+
+import java.sql.Connection;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.bundle.domain.DbArtifactSource;
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
@@ -62,102 +66,106 @@ import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
-import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.graph.guice.SLGraphModule;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import java.sql.Connection;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
- * During a column changing, its table needs to be marked as changed also. This test is to assert this behavior.
- *
+ * During a column changing, its table needs to be marked as changed also. This
+ * test is to assert this behavior.
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings("all")
 public class ColumnChangingFiresTableChangeTest {
 
-    @Before
-    public void cleanDatabaseFiles() throws Exception {
-        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-    }
+	@Before
+	public void cleanDatabaseFiles() throws Exception {
+		delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+	}
 
-    @Test
-    public void columnChangeShouldFireTableChange() throws Exception {
+	@Test
+	public void columnChangeShouldFireTableChange() throws Exception {
 
-        final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+		final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                repositoryPath(repository.getName())),
-                new SimplePersistModule(), new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.classRegularPartitionrPartitionrPartition.GRAPH).flushall();
-        final DbArtifactSource dbBundle = (DbArtifactSource) repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
-        Connection conn = DatabaseSupport.createConnection(dbBundle);
+		Injector injector = Guice.createInjector(
+				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+						RepositoryPath.repositoryPath(repository.getName())),
+				new SimplePersistModule(), new DetailedLoggerModule());
+		injector.getInstance(JRedisFactory.class)
+				.getFrom(RegularPartitions.FEDERATION).flushall();
+		final DbArtifactSource dbBundle = (DbArtifactSource) repository
+				.getArtifactSources().iterator().next(); //$NON-NLS-1$
+		Connection conn = DatabaseSupport.createConnection(dbBundle);
 
-        conn.prepareStatement(
-                "newPair table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
-                .execute();
-        conn.close();
-        final GlobalSettings configuration = new GlobalSettings();
-        configuration.setDefaultSleepingIntervalInMilliseconds(500);
-        GlobalSettings globalSettings = new GlobalSettings();
-        globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
+		conn.prepareStatement(
+				"newPair table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+				.execute();
+		conn.close();
+		final GlobalSettings configuration = new GlobalSettings();
+		configuration.setDefaultSleepingIntervalInMilliseconds(500);
+		GlobalSettings globalSettings = new GlobalSettings();
 
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
-                injector.getInstance(SimplePersistFactory.class),
-                dbBundle.getRepository());
+		PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+				injector.getInstance(SimplePersistFactory.class),
+				dbBundle.getRepository());
 
-        ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);
+		refreshResources(globalSettings, dbBundle, provider);
 
-        Iterable<DatabaseCustomArtifact> firstLoadedItems = provider.get().listByInitialPath(DatabaseCustomArtifact.class, null);
-        conn = DatabaseSupport.createConnection(dbBundle);
+		Iterable<DatabaseCustomArtifact> firstLoadedItems = provider.get()
+				.listByInitialPath(DatabaseCustomArtifact.class, null);
+		conn = DatabaseSupport.createConnection(dbBundle);
 
-        conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
-                .execute();
+		conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
+				.execute();
 
-        conn.prepareStatement("newPair table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
-                .execute();
-        conn.close();
-        ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);
-        
-        Iterable<DatabaseCustomArtifact> lastLoadedItems = provider.get().listByInitialPath(DatabaseCustomArtifact.class, null);
-        conn = DatabaseSupport.createConnection(dbBundle);
+		conn.prepareStatement(
+				"newPair table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
+				.execute();
+		conn.close();
+		refreshResources(globalSettings, dbBundle, provider);
 
-        boolean found = false;
-        all:
-        for (final Artifact first : firstLoadedItems) {
-            if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-                assertThat(first.equals(first), is(true));
-                assertThat(first.contentEquals(first), is(true));
-                for (final Artifact last : lastLoadedItems) {
-                    if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-                        System.out.println("first:" + first.toString());
-                        System.out.println("last:" + last.toString());
-                        assertThat(last.equals(first), is(true));
-                        assertThat(last.contentEquals(first), is(false));
-                        found = true;
-                        break all;
-                    }
-                }
-            }
-        }
-        assertThat(found, is(true));
-    }
+		Iterable<DatabaseCustomArtifact> lastLoadedItems = provider.get()
+				.listByInitialPath(DatabaseCustomArtifact.class, null);
+		conn = DatabaseSupport.createConnection(dbBundle);
+
+		boolean found = false;
+		all: for (final Artifact first : firstLoadedItems) {
+			if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
+				assertThat(first.equals(first), is(true));
+				assertThat(first.contentEquals(first), is(true));
+				for (final Artifact last : lastLoadedItems) {
+					if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
+						System.out.println("first:" + first.toString());
+						System.out.println("last:" + last.toString());
+						assertThat(last.equals(first), is(true));
+						assertThat(last.contentEquals(first), is(false));
+						found = true;
+						break all;
+					}
+				}
+			}
+		}
+		assertThat(found, is(true));
+	}
+
+	private void refreshResources(GlobalSettings globalSettings,
+			DbArtifactSource dbBundle,
+			PersistentArtifactManagerProvider provider) {
+		// globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
+		throw new UnsupportedOperationException();
+
+	}
 
 }

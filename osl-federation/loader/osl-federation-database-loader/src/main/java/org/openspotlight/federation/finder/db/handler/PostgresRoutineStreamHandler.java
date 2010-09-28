@@ -53,6 +53,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
+import org.antlr.stringtemplate.StringTemplate;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.finder.db.ScriptType;
 
@@ -118,5 +119,7 @@ public class PostgresRoutineStreamHandler implements DatabaseStreamHandler {
             }
         }
     }
+
+
 
 }
