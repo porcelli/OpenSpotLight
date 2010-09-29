@@ -53,7 +53,7 @@ import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.bundle.domain.Schedulable;
 
-public interface SLScheduler {
+public interface Scheduler {
 
     public <T extends Schedulable> void fireSchedulable( String username,
                                                          String password,
@@ -62,10 +62,6 @@ public interface SLScheduler {
     public <T extends Schedulable> void fireSchedulableInBackground( String username,
                                                                      String password,
                                                                      final T... schedulable );
-
-    public void initializeSettings( ExecutionContextFactory contextFactory,
-                                    String username,
-                                    String password);
 
     public void refreshJobs( GlobalSettings settings,
                              Iterable<Repository> repositories );

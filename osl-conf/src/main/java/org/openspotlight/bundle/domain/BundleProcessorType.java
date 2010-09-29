@@ -54,35 +54,31 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-// TODO: Auto-generated Javadoc
+import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
- * The Class Group.
+ * The Class BundleProcessorType.
  */
-@Name("group")
-public class Group implements SimpleNodeType, Serializable, Schedulable {
+@Name("bundle_processor_type")
+public class BundleProcessorType implements SimpleNodeType, Serializable {
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
+    }
 
-    private static final long serialVersionUID = -722058711327567623L;
+    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+        this.tasks = tasks;
+    }
 
-    private List<Group> groups = new ArrayList<Group>();
+    private volatile transient String uniqueName = null;
 
-    /**
-     * The repository.
-     */
-    private transient Repository repository;
-
-    /**
-     * The type.
-     */
-    private String type;
-
-    /**
-     * The name.
-     */
     private String name;
+
+    private Map<String, String> bundleProperties = new HashMap<String, String>();
+
+    private static final long serialVersionUID = -8305990807194729295L;
+
+    private List<Class<? extends Callable<Void>>> tasks = new ArrayList<Class<? extends Callable<Void>>>();
 
     /**
      * The active.
@@ -94,94 +90,82 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
      */
     private transient Group group;
 
+    /**
+     * The sources.
+     */
+    private Set<BundleSource> sources = new HashSet<BundleSource>();
+
+    /**
+     * The hash code.
+     */
     private volatile transient int hashCode;
 
-    private List<BundleProcessorType> bundleTypes = new ArrayList<BundleProcessorType>();
-
-    private List<String> cronInformation = new ArrayList<String>();
-
-    private volatile transient String uniqueName;
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equalsTo(java.lang.Object)
+     */
 
     public boolean equals(final Object o) {
-        if (!(o instanceof Group)) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof BundleProcessorType)) {
             return false;
         }
-        final Group that = (Group) o;
-        final boolean result = Equals.eachEquality(Arrays.of(group, repository, name), Arrays.andOf(that.group, that.repository,
-                that.name));
+        final BundleProcessorType that = (BundleProcessorType) o;
+        final boolean result = Equals.eachEquality(Arrays.of(group, name), Arrays.andOf(that.group, that.name));
         return result;
     }
 
-    public List<BundleProcessorType> getBundleTypes() {
-        return bundleTypes;
-    }
-
-    public List<String> getCronInformation() {
-        return cronInformation;
+    public Map<String, String> getBundleProperties() {
+        return bundleProperties;
     }
 
     /**
-     * Gets the group.
+     * Gets the artifact source.
      *
-     * @return the group
+     * @return the artifact source
      */
     @ParentProperty
     public Group getGroup() {
         return group;
     }
 
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
     @KeyProperty
     public String getName() {
         return name;
     }
 
     /**
-     * Gets the repository.
+     * Gets the sources.
      *
-     * @return the repository
+     * @return the sources
      */
-    @ParentProperty
-    public Repository getRepository() {
-        return repository;
+    public Set<BundleSource> getSources() {
+        return sources;
     }
 
     @TransientProperty
-    public Repository getRootRepository() {
-        return repository != null ? repository : getGroup().getRootRepository();
-    }
-
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
     public String getUniqueName() {
-        String result = uniqueName;
-        if (result == null) {
-            result = (group != null ? group.getUniqueName() : repository.getName()) + "/" + getName();
-            uniqueName = result;
+        String temp = uniqueName;
+        if (temp == null) {
+            temp = getGroup().getUniqueName() + "/" + getName();
+            uniqueName = temp;
         }
-        return result;
+        return temp;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
 
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(group, repository, name);
+            result = HashCodes.hashOf(group, name);
             hashCode = result;
         }
         return result;
@@ -205,12 +189,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         this.active = active;
     }
 
-    public void setBundleTypes(final List<BundleProcessorType> bundleTypes) {
-        this.bundleTypes = bundleTypes;
-    }
-
-    public void setCronInformation(final List<String> cronInformation) {
-        this.cronInformation = cronInformation;
+    public void setBundleProperties(final Map<String, String> bundleProperties) {
+        this.bundleProperties = bundleProperties;
     }
 
     /**
@@ -222,57 +202,17 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         this.group = group;
     }
 
-    public void setGroups(final List<Group> groups) {
-        this.groups = groups;
-    }
-
-    /**
-     * Sets the name.
-     *
-     * @param name the new name
-     */
     public void setName(final String name) {
         this.name = name;
     }
 
     /**
-     * Sets the repository.
+     * Sets the sources.
      *
-     * @param repository the new repository
+     * @param sources the new sources
      */
-    public void setRepository(final Repository repository) {
-        this.repository = repository;
+    public void setSources(final Set<BundleSource> sources) {
+        this.sources = sources;
     }
-
-    /**
-     * Sets the type.
-     *
-     * @param type the new type
-     */
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    public void setUniqueName(final String s) {
-    }
-
-    public String toString() {
-        return "Group: " + getUniqueName();
-    }
-
-    public String toUniqueJobString() {
-        return getUniqueName();
-    }
-
-    @TransientProperty
-    public Repository getRepositoryForSchedulable() {
-        return getRootRepository();
-    }
-    public void acceptVisitor( final Repository.GroupVisitor visitor ) {
-        visitor.visitGroup(this);
-             for (final Group g : getGroups()) {
-                 g.acceptVisitor(visitor);
-             }
-       }
 
 }

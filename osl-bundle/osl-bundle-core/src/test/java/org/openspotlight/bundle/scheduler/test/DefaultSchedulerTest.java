@@ -58,7 +58,6 @@ import org.junit.Test;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.bundle.domain.Repository;
