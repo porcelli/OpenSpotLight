@@ -50,42 +50,21 @@ package org.openspotlight.bundle.scheduler;
 
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Schedulable;
-import org.openspotlight.bundle.domain.SchedulableCommand;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class ArtifactSourceSchedulable.
  */
 public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<ArtifactSource> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    public void execute( final GlobalSettings settings,
-                         final ExecutionContext ctx,
-                         final ArtifactSource schedulable ) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(" >>>> Executing artifact loading from source" + schedulable.toUniqueJobString());
-        }
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
-                                                                                               schedulable.getRepository());
-        ArtifactLoaderManager.INSTANCE.refreshResources(settings, schedulable, provider);
-    }
-
-    public String getRepositoryNameBeforeExecution( final ArtifactSource schedulable ) {
-        return schedulable.getRepository().getName();
-    }
-
+    
     @Override
     public SchedulerTask[] createTasks(final ArtifactSource schedulable, final ExecutionContextFactory factory) {
 
-        TaskSupport.wrapTask(new SchedulerTask(){
+        return TaskSupport.wrapTask(new SchedulerTask() {
             @Override
             public String getUniqueJobId() {
                 return schedulable.toUniqueJobString();
@@ -93,12 +72,12 @@ public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<
 
             @Override
             public Void call() throws Exception {
-                ExecutionContext ctx =factory.get();
-
+                ExecutionContext ctx = factory.get();
 
                 PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
-                                                                                                       schedulable.getRepositoryForSchedulable());
-                ArtifactLoaderManager.INSTANCE.refreshResources(schedulable, provider,ctx.get);
+                        schedulable.getRepositoryForSchedulable());
+                ArtifactLoaderManager.INSTANCE.refreshResources(schedulable, provider, ctx.getLoaderRegistry());
+                return null;
             }
         });
     }

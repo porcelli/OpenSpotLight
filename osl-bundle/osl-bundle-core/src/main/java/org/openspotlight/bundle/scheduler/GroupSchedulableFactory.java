@@ -51,6 +51,8 @@ package org.openspotlight.bundle.scheduler;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.bundle.domain.Schedulable.SchedulableCommandWithContextFactory;
@@ -61,7 +63,7 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GroupSchedulable implements SchedulableCommandWithContextFactory<Group> {
+public class GroupSchedulableFactory implements  SchedulableTaskFactory<Group> {
 
     private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
@@ -89,12 +91,9 @@ public class GroupSchedulable implements SchedulableCommandWithContextFactory<Gr
 
     private ExecutionContextFactory factory;
 
-    private JcrConnectionDescriptor descriptor;
     private String                  username;
     private String                  password;
     private GlobalSettings          settings;
-
-    private static final Logger     logger = LoggerFactory.getLogger(GroupSchedulable.class);
 
     @SuppressWarnings( "unchecked" )
     public void execute( final GlobalSettings settigns,
@@ -110,21 +109,5 @@ public class GroupSchedulable implements SchedulableCommandWithContextFactory<Gr
 
     }
 
-    public String getRepositoryNameBeforeExecution( final Group schedulable ) {
-        return schedulable.getRootRepository().getName();
-    }
-
-    public void setContextFactoryBeforeExecution( final GlobalSettings settings,
-                                                  final JcrConnectionDescriptor descriptor,
-                                                  final String username,
-                                                  final String password,
-                                                  final String repository,
-                                                  final ExecutionContextFactory factory ) {
-        this.descriptor = descriptor;
-        this.username = username;
-        this.password = password;
-        this.factory = factory;
-        this.settings = settings;
-    }
 
 }

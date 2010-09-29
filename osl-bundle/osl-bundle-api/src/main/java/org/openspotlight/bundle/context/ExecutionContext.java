@@ -49,6 +49,7 @@
 package org.openspotlight.bundle.context;
 
 import org.openspotlight.common.Disposable;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.GraphSessionFactory;
@@ -80,4 +81,7 @@ public interface ExecutionContext extends Disposable, GraphSessionFactory {
     public RepositoryPath getRepositoryPath();
 
     public SimplePersistFactory getSimplePersistFactory();
+
+    public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry();
+
 }
