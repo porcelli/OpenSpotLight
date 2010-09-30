@@ -17,7 +17,9 @@ public class ExecutionContextModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(ExecutionContext.class).to(DefaultExecutionContext.class);
+		bind(ExecutionContext.class).toProvider(DefaultExecutionContextFactory.class);
+        bind(ExecutionContextFactory.class).to(DefaultExecutionContextFactory.class);
+
 		bind(
 				new TypeLiteral<Iterable<Class<? extends OriginArtifactLoader>>>() {
 				}).annotatedWith(ArtifactLoaderRegistry.class).toInstance(

@@ -54,7 +54,6 @@ import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
-import org.openspotlight.web.WebGlobalSettingsSupport;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -66,10 +65,9 @@ public class ConfigurationSupport {
 
     /**
      * Initialize configuration.
-     *
      */
-    public static boolean initializeConfiguration( final boolean forceReload,
-                                                   final ConfigurationManager jcrConfigurationManager ) throws Exception {
+    public static boolean initializeConfiguration(final boolean forceReload,
+                                                  final ConfigurationManager jcrConfigurationManager) throws Exception {
         final boolean firstTime = jcrConfigurationManager.getAllRepositories().iterator().hasNext();
         boolean reloaded = false;
         if (firstTime || forceReload) {
@@ -81,11 +79,11 @@ public class ConfigurationSupport {
 
     /**
      * Save xml on jcr.
-     * 
+     *
      * @param manager the manager
      * @return the configuration
      */
-    private static void saveXmlOnJcr( final ConfigurationManager manager ) throws Exception {
+    private static void saveXmlOnJcr(final ConfigurationManager manager) throws Exception {
         GlobalSettings settings;
         Iterable<Repository> repositories;
         final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
@@ -95,7 +93,6 @@ public class ConfigurationSupport {
         is.close();
         final ConfigurationManager xmlManager = XmlConfigurationManagerFactory.loadImmutableFromXmlContent(xmlContent);
         settings = xmlManager.getGlobalSettings();
-        WebGlobalSettingsSupport.initializeSettings(settings);
         repositories = xmlManager.getAllRepositories();
         manager.saveGlobalSettings(settings);
         for (final Repository repository : repositories) {

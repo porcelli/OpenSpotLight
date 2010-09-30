@@ -48,7 +48,6 @@
  */
 package org.openspotlight.web;
 
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -58,24 +57,20 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OslServletDataSupport implements OslDataConstants {
 
-    public static String getCurrentRepository( final ServletContext ctx,
-                                               final HttpServletRequest request ) {
-        return (String)request.getSession().getAttribute(OslDataConstants.SESSION__REPOSITORY);
+    public static String getCurrentRepository(final ServletContext ctx,
+                                              final HttpServletRequest request) {
+        return (String) request.getSession().getAttribute(OslDataConstants.SESSION__REPOSITORY);
     }
 
-    public static JcrConnectionDescriptor getJcrDescriptor( final ServletContext ctx,
-                                                            final HttpServletRequest request ) {
-        return (JcrConnectionDescriptor)ctx.getAttribute(OslDataConstants.CONTEXT__JCR_DESCRIPTOR);
+
+    public static String getPassword(final ServletContext ctx,
+                                     final HttpServletRequest request) {
+        return (String) request.getSession().getAttribute(OslDataConstants.SESSION__PASSWORD);
     }
 
-    public static String getPassword( final ServletContext ctx,
-                                      final HttpServletRequest request ) {
-        return (String)request.getSession().getAttribute(OslDataConstants.SESSION__PASSWORD);
-    }
-
-    public static String getUserName( final ServletContext ctx,
-                                      final HttpServletRequest request ) {
-        return (String)request.getSession().getAttribute(OslDataConstants.SESSION__USER_NAME);
+    public static String getUserName(final ServletContext ctx,
+                                     final HttpServletRequest request) {
+        return (String) request.getSession().getAttribute(OslDataConstants.SESSION__USER_NAME);
     }
 
 }

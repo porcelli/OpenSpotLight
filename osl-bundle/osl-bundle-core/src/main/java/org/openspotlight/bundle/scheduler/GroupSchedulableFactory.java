@@ -48,24 +48,22 @@
  */
 package org.openspotlight.bundle.scheduler;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Schedulable.SchedulableCommandWithContextFactory;
-import org.openspotlight.bundle.processing.DefaultBundleProcessorManager;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GroupSchedulableFactory implements  SchedulableTaskFactory<Group> {
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
 
     private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
 
         private final Set<Group> groupsWithBundles = new LinkedHashSet<Group>();
 
@@ -73,7 +71,7 @@ public class GroupSchedulableFactory implements  SchedulableTaskFactory<Group> {
             return groupsWithBundles;
         }
 
-        public void visitBean( Group bean ) {
+        public void visitBean(Group bean) {
             if (bean.getBundleTypes().size() != 0) {
                 groupsWithBundles.add(bean);
                 if (logger.isDebugEnabled()) {
@@ -89,24 +87,22 @@ public class GroupSchedulableFactory implements  SchedulableTaskFactory<Group> {
 
     }
 
-    private ExecutionContextFactory factory;
+    @Override
+    public SchedulerTask[] createTasks(final Group schedulable, final ExecutionContextFactory factory) {
+        return TaskSupport.wrapTask(new SchedulerTask() {
+            @Override
+            public String getUniqueJobId() {
+                return schedulable.toUniqueJobString();
+            }
 
-    private String                  username;
-    private String                  password;
-    private GlobalSettings          settings;
-
-    @SuppressWarnings( "unchecked" )
-    public void execute( final GlobalSettings settigns,
-                         final ExecutionContext ctx,
-                         final Group schedulable ) throws Exception {
-        final GroupVisitor visitor = new GroupVisitor();
-        SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable, visitor, TransientProperty.class);
-        final Group[] groupsToExecute = visitor.getGroupsWithBundles().toArray(new Group[0]);
-        if (logger.isDebugEnabled()) {
-            logger.debug("about to execute bundles " + visitor.getGroupsWithBundles() + " found inside group " + schedulable);
-        }
-        DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password, descriptor, factory, settings, groupsToExecute);
-
+            @Override
+            public Void call() throws Exception {
+                final GroupVisitor visitor = new GroupVisitor();
+                SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable, visitor, TransientProperty.class);
+                Set<Group> groupsToExecute = visitor.getGroupsWithBundles();
+                throw new UnsupportedOperationException();//Needs to re-implement bundle processing
+            }
+        });  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

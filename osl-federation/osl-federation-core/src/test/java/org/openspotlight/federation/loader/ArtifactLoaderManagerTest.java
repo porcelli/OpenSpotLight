@@ -121,7 +121,7 @@ public class ArtifactLoaderManagerTest {
 				injector.getInstance(SimplePersistFactory.class), repository);
 		List<Class<? extends OriginArtifactLoader>> loaderRegistry = new ArrayList<Class<? extends OriginArtifactLoader>>();
 		loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-		ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
+		ArtifactLoaderManager.INSTANCE.refreshResources(source,
 				provider, loaderRegistry);
 		Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(
 				StringArtifact.class, null);

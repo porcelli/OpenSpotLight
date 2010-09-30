@@ -54,11 +54,12 @@ import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.bundle.scheduler.DefaultScheduler;
-import org.openspotlight.bundle.scheduler.SLScheduler;
+import org.openspotlight.bundle.scheduler.Scheduler;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.RepositorySet;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.openspotlight.web.MessageWebException;
+import org.openspotlight.web.OslContextListener;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.json.Message;
 
@@ -80,7 +81,7 @@ public class ImediateArtifactLoadingWebCommand implements WebCommand {
             final Iterable<Repository> allRepositories = context.getDefaultConfigurationManager().getAllRepositories();
             final RepositorySet repositorySet = new RepositorySet();
             repositorySet.setRepositories(allRepositories);
-            final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+            final Scheduler scheduler = OslContextListener.scheduler;
             final Set<ArtifactSource> sources = new HashSet<ArtifactSource>();
             SimpleNodeTypeVisitorSupport.acceptVisitorOn(ArtifactSource.class, repositorySet,
                                                          new AggregateVisitor<ArtifactSource>(sources));

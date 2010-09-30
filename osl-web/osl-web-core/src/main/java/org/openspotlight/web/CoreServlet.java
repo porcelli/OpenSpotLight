@@ -141,7 +141,7 @@ public class CoreServlet extends HttpServlet {
                              final HttpServletResponse resp ) {
         ExecutionContext context = null;
         try {
-            context = WebExecutionContextFactory.INSTANCE.createExecutionContext(getServletContext(), req);
+            context = OslContextListener.factory.get();
             final String action = req.getParameter("action");
             final WebCommand command = loader.loadCommand(action);
             final Map<String, String> parameters = new TreeMap<String, String>();

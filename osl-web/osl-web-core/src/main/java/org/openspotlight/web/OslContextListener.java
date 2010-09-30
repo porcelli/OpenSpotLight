@@ -1,4 +1,4 @@
-/**
+/*
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -50,34 +50,29 @@ package org.openspotlight.web;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.bundle.scheduler.Scheduler;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.bundle.scheduler.DefaultScheduler;
-import org.openspotlight.bundle.scheduler.SLScheduler;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.GraphModule;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
-import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.remote.server.DefaultUserAuthenticator;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.openspotlight.web.command.InitialImportWebCommand;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 /**
  * The listener interface for receiving oslContext events. The class that is interested in processing a oslContext event
@@ -89,13 +84,13 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 public class OslContextListener implements ServletContextListener, OslDataConstants {
 
     private RemoteGraphSessionServer server;
+    public static Scheduler scheduler;
+    public static ExecutionContextFactory factory;
 
     /**
      * {@inheritDoc}
      */
-    public void contextDestroyed( final ServletContextEvent arg0 ) {
-        WebExecutionContextFactory.INSTANCE.contextStopped();
-        final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+    public void contextDestroyed(final ServletContextEvent arg0) {
         scheduler.stopScheduler();
         server.shutdown();
     }
@@ -103,40 +98,26 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
     /**
      * {@inheritDoc}
      */
-    public void contextInitialized( final ServletContextEvent sce ) {
+    public void contextInitialized(final ServletContextEvent sce) {
         try {
-            JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
-            Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
+            Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                     repositoryPath("repository")),
-                    new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+                    new SimplePersistModule(), new GraphModule());
 
 
-            SLGraph graph = injector.getInstance(SLGraph.class);
 
-            
-            final String jcrDescriptorName = sce.getServletContext().getInitParameter("JCR_DESCRIPTOR");
             final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
             final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
 
             final int remotePort = Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer.parseInt(remotePortAsString);
             final long remoteGraphTimeout = Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long.parseLong(remoteGraphTimeoutAsString);
-            if (jcrDescriptorName != null) {
-                try {
-                    descriptor = DefaultJcrDescriptor.valueOf(jcrDescriptorName);
-                } catch (final IllegalArgumentException e) {
-                }
-            }
 
-            sce.getServletContext().setAttribute(CONTEXT__JCR_DESCRIPTOR, descriptor);
-            WebExecutionContextFactory.INSTANCE.contextStarted();
-            final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE.getFactory();
-            Repository dummyRepo = new Repository();
-            dummyRepo.setActive(true);
-            dummyRepo.setName(SLConsts.DEFAULT_REPOSITORY_NAME);
 
-            final ExecutionContext context = factory.createExecutionContext(SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD,
-                                                                            descriptor, dummyRepo);
+            factory = injector.getInstance(ExecutionContextFactory.class);
+
+
+            final ExecutionContext context = factory.get();
 
             GlobalSettings settings = context.getDefaultConfigurationManager().getGlobalSettings();
             Iterable<Repository> repositories = context.getDefaultConfigurationManager().getAllRepositories();
@@ -150,12 +131,11 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
                 Assertions.checkNotNull("repositories", repositories);
                 Assertions.checkCondition("repositoriesSizePositive", repositories.iterator().hasNext());
             }
-            final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-            scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor);
+            scheduler = injector.getInstance(Scheduler.class);
             scheduler.refreshJobs(settings, repositories);
 
-            server = new RemoteGraphSessionServer(new DefaultUserAuthenticator(descriptor), remotePort, remoteGraphTimeout,
-                                                  descriptor,graph);
+//            server = new RemoteGraphSessionServer(new DefaultUserAuthenticator(descriptor), remotePort, remoteGraphTimeout,
+//                    descriptor, graph);
 
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, ConfigurationException.class);

@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>org.openspotlight</groupId>
-            <artifactId>osl-federation-database-loader</artifactId>
+            <artifactId>osl-bundle-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.openspotlight</groupId>
