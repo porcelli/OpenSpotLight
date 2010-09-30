@@ -49,18 +49,18 @@
 
 package org.openspotlight.common.util.test;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Test class for {@link Conversion}.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings("all")
@@ -74,7 +74,7 @@ public class ConversionTest {
 
     @Test
     public void shouldConvertValidValues()
-        throws Exception {
+            throws Exception {
         final Long l = 3l;
         final String asString = Conversion.convert(l, String.class);
         final Integer asInt = Conversion.convert(asString, Integer.class);
@@ -86,7 +86,7 @@ public class ConversionTest {
 
     @Test
     public void shouldWorkWithClass()
-        throws Exception {
+            throws Exception {
         final Class clazz = String.class;
         final String asString = Conversion.convert(clazz, String.class);
         final Class asClass = Conversion.convert(asString, Class.class);
@@ -95,16 +95,16 @@ public class ConversionTest {
 
     @Test
     public void shouldWorkWithDates()
-        throws Exception {
+            throws Exception {
         final Date d = new Date();
         final String asString = Conversion.convert(d, String.class);
         final Date asDate = Conversion.convert(asString, Date.class);
         Assert.assertThat(d.toString(), Is.is(asDate.toString()));
     }
 
-    @Test(expected = SLException.class)
+    @Test(expected = SLRuntimeException.class)
     public void shouldNotWorkWhenThereIsNoTimeZone()
-        throws Exception {
+            throws Exception {
         final String date1AsString = "2010-06-02 11:26:44";
         Conversion.convert(date1AsString, Date.class);
 
@@ -112,7 +112,7 @@ public class ConversionTest {
 
     @Test
     public void shouldWorkWithEnums()
-        throws Exception {
+            throws Exception {
         final SomeEnum a = SomeEnum.A;
         final String asString = Conversion.convert(a, String.class);
         final SomeEnum asEnum = Conversion.convert(asString, SomeEnum.class);

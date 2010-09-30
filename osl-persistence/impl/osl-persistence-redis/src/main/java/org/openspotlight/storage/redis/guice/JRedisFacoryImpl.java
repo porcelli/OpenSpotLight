@@ -127,27 +127,12 @@ public class JRedisFacoryImpl implements JRedisFactory {
 		try {
 			if (jRedis == null) {
 
-				jRedis = (JRedis) Proxy.newProxyInstance(getClass()
-						.getClassLoader(), new Class<?>[] { JRedis.class },
-						new InvocationHandler() {
-
-							private final JRedis redis = new JRedisClient(
+				jRedis = new JRedisClient(
 									serverDetail.getServerName(), serverDetail
 											.getServerPort(), serverDetail
 											.getPassword(), serverDetail
 											.getDb());
-
-							@Override
-							public Object invoke(final Object proxy,
-									final Method method, final Object[] args)
-									throws Throwable {
-								// System.out.println(">>> " + method.getName()
-								// + " " + Arrays.toString(args));
-								return method.invoke(redis, args);
-
-							}
-						});
-				cache.put(partition, jRedis);
+                cache.put(partition, jRedis);
 				synchronized (allInstances) {
 					allInstances.add(jRedis);
 				}
