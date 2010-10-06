@@ -62,8 +62,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.domain.DbArtifactSource;
+import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
 import org.openspotlight.federation.domain.artifact.db.RoutineType;
@@ -105,7 +105,7 @@ public class DatabaseCustomTest {
         final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
 
-        bundle = (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
+        bundle = (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().iterator().next().getArtifactSources().iterator().next();
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         finder = new DatabaseCustomArtifactFinder();
 
@@ -151,7 +151,7 @@ public class DatabaseCustomTest {
 
     @Test
     public void shouldLoadTablesAndViews() throws Exception {
-        final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
+        final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().iterator().next().getArtifactSources().iterator().next();
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         final Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
                 "sa", "");

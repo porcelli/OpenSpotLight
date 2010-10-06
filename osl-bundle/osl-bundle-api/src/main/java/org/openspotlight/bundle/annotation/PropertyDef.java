@@ -6,16 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 public @interface PropertyDef {
 	String name();
 
 	boolean mandatory() default false;
 
-	PropertyDefType type();
-
-	public enum PropertyDefType {
-		STRING, INT, FLOAT, BOOLEAN, PATH, CONTEXT_REF, CONTEXT_LIST_REF
-	}
+//	PropertyDefType type();
+//
+//	public enum PropertyDefType {
+//		STRING, INT, FLOAT, BOOLEAN, PATH, CONTEXT_REF, CONTEXT_LIST_REF
+//	}
 
 }

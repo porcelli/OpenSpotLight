@@ -48,7 +48,7 @@
  */
 package org.openspotlight.federation.util;
 
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class RepositorySet implements SimpleNodeType {

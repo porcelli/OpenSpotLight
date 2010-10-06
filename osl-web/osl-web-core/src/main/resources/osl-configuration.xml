@@ -25,7 +25,7 @@
           <name>Group name</name>
           <active>true</active>
           <hashCode>-731590671</hashCode>
-          <bundleTypes>
+          <bundleConfig>
             <osl.BundleProcessorType>
               <globalPhase>org.openspotlight.bundle.processing.internal.ExampleBundleProcessor</globalPhase>
               <active>true</active>
@@ -43,7 +43,7 @@
               </sources>
               <hashCode>-1198431196</hashCode>
             </osl.BundleProcessorType>
-          </bundleTypes>
+          </bundleConfig>
           <cronInformation/>
         </osl.Group>
       </groups>

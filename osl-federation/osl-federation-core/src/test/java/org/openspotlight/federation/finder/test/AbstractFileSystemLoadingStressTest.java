@@ -64,14 +64,14 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Group;
+import org.openspotlight.domain.Repository;
+import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
-import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.RepositoryPath;
@@ -123,7 +123,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 		repository.getGroups().add(group);
 		group.setActive(true);
 		artifactSource = new ArtifactSource();
-		repository.getArtifactSources().add(artifactSource);
+		group.getArtifactSources().add(artifactSource);
 		artifactSource.setRepository(repository);
 		artifactSource.setName("lots of files");
 		artifactSource.setActive(true);
@@ -145,7 +145,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 	}
 
 	private boolean runned = false;
-	private ConfigurationManager configurationManager;
+	private MutableConfigurationManager configurationManager;
 	private PersistentArtifactManager persistentArtifactManager;
 
 	@Before
@@ -157,7 +157,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 			clearData();
 			data = createRepositoryData();
 			configurationManager = injector
-					.getInstance(ConfigurationManager.class);
+					.getInstance(MutableConfigurationManager.class);
 
 			configurationManager.saveGlobalSettings(data.settings);
 			configurationManager.saveRepository(data.repository);

@@ -51,12 +51,12 @@ package org.openspotlight.federation.loader.xml;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 
 public class XmlConfiguration {
 
-    private GlobalSettings  settings;
+    private GlobalSettings settings;
 
     private Set<Repository> repositories = new HashSet<Repository>();
 

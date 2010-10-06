@@ -57,12 +57,11 @@ import java.sql.Connection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.DbArtifactSource;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
-import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
@@ -105,7 +104,7 @@ public class ColumnChangingFiresTableChangeTest {
 				new SimplePersistModule(), new DetailedLoggerModule());
 		injector.getInstance(JRedisFactory.class)
 				.getFrom(RegularPartitions.FEDERATION).flushall();
-		final DbArtifactSource dbBundle = (DbArtifactSource) repository
+		final DbArtifactSource dbBundle = (DbArtifactSource) repository.getGroups().iterator().next()
 				.getArtifactSources().iterator().next(); //$NON-NLS-1$
 		Connection conn = DatabaseSupport.createConnection(dbBundle);
 

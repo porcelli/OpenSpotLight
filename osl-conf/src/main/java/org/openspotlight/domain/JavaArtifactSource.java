@@ -46,34 +46,20 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.domain;
+package org.openspotlight.domain;
 
-import java.util.List;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
-import org.openspotlight.persist.annotation.SimpleNodeType;
+public class JavaArtifactSource extends ArtifactSource {
+    private static final long serialVersionUID = 5899043044379454212L;
 
-/**
- * The Interface Schedulable.
- */
-public interface Schedulable extends SimpleNodeType {
+    private String            virtualMachineVersion;
 
-    public Repository getRepositoryForSchedulable();
+    public String getVirtualMachineVersion() {
+        return this.virtualMachineVersion;
+    }
 
-    /**
-     * Gets the cron information. For each String, please follow the cron syntax described on
-     * http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-     * 
-     * @return the cron information
-     */
-    public List<String> getCronInformation();
-
-    /**
-     * This string should return an unique identifier for this job to be used inside the scheduler.
-     * 
-     * @return
-     */
-    public String toUniqueJobString();
-
-
-
+    public void setVirtualMachineVersion( final String virtualMachineVersion ) {
+        this.virtualMachineVersion = virtualMachineVersion;
+    }
 }

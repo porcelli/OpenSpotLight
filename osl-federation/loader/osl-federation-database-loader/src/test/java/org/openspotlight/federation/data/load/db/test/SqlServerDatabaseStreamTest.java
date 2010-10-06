@@ -54,8 +54,8 @@ import java.sql.Connection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.DbArtifactSource;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
 @SuppressWarnings( "all" )
@@ -67,7 +67,7 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements R
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createSqlServerDbConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     @Override

@@ -46,16 +46,19 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.domain;
+package org.openspotlight.domain;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.annotation.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 // TODO: Auto-generated Javadoc
 
@@ -68,6 +71,20 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     private static final long serialVersionUID = -722058711327567623L;
 
     private List<Group> groups = new ArrayList<Group>();
+
+    /** The artifact sources. */
+    private Set<ArtifactSource> artifactSources = new HashSet<ArtifactSource>();
+
+
+    public void setArtifactSources(final Set<ArtifactSource> artifactSources) {
+        this.artifactSources = artifactSources;
+    }
+
+
+    public Set<ArtifactSource> getArtifactSources() {
+        return artifactSources;
+    }
+    
 
     /**
      * The repository.
@@ -96,8 +113,6 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     private volatile transient int hashCode;
 
-    private List<BundleProcessorType> bundleTypes = new ArrayList<BundleProcessorType>();
-
     private List<String> cronInformation = new ArrayList<String>();
 
     private volatile transient String uniqueName;
@@ -113,9 +128,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return result;
     }
 
-    public List<BundleProcessorType> getBundleTypes() {
-        return bundleTypes;
-    }
+    
 
     public List<String> getCronInformation() {
         return cronInformation;
@@ -204,10 +217,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     public void setActive(final boolean active) {
         this.active = active;
     }
-
-    public void setBundleTypes(final List<BundleProcessorType> bundleTypes) {
-        this.bundleTypes = bundleTypes;
-    }
+    
 
     public void setCronInformation(final List<String> cronInformation) {
         this.cronInformation = cronInformation;

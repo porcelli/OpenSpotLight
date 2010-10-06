@@ -53,7 +53,7 @@ import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
-import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.graph.FullGraphSession;
 import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.graph.SimpleGraphSession;
@@ -84,7 +84,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 			GraphSessionFactory graphSessionFactory,
 			SimplePersistFactory simplePersistFactory,
 			PersistentArtifactManagerProvider persistentArtifactManagerProvider,
-			ConfigurationManager configurationManager,
+			MutableConfigurationManager configurationManager,
 			RepositoryPath repositoryPath,
 			@ArtifactLoaderRegistry
 			Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
@@ -114,7 +114,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 
 	private FullGraphSession openedFullGraphSession = null;
 
-	private final ConfigurationManager configurationManager;
+	private final MutableConfigurationManager configurationManager;
 
 	private final RepositoryPath repositoryPath;
 
@@ -162,7 +162,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 	}
 
 	@Override
-	public ConfigurationManager getDefaultConfigurationManager() {
+	public MutableConfigurationManager getDefaultConfigurationManager() {
 		return configurationManager;
 	}
 

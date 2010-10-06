@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.domain;
+package org.openspotlight.domain;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
@@ -58,10 +58,10 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
- * The Class BundleProcessorType.
+ * The Class BundleConfig.
  */
 @Name("bundle_processor_type")
-public class BundleProcessorType implements SimpleNodeType, Serializable {
+public class BundleConfig implements SimpleNodeType, Serializable {
     public List<Class<? extends Callable<Void>>> getTasks() {
         return tasks;
     }
@@ -91,11 +91,6 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
     private transient Group group;
 
     /**
-     * The sources.
-     */
-    private Set<BundleSource> sources = new HashSet<BundleSource>();
-
-    /**
      * The hash code.
      */
     private volatile transient int hashCode;
@@ -110,10 +105,10 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof BundleProcessorType)) {
+        if (!(o instanceof BundleConfig)) {
             return false;
         }
-        final BundleProcessorType that = (BundleProcessorType) o;
+        final BundleConfig that = (BundleConfig) o;
         final boolean result = Equals.eachEquality(Arrays.of(group, name), Arrays.andOf(that.group, that.name));
         return result;
     }
@@ -135,15 +130,6 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
     @KeyProperty
     public String getName() {
         return name;
-    }
-
-    /**
-     * Gets the sources.
-     *
-     * @return the sources
-     */
-    public Set<BundleSource> getSources() {
-        return sources;
     }
 
     @TransientProperty
@@ -204,15 +190,6 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    /**
-     * Sets the sources.
-     *
-     * @param sources the new sources
-     */
-    public void setSources(final Set<BundleSource> sources) {
-        this.sources = sources;
     }
 
 }

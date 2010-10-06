@@ -68,15 +68,13 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.domain.DbArtifactSource;
+import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.DatabaseStreamArtifactFinder;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.db.ScriptType;
-import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;

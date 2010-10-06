@@ -59,7 +59,7 @@ import org.jredis.JRedis;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;

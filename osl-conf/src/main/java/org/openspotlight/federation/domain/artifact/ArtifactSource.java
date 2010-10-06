@@ -54,12 +54,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.bundle.domain.Schedulable;
+import org.openspotlight.domain.Repository;
+import org.openspotlight.domain.Schedulable;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -72,7 +72,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  */
 @Name("artifact_source")
 public class ArtifactSource implements SimpleNodeType, Serializable,
-		Schedulable {
+        Schedulable {
 
 	private boolean binary = false;
 

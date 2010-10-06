@@ -8,12 +8,8 @@ public abstract class ProcessingTask extends BaseTask implements
 		ConfigurableTask {
 
 	private final ExecutionContextProvider provider;
-	private final Artifact artifact;
-
-	protected ProcessingTask(ExecutionContextProvider provider,
-			Artifact artifact) {
+	protected ProcessingTask(ExecutionContextProvider provider) {
 		this.provider = provider;
-		this.artifact = artifact;
 	}
 
 	@Override
@@ -21,14 +17,14 @@ public abstract class ProcessingTask extends BaseTask implements
 		provider.setupBeforeGet();
 		try {
 			ExecutionContext context = provider.get();
-			execute(context, artifact);
+			execute(context);
 			return null;
 		} finally {
 			provider.release();
 		}
 	}
 
-	protected abstract void execute(ExecutionContext context, Artifact artifact)
+	protected abstract void execute(ExecutionContext context)
 			throws Exception;
 
 }

@@ -46,58 +46,86 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.domain;
 
-package org.openspotlight.federation.loader;
+import java.io.Serializable;
 
-import java.util.Set;
+import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.common.Disposable;
-import org.openspotlight.common.exception.ConfigurationException;
-
+// TODO: Auto-generated Javadoc
 /**
- * Interface responsible to load and save the configuration data on a persistent layer.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * The Class Configuration.
  */
-public interface ConfigurationManager extends Disposable{
+@Name("configuration")
+public class GlobalSettings implements SimpleNodeType, Serializable {
 
-    Iterable<Repository> getAllRepositories() throws ConfigurationException;
+	private static final long serialVersionUID = 3443359462450366393L;
 
-    Set<String> getAllRepositoryNames() throws ConfigurationException;
+	private int parallelThreads = Runtime.getRuntime().availableProcessors() * 2;
 
-    /**
-     * Gets the global settings.
-     * 
-     * @return the global settings
-     */
-    GlobalSettings getGlobalSettings();
+	public int getParallelThreads() {
+		return parallelThreads;
+	}
 
-    /**
-     * Loads the current group from configuration, marking the configuration as saved.
-     * 
-     * @param name the name
-     * @return a fresh configuration
-     * @throws ConfigurationException the configuration exception
-     * @throws NoConfigurationYetException
-     */
-    Repository getRepositoryByName( String name ) throws ConfigurationException;
+	public void setParallelThreads(int parallelThreads) {
+		this.parallelThreads = parallelThreads;
+	}
 
-    /**
-     * Save global settings.
-     * 
-     * @param globalSettings the global settings
-     * @throws ConfigurationException the configuration exception
-     */
-    void saveGlobalSettings( GlobalSettings globalSettings ) throws ConfigurationException;
+	private long defaultSleepingIntervalInMilliseconds;
 
-    /**
-     * Saves the group on a persistent layer marking the current configuration as a saved configuration.
-     * 
-     * @param configuration the configuration
-     * @throws ConfigurationException the configuration exception
-     */
-    void saveRepository( Repository configuration ) throws ConfigurationException;
+	/** The max result list size. */
+	private int maxResultListSize;
+
+	private String systemUser;
+
+	private String systemPassword;
+
+	public GlobalSettings() {
+	}
+
+	public long getDefaultSleepingIntervalInMilliseconds() {
+		return defaultSleepingIntervalInMilliseconds;
+	}
+
+	/**
+	 * Gets the max result list size.
+	 * 
+	 * @return the max result list size
+	 */
+	public int getMaxResultListSize() {
+		return maxResultListSize;
+	}
+
+	public String getSystemPassword() {
+		return systemPassword;
+	}
+
+	public String getSystemUser() {
+		return systemUser;
+	}
+
+	public void setDefaultSleepingIntervalInMilliseconds(
+			final long defaultSleepingIntervalInMilliseconds) {
+		this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
+	}
+
+	/**
+	 * Sets the max result list size.
+	 * 
+	 * @param maxResultListSize
+	 *            the new max result list size
+	 */
+	public void setMaxResultListSize(final int maxResultListSize) {
+		this.maxResultListSize = maxResultListSize;
+	}
+
+	public void setSystemPassword(final String systemPassword) {
+		this.systemPassword = systemPassword;
+	}
+
+	public void setSystemUser(final String systemUser) {
+		this.systemUser = systemUser;
+	}
 
 }

@@ -52,45 +52,117 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
+import com.google.inject.Inject;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * A factory for creating JcrSessionConfigurationManager objects.
  */
-public class ConfigurationManagerFactoryImpl {
+public class PersistentConfigurationManagerFactoryImpl implements ConfigurationManagerFactory{
 
-	/**
+    private final SimplePersistFactory factory;
+
+    @Inject
+    public PersistentConfigurationManagerFactoryImpl(SimplePersistFactory factory) {
+        this.factory = factory;
+    }
+
+
+    @Override
+    public ImmutableConfigurationManager createImmutable() {
+        return createMutableUsingSession(factory.createSimplePersist(RegularPartitions.FEDERATION));
+    }
+
+    @Override
+    public org.openspotlight.federation.loader.MutableConfigurationManager createMutable() {
+        return createMutableUsingSession(factory.createSimplePersist(RegularPartitions.FEDERATION));
+       }
+
+    /**
 	 * The Class MutableConfigurationManager.
 	 */
-	private static class MutableConfigurationManager implements
-			ConfigurationManager {
+	private static class MutablePersistentConfigurationManager extends ImmutablePersistentConfigurationManager implements
+            org.openspotlight.federation.loader.MutableConfigurationManager {
+
+        public MutablePersistentConfigurationManager(
+                        SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+            super(simplePersist);
+        }
+
+/*
+		 * (non-Javadoc)
+		 *
+		 * @seeorg.openspotlight.federation.loader.MutableConfigurationManager#
+		 * saveGlobalSettings
+		 * (org.openspotlight.federation.domain.GlobalSettings)
+		 */
+
+        public void saveGlobalSettings(final GlobalSettings globalSettings)
+                throws ConfigurationException {
+            try {
+                simplePersist.convertBeanToNode(globalSettingsRootNode,
+                        globalSettings);
+                simplePersist.getCurrentSession().flushTransient();
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e,
+                        ConfigurationException.class);
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * org.openspotlight.federation.loader.MutableConfigurationManager#saveRepository
+         * (org.openspotlight.federation.domain.Repository)
+         */
+
+        public void saveRepository(final Repository configuration)
+                throws ConfigurationException {
+            try {
+                applyGroupDeltas(configuration);
+                simplePersist.convertBeanToNode(repositoriesRootNode,
+                        configuration);
+                simplePersist.getCurrentSession().flushTransient();
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e,
+                        ConfigurationException.class);
+            }
+        }
+
+	}
+
+    private static class ImmutablePersistentConfigurationManager implements
+            org.openspotlight.federation.loader.ImmutableConfigurationManager {
 
 		/**
 		 * The session.
 		 */
-		private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+		protected final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
 		/**
 		 * The Constant globalSettingsRootNode.
 		 */
-		private final StorageNode globalSettingsRootNode;
+		protected final StorageNode globalSettingsRootNode;
 		/**
 		 * The Constant repositoriesRootNode.
 		 */
-		private final StorageNode repositoriesRootNode;
+		protected final StorageNode repositoriesRootNode;
 
 		/**
 		 * Instantiates a new mutable jcr session configuration manager.
 		 */
-		public MutableConfigurationManager(
+		public ImmutablePersistentConfigurationManager(
 				SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
 			this.simplePersist = simplePersist;
 			this.globalSettingsRootNode = simplePersist.getPartitionMethods()
@@ -99,7 +171,7 @@ public class ConfigurationManagerFactoryImpl {
 					.createNewSimpleNode("configuration", "repositories");
 		}
 
-		private void applyGroupDeltas(final Repository configuration) {
+		protected void applyGroupDeltas(final Repository configuration) {
 			GroupDifferences existentDeltas = GroupSupport.getDifferences(
 					simplePersist, configuration.getName());
 			if (existentDeltas == null) {
@@ -123,14 +195,14 @@ public class ConfigurationManagerFactoryImpl {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
-		 * org.openspotlight.federation.loader.ConfigurationManager#closeResources
+		 * org.openspotlight.federation.loader.MutableConfigurationManager#closeResources
 		 * ()
 		 */
 
 		public void closeResources() {
-
+            this.simplePersist.closeResources();
 		}
 
 		public Iterable<Repository> getAllRepositories()
@@ -155,8 +227,8 @@ public class ConfigurationManagerFactoryImpl {
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @seeorg.openspotlight.federation.loader.ConfigurationManager#
+		 *
+		 * @seeorg.openspotlight.federation.loader.MutableConfigurationManager#
 		 * getGlobalSettings()
 		 */
 
@@ -175,8 +247,8 @@ public class ConfigurationManagerFactoryImpl {
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @seeorg.openspotlight.federation.loader.ConfigurationManager#
+		 *
+		 * @seeorg.openspotlight.federation.loader.MutableConfigurationManager#
 		 * getRepositoryByName(java.lang.String)
 		 */
 
@@ -195,59 +267,12 @@ public class ConfigurationManagerFactoryImpl {
 			}
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @seeorg.openspotlight.federation.loader.ConfigurationManager#
-		 * saveGlobalSettings
-		 * (org.openspotlight.federation.domain.GlobalSettings)
-		 */
-
-		public void saveGlobalSettings(final GlobalSettings globalSettings)
-				throws ConfigurationException {
-			try {
-				simplePersist.convertBeanToNode(globalSettingsRootNode,
-						globalSettings);
-				simplePersist.getCurrentSession().flushTransient();
-			} catch (final Exception e) {
-				throw Exceptions.logAndReturnNew(e,
-						ConfigurationException.class);
-			}
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.openspotlight.federation.loader.ConfigurationManager#saveRepository
-		 * (org.openspotlight.federation.domain.Repository)
-		 */
-
-		public void saveRepository(final Repository configuration)
-				throws ConfigurationException {
-			try {
-				applyGroupDeltas(configuration);
-				simplePersist.convertBeanToNode(repositoriesRootNode,
-						configuration);
-				simplePersist.getCurrentSession().flushTransient();
-			} catch (final Exception e) {
-				throw Exceptions.logAndReturnNew(e,
-						ConfigurationException.class);
-			}
-		}
 
 	}
 
-	/**
-	 * Creates a new JcrSessionConfigurationManager object.
-	 * 
-	 * @param simplePersist
-	 *            the simplePersist
-	 * @return the configuration manager
-	 */
-	public static ConfigurationManager createMutableUsingSession(
+	public static org.openspotlight.federation.loader.MutableConfigurationManager createMutableUsingSession(
 			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-		return new MutableConfigurationManager(simplePersist);
+		return new MutablePersistentConfigurationManager(simplePersist);
 	}
 
 }

@@ -51,7 +51,7 @@ package org.openspotlight.bundle.context;
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
-import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
@@ -65,7 +65,7 @@ public interface ExecutionContext extends Disposable, GraphSessionFactory {
 
     public PersistentArtifactManager getPersistentArtifactManager();
 
-    public ConfigurationManager getDefaultConfigurationManager();
+    public MutableConfigurationManager getDefaultConfigurationManager();
 
 
     public String getPassword();

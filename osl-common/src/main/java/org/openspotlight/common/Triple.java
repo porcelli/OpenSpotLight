@@ -131,4 +131,8 @@ public class Triple<K1, K2, K3> {
 
     }
 
+    public static <K1,K2,K3> Triple<K1,K2,K3> newTriple(K1 k1,K2 k2,K3 k3){
+        return new Triple<K1,K2,K3>(k1,k2,k3);
+    }
+
 }

@@ -63,7 +63,7 @@ public class XmlConfigurationManagerTest extends AbstractConfigurationManagerTes
     }
 
     @Override
-    protected ConfigurationManager createNewConfigurationManager() {
+    protected MutableConfigurationManager createNewConfigurationManager() {
         return XmlConfigurationManagerFactory.loadMutableFromFile("./target/XmlConfigurationManagerTest/newSavedConfiguration.xml");
     }
 

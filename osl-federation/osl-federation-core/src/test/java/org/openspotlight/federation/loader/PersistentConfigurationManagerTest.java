@@ -57,8 +57,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.Group;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.guice.SimplePersistModule;
@@ -76,9 +76,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 /**
- * The Class JcrSessionConfigurationManagerTest.
+ * The Class PersistentConfigurationManagerTest.
  */
-public class JcrSessionConfigurationManagerTest extends
+public class PersistentConfigurationManagerTest extends
 		AbstractConfigurationManagerTest {
 
 	private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
@@ -109,8 +109,8 @@ public class JcrSessionConfigurationManagerTest extends
 	}
 
 	@Override
-	protected ConfigurationManager createNewConfigurationManager() {
-		return ConfigurationManagerFactoryImpl
+	protected MutableConfigurationManager createNewConfigurationManager() {
+		return PersistentConfigurationManagerFactoryImpl
 				.createMutableUsingSession(simplePersist);
 	}
 
@@ -128,7 +128,7 @@ public class JcrSessionConfigurationManagerTest extends
 		group.setName("willBeRemoved");
 		group.setRepository(repository);
 		repository.getGroups().add(group);
-		final ConfigurationManager manager1 = createNewConfigurationManager();
+		final MutableConfigurationManager manager1 = createNewConfigurationManager();
 		manager1.saveRepository(repository);
 		final Group group2 = new Group();
 		group2.setName("new");

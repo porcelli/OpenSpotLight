@@ -56,13 +56,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;

@@ -48,7 +48,7 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistFactory;
 
 public class PersistentArtifactManagerProviderImpl extends PersistentArtifactManagerProvider {

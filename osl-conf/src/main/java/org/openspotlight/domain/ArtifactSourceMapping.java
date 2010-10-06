@@ -46,10 +46,12 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
@@ -206,5 +208,18 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
     public synchronized void setTo( final String to ) {
         this.to = to;
     }
+
+
+    public void setBundleConfig(final List<BundleConfig> bundleConfig) {
+        this.bundleConfig = bundleConfig;
+    }
+
+    public List<BundleConfig> getBundleConfig() {
+        return bundleConfig;
+    }
+
+
+    private List<BundleConfig> bundleConfig = new ArrayList<BundleConfig>();
+    
 
 }

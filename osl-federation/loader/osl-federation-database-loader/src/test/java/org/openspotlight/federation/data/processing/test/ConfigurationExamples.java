@@ -49,10 +49,10 @@
 
 package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.DbArtifactSource;
+import org.openspotlight.domain.Group;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 /**
@@ -79,7 +79,7 @@ public class ConfigurationExamples {
 		final DbArtifactSource artifactSource = new DbArtifactSource();
 		artifactSource.setServerName("server name " + sourceName);
 		artifactSource.setDatabaseName("db name " + sourceName);
-		repository.getArtifactSources().add(artifactSource);
+		group.getArtifactSources().add(artifactSource);
 		artifactSource.setRepository(repository);
 		artifactSource.setName(sourceName);
 		artifactSource.setActive(true);
@@ -97,16 +97,16 @@ public class ConfigurationExamples {
 		mapping.setTo("/databaseArtifacts");
 		artifactSource.getMappings().add(mapping);
 		mapping.getIncludeds().add("**");
-		// final BundleProcessorType commonProcessor = new
-		// BundleProcessorType();
+		// final BundleConfig commonProcessor = new
+		// BundleConfig();
 		// commonProcessor.setActive(true);
 		// commonProcessor.setGroup(group);
-		// group.getBundleTypes().add(commonProcessor);
-		// final BundleProcessorType customProcessor = new
-		// BundleProcessorType();
+		// group.getBundleConfig().add(commonProcessor);
+		// final BundleConfig customProcessor = new
+		// BundleConfig();
 		// customProcessor.setActive(true);
 		// customProcessor.setGroup(group);
-		// group.getBundleTypes().add(customProcessor);
+		// group.getBundleConfig().add(customProcessor);
 		return repository;
 	}
 

@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.artifact.Artifact;

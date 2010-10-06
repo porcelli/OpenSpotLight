@@ -46,23 +46,35 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.domain;
 
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.graph.Node;
+package org.openspotlight.federation.loader;
+
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
+import org.openspotlight.common.exception.ConfigurationException;
+
+/**
+ * Interface responsible to load and save the configuration data on a persistent layer.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ */
+public interface MutableConfigurationManager extends ImmutableConfigurationManager {
 
 
-public interface GroupListener {
+    /**
+     * Save global settings.
+     * 
+     * @param globalSettings the global settings
+     * @throws ConfigurationException the configuration exception
+     */
+    void saveGlobalSettings( GlobalSettings globalSettings ) throws ConfigurationException;
 
-    public static enum ListenerAction {
-        CONTINUE,
-        IGNORE
-    }
-
-    public ListenerAction groupAdded( Node groupNode,
-                                      ExecutionContext context );
-
-    public ListenerAction groupRemoved( Node groupNode,
-                                        ExecutionContext context );
+    /**
+     * Saves the group on a persistent layer marking the current configuration as a saved configuration.
+     * 
+     * @param configuration the configuration
+     * @throws ConfigurationException the configuration exception
+     */
+    void saveRepository( Repository configuration ) throws ConfigurationException;
 
 }

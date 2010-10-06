@@ -54,7 +54,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.sql.Connection;
 
-import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.domain.DbArtifactSource;
 
 /**
  * Helper methods to manipulate database resources.

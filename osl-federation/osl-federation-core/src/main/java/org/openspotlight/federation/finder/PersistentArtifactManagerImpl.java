@@ -51,7 +51,7 @@ package org.openspotlight.federation.finder;
 import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Strings.concatPaths;
 
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;

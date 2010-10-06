@@ -53,8 +53,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.Group;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;

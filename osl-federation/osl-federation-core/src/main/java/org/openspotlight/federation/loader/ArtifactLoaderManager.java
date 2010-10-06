@@ -48,14 +48,13 @@
  */
 package org.openspotlight.federation.loader;
 
-import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;

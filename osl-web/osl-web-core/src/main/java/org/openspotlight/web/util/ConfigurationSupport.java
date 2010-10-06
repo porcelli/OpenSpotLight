@@ -49,17 +49,18 @@
 package org.openspotlight.web.util;
 
 import org.apache.commons.io.IOUtils;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.common.util.ClassPathResource;
-import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.loader.ImmutableConfigurationManager;
+import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 
 import java.io.InputStream;
 import java.io.StringWriter;
 
 /**
- * The Class ConfigurationSupport contains methods to be used on {@link ConfigurationManager} saved data.
+ * The Class ConfigurationSupport contains methods to be used on {@link org.openspotlight.federation.loader.MutableConfigurationManager} saved data.
  */
 public class ConfigurationSupport {
 
@@ -67,7 +68,7 @@ public class ConfigurationSupport {
      * Initialize configuration.
      */
     public static boolean initializeConfiguration(final boolean forceReload,
-                                                  final ConfigurationManager jcrConfigurationManager) throws Exception {
+                                                  final MutableConfigurationManager jcrConfigurationManager) throws Exception {
         final boolean firstTime = jcrConfigurationManager.getAllRepositories().iterator().hasNext();
         boolean reloaded = false;
         if (firstTime || forceReload) {
@@ -83,7 +84,7 @@ public class ConfigurationSupport {
      * @param manager the manager
      * @return the configuration
      */
-    private static void saveXmlOnJcr(final ConfigurationManager manager) throws Exception {
+    private static void saveXmlOnJcr(final MutableConfigurationManager manager) throws Exception {
         GlobalSettings settings;
         Iterable<Repository> repositories;
         final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
@@ -91,7 +92,7 @@ public class ConfigurationSupport {
         IOUtils.copy(is, writter);
         final String xmlContent = writter.toString();
         is.close();
-        final ConfigurationManager xmlManager = XmlConfigurationManagerFactory.loadImmutableFromXmlContent(xmlContent);
+        final ImmutableConfigurationManager xmlManager = XmlConfigurationManagerFactory.loadImmutableFromXmlContent(xmlContent);
         settings = xmlManager.getGlobalSettings();
         repositories = xmlManager.getAllRepositories();
         manager.saveGlobalSettings(settings);

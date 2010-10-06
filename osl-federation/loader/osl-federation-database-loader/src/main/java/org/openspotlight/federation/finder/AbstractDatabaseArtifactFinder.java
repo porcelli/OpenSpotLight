@@ -69,7 +69,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
-import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.artifact.Artifact;

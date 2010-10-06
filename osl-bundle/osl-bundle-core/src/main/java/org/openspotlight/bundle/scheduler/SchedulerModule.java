@@ -3,7 +3,7 @@ package org.openspotlight.bundle.scheduler;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import org.openspotlight.bundle.annotation.SchedulableCommandMap;
-import org.openspotlight.bundle.domain.Schedulable;
+import org.openspotlight.domain.Schedulable;
 
 import java.util.Map;
 

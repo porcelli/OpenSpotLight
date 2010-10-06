@@ -49,7 +49,7 @@
 package org.openspotlight.bundle.scheduler;
 
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.domain.Group;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
@@ -72,17 +72,18 @@ public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
         }
 
         public void visitBean(Group bean) {
-            if (bean.getBundleTypes().size() != 0) {
-                groupsWithBundles.add(bean);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("adding group " + bean + " because it has " + bean.getBundleTypes().size() + "  bundles");
-                }
-            } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("ignoring group " + bean + " because it has no bundles");
-                }
-
-            }
+//            if (bean.getBundleTypes().size() != 0) {
+//                groupsWithBundles.add(bean);
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("adding group " + bean + " because it has " + bean.getBundleTypes().size() + "  bundles");
+//                }
+//            } else {
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("ignoring group " + bean + " because it has no bundles");
+//                }
+//
+//            }
+            throw new UnsupportedOperationException();//FIXME
         }
 
     }

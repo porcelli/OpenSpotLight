@@ -53,10 +53,10 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.ArtifactSourceMapping;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Group;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 /**
@@ -64,69 +64,68 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
  */
 public abstract class AbstractConfigurationManagerTest {
 
-	protected abstract ConfigurationManager createNewConfigurationManager();
+    protected abstract MutableConfigurationManager createNewConfigurationManager();
 
-	/**
-	 * Should save and load the configuration.
-	 * 
-	 * @throws Exception
-	 *             the exception
-	 */
-	@Test
-	public void shouldSaveAndLoadTheConfiguration() throws Exception {
-		// FIXME Create a detailed and real configuration to be used as an
-		// example
-		final GlobalSettings setting = new GlobalSettings();
-		setting.setDefaultSleepingIntervalInMilliseconds(500);
-		setting.setMaxResultListSize(50);
+    /**
+     * Should save and load the configuration.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void shouldSaveAndLoadTheConfiguration() throws Exception {
+        // FIXME Create a detailed and real configuration to be used as an
+        // example
+        final GlobalSettings setting = new GlobalSettings();
+        setting.setDefaultSleepingIntervalInMilliseconds(500);
+        setting.setMaxResultListSize(50);
 
-		final Repository repository = new Repository();
-		repository.setActive(true);
-		repository.setName("repository name");
+        final Repository repository = new Repository();
+        repository.setActive(true);
+        repository.setName("repository name");
 
-		final ArtifactSource artifactSource = new ArtifactSource();
-		artifactSource.setActive(true);
-		artifactSource.setName("artifactSource name");
-		artifactSource.setRepository(repository);
-		artifactSource.setInitialLookup("/usr/src/files");
-		artifactSource.setRepository(repository);
-		repository.getArtifactSources().add(artifactSource);
+        final ArtifactSource artifactSource = new ArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setName("artifactSource name");
+        artifactSource.setRepository(repository);
+        artifactSource.setInitialLookup("/usr/src/files");
+        artifactSource.setRepository(repository);
 
-		artifactSource.getCronInformation().add("* * 16 * - ! #");
-		artifactSource.getCronInformation().add("* 1 * - ! #");
-		artifactSource.getCronInformation().add("* * XD * - ! #");
+        final Group group = new Group();
+        group.setActive(true);
+        group.setName("group name");
+        group.setRepository(repository);
+        group.setType("group type");
+        repository.getGroups().add(group);
+        group.getArtifactSources().add(artifactSource);
 
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setSource(artifactSource);
-		mapping.setFrom("/first-dir/");
-		mapping.setTo("/virtual-dir/java");
-		mapping.getExcludeds().add("**/*.class");
-		mapping.getIncludeds().add("**/*.java");
-		mapping.getIncludeds().add("**/*.properties");
-		mapping.getIncludeds().add("**/*.xml");
-		artifactSource.getMappings().add(mapping);
+        artifactSource.getCronInformation().add("* * 16 * - ! #");
+        artifactSource.getCronInformation().add("* 1 * - ! #");
+        artifactSource.getCronInformation().add("* * XD * - ! #");
 
-		final Group group = new Group();
-		group.setActive(true);
-		group.setName("group name");
-		group.setRepository(repository);
-		group.setType("group type");
-		repository.getGroups().add(group);
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setSource(artifactSource);
+        mapping.setFrom("/first-dir/");
+        mapping.setTo("/virtual-dir/java");
+        mapping.getExcludeds().add("**/*.class");
+        mapping.getIncludeds().add("**/*.java");
+        mapping.getIncludeds().add("**/*.properties");
+        mapping.getIncludeds().add("**/*.xml");
+        artifactSource.getMappings().add(mapping);
 
-		group.getCronInformation().add("* * 16 * - ! #");
-		group.getCronInformation().add("* 1 * - ! #");
-		group.getCronInformation().add("* * XD * - ! #");
+        group.getCronInformation().add("* * 16 * - ! #");
+        group.getCronInformation().add("* 1 * - ! #");
+        group.getCronInformation().add("* * XD * - ! #");
 
-		final ConfigurationManager manager = createNewConfigurationManager();
-		manager.saveGlobalSettings(setting);
-		manager.saveRepository(repository);
+        final MutableConfigurationManager manager = createNewConfigurationManager();
+        manager.saveGlobalSettings(setting);
+        manager.saveRepository(repository);
 
-		final ConfigurationManager manager1 = createNewConfigurationManager();
-		final GlobalSettings sessing1 = manager1.getGlobalSettings();
-		final Repository repo1 = manager1
-				.getRepositoryByName("repository name");
-		assertThat(sessing1, is(notNullValue()));
-		assertThat(repo1, is(repository));
+        final MutableConfigurationManager manager1 = createNewConfigurationManager();
+        final GlobalSettings sessing1 = manager1.getGlobalSettings();
+        final Repository repo1 = manager1
+                .getRepositoryByName("repository name");
+        assertThat(sessing1, is(notNullValue()));
+        assertThat(repo1, is(repository));
 	}
 
 }

@@ -56,8 +56,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.Before;
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.domain.DbArtifactSource;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
 @SuppressWarnings( "all" )
@@ -74,7 +74,7 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**
