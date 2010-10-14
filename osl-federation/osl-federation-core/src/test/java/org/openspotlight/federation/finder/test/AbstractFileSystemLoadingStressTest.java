@@ -74,7 +74,6 @@ import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.task.ExecutorInstance;
 
 import com.google.inject.Guice;
@@ -151,8 +150,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 	@Before
 	public void setupResources() throws Exception {
 		if (!runned) {
-			injector = Guice.createInjector(createStorageModule(RepositoryPath
-					.repositoryPath("repository")), new SimplePersistModule(),
+			injector = Guice.createInjector(createStorageModule(), new SimplePersistModule(),
 					new DetailedLoggerModule());
 			clearData();
 			data = createRepositoryData();
@@ -170,7 +168,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 
 	protected abstract void clearData() throws Exception;
 
-	protected abstract Module createStorageModule(RepositoryPath repositoryPath)
+	protected abstract Module createStorageModule()
 			throws Exception;
 
 	@After

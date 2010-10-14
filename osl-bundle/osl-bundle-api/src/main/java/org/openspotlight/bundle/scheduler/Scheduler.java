@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.scheduler;
 
-import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.bundle.domain.Schedulable;

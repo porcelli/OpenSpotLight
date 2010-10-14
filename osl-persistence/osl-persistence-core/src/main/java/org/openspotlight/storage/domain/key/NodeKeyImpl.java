@@ -59,8 +59,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.RepositoryPath;
-import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.StringKeysSupport;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -80,24 +79,18 @@ public class NodeKeyImpl implements NodeKey {
                 '}';
     }
 
-    public NodeKeyImpl(final CompositeKey localKey, final String parentKeyAsString, final Partition partition,
-                         final RepositoryPath repositoryPath) {
+    public NodeKeyImpl(final CompositeKey localKey, final String parentKeyAsString, final Partition partition) {
         if (localKey == null) { throw new IllegalArgumentException(); }
-        if (repositoryPath == null) { throw new IllegalArgumentException(); }
         this.localKey = localKey;
         this.parentKeyAsString = parentKeyAsString;
         this.partition = partition;
-        this.repositoryPath = repositoryPath;
 
-        int result = repositoryPath != null ? repositoryPath.hashCode() : 0;
-        result = 31 * result + (partition != null ? partition.hashCode() : 0);
+        int result = partition != null ? partition.hashCode() : 0;
         result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
         result = 31 * result + (parentKeyAsString != null ? parentKeyAsString.hashCode() : 0);
         hashCode = result;
 
     }
-
-    private final RepositoryPath repositoryPath;
 
     private final Partition      partition;
 
@@ -111,7 +104,7 @@ public class NodeKeyImpl implements NodeKey {
     public String getKeyAsString() {
         String value = keyAsString;
         if (value == null) {
-            value = StringIDSupport.getNodeKeyAsStringHash(this);
+            value = StringKeysSupport.buildNodeKeyAsString(this);
             keyAsString = value;
         }
         return value;
@@ -133,11 +126,6 @@ public class NodeKeyImpl implements NodeKey {
     }
 
     @Override
-    public RepositoryPath getRepositoryPath() {
-        return repositoryPath;
-    }
-
-    @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
@@ -148,7 +136,6 @@ public class NodeKeyImpl implements NodeKey {
         if (parentKeyAsString != null ? !parentKeyAsString.equals(uniqueKey.parentKeyAsString)
             : uniqueKey.parentKeyAsString != null) { return false; }
         if (partition != null ? !partition.equals(uniqueKey.partition) : uniqueKey.partition != null) { return false; }
-        if (repositoryPath != null ? !repositoryPath.equals(uniqueKey.repositoryPath) : uniqueKey.repositoryPath != null) { return false; }
 
         return true;
     }
@@ -220,7 +207,7 @@ public class NodeKeyImpl implements NodeKey {
         public String getKeyAsString() {
             String value = keyAsString;
             if (value == null) {
-                value = StringIDSupport.getCompositeKeyAsStringHash(this);
+                value = StringKeysSupport.buildCompositeKeyAsHash(this);
                 keyAsString = value;
             }
             return value;

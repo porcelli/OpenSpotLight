@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -50,7 +50,6 @@
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import org.junit.After;
 import org.junit.Before;
@@ -124,8 +123,7 @@ public class DetailedLoggerTest {
 
 		Injector autoFlushInjector = Guice.createInjector(
 				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-						repositoryPath("repositoryPath")),
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
 				new SimplePersistModule(), new GraphModule());
 
 		graphSession = autoFlushInjector.getInstance(FullGraphSession.class);

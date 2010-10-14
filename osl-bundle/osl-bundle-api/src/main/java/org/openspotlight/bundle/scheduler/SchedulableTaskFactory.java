@@ -3,8 +3,6 @@ package org.openspotlight.bundle.scheduler;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.domain.Schedulable;
 
-import java.util.concurrent.Callable;
-
 /**
  * Created by IntelliJ IDEA.
  * User: feu

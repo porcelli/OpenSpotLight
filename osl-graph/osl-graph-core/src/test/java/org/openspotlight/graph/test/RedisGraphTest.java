@@ -49,8 +49,6 @@
 
 package org.openspotlight.graph.test;
 
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
-
 import java.util.Map;
 
 import org.openspotlight.graph.GraphModule;
@@ -154,8 +152,7 @@ public class RedisGraphTest extends AbstractGraphTest {
     protected Injector createInjector()
         throws Exception {
         return Guice.createInjector(new JRedisStorageModule(
-                StorageSession.FlushMode.AUTO, mappedServerConfig,
-                repositoryPath("repositoryPath"), RegularPartitions.FACTORY),
+                StorageSession.FlushMode.AUTO, mappedServerConfig, RegularPartitions.FACTORY),
                 new GraphModule());
     }
 

@@ -52,7 +52,6 @@ package org.openspotlight.persist.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -72,8 +71,8 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -87,12 +86,11 @@ import com.google.inject.Injector;
 public class SimplePersistSupportTest {
 
     SimplePersistCapable<StorageNode, StorageSession> simplePersist;
-    private StorageSession                     session;
+    private StorageSession                            session;
 
     public SimplePersistSupportTest() {
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repositoryPath")));
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig()));
     }
 
     final Injector autoFlushInjector;

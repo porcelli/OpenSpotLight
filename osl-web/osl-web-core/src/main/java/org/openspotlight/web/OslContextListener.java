@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -48,8 +48,9 @@
  */
 package org.openspotlight.web;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.domain.GlobalSettings;
@@ -69,10 +70,8 @@ import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.openspotlight.web.command.InitialImportWebCommand;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * The listener interface for receiving oslContext events. The class that is interested in processing a oslContext event
@@ -83,8 +82,8 @@ import static org.openspotlight.storage.RepositoryPath.repositoryPath;
  */
 public class OslContextListener implements ServletContextListener, OslDataConstants {
 
-    private RemoteGraphSessionServer server;
-    public static Scheduler scheduler;
+    private RemoteGraphSessionServer      server;
+    public static Scheduler               scheduler;
     public static ExecutionContextFactory factory;
 
     /**
@@ -101,21 +100,20 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
     public void contextInitialized(final ServletContextEvent sce) {
         try {
             Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                    repositoryPath("repository")),
+                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
-
-
 
             final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
             final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
 
-            final int remotePort = Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer.parseInt(remotePortAsString);
-            final long remoteGraphTimeout = Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long.parseLong(remoteGraphTimeoutAsString);
-
+            final int remotePort =
+                Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer
+                    .parseInt(remotePortAsString);
+            final long remoteGraphTimeout =
+                Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long
+                    .parseLong(remoteGraphTimeoutAsString);
 
             factory = injector.getInstance(ExecutionContextFactory.class);
-
 
             final ExecutionContext context = factory.get();
 
@@ -134,8 +132,8 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
             scheduler = injector.getInstance(Scheduler.class);
             scheduler.refreshJobs(settings, repositories);
 
-//            server = new RemoteGraphSessionServer(new DefaultUserAuthenticator(descriptor), remotePort, remoteGraphTimeout,
-//                    descriptor, graph);
+            //            server = new RemoteGraphSessionServer(new DefaultUserAuthenticator(descriptor), remotePort, remoteGraphTimeout,
+            //                    descriptor, graph);
 
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, ConfigurationException.class);

@@ -78,7 +78,7 @@ public interface Criteria {
 
         }
 
-        public interface CompisiteKeyCriteriaItem extends CriteriaItem {
+        public interface CompositeKeyCriteriaItem extends CriteriaItem {
             CompositeKey getValue();
         }
 

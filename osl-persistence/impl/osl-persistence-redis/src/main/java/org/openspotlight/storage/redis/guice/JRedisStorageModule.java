@@ -54,7 +54,6 @@ import java.util.Map;
 import org.openspotlight.storage.DefaultPartitionFactory;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 
 import com.google.inject.AbstractModule;
@@ -69,25 +68,20 @@ public class JRedisStorageModule extends AbstractModule {
 
     private final Map<Partition, JRedisServerDetail> mappedServerConfig;
 
-    private final RepositoryPath                     repositoryPath;
-
     private final PartitionFactory                   partitionFactory;
 
     public JRedisStorageModule(final StorageSession.FlushMode flushMode,
-                               final Map<Partition, JRedisServerDetail> mappedServerConfig,
-                                final RepositoryPath repositoryPath) {
+                               final Map<Partition, JRedisServerDetail> mappedServerConfig) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
-        this.repositoryPath = repositoryPath;
         partitionFactory = new DefaultPartitionFactory();
     }
 
     public JRedisStorageModule(final StorageSession.FlushMode flushMode,
                                final Map<Partition, JRedisServerDetail> mappedServerConfig,
-                                final RepositoryPath repositoryPath, final PartitionFactory partitionFactory) {
+                               final PartitionFactory partitionFactory) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
-        this.repositoryPath = repositoryPath;
         this.partitionFactory = partitionFactory;
     }
 
@@ -99,7 +93,6 @@ public class JRedisStorageModule extends AbstractModule {
         bind(new TypeLiteral<Map<Partition, JRedisServerDetail>>() {
             })
                 .toInstance(mappedServerConfig);
-        bind(RepositoryPath.class).toInstance(repositoryPath);
         bind(JRedisFactory.class).to(JRedisFacoryImpl.class);
         bind(boolean.class).annotatedWith(StartRedisLocally.class).toInstance(true);
     }

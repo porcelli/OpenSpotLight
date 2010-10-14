@@ -49,7 +49,7 @@
 package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.StringKeysSupport;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 
@@ -59,25 +59,24 @@ public class StorageLinkImpl extends PropertyContainerImpl implements
     private static final long serialVersionUID = -3462836679437486046L;
 
     public StorageLinkImpl(final String linkType, final StorageNode origin,
-                    final StorageNode target, final boolean resetTimeout) {
+                           final StorageNode target, final boolean resetTimeout) {
         super(resetTimeout);
         this.linkType = linkType;
         this.origin = origin;
         this.target = target;
         originPartition = origin.getPartition();
-        linkId = StringIDSupport.getLinkKeyAsString(originPartition,
-                linkType, origin, target);
+        linkId = StringKeysSupport.buildLinkKeyAsString(linkType, origin, target);
     }
 
-    private final String    linkId;
+    private final String      linkId;
 
-    private final String    linkType;
+    private final String      linkType;
 
-    private final StorageNode      origin;
+    private final StorageNode origin;
 
-    private final StorageNode      target;
+    private final StorageNode target;
 
-    private final Partition originPartition;
+    private final Partition   originPartition;
 
     @Override
     public String getLinkId() {

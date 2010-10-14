@@ -49,8 +49,6 @@
 
 package org.openspotlight.security.idm.store.test;
 
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
-
 import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
 import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
 import org.jboss.identity.idm.impl.configuration.jaxb2.JAXB2IdentityConfiguration;
@@ -167,8 +165,7 @@ public class SLIdentityStoreImplTest {
 
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
                                                                          StorageSession.FlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repositoryPath")) {
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig()) {
 
             @Override
             protected void configure() {

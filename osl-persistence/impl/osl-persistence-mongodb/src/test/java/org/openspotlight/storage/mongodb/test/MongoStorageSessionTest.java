@@ -49,9 +49,6 @@
 
 package org.openspotlight.storage.mongodb.test;
 
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
-
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.test.AbstractStorageSessionTest;
 
@@ -67,12 +64,10 @@ import com.mongodb.Mongo;
 public class MongoStorageSessionTest extends AbstractStorageSessionTest {
 
     private final Mongo          mongo;
-    private final RepositoryPath repositoryPath;
 
     public MongoStorageSessionTest() {
         try {
             mongo = new Mongo();
-            repositoryPath = repositoryPath("repositoryPath");
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -81,15 +76,13 @@ public class MongoStorageSessionTest extends AbstractStorageSessionTest {
     @Override
     protected Injector createsAutoFlushInjector() {
         return Guice.createInjector(new MongoModule(
-                StorageSession.FlushMode.AUTO, mongo, repositoryPath,
-                ExamplePartition.FACTORY));
+                StorageSession.FlushMode.AUTO, mongo, ExamplePartition.FACTORY));
     }
 
     @Override
     protected Injector createsExplicitFlushInjector() {
         return Guice.createInjector(new MongoModule(
-                StorageSession.FlushMode.EXPLICIT, mongo, repositoryPath,
-                ExamplePartition.FACTORY));
+                StorageSession.FlushMode.EXPLICIT, mongo, ExamplePartition.FACTORY));
     }
 
     @Override

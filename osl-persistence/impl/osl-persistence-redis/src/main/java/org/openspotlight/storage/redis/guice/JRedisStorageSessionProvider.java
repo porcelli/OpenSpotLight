@@ -51,7 +51,6 @@ package org.openspotlight.storage.redis.guice;
 
 import org.openspotlight.guice.ThreadLocalProvider;
 import org.openspotlight.storage.PartitionFactory;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.JRedisStorageSessionImpl;
 
@@ -67,19 +66,17 @@ public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageSes
 
     @Inject
     public JRedisStorageSessionProvider(final StorageSession.FlushMode flushMode, final JRedisFactory factory,
-                                           final RepositoryPath repositoryPath, final PartitionFactory partitionFactory) {
+                                        final PartitionFactory partitionFactory) {
         this.flushMode = flushMode;
         this.factory = factory;
-        this.repositoryPath = repositoryPath;
         this.partitionFactory = partitionFactory;
     }
 
     private final StorageSession.FlushMode flushMode;
     private final JRedisFactory            factory;
-    private final RepositoryPath           repositoryPath;
 
     @Override
     protected StorageSession createInstance() {
-        return new JRedisStorageSessionImpl(flushMode, factory, repositoryPath, partitionFactory);
+        return new JRedisStorageSessionImpl(flushMode, factory, partitionFactory);
     }
 }

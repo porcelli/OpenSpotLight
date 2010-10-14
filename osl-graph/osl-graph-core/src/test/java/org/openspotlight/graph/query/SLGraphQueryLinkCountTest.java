@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -48,8 +48,6 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +60,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.graph.Context;
-import org.openspotlight.graph.FullGraphSession;
 import org.openspotlight.graph.GraphLocation;
 import org.openspotlight.graph.GraphModule;
 import org.openspotlight.graph.GraphSessionFactory;
@@ -79,7 +76,6 @@ import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -144,8 +140,7 @@ public class SLGraphQueryLinkCountTest {
 
 		Injector injector = Guice.createInjector(
 				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-						repositoryPath("repository")),
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
 				new SimplePersistModule(), new GraphModule());
 
 		storageSession = injector.getInstance(StorageSession.class);

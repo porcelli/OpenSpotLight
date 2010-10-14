@@ -61,7 +61,6 @@ import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
 
@@ -85,7 +84,6 @@ public class DefaultExecutionContext implements ExecutionContext {
 			SimplePersistFactory simplePersistFactory,
 			PersistentArtifactManagerProvider persistentArtifactManagerProvider,
 			ConfigurationManager configurationManager,
-			RepositoryPath repositoryPath,
 			@ArtifactLoaderRegistry
 			Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
 		this.sessionProvider = sessionProvider;
@@ -93,7 +91,6 @@ public class DefaultExecutionContext implements ExecutionContext {
 		this.simplePersistFactory = simplePersistFactory;
 		this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
 		this.configurationManager = configurationManager;
-		this.repositoryPath = repositoryPath;
 		this.loaderRegistry = loaderRegistry;
 
 	}
@@ -115,8 +112,6 @@ public class DefaultExecutionContext implements ExecutionContext {
 	private FullGraphSession openedFullGraphSession = null;
 
 	private final ConfigurationManager configurationManager;
-
-	private final RepositoryPath repositoryPath;
 
 	public static void closeResourcesIfNeeded(Object o) {
 		if (o instanceof Disposable) {
@@ -172,11 +167,6 @@ public class DefaultExecutionContext implements ExecutionContext {
 	}
 
 	@Override
-	public String getRepository() {
-		return repositoryPath.getRepositoryPathAsString();
-	}
-
-	@Override
 	public AuthenticatedUser getUser() {
 		throw new UnsupportedOperationException();
 	}
@@ -190,11 +180,6 @@ public class DefaultExecutionContext implements ExecutionContext {
 	public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
 			Partition partition) {
 		return simplePersistFactory.createSimplePersist(partition);
-	}
-
-	@Override
-	public RepositoryPath getRepositoryPath() {
-		return repositoryPath;
 	}
 
 	@Override

@@ -52,7 +52,6 @@ package org.openspotlight.storage.domain.key;
 import java.util.Set;
 
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.domain.StorageDataMarker;
 
 /**
@@ -68,8 +67,6 @@ public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
     CompositeKey getCompositeKey();
 
     String getParentKeyAsString();
-
-    RepositoryPath getRepositoryPath();
 
     public interface CompositeKey extends StorageDataMarker, Comparable<CompositeKey> {
 

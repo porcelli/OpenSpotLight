@@ -49,8 +49,6 @@
 
 package org.openspotlight.storage.redis;
 
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
-
 import java.util.Map;
 
 import org.openspotlight.storage.Partition;
@@ -132,14 +130,14 @@ public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
     protected Injector createsAutoFlushInjector() {
         return Guice.createInjector(new JRedisStorageModule(
                 StorageSession.FlushMode.AUTO, mappedServerConfig,
-                repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
+                ExamplePartition.FACTORY));
     }
 
     @Override
     protected Injector createsExplicitFlushInjector() {
         return Guice.createInjector(new JRedisStorageModule(
                 StorageSession.FlushMode.EXPLICIT, mappedServerConfig,
-                repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
+                ExamplePartition.FACTORY));
     }
 
     @Override
