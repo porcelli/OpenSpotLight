@@ -60,7 +60,7 @@ public class RepositoryPath {
 
     private final String repositoryPath;
 
-    public RepositoryPath(final String repositoryPath) {
+    private RepositoryPath(final String repositoryPath) {
         this.repositoryPath = repositoryPath;
     }
 

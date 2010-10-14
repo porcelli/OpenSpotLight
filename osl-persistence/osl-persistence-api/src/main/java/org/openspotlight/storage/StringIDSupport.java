@@ -49,6 +49,7 @@
 
 package org.openspotlight.storage;
 
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
@@ -56,18 +57,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openspotlight.common.util.Messages;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 
-/**
- * Created by User: feu - Date: Jun 9, 2010 - Time: 4:51:47 PM
- */
-public class StringIDSupport {
+public final class StringIDSupport {
     private static final String SEP          = "__";
     private static final String NODE_KEY_SEP = ":";
     private static final String LINK_KEY_SEP = "::";
+
+    private StringIDSupport() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
 
     public static String getNodeEntryName(
                                           final String uniqueKeyAsString) {
