@@ -58,23 +58,21 @@ import org.quartz.UnableToInterruptJobException;
 
 public class OslQuartzJob implements StatefulJob, InterruptableJob {
 
-    private final DefaultScheduler scheduler;
 
-    public OslQuartzJob(DefaultScheduler scheduler) {
-        this.scheduler = scheduler;
+    public OslQuartzJob() {
     }
 
     public void execute( final JobExecutionContext arg0 ) throws JobExecutionException {
         OslInternalSchedulerCommand command = null;
         try {
             final String jobName = arg0.getJobDetail().getName();
-            command = scheduler.getCommandByName(jobName);
+            command = DefaultScheduler.getDefaultInstance().getCommandByName(jobName);
             Assertions.checkNotNull("command", command);
             command.execute();
 
         } finally {
             if (command != null) {
-                scheduler.removeIfImediate(command);
+                DefaultScheduler.getDefaultInstance().removeIfImediate(command);
             }
         }
     }

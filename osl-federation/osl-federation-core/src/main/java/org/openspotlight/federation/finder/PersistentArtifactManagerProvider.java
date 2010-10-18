@@ -58,3 +58,4 @@ public class PersistentArtifactManagerProvider extends MultipleProvider<Persiste
     }
 
 }
+ 

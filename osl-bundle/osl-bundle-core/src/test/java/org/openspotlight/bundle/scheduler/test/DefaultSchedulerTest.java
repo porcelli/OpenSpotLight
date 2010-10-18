@@ -70,6 +70,8 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.loader.PersistentConfigurationManagerModule;
+import org.openspotlight.graph.GraphModule;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -86,9 +88,9 @@ import static com.google.common.collect.Maps.newHashMap;
 import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 public class DefaultSchedulerTest {
-    private static GlobalSettings settings;
-    private static ArrayList<Repository> repositories;
-    private static Scheduler scheduler;
+    private GlobalSettings settings;
+    private ArrayList<Repository> repositories;
+    private Scheduler scheduler;
 
     public static class SampleGroupSchedulableCommand implements SchedulableTaskFactory<Group> {
         public static AtomicBoolean wasExecuted = new AtomicBoolean(false);
@@ -107,53 +109,71 @@ public class DefaultSchedulerTest {
                 public Void call() throws Exception {
                     wasExecuted.set(true);
                     counter.incrementAndGet();
-                    return null;  
+                    return null;
                 }
             });
         }
     }
 
-    @BeforeClass
-    public static void setupScheduler() {
-        Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
-        schedulableMap.put(Group.class, SampleGroupSchedulableCommand.class);
-        List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
-        loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-        Injector injector = Guice.createInjector(new SchedulerModule(schedulableMap), new ExecutionContextModule(loaderRegistry),
-                new JRedisStorageModule(StorageSession.FlushMode.AUTO, 
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),repositoryPath("repository")),
-                new PersistentConfigurationManagerModule());
 
-        final ArtifactSource source = new ArtifactSource();
-        final String initialRawPath = Files.getNormalizedFileName(new File(".."));
-        final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
-        source.setActive(true);
-        source.setInitialLookup(initial);
-        source.setName("sourceName");
-        repositories = new ArrayList<Repository>();
-        scheduler = injector.getInstance(Scheduler.class);
+    private boolean runned = false;
 
-        settings = new GlobalSettings();
-        final Repository repository = new Repository();
-        repositories.add(repository);
-        repository.setActive(true);
-        repository.setName("repository");
-        source.setRepository(repository);
-
-        final Group group = new Group();
-        group.setActive(true);
-        group.setName("new group");
-        group.setRepository(repository);
-        group.setType("types");
-        repository.getGroups().add(group);
-        scheduler.refreshJobs(settings, repositories);
-        scheduler.startScheduler();
-    }
 
     @Before
+    public void setupScheduler() {
+
+        if (!runned) {
+            Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
+            schedulableMap.put(Group.class, SampleGroupSchedulableCommand.class);
+            List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
+            loaderRegistry.add(FileSystemOriginArtifactLoader.class);
+            Injector injector = Guice.createInjector(
+                    new SchedulerModule(schedulableMap), new ExecutionContextModule(loaderRegistry),
+                    new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                            ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                    new PersistentConfigurationManagerModule(),
+                    new SimplePersistModule(),
+                    new GraphModule());
+
+            final ArtifactSource source = new ArtifactSource();
+            final String initialRawPath = Files.getNormalizedFileName(new File(".."));
+            final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
+            source.setActive(true);
+            source.setInitialLookup(initial);
+            source.setName("sourceName");
+            repositories = new ArrayList<Repository>();
+            scheduler = injector.getInstance(Scheduler.class);
+
+            settings = new GlobalSettings();
+            final Repository repository = new Repository();
+            repositories.add(repository);
+            repository.setActive(true);
+            repository.setName("repository");
+            source.setRepository(repository);
+
+            final Group group = new Group();
+            group.setActive(true);
+            group.setName("new group");
+            group.setRepository(repository);
+            group.setType("types");
+            repository.getGroups().add(group);
+            scheduler.refreshJobs(settings, repositories);
+            scheduler.startScheduler();
+            System.err.println(">>> started");
+
+            runned = true;
+        }
+        resetStatus();
+
+    }
+    
+
     public void resetStatus() {
         SampleGroupSchedulableCommand.wasExecuted.set(false);
         SampleGroupSchedulableCommand.counter.set(0);
+        scheduler.startScheduler();
+        System.err.println(">>> before");
+
     }
 
     @Test
@@ -173,6 +193,8 @@ public class DefaultSchedulerTest {
 
     @Test
     public void shouldStartImediateJob() throws Exception {
+        System.err.println("method");
+
         scheduler.fireSchedulable("username", "password", repositories.iterator().next().getGroups().iterator().next());
         for (int i = 0; i < 20; i++) {
             if (SampleGroupSchedulableCommand.wasExecuted.get()) {

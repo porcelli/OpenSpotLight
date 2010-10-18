@@ -6,6 +6,7 @@ import org.openspotlight.bundle.annotation.ArtifactLoaderRegistry;
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
+import org.openspotlight.federation.loader.ConfigurationManagerFactory;
 import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.guice.ThreadLocalProvider;
@@ -27,14 +28,14 @@ public class DefaultExecutionContextFactory extends ThreadLocalProvider<Executio
                 GraphSessionFactory graphSessionFactory,
                 SimplePersistFactory simplePersistFactory,
                 PersistentArtifactManagerProvider persistentArtifactManagerProvider,
-                MutableConfigurationManager configurationManager,
+                ConfigurationManagerFactory configurationManagerFactory,
                 RepositoryPath repositoryPath,
                 @ArtifactLoaderRegistry Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
             this.sessionProvider = sessionProvider;
             this.graphSessionFactory = graphSessionFactory;
             this.simplePersistFactory = simplePersistFactory;
             this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
-            this.configurationManager = configurationManager;
+            this.configurationManager = configurationManagerFactory.createMutable();
             this.repositoryPath = repositoryPath;
             this.loaderRegistry = loaderRegistry;
         }
