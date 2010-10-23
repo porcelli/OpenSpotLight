@@ -1,8 +1,8 @@
+echo "Installing OSL external dependencies"
+
 call mvn install:install-file -DgroupId=cajo -DartifactId=cajo -Dversion=1.127 -Dpackaging=jar -Dfile=cajo.jar
 
-
-call mvn install:install-file -DgroupId=org.clapper -DartifactId=ocutil -Dversion=2.4.4b -Dpackaging=jar -Dfile=ocutil-2.4.4b.jar 
-
+call mvn install:install-file -DgroupId=org.clapper -DartifactId=ocutil -Dversion=2.4.4b -Dpackaging=jar -Dfile=ocutil-2.4.4b.jar
 
 call mvn install:install-file -DgroupId=dynamo -DartifactId=dynamo-file-gen -Dversion=1.0.1 -Dpackaging=jar -Dfile=dynamo-file-gen-1.0.1.jar
 
