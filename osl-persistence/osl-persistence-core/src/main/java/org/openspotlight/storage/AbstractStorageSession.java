@@ -53,6 +53,8 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.openspotlight.common.Pair.newPair;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -123,22 +125,28 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     public class PartitionMethodsImpl implements PartitionMethods {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public NodeFactory.NodeBuilder createWithType(
-                                                      final StorageSession session,
-                                                      final String type) {
+        public NodeFactory.NodeBuilder createWithType(final StorageSession session,
+                                                        final String type)
+            throws IllegalArgumentException {
+            checkNotNull("session", session);
+            checkNotEmpty("type", type);
+
             return new NodeBuilderImpl(type, partition);
         }
 
         @Override
-        public NodeFactory.NodeBuilder createWithType(
-                                                      final String type) {
+        public NodeFactory.NodeBuilder createWithType(final String type) {
+            checkNotEmpty("type", type);
+
             return this.createWithType(AbstractStorageSession.this, type);
         }
 
         @Override
-        public Iterable<StorageNode> findByCriteria(
-                                                    final Criteria criteria) {
+        public Iterable<StorageNode> findByCriteria(final Criteria criteria) {
             try {
                 if (!criteria.getPartition().equals(partition)) { throw new IllegalArgumentException(); }
                 boolean hasGlobal = false;
@@ -401,7 +409,11 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         @Override
         public NodeFactory.NodeBuilder withSimpleKey(
                                                      final String name,
-                                                     final String value) {
+                                                     final String value)
+            throws IllegalArgumentException, IllegalStateException {
+            checkNotEmpty("name", name);
+            checkNotEmpty("value", value);
+
             if (keyNames.contains(name)) { throw new IllegalStateException("key name already inserted"); }
             this.keys.add(new SimpleKeyImpl(name, value));
             this.keyNames.add(name);
@@ -409,25 +421,37 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public NodeFactory.NodeBuilder withParentKey(
-                                                     final NodeKey parentKey) {
+        public NodeBuilder withParent(final String parentAsString) {
+            checkNotEmpty("parentAsString", parentAsString);
+
+            this.parentKey = parentAsString;
+            return this;
+        }
+
+        @Override
+        public NodeFactory.NodeBuilder withParent(
+                                                  final StorageNode parent)
+            throws IllegalArgumentException, IllegalStateException {
+            checkNotNull("parent", parent);
+
+            return withParentKey(parent.getKey());
+        }
+
+        private NodeFactory.NodeBuilder withParentKey(
+                                                      final NodeKey parentKey)
+            throws IllegalArgumentException, IllegalStateException {
+            checkNotNull("parentKey", parentKey);
+
             if (this.parentKey != null) { throw new IllegalStateException(); }
             this.parentKey = parentKey.getKeyAsString();
             return this;
         }
 
         @Override
-        public NodeFactory.NodeBuilder withParent(
-                                                  final StorageNode parent) {
-            return withParentKey(parent.getKey());
-        }
-
-        @Override
         public StorageNode andCreate() {
             final CompositeKeyImpl localKey = new CompositeKeyImpl(keys, type);
 
-            final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey,
-                parentKey, partition);
+            final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey, parentKey, partition);
             final StorageNodeImpl result = new StorageNodeImpl(uniqueKey, false);
             if (getFlushMode().equals(FlushMode.AUTO)) {
 
@@ -440,14 +464,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             }
             return result;
         }
-
-        @Override
-        public NodeBuilder withParentAsString(
-                                              final String parentAsString) {
-            this.parentKey = parentAsString;
-            return this;
-        }
-
     }
 
     @Override
@@ -797,11 +813,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         return null;
     }
 
-    public Set<Property> propertyContainerLoadProperties(
-                                                         final PropertyContainer StorageNode) {
+    public Set<Property> propertyContainerLoadProperties(final PropertyContainer storageNode) {
         try {
-            return internalPropertyContainerLoadProperties(null, StorageNode.getPartition(),
-                StorageNode);
+            return internalPropertyContainerLoadProperties(null, storageNode.getPartition(), storageNode);
         } catch (final Exception e) {
             handleException(e);
         }

@@ -235,7 +235,6 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                     collectionName);
             final BasicDBObject queryObject = new BasicDBObject();
             queryObject.put(ID, key.getKeyAsString());
-            System.out.println(queryObject);
             basicDBObject = coll.findOne(queryObject);
             if (basicDBObject == null) {
                 basicDBObject = new BasicDBObject();

@@ -53,35 +53,106 @@ import java.util.Set;
 
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.domain.StorageDataMarker;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:57:04 PM To change this template use File | Settings | File
- * Templates.
+ * Identifies uniquely a {@link StorageNode}. The node uniquiness is achieved by: <br>
+ * <ul>
+ * <li>its {@link Partition} (where its stored)
+ * <li>its parent node (that can be null)
+ * <li>and its {@link CompositeKey} (that aggregates simple keys and node type)
+ * </ul>
+ * NodeKeys shouldn't be instantiated direclty, they should be used inside {@link StorageNode}.<br>
+ * 
+ * @author feuteston
+ * @author porcelli
  */
 public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
+    /**
+     * Returns this key encoded into a string format
+     * 
+     * @return the node key encoded into string format
+     */
+    String getKeyAsString();
+
+    /**
+     * Returns the {@link Partition} where the {@link StorageNode} is stored.
+     * 
+     * @return the partition where node is stored
+     */
     Partition getPartition();
 
-    public String getKeyAsString();
-
+    /**
+     * Returns the {@link CompositeKey}
+     * 
+     * @return the composite key
+     */
     CompositeKey getCompositeKey();
 
+    /**
+     * Returns the parent key (using {@link #getKeyAsString()}), or null if there is no parent.
+     * 
+     * @return the parent key, or null if there is no parent
+     */
     String getParentKeyAsString();
 
+    /**
+     * The composite key aggregates all {@link SimpleKey}s and the node type.
+     * 
+     * @author feuteston
+     * @author porcelli
+     */
     public interface CompositeKey extends StorageDataMarker, Comparable<CompositeKey> {
 
-        Set<SimpleKey> getKeys();
-
-        Set<String> getKeyNames();
-
-        String getNodeType();
-
+        /**
+         * Returns this key encoded into a string format
+         * 
+         * @return the node key encoded into string format
+         */
         String getKeyAsString();
 
+        /**
+         * Returns all existing {@link SimpleKey}, or an empty {@link Set} if there is no SimpleKeys. <br>
+         * 
+         * @return all simple key of this composite key
+         */
+        Set<SimpleKey> getKeys();
+
+        /**
+         * Returns all existing {@link SimpleKey} names, or an empty {@link Set} if there is no SimpleKeys. <br>
+         * 
+         * @return all simple key names of this composite key
+         */
+        Set<String> getKeyNames();
+
+        /**
+         * Returns the node type
+         * 
+         * @return the node type
+         */
+        String getNodeType();
+
+        /**
+         * The simplest key (pair of name and value) that composes a node key.
+         * 
+         * @author feuteston
+         * @author porcelli
+         */
         public interface SimpleKey extends StorageDataMarker, Comparable<SimpleKey> {
 
+            /**
+             * Returns the key name
+             * 
+             * @return the key name
+             */
             String getKeyName();
 
+            /**
+             * Returns the key value
+             * 
+             * @return the key value
+             */
             String getValue();
         }
     }

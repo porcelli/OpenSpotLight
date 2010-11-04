@@ -50,29 +50,73 @@
 package org.openspotlight.storage.domain;
 
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.NodeKey;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
- * Templates.
+ * The main contract here is the creation of {@link StorageNode} instances using a builder pattern.<br>
+ * 
+ * @author feuteston
+ * @author porcelli
  */
 public interface NodeFactory {
 
-    NodeBuilder createWithType(StorageSession session,
-                                       String type);
+    /**
+     * Start point to create a {@link StorageNode}.
+     * 
+     * @param session the storage session
+     * @param type the node type
+     * @return the node builder
+     * @throws IllegalArgumentException if any input param is null or empty
+     */
+    NodeBuilder createWithType(StorageSession session, String type)
+        throws IllegalArgumentException;
 
+    /**
+     * The builder interface for {@link StorageNode}.
+     * 
+     * @author feuteston
+     * @author porcelli
+     */
     interface NodeBuilder {
 
-        NodeBuilder withSimpleKey(String name,
-                                         String value);
+        /**
+         * Add to the builder a simple key-value pair.
+         * 
+         * @param name
+         * @param value
+         * @return the builder
+         * @throws IllegalStateException if key name already added on builder
+         * @throws IllegalArgumentException if any input param is null or empty
+         */
+        NodeBuilder withSimpleKey(String name, String value)
+            throws IllegalArgumentException, IllegalStateException;
 
-        NodeBuilder withParent(StorageNode parent);
+        /**
+         * Add to the builder a parent reference.
+         * 
+         * @param parent the parent node
+         * @return the builder
+         * @throws IllegalStateException if parent key already added on builder
+         * @throws IllegalArgumentException if input param is null
+         */
+        NodeBuilder withParent(StorageNode parent)
+            throws IllegalArgumentException, IllegalStateException;
 
-        NodeBuilder withParentAsString(String parentAsString);
+        /**
+         * Add to the builder a parent reference.
+         * 
+         * @param parent the parent node key as string
+         * @return the builder
+         * @throws IllegalStateException if parent key already added on builder
+         * @throws IllegalArgumentException if input param is null or empty
+         */
+        NodeBuilder withParent(String parentAsString)
+            throws IllegalArgumentException;
 
-        NodeBuilder withParentKey(NodeKey parentKey);
-
+        /**
+         * Creates the {@link StorageNode}.
+         * 
+         * @return the new storage node
+         */
         StorageNode andCreate();
     }
-
 }

@@ -178,7 +178,7 @@ public class PersistentArtifactManagerImpl extends
 		b.withConverter(new IteratorBuilder.Converter<String, StorageNode>() {
 			@Override
 			public String convert(StorageNode nodeEntry) throws Exception {
-				String name = nodeEntry.getPropertyAsString(
+				String name = nodeEntry.getPropertyValueAsString(
 						simplePersist.getCurrentSession(),
 						propertyNameAndPath[IDX_ARTIFACT_NAME]);
 				if (name == null) {

@@ -131,7 +131,7 @@ public interface StorageSession extends Disposable {
 
     StorageLink getLink(StorageNode origin,
                          StorageNode destiny,
-                         String name);
+                         String type);
 
     Iterable<StorageLink> findLinks(StorageNode origin,
                                      StorageNode destiny);

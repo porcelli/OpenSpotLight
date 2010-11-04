@@ -142,7 +142,7 @@ public class GraphReaderImpl implements GraphReader {
                 if (name == null) {
                 return true;
                 }
-                return name.equals(o.getPropertyAsString(
+                return name.equals(o.getPropertyValueAsString(
                     session, NodeAndLinkSupport.NAME));
 
             }
@@ -184,9 +184,9 @@ public class GraphReaderImpl implements GraphReader {
                     String.class));
                 session.flushTransient();
             } else {
-                caption = contextNode.getPropertyAsString(session,
+                caption = contextNode.getPropertyValueAsString(session,
                     CONTEXT_CAPTION);
-                final String weigthAsString = contextNode.getPropertyAsString(
+                final String weigthAsString = contextNode.getPropertyValueAsString(
                     session, NodeAndLinkSupport.WEIGTH_VALUE);
                 weigth = convert(weigthAsString, Integer.class);
                 final Set<String> names = contextNode.getPropertyNames(session);
@@ -196,7 +196,7 @@ public class GraphReaderImpl implements GraphReader {
                         continue;
                     }
                     properties.put(propertyName, Conversion.convert(contextNode
-                        .getPropertyAsBytes(session, propertyName),
+                        .getPropertyValueAsBytes(session, propertyName),
                         Serializable.class));
                 }
 
@@ -215,12 +215,12 @@ public class GraphReaderImpl implements GraphReader {
                                  final StorageNode rawStNode, final boolean needsToVerifyType) {
         try {
             final StorageSession session = sessionProvider.get();
-            final String clazzName = rawStNode.getPropertyAsString(session,
+            final String clazzName = rawStNode.getPropertyValueAsString(session,
                 NodeAndLinkSupport.CORRECT_CLASS);
             final Class<?> clazz = forName(clazzName);
             final Node node = NodeAndLinkSupport.createNode(factory, session,
                 contextId, parentId, (Class<? extends Node>) clazz,
-                rawStNode.getPropertyAsString(session,
+                rawStNode.getPropertyValueAsString(session,
                 NodeAndLinkSupport.NAME), needsToVerifyType, null,
                 null);
             return node;
@@ -694,7 +694,7 @@ public class GraphReaderImpl implements GraphReader {
             new LinkedList<StorageLink>();
         if (LinkDirection.BIDIRECTIONAL.equals(linkDirection)) {
             List<String> linkIds =
-                SerializationUtil.deserialize(stNode.getPropertyAsStream(session, NodeAndLinkSupport.BIDIRECTIONAL_LINK_IDS));
+                SerializationUtil.deserialize(stNode.getPropertyValueAsStream(session, NodeAndLinkSupport.BIDIRECTIONAL_LINK_IDS));
             if (linkIds != null) {
                 for (String linkId: linkIds) {
                     String rawAnotherOriginId = StringKeysSupport.getOriginKeyAsStringFromLinkKey(linkId);
@@ -759,7 +759,7 @@ public class GraphReaderImpl implements GraphReader {
                     }
                     if (LinkDirection.ANY.equals(linkDirection)) return true;
                     LinkDirection retrievedLinkDirection =
-                        LinkDirection.valueOf(o.getPropertyAsString(session, NodeAndLinkSupport.LINK_DIRECTION));
+                        LinkDirection.valueOf(o.getPropertyValueAsString(session, NodeAndLinkSupport.LINK_DIRECTION));
                     return retrievedLinkDirection.equals(linkDirection);
                 } catch (final ClassNotFoundException e) {
                     return false;

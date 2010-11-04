@@ -108,7 +108,6 @@ import org.openspotlight.storage.StringKeysSupport;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
-import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -207,7 +206,7 @@ public class NodeAndLinkSupport {
             propertyTypes.put(d.getName(),
                     (Class<? extends Serializable>) Reflection
                             .findClassWithoutPrimitives(d.getPropertyType()));
-            final Object rawValue = node != null ? node.getPropertyAsString(
+            final Object rawValue = node != null ? node.getPropertyValueAsString(
                     session, d.getName()) : null;
             final Serializable value = (Serializable) (rawValue != null ? Conversion
                     .convert(rawValue, d.getPropertyType()) : null);
@@ -218,7 +217,7 @@ public class NodeAndLinkSupport {
                 .getPropertyNames(session) : Collections.<String>emptySet();
         if (stNodeProperties.contains(WEIGTH_VALUE)) {
             weigthValue = Conversion.convert(
-                    node.getPropertyAsString(session, WEIGTH_VALUE),
+                    node.getPropertyValueAsString(session, WEIGTH_VALUE),
                     Integer.class);
         } else {
             weigthValue = findInitialWeight(clazz);
@@ -226,7 +225,7 @@ public class NodeAndLinkSupport {
         Class<? extends Node> savedClass = null;
         if (stNodeProperties.contains(CORRECT_CLASS)) {
             savedClass = Conversion.convert(
-                    node.getPropertyAsString(session, CORRECT_CLASS),
+                    node.getPropertyValueAsString(session, CORRECT_CLASS),
                     Class.class);
         }
         final BigInteger savedClassNumericType = savedClass != null ? findNumericType(savedClass)
@@ -245,7 +244,7 @@ public class NodeAndLinkSupport {
             if (needsToVerifyType) {
                 fixTypeData(session, classToUse, node);
             }
-            final String captionAsString = node.getPropertyAsString(session,
+            final String captionAsString = node.getPropertyValueAsString(session,
                     CAPTION);
             if (captionAsString != null) {
                 internalNode.setCaption(captionAsString);
@@ -262,7 +261,7 @@ public class NodeAndLinkSupport {
     private static void fixTypeData(final StorageSession session,
                                     final Class<? extends Node> clazz,
                                     final StorageNode node) {
-        final String numericTypeAsString = node.getPropertyAsString(session,
+        final String numericTypeAsString = node.getPropertyValueAsString(session,
                 NUMERIC_TYPE);
         final BigInteger numericTypeFromTargetNodeType = findNumericType(clazz);
         if (numericTypeAsString != null) {
@@ -323,7 +322,7 @@ public class NodeAndLinkSupport {
                         .createWithType(
                                 findTargetClass(node.getClass()).getName())
                         .withSimpleKey(NAME, node.getName())
-                        .withParentAsString(node.getParentId()).andCreate();
+                        .withParent(node.getParentId()).andCreate();
                 if (needsToVerifyType) {
                     fixTypeData(session, (Class<? extends Node>) node
                             .getClass().getSuperclass(), internalNode);
@@ -392,14 +391,14 @@ public class NodeAndLinkSupport {
                             originAsSTNode, targetAsSTNode, clazz.getName());
                     if (possibleLink != null && anotherPossibleLink != null) { throw new IllegalStateException(); }
                     if (possibleLink != null
-                            && possibleLink.getPropertyAsString(session,
+                            && possibleLink.getPropertyValueAsString(session,
                                     LINK_DIRECTION).equals(
                                     LinkDirection.BIDIRECTIONAL.name())) {
                         return createLink(factory, session, clazz, rawOrigin,
                                 rawTarget, LinkDirection.BIDIRECTIONAL,
                                 createIfDontExists);
                     } else if (anotherPossibleLink != null
-                            && anotherPossibleLink.getPropertyAsString(session,
+                            && anotherPossibleLink.getPropertyValueAsString(session,
                                     LINK_DIRECTION).equals(
                                     LinkDirection.BIDIRECTIONAL.name())) {
                         return createLink(factory, session, clazz, rawTarget,
@@ -431,7 +430,7 @@ public class NodeAndLinkSupport {
                     if (linkEntry != null) {
                         if (LinkDirection.BIDIRECTIONAL.equals(direction)) {
                             InputStream objectAsStream = targetAsSTNode
-                                    .getPropertyAsStream(session,
+                                    .getPropertyValueAsStream(session,
                                             BIDIRECTIONAL_LINK_IDS);
                             List<String> linkIds;
                             if (objectAsStream != null) {
@@ -462,7 +461,7 @@ public class NodeAndLinkSupport {
                     (Class<? extends Serializable>) Reflection
                             .findClassWithoutPrimitives(d.getPropertyType()));
             final Object rawValue = linkEntry != null ? linkEntry
-                    .getPropertyAsString(session, d.getName()) : null;
+                    .getPropertyValueAsString(session, d.getName()) : null;
             final Serializable value = (Serializable) (rawValue != null ? Conversion
                     .convert(rawValue, d.getPropertyType()) : null);
             propertyValues.put(d.getName(), value);
@@ -472,7 +471,7 @@ public class NodeAndLinkSupport {
                 .getPropertyNames(session) : Collections.<String>emptySet();
         if (stNodeProperties.contains(WEIGTH_VALUE)) {
             weigthValue = Conversion.convert(
-                    linkEntry.getPropertyAsString(session, WEIGTH_VALUE),
+                    linkEntry.getPropertyValueAsString(session, WEIGTH_VALUE),
                     Integer.class);
         } else {
             weigthValue = findInitialWeight(clazz);
@@ -1278,7 +1277,7 @@ public class NodeAndLinkSupport {
 
             Map<String, Iterable<ArtifactLineReference>> newCacheData = new HashMap<String, Iterable<ArtifactLineReference>>();
             for (String currentArtifactId: artifactIds) {
-                InputStream stream = lineRefNode.getPropertyAsStream(session,
+                InputStream stream = lineRefNode.getPropertyValueAsStream(session,
                         currentArtifactId);
                 if (stream != null) {
                     ArtifactLineReference artifactLineReference = SerializationUtil

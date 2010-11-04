@@ -32,7 +32,7 @@ import org.openspotlight.common.Disposable;
  * @author porcelli
  * @author feuteston
  */
-public interface GraphSessionFactory  extends Disposable{
+public interface GraphSessionFactory extends Disposable {
 
     /**
      * Opens a simple graph session.

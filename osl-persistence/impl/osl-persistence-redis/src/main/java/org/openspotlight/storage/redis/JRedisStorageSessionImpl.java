@@ -106,10 +106,8 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
 
     private static enum PropertyType {
         SIMPLE(SET_WITH_NODE_PROPERTY_SIMPLE_NAMES, false, false),
-        INDEXED(
-                SET_WITH_NODE_PROPERTY_INDEXED_NAMES, true, false),
-        KEY(
-                SET_WITH_NODE_PROPERTY_KEY_NAMES, true, true);
+        INDEXED(SET_WITH_NODE_PROPERTY_INDEXED_NAMES, true, false),
+        KEY(SET_WITH_NODE_PROPERTY_KEY_NAMES, true, true);
 
         private final boolean key;
         private final boolean indexed;
@@ -833,12 +831,12 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
     @Override
     protected Set<Property> internalPropertyContainerLoadProperties(
                                                                     final Nothing reference, final Partition partition,
-                                                                    final PropertyContainer StorageNode)
+                                                                    final PropertyContainer storageNode)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
         final Set<Property> result = newHashSet();
 
-        final String parentKey = StorageNode.getKeyAsString();
+        final String parentKey = storageNode.getKeyAsString();
         for (final PropertyType type: PropertyType.values()) {
             final String properties = type.getSetName(parentKey);
             if (jredis.exists(properties)) {
@@ -846,7 +844,7 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
                         .smembers(properties));
                 for (final String propertyName: propertyNames) {
                     final Property property = loadProperty(partition,
-                            StorageNode, parentKey, propertyName, type);
+                            storageNode, parentKey, propertyName, type);
                     if (property != null) {
                         result.add(property);
                     }

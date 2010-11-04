@@ -48,6 +48,9 @@
  */
 package org.openspotlight.storage.domain.node;
 
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,25 +81,34 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
 
     @Override
-    public Set<String> getPropertyNames(final StorageSession session) {
+    public Set<String> getPropertyNames(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
 
     @Override
-    public Set<Property> getProperties(final StorageSession session) {
+    public Set<Property> getProperties(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.values());
     }
 
-    protected void verifyBeforeSet(final String propertyName) {
-
-    }
+    //TODO check if this method is really needed once the Property class handles the same consitency
+    protected void verifyBeforeSet(final String propertyName) {}
 
     @Override
     public Property setSimpleProperty(final StorageSession session,
                                        final String name,
-                                       final String value) {
+                                       final String value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
+
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -111,7 +123,11 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     @Override
     public Property setSimpleProperty(final StorageSession session,
                                        final String name,
-                                       final InputStream value) {
+                                       final InputStream value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
+
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -126,7 +142,11 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     @Override
     public Property setSimpleProperty(final StorageSession session,
                                        final String name,
-                                       final byte[] value) {
+                                       final byte[] value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
+
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -142,7 +162,11 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     @Override
     public Property setIndexedProperty(final StorageSession session,
                                         final String name,
-                                        final String value) {
+                                        final String value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
+
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -174,16 +198,23 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     }
 
     @Override
-    public String getPropertyAsString(final StorageSession session,
-                                       final String name) {
+    public String getPropertyValueAsString(final StorageSession session,
+                                           final String name)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
+
         final Property prop = getProperty(session, name);
         if (prop != null) { return prop.getValueAsString(session); }
         return null;
     }
 
     @Override
-    public InputStream getPropertyAsStream(final StorageSession session,
-                                            final String name) {
+    public InputStream getPropertyValueAsStream(final StorageSession session,
+                                                final String name)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
 
         final Property prop = getProperty(session, name);
         if (prop != null) { return prop.getValueAsStream(session); }
@@ -191,8 +222,11 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     }
 
     @Override
-    public byte[] getPropertyAsBytes(final StorageSession session,
-                                      final String name) {
+    public byte[] getPropertyValueAsBytes(final StorageSession session,
+                                          final String name)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
 
         final Property prop = getProperty(session, name);
         if (prop != null) { return prop.getValueAsBytes(session); }
@@ -201,7 +235,11 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
 
     @Override
     public Property getProperty(final StorageSession session,
-                                 final String name) {
+                                 final String name)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+        checkNotEmpty("name", name);
+
         loadPropertiesOnce(session);
         Property result = propertiesByName.get(name);
         if (result == null) {

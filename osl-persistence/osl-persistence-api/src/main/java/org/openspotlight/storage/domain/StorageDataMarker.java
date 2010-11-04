@@ -52,7 +52,10 @@ package org.openspotlight.storage.domain;
 import java.io.Serializable;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:52:51 PM To change this template use File | Settings | File
- * Templates.
+ * This interface has no methods or fields and serves only to identify the semantics of being a data to be stored by persistence
+ * engine.
+ * 
+ * @author feuteston
+ * @author porcelli
  */
 public interface StorageDataMarker extends Serializable {}

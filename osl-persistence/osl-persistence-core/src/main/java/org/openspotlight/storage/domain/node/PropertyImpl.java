@@ -49,6 +49,8 @@
 
 package org.openspotlight.storage.domain.node;
 
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.io.ByteArrayInputStream;
@@ -120,9 +122,17 @@ public class PropertyImpl implements Property {
 
     private final boolean key;
 
+    private void verifyBeforeSet(final String propertyName) {
+        if (key) throw new IllegalStateException();
+    }
+
     @Override
     public void setStringValue(final StorageSession session,
-                                final String value) {
+                                final String value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet(name);
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
@@ -130,7 +140,11 @@ public class PropertyImpl implements Property {
 
     @Override
     public void setBytesValue(final StorageSession session,
-                               final byte[] value) {
+                               final byte[] value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet(name);
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
@@ -138,7 +152,11 @@ public class PropertyImpl implements Property {
 
     @Override
     public void setStreamValue(final StorageSession session,
-                                final InputStream value) {
+                                final InputStream value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet(name);
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
@@ -154,19 +172,28 @@ public class PropertyImpl implements Property {
     }
 
     @Override
-    public String getValueAsString(final StorageSession session) {
+    public String getValueAsString(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         refreshPropertyIfNecessary(session);
         return propertyValue.getValueAsString();
     }
 
     @Override
-    public byte[] getValueAsBytes(final StorageSession session) {
+    public byte[] getValueAsBytes(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         refreshPropertyIfNecessary(session);
         return propertyValue.getValueAsBytes();
     }
 
     @Override
-    public InputStream getValueAsStream(final StorageSession session) {
+    public InputStream getValueAsStream(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         refreshPropertyIfNecessary(session);
         return propertyValue.getValueAsStream();
     }
@@ -177,7 +204,10 @@ public class PropertyImpl implements Property {
     }
 
     public void setStringValueOnLoad(final StorageSession session,
-                                      final String value) {
+                                      final String value)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         propertyValue.setValue(value);
         propertyValue.setDirty(false);
         propertyValue.setLoaded(true);
@@ -185,7 +215,10 @@ public class PropertyImpl implements Property {
     }
 
     public void setBytesValueOnLoad(final StorageSession session,
-                                     final byte[] value) {
+                                     final byte[] value)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         propertyValue.setValue(value);
         propertyValue.setDirty(false);
         propertyValue.setLoaded(true);
@@ -193,6 +226,8 @@ public class PropertyImpl implements Property {
 
     public void setStreamValueOnLoad(final StorageSession session,
                                       final InputStream value) {
+        checkNotNull("session", session);
+
         propertyValue.setValue(value);
         propertyValue.setDirty(false);
         propertyValue.setLoaded(true);
@@ -209,15 +244,24 @@ public class PropertyImpl implements Property {
         }
     }
 
-    public String getTransientValueAsString(final StorageSession session) {
+    public String getTransientValueAsString(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         return propertyValue.getValueAsString();
     }
 
-    public byte[] getTransientValueAsBytes(final StorageSession session) {
+    public byte[] getTransientValueAsBytes(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         return propertyValue.getValueAsBytes();
     }
 
-    public InputStream getTransientValueAsStream(final StorageSession session) {
+    public InputStream getTransientValueAsStream(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         return propertyValue.getValueAsStream();
     }
 
@@ -331,7 +375,6 @@ public class PropertyImpl implements Property {
         public byte[] getValueAsBytes() {
             return realValue;
         }
-
     }
 
 }
