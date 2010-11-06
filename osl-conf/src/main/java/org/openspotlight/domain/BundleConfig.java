@@ -69,52 +69,39 @@ import org.openspotlight.persist.annotation.TransientProperty;
  */
 @Name("bundle_processor_type")
 public class BundleConfig implements SimpleNodeType, Serializable {
-    public List<Class<? extends Callable<Void>>> getTasks() {
-        return tasks;
-    }
+    private volatile transient String             uniqueName       = null;
 
-    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
-        this.tasks = tasks;
-    }
+    private String                                name;
 
-    private volatile transient String uniqueName = null;
+    private Map<String, String>                   bundleProperties = new HashMap<String, String>();
 
-    private String name;
+    private static final long                     serialVersionUID = -8305990807194729295L;
 
-    private Map<String, String> bundleProperties = new HashMap<String, String>();
-
-    private static final long serialVersionUID = -8305990807194729295L;
-
-    private List<Class<? extends Callable<Void>>> tasks = new ArrayList<Class<? extends Callable<Void>>>();
+    private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
 
     /**
      * The active.
      */
-    private boolean active;
+    private boolean                               active;
 
     /**
      * The group.
      */
-    private transient Group group;
+    private transient Group                       group;
 
     /**
      * The hash code.
      */
-    private volatile transient int hashCode;
+    private volatile transient int                hashCode;
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
 
     public boolean equals(final Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof BundleConfig)) {
-            return false;
-        }
+        if (o == this) { return true; }
+        if (!(o instanceof BundleConfig)) { return false; }
         final BundleConfig that = (BundleConfig) o;
         final boolean result = Equals.eachEquality(Arrays.of(group, name), Arrays.andOf(that.group, that.name));
         return result;
@@ -126,7 +113,7 @@ public class BundleConfig implements SimpleNodeType, Serializable {
 
     /**
      * Gets the artifact source.
-     *
+     * 
      * @return the artifact source
      */
     @ParentProperty
@@ -151,7 +138,6 @@ public class BundleConfig implements SimpleNodeType, Serializable {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
 
@@ -166,7 +152,7 @@ public class BundleConfig implements SimpleNodeType, Serializable {
 
     /**
      * Checks if is active.
-     *
+     * 
      * @return true, if is active
      */
     public boolean isActive() {
@@ -175,7 +161,7 @@ public class BundleConfig implements SimpleNodeType, Serializable {
 
     /**
      * Sets the active.
-     *
+     * 
      * @param active the new active
      */
     public void setActive(final boolean active) {
@@ -188,7 +174,7 @@ public class BundleConfig implements SimpleNodeType, Serializable {
 
     /**
      * Sets the group.
-     *
+     * 
      * @param group the new group
      */
     public void setGroup(final Group group) {
@@ -199,4 +185,11 @@ public class BundleConfig implements SimpleNodeType, Serializable {
         this.name = name;
     }
 
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+        this.tasks = tasks;
+    }
 }

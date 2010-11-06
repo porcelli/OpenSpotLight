@@ -48,12 +48,14 @@
  */
 package org.openspotlight.bundle.task;
 
+import java.util.Map;
+
 import org.openspotlight.bundle.context.ExecutionContextProvider;
 
 public abstract class BeforeProcessingTask extends ProcessingTask {
 
-    public BeforeProcessingTask(ExecutionContextProvider provider) {
-        super(provider);
+    protected BeforeProcessingTask(ExecutionContextProvider provider, Map<String, String> properties) {
+        super(provider, properties);
     }
 
 }

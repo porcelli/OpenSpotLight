@@ -48,30 +48,56 @@
  */
 package org.openspotlight.bundle.task;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextProvider;
 
+import com.google.common.collect.ImmutableMap;
+
 public abstract class ProcessingTask extends BaseTask implements
-		ConfigurableTask {
+        ConfigurableTask {
 
-	private final ExecutionContextProvider provider;
-	protected ProcessingTask(ExecutionContextProvider provider) {
-		this.provider = provider;
-	}
+    private final ExecutionContextProvider     provider;
+    private final ImmutableMap<String, String> properties;
+    private ExecutionContext                   context;
 
-	@Override
-	public Void call() throws Exception {
-		provider.setupBeforeGet();
-		try {
-			ExecutionContext context = provider.get();
-			execute(context);
-			return null;
-		} finally {
-			provider.release();
-		}
-	}
+    protected ProcessingTask(ExecutionContextProvider provider, Map<String, String> properties) {
+        this.provider = provider;
+        this.properties = ImmutableMap.copyOf(properties);
+    }
 
-	protected abstract void execute(ExecutionContext context)
-			throws Exception;
+    @Override
+    public Void call()
+        throws Exception {
+        try {
+            execute();
+            return null;
+        } finally {
+            if (context != null) {
+                provider.release();
+            }
+        }
+    }
+
+    public ExecutionContext getContext() {
+        if (context == null) {
+            provider.setupBeforeGet();
+            context = provider.get();
+        }
+        return context;
+    }
+
+    public Set<String> getPropertyNames() {
+        return properties.keySet();
+    }
+
+    public String getPropertyValue(String name) {
+        return properties.get(name);
+    }
+
+    protected abstract void execute()
+        throws Exception;
 
 }

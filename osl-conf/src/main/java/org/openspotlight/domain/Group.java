@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
@@ -72,67 +73,61 @@ import org.openspotlight.persist.annotation.TransientProperty;
 @Name("group")
 public class Group implements SimpleNodeType, Serializable, Schedulable {
 
-    private static final long serialVersionUID = -722058711327567623L;
+    private static final long   serialVersionUID = -722058711327567623L;
 
-    private List<Group> groups = new ArrayList<Group>();
+    private List<Group>         groups           = new ArrayList<Group>();
 
     /** The artifact sources. */
-    private Set<ArtifactSource> artifactSources = new HashSet<ArtifactSource>();
-
+    private Set<ArtifactSource> artifactSources  = new HashSet<ArtifactSource>();
 
     public void setArtifactSources(final Set<ArtifactSource> artifactSources) {
         this.artifactSources = artifactSources;
     }
 
-
     public Set<ArtifactSource> getArtifactSources() {
         return artifactSources;
     }
-    
 
     /**
      * The repository.
      */
-    private transient Repository repository;
+    private transient Repository                  repository;
 
     /**
      * The type.
      */
-    private String type;
+    private String                                type;
 
     /**
      * The name.
      */
-    private String name;
+    private String                                name;
 
     /**
      * The active.
      */
-    private boolean active;
+    private boolean                               active;
 
     /**
      * The group.
      */
-    private transient Group group;
+    private transient Group                       group;
 
-    private volatile transient int hashCode;
+    private volatile transient int                hashCode;
 
-    private List<String> cronInformation = new ArrayList<String>();
+    private List<String>                          cronInformation = new ArrayList<String>();
 
-    private volatile transient String uniqueName;
+    private volatile transient String             uniqueName;
 
+    private List<Class<? extends Callable<Void>>> tasks           = new ArrayList<Class<? extends Callable<Void>>>();
 
     public boolean equals(final Object o) {
-        if (!(o instanceof Group)) {
-            return false;
-        }
+        if (!(o instanceof Group)) { return false; }
         final Group that = (Group) o;
         final boolean result = Equals.eachEquality(Arrays.of(group, repository, name), Arrays.andOf(that.group, that.repository,
                 that.name));
         return result;
     }
-
-    
 
     public List<String> getCronInformation() {
         return cronInformation;
@@ -140,7 +135,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Gets the group.
-     *
+     * 
      * @return the group
      */
     @ParentProperty
@@ -154,7 +149,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Gets the name.
-     *
+     * 
      * @return the name
      */
     @KeyProperty
@@ -164,7 +159,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Gets the repository.
-     *
+     * 
      * @return the repository
      */
     @ParentProperty
@@ -179,7 +174,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Gets the type.
-     *
+     * 
      * @return the type
      */
     public String getType() {
@@ -206,7 +201,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Checks if is active.
-     *
+     * 
      * @return true, if is active
      */
     public boolean isActive() {
@@ -215,13 +210,12 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Sets the active.
-     *
+     * 
      * @param active the new active
      */
     public void setActive(final boolean active) {
         this.active = active;
     }
-    
 
     public void setCronInformation(final List<String> cronInformation) {
         this.cronInformation = cronInformation;
@@ -229,7 +223,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Sets the group.
-     *
+     * 
      * @param group the new group
      */
     public void setGroup(final Group group) {
@@ -242,7 +236,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Sets the name.
-     *
+     * 
      * @param name the new name
      */
     public void setName(final String name) {
@@ -251,7 +245,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Sets the repository.
-     *
+     * 
      * @param repository the new repository
      */
     public void setRepository(final Repository repository) {
@@ -260,15 +254,14 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /**
      * Sets the type.
-     *
+     * 
      * @param type the new type
      */
     public void setType(final String type) {
         this.type = type;
     }
 
-    public void setUniqueName(final String s) {
-    }
+    public void setUniqueName(final String s) {}
 
     public String toString() {
         return "Group: " + getUniqueName();
@@ -278,15 +271,24 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return getUniqueName();
     }
 
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+        this.tasks = tasks;
+    }
+
     @TransientProperty
     public Repository getRepositoryForSchedulable() {
         return getRootRepository();
     }
-    public void acceptVisitor( final Repository.GroupVisitor visitor ) {
+
+    public void acceptVisitor(final Repository.GroupVisitor visitor) {
         visitor.visitGroup(this);
-             for (final Group g : getGroups()) {
-                 g.acceptVisitor(visitor);
-             }
-       }
+        for (final Group g: getGroups()) {
+            g.acceptVisitor(visitor);
+        }
+    }
 
 }
