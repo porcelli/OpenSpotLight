@@ -56,6 +56,7 @@ import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Exceptions;
 
 /**
  * Test class for {@link Exceptions}

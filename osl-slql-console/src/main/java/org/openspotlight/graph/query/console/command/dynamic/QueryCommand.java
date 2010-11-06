@@ -64,7 +64,7 @@ import org.openspotlight.graph.query.QueryResult;
 import org.openspotlight.graph.query.QueryText;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
-import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.StringKeysSupport;
 
 /**
  * The Class QueryCommand. This command executes a slql query.
@@ -212,7 +212,7 @@ public class QueryCommand implements DynamicCommand {
 						COLUMN_SIZE));
 				output.add(" | ");
 				output.add(StringUtils.rightPad(StringUtils.abbreviate(
-						StringIDSupport.getNodeEntryName(node.getParentId()),
+						StringKeysSupport.getNodeType(node.getParentId()),
 						COLUMN_SIZE), COLUMN_SIZE));
 				output.add(" | ");
 				for (String propertyName : additionalProperties) {

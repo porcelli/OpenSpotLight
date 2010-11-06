@@ -584,13 +584,13 @@ public class SimplePersistImpl implements
 	}
 
 	private boolean isSimpleNode(final StorageNode currentParent) {
-		return currentParent.getPropertyAsString(currentSession,
+		return currentParent.getPropertyValueAsString(currentSession,
 				NODE_ENTRY_TYPE) != null;
 	}
 
 	private Class<?> findClassFromNode(final StorageNode nodeEntry)
 			throws Exception {
-		return forName(nodeEntry.getPropertyAsString(currentSession,
+		return forName(nodeEntry.getPropertyValueAsString(currentSession,
 				NODE_ENTRY_TYPE));
 	}
 
@@ -606,7 +606,7 @@ public class SimplePersistImpl implements
 			lazyProperty.getMetadata().setParentKey(cached.getKey());
 			lazyProperty.getMetadata().setSavedNode(cached);
 			lazyProperty.getMetadata().setPropertyName(propertyName);
-			final String sha1 = cached.getPropertyAsString(currentSession,
+			final String sha1 = cached.getPropertyValueAsString(currentSession,
 					format(SHA1_PROPERTY_NAME, propertyName));
 			lazyProperty.getMetadata().internalSetSha1(sha1);
 		}
@@ -676,7 +676,7 @@ public class SimplePersistImpl implements
 		}
 		final List<StorageNode> filtered = newLinkedList();
 		for (final StorageNode e : children) {
-			final String propertyValue = e.getPropertyAsString(currentSession,
+			final String propertyValue = e.getPropertyValueAsString(currentSession,
 					NODE_PROPERTY_NAME);
 			if (name.equals(propertyValue)) {
 				filtered.add(e);
@@ -692,13 +692,13 @@ public class SimplePersistImpl implements
 		for (final PropertyDescriptor descriptor : streamPropertiesDescriptor) {
 			final Class<?> propertyType = descriptor.getPropertyType();
 			if (InputStream.class.isAssignableFrom(propertyType)) {
-				final InputStream value = node.getPropertyAsStream(
+				final InputStream value = node.getPropertyValueAsStream(
 						currentSession, descriptor.getName());
 				descriptor.getWriteMethod().invoke(bean, value);
 			} else if (Serializable.class.isAssignableFrom(propertyType)
 					|| Collection.class.isAssignableFrom(propertyType)
 					|| Map.class.isAssignableFrom(propertyType)) {
-				final Serializable value = asObject(node.getPropertyAsStream(
+				final Serializable value = asObject(node.getPropertyValueAsStream(
 						currentSession, descriptor.getName()));
 				descriptor.getWriteMethod().invoke(
 						bean,
@@ -716,7 +716,7 @@ public class SimplePersistImpl implements
 			final List<PropertyDescriptor> simplePropertiesDescriptor)
 			throws Exception {
 		for (final PropertyDescriptor descriptor : simplePropertiesDescriptor) {
-			final String value = node.getPropertyAsString(currentSession,
+			final String value = node.getPropertyValueAsString(currentSession,
 					descriptor.getName());
 			if (value == null && descriptor.getPropertyType().isPrimitive()) {
 				continue;
@@ -945,7 +945,7 @@ public class SimplePersistImpl implements
 			b.withReferee(new IteratorBuilder.NextItemReferee<StorageNode>() {
 				@Override
 				public boolean canAcceptAsNewItem(final StorageNode nodeEntry) {
-					final String typeAsString = nodeEntry.getPropertyAsString(
+					final String typeAsString = nodeEntry.getPropertyValueAsString(
 							currentSession, NODE_ENTRY_TYPE);
 					if (typeAsString != null
 							&& typeAsString.equals(beanType.getName())) {

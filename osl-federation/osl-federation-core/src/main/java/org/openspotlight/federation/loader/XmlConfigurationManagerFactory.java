@@ -56,14 +56,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import org.openspotlight.domain.GlobalSettings;
-import org.openspotlight.domain.Repository;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.loader.xml.XmlConfiguration;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.thoughtworks.xstream.XStream;
 
 /**

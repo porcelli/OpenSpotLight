@@ -60,6 +60,7 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
 import java.math.BigInteger;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Sha1;
 
 /**
  * Test class for {@link Sha1}

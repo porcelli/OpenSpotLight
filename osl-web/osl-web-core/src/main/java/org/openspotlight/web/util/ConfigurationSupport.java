@@ -48,16 +48,16 @@
  */
 package org.openspotlight.web.util;
 
+import java.io.InputStream;
+import java.io.StringWriter;
+
 import org.apache.commons.io.IOUtils;
+import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Repository;
-import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.loader.ImmutableConfigurationManager;
 import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
-
-import java.io.InputStream;
-import java.io.StringWriter;
 
 /**
  * The Class ConfigurationSupport contains methods to be used on {@link org.openspotlight.federation.loader.MutableConfigurationManager} saved data.

@@ -1,6 +1,5 @@
 package org.openspotlight.federation.finder.test;
 
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
@@ -21,10 +20,9 @@ public class JRedisFileSystemLoadingStressTest extends AbstractFileSystemLoading
     }
 
     @Override
-    protected Module createStorageModule(RepositoryPath repositoryPath) {
+    protected Module createStorageModule() {
         return new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                repositoryPath);
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig());
 
     }
 }

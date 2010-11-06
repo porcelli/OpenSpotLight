@@ -3,7 +3,6 @@ package org.openspotlight.bundle.test;
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextProvider;
 import org.openspotlight.bundle.task.ProcessingTask;
-import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
  * Created by IntelliJ IDEA.

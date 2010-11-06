@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -56,10 +56,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.graph.GraphModule;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 import org.openspotlight.graph.query.AssertResult;
@@ -74,15 +72,6 @@ import org.openspotlight.graph.test.domain.node.JavaInnerInterface;
 import org.openspotlight.graph.test.domain.node.JavaInterface;
 import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
-import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
-import org.openspotlight.storage.redis.util.ExampleRedisConfig;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 /**
  * The Class QLQueryTest.

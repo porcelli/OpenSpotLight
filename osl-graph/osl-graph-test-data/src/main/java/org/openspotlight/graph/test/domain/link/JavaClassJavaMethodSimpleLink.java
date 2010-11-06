@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import java.text.Collator;
 import java.util.Date;
 
 import org.openspotlight.graph.Link;

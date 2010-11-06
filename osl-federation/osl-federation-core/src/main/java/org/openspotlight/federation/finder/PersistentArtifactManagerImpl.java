@@ -51,8 +51,8 @@ package org.openspotlight.federation.finder;
 import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Strings.concatPaths;
 
-import org.openspotlight.domain.Repository;
 import org.openspotlight.common.collection.IteratorBuilder;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistCapable;
@@ -178,7 +178,7 @@ public class PersistentArtifactManagerImpl extends
 		b.withConverter(new IteratorBuilder.Converter<String, StorageNode>() {
 			@Override
 			public String convert(StorageNode nodeEntry) throws Exception {
-				String name = nodeEntry.getPropertyAsString(
+				String name = nodeEntry.getPropertyValueAsString(
 						simplePersist.getCurrentSession(),
 						propertyNameAndPath[IDX_ARTIFACT_NAME]);
 				if (name == null) {

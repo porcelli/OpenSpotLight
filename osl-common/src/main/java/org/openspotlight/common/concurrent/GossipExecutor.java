@@ -56,6 +56,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.source.util.TaskEvent;
+
 /**
  * The Class GossipExecutor has this name because it stay telling every listener what is going on ;-).
  */

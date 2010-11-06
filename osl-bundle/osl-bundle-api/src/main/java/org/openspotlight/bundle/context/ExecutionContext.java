@@ -57,7 +57,6 @@ import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
 
@@ -67,18 +66,13 @@ public interface ExecutionContext extends Disposable, GraphSessionFactory {
 
     public MutableConfigurationManager getDefaultConfigurationManager();
 
-
     public String getPassword();
-
-    public String getRepository();
 
     public AuthenticatedUser getUser();
 
     public String getUserName();
 
     public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist( Partition partition );
-
-    public RepositoryPath getRepositoryPath();
 
     public SimplePersistFactory getSimplePersistFactory();
 

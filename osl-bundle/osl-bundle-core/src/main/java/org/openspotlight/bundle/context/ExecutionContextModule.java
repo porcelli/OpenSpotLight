@@ -2,11 +2,11 @@ package org.openspotlight.bundle.context;
 
 import org.openspotlight.bundle.annotation.ArtifactLoaderRegistry;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 
 public class ExecutionContextModule extends AbstractModule {
 

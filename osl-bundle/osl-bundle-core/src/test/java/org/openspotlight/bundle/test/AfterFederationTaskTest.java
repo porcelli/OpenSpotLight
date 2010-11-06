@@ -1,17 +1,17 @@
 package org.openspotlight.bundle.test;
 
-import org.junit.Test;
-import org.openspotlight.common.Triple;
-import org.openspotlight.domain.Repository;
-import org.openspotlight.federation.domain.artifact.Artifact;
-
-import java.util.Iterator;
-import java.util.concurrent.Callable;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.openspotlight.bundle.test.ExampleExecutionHistory.getData;
+
+import java.util.Iterator;
+import java.util.concurrent.Callable;
+
+import org.junit.Test;
+import org.openspotlight.common.Triple;
+import org.openspotlight.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
  * Created by IntelliJ IDEA.

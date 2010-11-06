@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 
 /**
  * The Interface SLQueryText. This class is exposed to the user.

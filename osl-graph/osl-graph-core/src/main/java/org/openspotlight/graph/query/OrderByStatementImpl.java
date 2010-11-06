@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -50,8 +50,8 @@ package org.openspotlight.graph.query;
 
 import org.openspotlight.graph.query.info.OrderByStatementInfo;
 import org.openspotlight.graph.query.info.OrderByTypeInfo;
-import org.openspotlight.graph.query.info.SelectStatementInfo;
 import org.openspotlight.graph.query.info.OrderByTypeInfo.OrderType;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
 
 /**
  * The Class SLOrderByStatementImpl.

@@ -58,6 +58,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.openspotlight.common.MutableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

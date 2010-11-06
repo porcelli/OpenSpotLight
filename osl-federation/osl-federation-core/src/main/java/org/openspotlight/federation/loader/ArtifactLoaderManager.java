@@ -48,6 +48,18 @@
  */
 package org.openspotlight.federation.loader;
 
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Future;
+
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
@@ -65,18 +77,6 @@ import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Future;
-
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
-import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 /**
  * Class responsible to load artifacts. It has a public method read its javadoc.

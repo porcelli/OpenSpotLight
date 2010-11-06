@@ -48,10 +48,10 @@
  */
 package org.openspotlight.web.command;
 
+import java.util.Map;
+
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.web.WebException;
-
-import java.util.Map;
 
 /**
  * The Interface WebCommand.

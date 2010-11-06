@@ -48,13 +48,14 @@
  */
 package org.openspotlight.graph.query.console.completor;
 
-import jline.FileNameCompletor;
-import org.openspotlight.graph.query.console.command.Command;
-import org.openspotlight.graph.query.console.command.Command.FileCompletionMode;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import jline.FileNameCompletor;
+
+import org.openspotlight.graph.query.console.command.Command;
+import org.openspotlight.graph.query.console.command.Command.FileCompletionMode;
 
 /**
  * The Class SLQLFileNameCompletor. This class executes file name completion based on Command.

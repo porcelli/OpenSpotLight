@@ -53,15 +53,14 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -71,15 +70,14 @@ import com.google.inject.Injector;
 
 public class SimplePersistLazyBehaviorTest {
 
-    final Injector                             autoFlushInjector =
-                                                                     Guice
-                                                                         .createInjector(new JRedisStorageModule(
+    final Injector                                    autoFlushInjector =
+                                                                            Guice
+                                                                                .createInjector(new JRedisStorageModule(
                                                                                                                          StorageSession.FlushMode.AUTO,
                                                                                                                          ExampleRedisConfig.EXAMPLE
-                                                                                                                             .getMappedServerConfig(),
-                                                                                                                         repositoryPath("repository")));
+                                                                                                                             .getMappedServerConfig()));
 
-    StorageSession                             session;
+    StorageSession                                    session;
     SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     @Before

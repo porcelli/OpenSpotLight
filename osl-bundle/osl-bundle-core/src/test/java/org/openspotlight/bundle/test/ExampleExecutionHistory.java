@@ -1,14 +1,11 @@
 package org.openspotlight.bundle.test;
 
-import org.openspotlight.common.Pair;
-import org.openspotlight.common.Triple;
-import org.openspotlight.federation.domain.artifact.Artifact;
-
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static org.openspotlight.common.Triple.newTriple;
+import org.openspotlight.common.Triple;
+import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
  * Created by IntelliJ IDEA.

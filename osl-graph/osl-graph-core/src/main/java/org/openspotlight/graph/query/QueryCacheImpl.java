@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -53,7 +53,6 @@ import java.util.List;
 
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Sha1;
-import org.openspotlight.graph.Node;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.Query.SortMode;
 import org.openspotlight.storage.StorageSession;

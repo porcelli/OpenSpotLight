@@ -49,6 +49,8 @@
 
 package org.openspotlight.remote.server;
 
+import java.rmi.server.RemoteServer;
+
 import org.openspotlight.common.exception.SLException;
 
 /**

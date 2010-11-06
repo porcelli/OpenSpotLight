@@ -78,7 +78,8 @@ public enum RedisServerExecutor {
     public synchronized void startServerIfNecessary(final Partition somePartition,
                                                      final JRedisFactory factory) {
         if (currentProcess == null) {
-            final String oslHome = getVar("OSL_HOME");
+            //final String oslHome = getVar("OSL_HOME");
+            final String oslHome = "/Users/porcelli/Documents/dev/osl/";
             String redisHome = getVar("REDIS_HOME");
             if (oslHome == null && redisHome == null) { throw new IllegalStateException(ERROR_MESSAGE); }
             try {

@@ -48,16 +48,23 @@
  */
 package org.openspotlight.graph.query.console.command;
 
-import org.clapper.util.classutil.*;
-import org.openspotlight.graph.query.console.command.system.ClearSystemCommand;
-import org.openspotlight.graph.query.console.command.system.ExitSystemCommand;
-import org.openspotlight.graph.query.console.command.system.HelpSystemCommand;
-import org.openspotlight.graph.query.console.command.system.VersionSystemCommand;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.clapper.util.classutil.AbstractClassFilter;
+import org.clapper.util.classutil.AndClassFilter;
+import org.clapper.util.classutil.ClassFilter;
+import org.clapper.util.classutil.ClassFinder;
+import org.clapper.util.classutil.ClassInfo;
+import org.clapper.util.classutil.InterfaceOnlyClassFilter;
+import org.clapper.util.classutil.NotClassFilter;
+import org.clapper.util.classutil.SubclassClassFilter;
+import org.openspotlight.graph.query.console.command.system.ClearSystemCommand;
+import org.openspotlight.graph.query.console.command.system.ExitSystemCommand;
+import org.openspotlight.graph.query.console.command.system.HelpSystemCommand;
+import org.openspotlight.graph.query.console.command.system.VersionSystemCommand;
 
 /**
  * Helper class for DynamicComamnd loading.

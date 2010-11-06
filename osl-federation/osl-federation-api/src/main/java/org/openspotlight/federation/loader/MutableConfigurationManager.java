@@ -49,9 +49,9 @@
 
 package org.openspotlight.federation.loader;
 
+import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Repository;
-import org.openspotlight.common.exception.ConfigurationException;
 
 /**
  * Interface responsible to load and save the configuration data on a persistent layer.

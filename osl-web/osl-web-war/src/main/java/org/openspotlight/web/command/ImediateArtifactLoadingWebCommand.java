@@ -48,12 +48,17 @@
  */
 package org.openspotlight.web.command;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import net.sf.json.JSONObject;
-import org.openspotlight.common.util.Exceptions;
+
 import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.scheduler.Scheduler;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.bundle.scheduler.Scheduler;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.RepositorySet;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
@@ -61,10 +66,6 @@ import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.OslContextListener;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.json.Message;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The Class ImediateBundleProcessingWebCommand.

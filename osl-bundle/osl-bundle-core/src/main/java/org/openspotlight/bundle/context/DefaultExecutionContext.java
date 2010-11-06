@@ -61,7 +61,6 @@ import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
 
@@ -69,137 +68,120 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 /**
- * This class is an {@link ExecutionContext} which initialize all resources in a
- * lazy way, and also close it in a lazy way also.
+ * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
  * 
  * @author feu
  */
 public class DefaultExecutionContext implements ExecutionContext {
 
-	private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
+    private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
 
-	@Inject
-	public DefaultExecutionContext(
-			Provider<StorageSession> sessionProvider,
-			GraphSessionFactory graphSessionFactory,
-			SimplePersistFactory simplePersistFactory,
-			PersistentArtifactManagerProvider persistentArtifactManagerProvider,
-			MutableConfigurationManager configurationManager,
-			RepositoryPath repositoryPath,
-			@ArtifactLoaderRegistry
-			Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
-		this.sessionProvider = sessionProvider;
-		this.graphSessionFactory = graphSessionFactory;
-		this.simplePersistFactory = simplePersistFactory;
-		this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
-		this.configurationManager = configurationManager;
-		this.repositoryPath = repositoryPath;
-		this.loaderRegistry = loaderRegistry;
+    @Inject
+    public DefaultExecutionContext(Provider<StorageSession> sessionProvider,
+                                   GraphSessionFactory graphSessionFactory,
+                                   SimplePersistFactory simplePersistFactory,
+                                   PersistentArtifactManagerProvider persistentArtifactManagerProvider,
+                                   MutableConfigurationManager configurationManager,
+                                   @ArtifactLoaderRegistry Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
+        this.sessionProvider = sessionProvider;
+        this.graphSessionFactory = graphSessionFactory;
+        this.simplePersistFactory = simplePersistFactory;
+        this.persistentArtifactManagerProvider = persistentArtifactManagerProvider;
+        this.configurationManager = configurationManager;
+        this.loaderRegistry = loaderRegistry;
 
-	}
+    }
 
-	public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
-		return loaderRegistry;
-	}
+    public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+        return loaderRegistry;
+    }
 
-	private final Provider<StorageSession> sessionProvider;
+    private final Provider<StorageSession>          sessionProvider;
 
-	private final GraphSessionFactory graphSessionFactory;
+    private final GraphSessionFactory               graphSessionFactory;
 
-	private final SimplePersistFactory simplePersistFactory;
+    private final SimplePersistFactory              simplePersistFactory;
 
-	private final PersistentArtifactManagerProvider persistentArtifactManagerProvider;
+    private final PersistentArtifactManagerProvider persistentArtifactManagerProvider;
 
-	private SimpleGraphSession openedSimpleGraphSession = null;
+    private SimpleGraphSession                      openedSimpleGraphSession = null;
 
-	private FullGraphSession openedFullGraphSession = null;
+    private FullGraphSession                        openedFullGraphSession   = null;
 
-	private final MutableConfigurationManager configurationManager;
+    private final MutableConfigurationManager       configurationManager;
 
-	private final RepositoryPath repositoryPath;
+    public static void closeResourcesIfNeeded(Object o) {
+        if (o instanceof Disposable) {
+            ((Disposable) o).closeResources();
+        }
+    }
 
-	public static void closeResourcesIfNeeded(Object o) {
-		if (o instanceof Disposable) {
-			((Disposable) o).closeResources();
-		}
-	}
+    @Override
+    public void closeResources() {
+        closeResourcesIfNeeded(sessionProvider);
+        closeResourcesIfNeeded(graphSessionFactory);
+        closeResourcesIfNeeded(simplePersistFactory);
+        closeResourcesIfNeeded(persistentArtifactManagerProvider);
+        closeResourcesIfNeeded(openedFullGraphSession);
+        closeResourcesIfNeeded(openedSimpleGraphSession);
+        closeResourcesIfNeeded(configurationManager);
 
-	@Override
-	public void closeResources() {
-		closeResourcesIfNeeded(sessionProvider);
-		closeResourcesIfNeeded(graphSessionFactory);
-		closeResourcesIfNeeded(simplePersistFactory);
-		closeResourcesIfNeeded(persistentArtifactManagerProvider);
-		closeResourcesIfNeeded(openedFullGraphSession);
-		closeResourcesIfNeeded(openedSimpleGraphSession);
-		closeResourcesIfNeeded(configurationManager);
+    }
 
-	}
+    @Override
+    public SimpleGraphSession openSimple() {
+        if (openedSimpleGraphSession == null)
+            openedSimpleGraphSession = graphSessionFactory.openSimple();
+        return openedSimpleGraphSession;
+    }
 
-	@Override
-	public SimpleGraphSession openSimple() {
-		if (openedSimpleGraphSession == null)
-			openedSimpleGraphSession = graphSessionFactory.openSimple();
-		return openedSimpleGraphSession;
-	}
+    @Override
+    public FullGraphSession openFull() {
+        if (openedFullGraphSession == null)
+            openedFullGraphSession = graphSessionFactory.openFull();
+        return openedFullGraphSession;
+    }
 
-	@Override
-	public FullGraphSession openFull() {
-		if (openedFullGraphSession == null)
-			openedFullGraphSession = graphSessionFactory.openFull();
-		return openedFullGraphSession;
-	}
+    @Override
+    public FullGraphSession openFull(String artifactId)
+            throws IllegalArgumentException {
+        return graphSessionFactory.openFull(artifactId);
+    }
 
-	@Override
-	public FullGraphSession openFull(String artifactId)
-			throws IllegalArgumentException {
-		return graphSessionFactory.openFull(artifactId);
-	}
+    @Override
+    public PersistentArtifactManager getPersistentArtifactManager() {
+        return persistentArtifactManagerProvider.get();
+    }
 
-	@Override
-	public PersistentArtifactManager getPersistentArtifactManager() {
-		return persistentArtifactManagerProvider.get();
-	}
+    @Override
+    public MutableConfigurationManager getDefaultConfigurationManager() {
+        return configurationManager;
+    }
 
-	@Override
-	public MutableConfigurationManager getDefaultConfigurationManager() {
-		return configurationManager;
-	}
+    @Override
+    public String getPassword() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String getPassword() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public AuthenticatedUser getUser() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String getRepository() {
-		return repositoryPath.getRepositoryPathAsString();
-	}
+    @Override
+    public String getUserName() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public AuthenticatedUser getUser() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
+                                                                              Partition partition) {
+        return simplePersistFactory.createSimplePersist(partition);
+    }
 
-	@Override
-	public String getUserName() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
-			Partition partition) {
-		return simplePersistFactory.createSimplePersist(partition);
-	}
-
-	@Override
-	public RepositoryPath getRepositoryPath() {
-		return repositoryPath;
-	}
-
-	@Override
-	public SimplePersistFactory getSimplePersistFactory() {
-		return simplePersistFactory;
-	}
+    @Override
+    public SimplePersistFactory getSimplePersistFactory() {
+        return simplePersistFactory;
+    }
 
 }

@@ -207,7 +207,7 @@ public final class LazyProperty<T> implements Serializable {
                                                                                                                                                                                                     .getCurrentSession());
 
                         }
-                        final InputStream o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
+                        final InputStream o = node.getPropertyValueAsStream(simplePersist.getCurrentSession(), propertyName);
                         final InputStream is = o;
                         if (is != null && is.markSupported()) {
                             is.reset();

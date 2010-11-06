@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -78,8 +78,8 @@ import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.QueryTextInternal;
+import org.openspotlight.graph.query.SLQLVariable;
 
 /**
  * The Class SLQueryTextInternalBuilder. This class genarates, based on slql external dsl, a new instance SLQueryTextInternal.

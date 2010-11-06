@@ -52,11 +52,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.google.inject.Inject;
-import org.openspotlight.domain.GlobalSettings;
-import org.openspotlight.domain.Repository;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.support.SimplePersistCapable;
@@ -64,6 +63,8 @@ import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.StorageNode;
+
+import com.google.inject.Inject;
 
 /**
  * A factory for creating JcrSessionConfigurationManager objects.

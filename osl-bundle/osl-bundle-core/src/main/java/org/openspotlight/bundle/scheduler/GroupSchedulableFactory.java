@@ -48,6 +48,9 @@
  */
 package org.openspotlight.bundle.scheduler;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.domain.Group;
 import org.openspotlight.persist.annotation.TransientProperty;
@@ -55,9 +58,6 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
 

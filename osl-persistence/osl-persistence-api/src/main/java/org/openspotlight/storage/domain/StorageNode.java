@@ -53,8 +53,7 @@ import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.key.NodeKey;
 
-public interface StorageNode extends StorageDataMarker, NodeFactory,
-        PropertyContainer {
+public interface StorageNode extends StorageDataMarker, NodeFactory, PropertyContainer {
 
     public void forceReload();
 
@@ -63,16 +62,16 @@ public interface StorageNode extends StorageDataMarker, NodeFactory,
     NodeKey getKey();
 
     Iterable<StorageNode> getChildren(Partition partition,
-                               StorageSession session);
+                                      StorageSession session);
 
     Iterable<StorageNode> getChildrenByType(Partition partition,
-                                     StorageSession session, String type);
+                                            StorageSession session, String type);
 
     Iterable<StorageNode> getChildrenForcingReload(Partition partition,
-                                            StorageSession session);
+                                                   StorageSession session);
 
     Iterable<StorageNode> getChildrenByTypeForcingReload(Partition partition,
-                                                  StorageSession session, String type);
+                                                         StorageSession session, String type);
 
     StorageNode getParent(StorageSession session);
 

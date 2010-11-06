@@ -1,8 +1,8 @@
 package org.openspotlight.bundle.test;
 
-import org.junit.Test;
-
 import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -64,7 +64,6 @@ import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.StorageNode;
@@ -89,8 +88,7 @@ public class PersistentConfigurationManagerTest extends
 	public static void setupJcrRepo() throws Exception {
 		Injector injector = Guice.createInjector(
 				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-						RepositoryPath.repositoryPath("repository")),
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
 				new SimplePersistModule());
 		simplePersist = injector.getInstance(SimplePersistFactory.class)
 				.createSimplePersist(RegularPartitions.FEDERATION);

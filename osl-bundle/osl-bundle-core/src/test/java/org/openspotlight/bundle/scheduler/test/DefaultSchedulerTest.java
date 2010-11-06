@@ -48,12 +48,19 @@
  */
 package org.openspotlight.bundle.scheduler.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.bundle.context.ExecutionContextModule;
@@ -76,16 +83,8 @@ import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static org.openspotlight.storage.RepositoryPath.repositoryPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class DefaultSchedulerTest {
     private GlobalSettings settings;
@@ -130,7 +129,7 @@ public class DefaultSchedulerTest {
             Injector injector = Guice.createInjector(
                     new SchedulerModule(schedulableMap), new ExecutionContextModule(loaderRegistry),
                     new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-                            ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                            ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new PersistentConfigurationManagerModule(),
                     new SimplePersistModule(),
                     new GraphModule());

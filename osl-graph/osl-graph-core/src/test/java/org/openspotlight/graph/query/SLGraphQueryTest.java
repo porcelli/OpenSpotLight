@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -55,7 +55,6 @@ import static org.hamcrest.Matchers.not;
 
 import java.lang.reflect.Method;
 import java.text.Collator;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +63,6 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.Query.SortMode;
@@ -77,7 +75,6 @@ import org.openspotlight.graph.test.domain.node.JavaInterface;
 import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaType;
 import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
  * The Class SLGraphQueryTest.

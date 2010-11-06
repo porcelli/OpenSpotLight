@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -62,17 +62,16 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Group;
 import org.openspotlight.domain.Repository;
-import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
@@ -152,8 +151,7 @@ public class FileSystemLoadingStressTest {
 
 		Injector injector = Guice.createInjector(
 				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-						RepositoryPath.repositoryPath("repository")),
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
 				new SimplePersistModule(), new DetailedLoggerModule());
 
 		injector.getInstance(JRedisFactory.class)

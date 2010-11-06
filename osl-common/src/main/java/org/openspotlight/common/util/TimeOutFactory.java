@@ -59,6 +59,8 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.openspotlight.common.util.TimeOutFactory.TaskFinalizer;
+
 /**
  * This class wraps object instances from a given interface inside a timeout object. This timeout object will run a background
  * thread to monitor how many time the wrapped object wasn't invoked. If this time is so long, it will finalize this object,

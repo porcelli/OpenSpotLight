@@ -91,8 +91,8 @@ import org.openspotlight.security.domain.SLIdentityObjectType;
 import org.openspotlight.security.domain.SLPasswordEntry;
 import org.openspotlight.security.domain.SLTransientIdentityObjectAttribute;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.StorageNode;
 
 import com.google.inject.Injector;
 

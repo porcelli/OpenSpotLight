@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -59,8 +59,8 @@ import org.jredis.JRedis;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.domain.Repository;
 import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
@@ -68,7 +68,6 @@ import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
@@ -100,8 +99,7 @@ public class PersistentArtifactManagerTest {
 	public static void setup() throws Exception {
 		Injector injector = Guice.createInjector(
 				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-						RepositoryPath.repositoryPath("name")),
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
 				new SimplePersistModule(), new DetailedLoggerModule());
 		jredis = injector.getInstance(JRedisFactory.class).getFrom(
 				RegularPartitions.FEDERATION);

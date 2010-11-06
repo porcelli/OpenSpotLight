@@ -53,8 +53,6 @@ import java.util.Set;
 
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.StorageNode;
 
 /**

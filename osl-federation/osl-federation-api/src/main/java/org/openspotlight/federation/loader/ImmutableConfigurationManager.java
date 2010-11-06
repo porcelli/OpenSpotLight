@@ -1,11 +1,11 @@
 package org.openspotlight.federation.loader;
 
+import java.util.Set;
+
 import org.openspotlight.common.Disposable;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Repository;
-
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.

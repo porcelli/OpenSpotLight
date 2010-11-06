@@ -48,9 +48,10 @@
  */
 package org.openspotlight.federation.finder;
 
-import com.google.inject.Inject;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistFactory;
+
+import com.google.inject.Inject;
 
 public class PersistentArtifactManagerProviderImpl extends PersistentArtifactManagerProvider {
 

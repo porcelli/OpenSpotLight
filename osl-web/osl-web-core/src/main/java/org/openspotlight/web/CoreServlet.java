@@ -48,24 +48,25 @@
  */
 package org.openspotlight.web;
 
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.ClassPathResource;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.web.command.WebCommand;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.ClassPathResource;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.web.command.WebCommand;
 
 /**
  * The Class CoreServlet is used to load {@link WebCommand web commands} by its actions.

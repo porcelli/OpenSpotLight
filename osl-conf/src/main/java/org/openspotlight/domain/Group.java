@@ -48,17 +48,21 @@
  */
 package org.openspotlight.domain;
 
-import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.persist.annotation.*;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 

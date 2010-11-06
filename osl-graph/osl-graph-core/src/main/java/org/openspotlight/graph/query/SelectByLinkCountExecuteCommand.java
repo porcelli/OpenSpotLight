@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -51,7 +51,6 @@ package org.openspotlight.graph.query;
 import static org.openspotlight.graph.query.ConditionalOperatorType.AND;
 import static org.openspotlight.graph.query.ConditionalOperatorType.OR;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;

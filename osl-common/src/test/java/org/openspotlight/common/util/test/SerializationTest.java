@@ -62,6 +62,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Serialization;
 
 /**
  * Test class for {@link Serialization}

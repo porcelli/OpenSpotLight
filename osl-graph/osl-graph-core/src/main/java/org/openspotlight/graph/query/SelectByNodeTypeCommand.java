@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -48,25 +48,12 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.query.ConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.ConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.RelationalOperatorType.EQUAL;
-
-import java.text.Collator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.XPathStatementBuilder.Statement;
-import org.openspotlight.graph.query.XPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SelectStatementInfo;
-import org.openspotlight.graph.query.info.SelectTypeInfo;
-import org.openspotlight.graph.query.info.WhereStatementInfo;
-import org.openspotlight.graph.query.info.WhereTypeInfo;
 import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo;
-import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
 import org.openspotlight.storage.domain.StorageNode;
 
 /**

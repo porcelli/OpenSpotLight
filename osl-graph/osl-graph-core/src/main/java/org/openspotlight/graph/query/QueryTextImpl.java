@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -55,7 +55,6 @@ import org.apache.log4j.Logger;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.manipulation.GraphReader;
-import org.openspotlight.storage.StorageSession;
 
 /**
  * The Class SLQueryTextImpl.

@@ -1,22 +1,50 @@
-/*
- * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
- * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
- * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
- * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
- * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
- * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
- * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
- * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto * Direitos Autorais Reservados (c) 2009, CARAVELATECH
- * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
- * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
- * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
- * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
- * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
- * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
- * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
+/**
+ * OpenSpotLight - Open Source IT Governance Platform
+ *
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
+ * or third-party contributors as indicated by the @author tags or express
+ * copyright attribution statements applied by the authors.  All third-party
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E
+ * TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License  for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ *
+ ***********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
+ * Foundation.
+ *
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
+ *
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
  */
 
 package org.openspotlight.storage;
@@ -25,6 +53,8 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.openspotlight.common.Pair.newPair;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -39,19 +69,19 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.Criteria.CriteriaBuilder;
 import org.openspotlight.storage.Criteria.CriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.CompisiteKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.CompositeKeyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.CriteriaImpl.CriteriaBuilderImpl;
-import org.openspotlight.storage.domain.StorageLink;
-import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.NodeFactory.NodeBuilder;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
+import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
@@ -70,11 +100,11 @@ import com.google.common.collect.Multimap;
 public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
-    public StorageNode findNodeByStringId(
-                                   final String idAsString) {
+    public StorageNode findNodeByStringKey(
+                                          final String idAsString) {
 
         final Partition partition = partitionFactory
-            .getPartitionByName(StringIDSupport
+            .getPartitionByName(StringKeysSupport
                 .getPartitionName(idAsString));
         return withPartition(partition).createCriteria().withUniqueKeyAsString(
             idAsString).buildCriteria().andFindUnique(this);
@@ -83,13 +113,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     protected abstract void internalSavePartitions(
                                                    Partition... partitions)
         throws Exception;
-
-    @Override
-    public RepositoryPath getRepositoryPath() {
-        return repositoryPath;
-    }
-
-    protected final RepositoryPath repositoryPath;
 
     @Override
     public void discardTransient() {
@@ -102,22 +125,28 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     public class PartitionMethodsImpl implements PartitionMethods {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public NodeFactory.NodeBuilder createWithType(
-                                                      final StorageSession session,
-                                                      final String type) {
+        public NodeFactory.NodeBuilder createWithType(final StorageSession session,
+                                                        final String type)
+            throws IllegalArgumentException {
+            checkNotNull("session", session);
+            checkNotEmpty("type", type);
+
             return new NodeBuilderImpl(type, partition);
         }
 
         @Override
-        public NodeFactory.NodeBuilder createWithType(
-                                                      final String type) {
+        public NodeFactory.NodeBuilder createWithType(final String type) {
+            checkNotEmpty("type", type);
+
             return this.createWithType(AbstractStorageSession.this, type);
         }
 
         @Override
-        public Iterable<StorageNode> findByCriteria(
-                                             final Criteria criteria) {
+        public Iterable<StorageNode> findByCriteria(final Criteria criteria) {
             try {
                 if (!criteria.getPartition().equals(partition)) { throw new IllegalArgumentException(); }
                 boolean hasGlobal = false;
@@ -125,7 +154,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
                 for (final CriteriaItem item: criteria.getCriteriaItems()) {
                     if (item instanceof PropertyCriteriaItem) {
                         hasOther = true;
-                    } else if (item instanceof CompisiteKeyCriteriaItem) {
+                    } else if (item instanceof CompositeKeyCriteriaItem) {
                         hasOther = true;
                     } else if (item instanceof PropertyContainsString) {
                         hasOther = true;
@@ -147,7 +176,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public Iterable<StorageNode> findByType(
-                                         final String nodeType) {
+                                                final String nodeType) {
             try {
                 return internalFindByType(partition, nodeType);
             } catch (final Exception e) {
@@ -158,7 +187,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public StorageNode findUniqueByCriteria(
-                                         final Criteria criteria) {
+                                                final Criteria criteria) {
             try {
                 final Iterable<StorageNode> result = findByCriteria(criteria);
                 if (result == null) { return null; }
@@ -188,21 +217,21 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
                             .<SimpleKey>emptySet(), path),
                         parentKey
                             .getKeyAsString(),
-                        partition, repositoryPath);
+                        partition);
             }
             return parentKey;
         }
 
         @Override
         public StorageNode createNewSimpleNode(
-                                        final String... nodePaths) {
+                                               final String... nodePaths) {
             StorageNode parent = null;
             NodeKey parentKey = null;
             for (final String nodePath: nodePaths) {
                 parentKey = new NodeKeyImpl(new CompositeKeyImpl(Collections
                     .<SimpleKey>emptySet(), nodePath),
                     parentKey != null ? parentKey.getKeyAsString() : null,
-                    partition, repositoryPath);
+                    partition);
                 parent = new StorageNodeImpl(parentKey, false);
                 handleNewItem(parent);
             }
@@ -213,8 +242,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         @Override
         public NodeKeyBuilder createKey(
                                           final String nodeType) {
-            return new NodeKeyBuilderImpl(nodeType, partition,
-                repositoryPath);
+            return new NodeKeyBuilderImpl(nodeType, partition);
         }
 
         private final Partition partition;
@@ -266,12 +294,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     protected AbstractStorageSession(final FlushMode flushMode,
-                                     final RepositoryPath repositoryPath, final PartitionFactory partitionFactory) {
+                                     final PartitionFactory partitionFactory) {
         if (flushMode == null) { throw new NullPointerException(); }
-        if (repositoryPath == null) { throw new NullPointerException(); }
         if (partitionFactory == null) { throw new NullPointerException(); }
         this.flushMode = flushMode;
-        this.repositoryPath = repositoryPath;
         this.partitionFactory = partitionFactory;
     }
 
@@ -296,14 +322,14 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     private final FlushMode                               flushMode;
 
-    protected final Set<Pair<StorageNode, R>>                    newNodes        = newLinkedHashSet();
-    protected final Set<Pair<StorageLink, R>>                    newLinks        = newLinkedHashSet();
+    protected final Set<Pair<StorageNode, R>>             newNodes        = newLinkedHashSet();
+    protected final Set<Pair<StorageLink, R>>             newLinks        = newLinkedHashSet();
 
     protected final Multimap<PropertyContainer, Property> dirtyProperties = ArrayListMultimap
                                                                               .create();
 
-    protected final Set<StorageNode>                             removedNodes    = newLinkedHashSet();
-    protected final Set<StorageLink>                             removedLinks    = newLinkedHashSet();
+    protected final Set<StorageNode>                      removedNodes    = newLinkedHashSet();
+    protected final Set<StorageLink>                      removedLinks    = newLinkedHashSet();
 
     private void handleNewItem(
                                final StorageNode entry) {
@@ -383,7 +409,11 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         @Override
         public NodeFactory.NodeBuilder withSimpleKey(
                                                      final String name,
-                                                     final String value) {
+                                                     final String value)
+            throws IllegalArgumentException, IllegalStateException {
+            checkNotEmpty("name", name);
+            checkNotEmpty("value", value);
+
             if (keyNames.contains(name)) { throw new IllegalStateException("key name already inserted"); }
             this.keys.add(new SimpleKeyImpl(name, value));
             this.keyNames.add(name);
@@ -391,25 +421,37 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public NodeFactory.NodeBuilder withParentKey(
-                                                     final NodeKey parentKey) {
+        public NodeBuilder withParent(final String parentAsString) {
+            checkNotEmpty("parentAsString", parentAsString);
+
+            this.parentKey = parentAsString;
+            return this;
+        }
+
+        @Override
+        public NodeFactory.NodeBuilder withParent(
+                                                  final StorageNode parent)
+            throws IllegalArgumentException, IllegalStateException {
+            checkNotNull("parent", parent);
+
+            return withParentKey(parent.getKey());
+        }
+
+        private NodeFactory.NodeBuilder withParentKey(
+                                                      final NodeKey parentKey)
+            throws IllegalArgumentException, IllegalStateException {
+            checkNotNull("parentKey", parentKey);
+
             if (this.parentKey != null) { throw new IllegalStateException(); }
             this.parentKey = parentKey.getKeyAsString();
             return this;
         }
 
         @Override
-        public NodeFactory.NodeBuilder withParent(
-                                                  final StorageNode parent) {
-            return withParentKey(parent.getKey());
-        }
-
-        @Override
         public StorageNode andCreate() {
             final CompositeKeyImpl localKey = new CompositeKeyImpl(keys, type);
 
-            final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey,
-                parentKey, partition, repositoryPath);
+            final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey, parentKey, partition);
             final StorageNodeImpl result = new StorageNodeImpl(uniqueKey, false);
             if (getFlushMode().equals(FlushMode.AUTO)) {
 
@@ -422,14 +464,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             }
             return result;
         }
-
-        @Override
-        public NodeBuilder withParentAsString(
-                                              final String parentAsString) {
-            this.parentKey = parentAsString;
-            return this;
-        }
-
     }
 
     @Override
@@ -529,25 +563,19 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         private final NodeKeyBuilderImpl child;
 
-        private final RepositoryPath     repositoryPath;
-
         private String                   parentKey;
 
-        public NodeKeyBuilderImpl(final String type, final Partition partition,
-                                    final RepositoryPath repositoryPath) {
+        public NodeKeyBuilderImpl(final String type, final Partition partition) {
             this.type = type;
             this.partition = partition;
             this.child = null;
-            this.repositoryPath = repositoryPath;
         }
 
         private NodeKeyBuilderImpl(final String type,
-                                     final NodeKeyBuilderImpl child, final Partition partition,
-                                     final RepositoryPath repositoryPath) {
+                                     final NodeKeyBuilderImpl child, final Partition partition) {
             this.type = type;
             this.child = child;
             this.partition = partition;
-            this.repositoryPath = repositoryPath;
         }
 
         @Override
@@ -563,7 +591,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
                                            final Partition newPartition,
                                            final String nodeType) {
             return new NodeKeyBuilderImpl(nodeType, this,
-                newPartition, repositoryPath);
+                newPartition);
         }
 
         @Override
@@ -584,15 +612,14 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
                         currentBuilder.localEntries, currentBuilder.type);
                     currentKey = new NodeKeyImpl(localKey,
                         currentKey != null ? currentKey.getKeyAsString()
-                            : null, currentBuilder.partition,
-                        repositoryPath);
+                            : null, currentBuilder.partition);
                     currentBuilder = currentBuilder.child;
                 } while (currentBuilder != null);
             } else {
                 final CompositeKey localKey = new CompositeKeyImpl(
                     currentBuilder.localEntries, currentBuilder.type);
                 currentKey = new NodeKeyImpl(localKey, parentKey,
-                    partition, repositoryPath);
+                    partition);
 
             }
             return currentKey;
@@ -602,8 +629,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     protected abstract Iterable<StorageNode> internalFindByCriteria(
-                                                             Partition partition,
-                                                             Criteria criteria)
+                                                                    Partition partition,
+                                                                    Criteria criteria)
         throws Exception;
 
     protected abstract void flushNewItem(
@@ -618,9 +645,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         throws Exception;
 
     protected abstract Iterable<StorageNode> internalNodeEntryGetChildrenByType(
-                                                                         Partition partition,
-                                                                         StorageNode StorageNode,
-                                                                         String type)
+                                                                                Partition partition,
+                                                                                StorageNode StorageNode,
+                                                                                String type)
         throws Exception;
 
     protected abstract void internalFlushSimpleProperty(
@@ -630,13 +657,13 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         throws Exception;
 
     protected abstract Iterable<StorageNode> internalNodeEntryGetChildren(
-                                                                   Partition partition,
-                                                                   StorageNode StorageNode)
+                                                                          Partition partition,
+                                                                          StorageNode StorageNode)
         throws Exception;
 
     protected abstract StorageNode internalNodeEntryGetParent(
-                                                       Partition partition,
-                                                       StorageNode StorageNode)
+                                                              Partition partition,
+                                                              StorageNode StorageNode)
         throws Exception;
 
     protected abstract Set<Property> internalPropertyContainerLoadProperties(
@@ -646,22 +673,22 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         throws Exception;
 
     protected abstract Iterable<StorageNode> internalFindByType(
-                                                         Partition partition,
-                                                         String nodeType)
+                                                                Partition partition,
+                                                                String nodeType)
         throws Exception;
 
     protected abstract Iterable<StorageLink> internalFindLinks(
-                                                        Partition partition,
-                                                        StorageNode origin,
-                                                        StorageNode destiny,
-                                                        String type)
+                                                               Partition partition,
+                                                               StorageNode origin,
+                                                               StorageNode destiny,
+                                                               String type)
         throws Exception;
 
     @Override
     public StorageLink addLink(
-                        final StorageNode origin,
-                        final StorageNode target,
-                        final String type) {
+                               final StorageNode origin,
+                               final StorageNode target,
+                               final String type) {
         final StorageLink link = new StorageLinkImpl(type, origin, target, true);
         if (getFlushMode().equals(FlushMode.AUTO)) {
             try {
@@ -686,8 +713,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
     public Iterable<StorageLink> findLinks(
-                                    final StorageNode origin,
-                                    final StorageNode destiny) {
+                                           final StorageNode origin,
+                                           final StorageNode destiny) {
         try {
             return internalFindLinks(origin.getPartition(), origin, destiny,
                 null);
@@ -699,8 +726,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
     public Iterable<StorageLink> findLinks(
-                                    final StorageNode origin,
-                                    final String type) {
+                                           final StorageNode origin,
+                                           final String type) {
         try {
             return internalFindLinks(origin.getPartition(), origin, null, type);
         } catch (final Exception e) {
@@ -711,7 +738,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
     public Iterable<StorageLink> findLinks(
-                                    final StorageNode origin) {
+                                           final StorageNode origin) {
         try {
             return internalFindLinks(origin.getPartition(), origin, null, null);
         } catch (final Exception e) {
@@ -722,9 +749,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
     public StorageLink getLink(
-                        final StorageNode origin,
-                        final StorageNode destiny,
-                        final String type) {
+                               final StorageNode origin,
+                               final StorageNode destiny,
+                               final String type) {
         try {
             return SLCollections.firstOf(internalFindLinks(origin
                 .getPartition(), origin, destiny, type));
@@ -786,11 +813,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         return null;
     }
 
-    public Set<Property> propertyContainerLoadProperties(
-                                                         final PropertyContainer StorageNode) {
+    public Set<Property> propertyContainerLoadProperties(final PropertyContainer storageNode) {
         try {
-            return internalPropertyContainerLoadProperties(null, StorageNode.getPartition(),
-                StorageNode);
+            return internalPropertyContainerLoadProperties(null, storageNode.getPartition(), storageNode);
         } catch (final Exception e) {
             handleException(e);
         }
@@ -798,9 +823,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     public Iterable<StorageNode> nodeEntryGetChildrenByType(
-                                                     final Partition partition,
-                                                     final StorageNode StorageNode,
-                                                     final String type) {
+                                                            final Partition partition,
+                                                            final StorageNode StorageNode,
+                                                            final String type) {
         if (!partition.equals(StorageNode.getKey().getPartition())) { throw new IllegalArgumentException(
             "wrong partition for this node entry"); }
 
@@ -823,7 +848,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     public StorageNode nodeEntryGetParent(
-                                   final StorageNode StorageNode) {
+                                          final StorageNode StorageNode) {
         try {
             return internalNodeEntryGetParent(StorageNode.getPartition(), StorageNode);
         } catch (final Exception e) {
@@ -833,8 +858,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     public Iterable<StorageNode> nodeEntryGetChildren(
-                                               final Partition partition,
-                                               final StorageNode StorageNode) {
+                                                      final Partition partition,
+                                                      final StorageNode StorageNode) {
         try {
             return internalNodeEntryGetChildren(partition, StorageNode);
         } catch (final Exception e) {

@@ -200,6 +200,12 @@ public class Sha1 {
         return getSha1SignatureEncodedAsHexa(content.getBytes());
     }
 
+    /**
+     * Convert input to hexadecimal format.
+     * 
+     * @param bytes input
+     * @return an hexadecimal string
+     */
     private static String toHexa(final byte[] bytes) {
         final StringBuilder s = new StringBuilder();
         for (final byte b: bytes) {

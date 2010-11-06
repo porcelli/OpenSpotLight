@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -48,28 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.query.ConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.ConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.RelationalOperatorType.EQUAL;
-
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.XPathStatementBuilder.Statement;
-import org.openspotlight.graph.query.XPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SelectByLinkInfo;
 import org.openspotlight.graph.query.info.SelectStatementInfo;
-import org.openspotlight.graph.query.info.SelectTypeInfo;
 import org.openspotlight.graph.query.info.WhereLinkTypeInfo;
 import org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo;
-import org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
 import org.openspotlight.graph.query.info.WhereStatementInfo;
-import org.openspotlight.storage.domain.StorageNode;
 
 public class SelectByLinkTypeCommand extends SelectAbstractCommand {
 

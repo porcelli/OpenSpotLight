@@ -48,20 +48,7 @@
  */
 package org.openspotlight.graph.server.test;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
-import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.graph.test.BaseGraphTest;
-import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.storage.redis.guice.JRedisFactory;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
-import org.openspotlight.storage.redis.util.ExampleRedisConfig;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 /**
  * The Class SLGraphTest.

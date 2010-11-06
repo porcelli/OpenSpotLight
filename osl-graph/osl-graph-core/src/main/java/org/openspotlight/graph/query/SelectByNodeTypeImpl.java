@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -53,9 +53,9 @@ import java.util.List;
 
 import org.openspotlight.graph.query.info.AllTypesInfo;
 import org.openspotlight.graph.query.info.SelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SelectByNodeTypeInfo.SLSelectTypeInfo;
 import org.openspotlight.graph.query.info.SelectInfo;
 import org.openspotlight.graph.query.info.WhereByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SelectByNodeTypeInfo.SLSelectTypeInfo;
 
 /**
  * The Class SLSelectStatementImpl.

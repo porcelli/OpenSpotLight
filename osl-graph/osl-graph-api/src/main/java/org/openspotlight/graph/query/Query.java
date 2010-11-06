@@ -23,6 +23,7 @@ package org.openspotlight.graph.query;
 import java.util.Collection;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 
 /**
  * The Interface SLQuery.

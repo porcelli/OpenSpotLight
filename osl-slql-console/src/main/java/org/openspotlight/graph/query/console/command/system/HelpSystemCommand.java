@@ -48,15 +48,16 @@
  */
 package org.openspotlight.graph.query.console.command.system;
 
+import java.io.PrintWriter;
+import java.util.Collection;
+
 import jline.ConsoleReader;
+
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.SystemCommand;
-
-import java.io.PrintWriter;
-import java.util.Collection;
 
 /**
  * The Class HelpSystemCommand. This system command display all command descriptions.

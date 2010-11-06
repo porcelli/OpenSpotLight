@@ -48,12 +48,13 @@
  */
 package org.openspotlight.web.command;
 
+import java.util.Map;
+
 import net.sf.json.JSONObject;
+
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.json.Message;
-
-import java.util.Map;
 
 // TODO: Auto-generated Javadoc
 /**

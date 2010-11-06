@@ -1,11 +1,12 @@
 package org.openspotlight.bundle.scheduler;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.TypeLiteral;
+import java.util.Map;
+
 import org.openspotlight.bundle.annotation.SchedulableCommandMap;
 import org.openspotlight.domain.Schedulable;
 
-import java.util.Map;
+import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 
 /**
  * Created by IntelliJ IDEA.

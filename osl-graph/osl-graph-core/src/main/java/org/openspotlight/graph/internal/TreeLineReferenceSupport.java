@@ -15,6 +15,8 @@ public class TreeLineReferenceSupport {
 
     private static final class TreeLineReferenceImpl implements TreeLineReference {
 
+        private static final long serialVersionUID = 8915154022785981563L;
+
         private final Iterable<ArtifactLineReference> artifacts;
 
         private final String                          id;
@@ -63,6 +65,8 @@ public class TreeLineReferenceSupport {
     }
 
     private static final class ArtifactLineReferenceImpl implements ArtifactLineReference {
+
+        private static final long serialVersionUID = 8671847295268238991L;
 
         private final String                           artifactId;
 
@@ -125,6 +129,8 @@ public class TreeLineReferenceSupport {
 
     private static final class StatementLineReferenceImpl implements StatementLineReference {
 
+        private static final long serialVersionUID = 3325696914749205681L;
+
         private final Iterable<SimpleLineReference> lineReferences;
 
         private final String                        statement;
@@ -175,6 +181,7 @@ public class TreeLineReferenceSupport {
 
     private static final class SimpleLineReferenceImpl implements SimpleLineReference {
 
+        private static final long serialVersionUID = 1L;
         private final int beginColumn, endColumn, beginLine, endLine;
 
         SimpleLineReferenceImpl(int beginLine, int endLine, int beginColumn, int endColumn) {

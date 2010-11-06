@@ -22,6 +22,7 @@ package org.openspotlight.graph;
 
 import java.math.BigInteger;
 
+import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.log.LogableObject;
 
 /**

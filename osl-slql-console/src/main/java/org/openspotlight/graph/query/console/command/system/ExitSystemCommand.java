@@ -48,12 +48,13 @@
  */
 package org.openspotlight.graph.query.console.command.system;
 
+import java.io.PrintWriter;
+
 import jline.ConsoleReader;
+
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.SystemCommand;
-
-import java.io.PrintWriter;
 
 /**
  * The Class ExitSystemCommand. This system command enable users to quit from application.

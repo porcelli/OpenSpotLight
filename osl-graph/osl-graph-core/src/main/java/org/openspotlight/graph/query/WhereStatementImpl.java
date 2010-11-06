@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -51,10 +51,10 @@ package org.openspotlight.graph.query;
 import org.openspotlight.graph.query.info.OrderByStatementInfo;
 import org.openspotlight.graph.query.info.SelectStatementInfo;
 import org.openspotlight.graph.query.info.WhereLinkTypeInfo;
-import org.openspotlight.graph.query.info.WhereStatementInfo;
-import org.openspotlight.graph.query.info.WhereTypeInfo;
 import org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
+import org.openspotlight.graph.query.info.WhereStatementInfo;
+import org.openspotlight.graph.query.info.WhereTypeInfo;
 import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
 

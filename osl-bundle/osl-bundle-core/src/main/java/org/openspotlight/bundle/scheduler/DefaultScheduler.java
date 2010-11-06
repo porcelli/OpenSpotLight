@@ -48,28 +48,41 @@
  */
 package org.openspotlight.bundle.scheduler;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.openspotlight.bundle.annotation.SchedulableCommandMap;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.domain.Repository;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.domain.GlobalSettings;
+import org.openspotlight.domain.Repository;
 import org.openspotlight.domain.Schedulable;
 import org.openspotlight.federation.util.RepositorySet;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
-import org.quartz.*;
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.TriggerUtils;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 
 @Singleton

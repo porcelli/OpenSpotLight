@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -48,14 +48,21 @@
  */
 package org.openspotlight.domain;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.persist.annotation.*;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.Callable;
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 /**
  * The Class BundleConfig.

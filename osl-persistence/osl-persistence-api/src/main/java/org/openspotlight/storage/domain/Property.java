@@ -54,32 +54,111 @@ import java.io.InputStream;
 import org.openspotlight.storage.StorageSession;
 
 /**
- * Created by IntelliJ IDEA. User: feuteston Date: 28/03/2010 Time: 10:27:26 To change this template use File | Settings | File
- * Templates.
+ * A Property represents the smallest granularity of content. Properties holds primarily string values, but it can handle any
+ * other data thru a stream or byte array. <br>
+ * Any {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey} can be also represented as a property, but as
+ * keys are immutable, they cannot be modified.
+ * 
+ * @author feuteston
+ * @author porcelli
  */
 public interface Property {
 
+    /**
+     * Returns the property name.
+     * 
+     * @return the property name
+     */
+    String getPropertyName();
+
+    /**
+     * Checks if this property is indexed. Only indexed properties are searchable.
+     * 
+     * @return true is indexed, false otherwise
+     */
+    boolean isIndexed();
+
+    /**
+     * Checks if this property is a key.
+     * 
+     * @return true is indexed, false otherwise
+     */
+    //TODO: needs more info about what is this key!
+    boolean isKey();
+
+    /**
+     * Returns the {@link PropertyContainer} ({@link StorageNode} or {@link StorageLink}) that owns this object.
+     * 
+     * @return the property owner
+     */
     PropertyContainer getParent();
 
-    public boolean isIndexed();
+    /**
+     * Sets the property value in String format. Null is an accepted value. <br>
+     * 
+     * @param session the storage session
+     * @param value the property value
+     * @throws IllegalArgumentException if input param session is null
+     * @throws IllegalStateException if try to set a property that is also a
+     *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
+     */
+    void setStringValue(StorageSession session, String value)
+        throws IllegalArgumentException;
 
-    public boolean isKey();
+    /**
+     * Sets the property value in byte array format. Null is an accepted value. <br>
+     * 
+     * @param session the storage session
+     * @param value the property value
+     * @throws IllegalArgumentException if input param session is null
+     * @throws IllegalStateException if try to set a property that is also a
+     *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
+     */
+    void setBytesValue(StorageSession session, byte[] value)
+        throws IllegalArgumentException;
 
-    void setStringValue(StorageSession session,
-                         String value);
+    /**
+     * Sets the property value using {@link InputStream}. Null is an accepted value.<br>
+     * The {@link InputStream} format is usefull when you have to store big values. Behind the scenes the {@link InputStream}
+     * content is converted to byte array.
+     * 
+     * @param session the storage session
+     * @param value the property value
+     * @throws IllegalArgumentException if input param session is null
+     * @throws IllegalStateException if try to set a property that is also a
+     *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
+     */
+    void setStreamValue(StorageSession session, InputStream value)
+        throws IllegalArgumentException;
 
-    void setBytesValue(StorageSession session,
-                        byte[] value);
+    /**
+     * Returns the property value as String.
+     * 
+     * @param session the storage session
+     * @return the value as string
+     * @throws IllegalArgumentException if input param is null
+     */
+    String getValueAsString(StorageSession session)
+        throws IllegalArgumentException;
 
-    void setStreamValue(StorageSession session,
-                         InputStream value);
+    /**
+     * Returns the property value as byte array.
+     * 
+     * @param session the storage session
+     * @return the value as byte array
+     * @throws IllegalArgumentException if input param is null
+     */
+    byte[] getValueAsBytes(StorageSession session)
+        throws IllegalArgumentException;
 
-    String getValueAsString(StorageSession session);
-
-    byte[] getValueAsBytes(StorageSession session);
-
-    InputStream getValueAsStream(StorageSession session);
-
-    String getPropertyName();
+    /**
+     * Returns the property value as {@link InputStream} - usefull for large data value.
+     * 
+     * @param session the storage session
+     * @return the value as {@link InputStream}
+     * @throws IllegalArgumentException if input param is null
+     */
+    InputStream getValueAsStream(StorageSession session)
+        throws IllegalArgumentException;
 
 }

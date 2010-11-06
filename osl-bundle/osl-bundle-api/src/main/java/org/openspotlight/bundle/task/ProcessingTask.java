@@ -2,7 +2,6 @@ package org.openspotlight.bundle.task;
 
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextProvider;
-import org.openspotlight.federation.domain.artifact.Artifact;
 
 public abstract class ProcessingTask extends BaseTask implements
 		ConfigurableTask {

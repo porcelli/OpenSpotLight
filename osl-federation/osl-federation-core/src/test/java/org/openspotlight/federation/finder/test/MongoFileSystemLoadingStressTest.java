@@ -1,6 +1,5 @@
 package org.openspotlight.federation.finder.test;
 
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.mongodb.test.MongoModule;
 
@@ -14,22 +13,23 @@ import com.mongodb.Mongo;
  */
 public class MongoFileSystemLoadingStressTest extends AbstractFileSystemLoadingStressTest {
     private Mongo mongo;
-    
+
     @Override
-    protected void clearData() throws Exception {
+    protected void clearData()
+        throws Exception {
         BasicDBObject dbObject = new BasicDBObject();
-        for(String dbName: mongo.getDatabaseNames()){
+        for (String dbName: mongo.getDatabaseNames()) {
             DB db = mongo.getDB(dbName);
-            for(String colName: db.getCollectionNames()){
+            for (String colName: db.getCollectionNames()) {
                 db.getCollection(colName).remove(dbObject);
             }
         }
     }
 
     @Override
-    protected Module createStorageModule(RepositoryPath repositoryPath) throws Exception{
+    protected Module createStorageModule()
+        throws Exception {
         mongo = new Mongo();
-        return new MongoModule(StorageSession.FlushMode.EXPLICIT,mongo,repositoryPath);
-
+        return new MongoModule(StorageSession.FlushMode.EXPLICIT, mongo);
     }
 }

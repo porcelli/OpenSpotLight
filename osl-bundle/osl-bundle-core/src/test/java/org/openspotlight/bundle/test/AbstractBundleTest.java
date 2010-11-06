@@ -1,12 +1,12 @@
 package org.openspotlight.bundle.test;
 
-import com.google.inject.Injector;
 import org.junit.Before;
 import org.openspotlight.bundle.scheduler.Scheduler;
-import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.domain.Group;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+
+import com.google.inject.Injector;
 
 /**
  * Created by IntelliJ IDEA.

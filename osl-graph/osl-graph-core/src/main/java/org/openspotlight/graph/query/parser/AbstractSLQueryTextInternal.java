@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -61,11 +61,11 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.InvalidQueryElementException;
-import org.openspotlight.graph.query.QueryException;
-import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.Query.SortMode;
+import org.openspotlight.graph.query.QueryException;
 import org.openspotlight.graph.query.QueryResult;
 import org.openspotlight.graph.query.QueryTextInternal;
+import org.openspotlight.graph.query.SLQLVariable;
 
 /**
  * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.

@@ -60,9 +60,7 @@ import org.openspotlight.storage.domain.key.NodeKey;
  * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
  * connection state. This implementation must not be shared between threads.
  */
-public interface StorageSession extends Disposable{
-	
-    public RepositoryPath getRepositoryPath();
+public interface StorageSession extends Disposable {
 
     PartitionMethods withPartition(Partition partition);
 
@@ -78,17 +76,16 @@ public interface StorageSession extends Disposable{
 
         StorageNode findUniqueByCriteria(Criteria criteria);
 
-        public CriteriaBuilder createCriteria();
+        CriteriaBuilder createCriteria();
 
         NodeBuilder createWithType(String nodeType);
 
         NodeKey createNewSimpleKey(String... nodePaths);
 
         StorageNode createNewSimpleNode(String... nodePaths);
-
     }
 
-    StorageNode findNodeByStringId(String idAsString);
+    StorageNode findNodeByStringKey(String key);
 
     void removeNode(StorageNode StorageNode);
 
@@ -110,7 +107,6 @@ public interface StorageSession extends Disposable{
         NodeKeyBuilder withParent(String parentId);
 
         NodeKey andCreate();
-
     }
 
     void discardTransient();
@@ -134,7 +130,7 @@ public interface StorageSession extends Disposable{
 
     StorageLink getLink(StorageNode origin,
                          StorageNode destiny,
-                         String name);
+                         String type);
 
     Iterable<StorageLink> findLinks(StorageNode origin,
                                      StorageNode destiny);

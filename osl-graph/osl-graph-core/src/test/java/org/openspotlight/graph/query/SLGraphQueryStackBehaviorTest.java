@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -56,7 +56,6 @@ import static org.hamcrest.Matchers.not;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
-import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.test.domain.link.PackageContainsType;
 import org.openspotlight.graph.test.domain.node.JavaInterface;

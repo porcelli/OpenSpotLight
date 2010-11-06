@@ -1,22 +1,50 @@
-/*
- * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
- * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
- * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
- * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
- * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
- * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
- * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
- * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto * Direitos Autorais Reservados (c) 2009, CARAVELATECH
- * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
- * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
- * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
- * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
- * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
- * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
- * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
+/**
+ * OpenSpotLight - Open Source IT Governance Platform
+ *
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
+ * or third-party contributors as indicated by the @author tags or express
+ * copyright attribution statements applied by the authors.  All third-party
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E
+ * TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License  for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ *
+ ***********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
+ * Foundation.
+ *
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
+ *
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
  */
 
 package org.openspotlight.storage.test;
@@ -31,8 +59,6 @@ import static org.openspotlight.common.util.SLCollections.iterableToList;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -44,6 +70,7 @@ import org.junit.Test;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.node.PropertyImpl;
@@ -58,8 +85,6 @@ public abstract class AbstractStorageSessionTest {
     protected abstract Injector createsAutoFlushInjector();
 
     protected abstract Injector createsExplicitFlushInjector();
-
-    private final boolean didRunOnce = false;
 
     public void setupInjectors()
         throws Exception {
@@ -799,17 +824,17 @@ public abstract class AbstractStorageSessionTest {
         assertThat(foundNewNode3, is(newNode3));
         assertThat(foundNewNode2, is(newNode2));
         assertThat(foundNewNode1, is(newNode1));
-        assertThat(foundNewNode1.getPropertyAsString(session, "name"),
+        assertThat(foundNewNode1.getPropertyValueAsString(session, "name"),
                    is("name"));
-        assertThat(foundNewNode2.getPropertyAsString(session, "name"),
+        assertThat(foundNewNode2.getPropertyValueAsString(session, "name"),
                    is("name"));
-        assertThat(foundNewNode3.getPropertyAsString(session, "name"),
+        assertThat(foundNewNode3.getPropertyValueAsString(session, "name"),
                    is("name"));
-        assertThat(foundNewNode1.getPropertyAsString(session, "sequence"),
+        assertThat(foundNewNode1.getPropertyValueAsString(session, "sequence"),
                    is("1"));
-        assertThat(foundNewNode2.getPropertyAsString(session, "sequence"),
+        assertThat(foundNewNode2.getPropertyValueAsString(session, "sequence"),
                    is("1"));
-        assertThat(foundNewNode3.getPropertyAsString(session, "sequence"),
+        assertThat(foundNewNode3.getPropertyValueAsString(session, "sequence"),
                    is("3"));
         assertThat(foundNewNode1.getType(), is("sameName"));
         assertThat(foundNewNode2.getType(), is("sameName"));
@@ -910,6 +935,12 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
+    public void shouldCheckPartitionsFactoryBehavior() {
+        final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
+        
+    }
+
+    @Test
     public void shouldWorkWithPartitions() {
         final StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
@@ -1004,7 +1035,7 @@ public abstract class AbstractStorageSessionTest {
                           .getTransientValueAsString(session),
                    is("value"));
 
-        assertThat(loadedNode1.getPropertyAsString(session, "stringProperty"),
+        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
                    is(nullValue()));
 
         session.flushTransient();
@@ -1016,15 +1047,15 @@ public abstract class AbstractStorageSessionTest {
                                          .withProperty("name").equalsTo("name").buildCriteria()
                                          .andFindUnique(session);
 
-        assertThat(loadedNode1.getPropertyAsString(session, "stringProperty"),
+        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
                    is(nullValue()));
 
-        assertThat(loadedNode2.getPropertyAsString(session, "stringProperty"),
+        assertThat(loadedNode2.getPropertyValueAsString(session, "stringProperty"),
                    is("value"));
 
         loadedNode1.forceReload();
 
-        assertThat(loadedNode1.getPropertyAsString(session, "stringProperty"),
+        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
                    is("value"));
 
     }
@@ -1037,7 +1068,6 @@ public abstract class AbstractStorageSessionTest {
     public void shouldWorkWithSimplePropertiesOnAutoFlush()
         throws Exception {
 
-        final Date newDate = new Date();
         final StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
         final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
@@ -1057,10 +1087,10 @@ public abstract class AbstractStorageSessionTest {
                                                                                  .getTransientValueAsString(session),
                    is("value"));
 
-        assertThat(newNode.getPropertyAsString(session, "stringProperty"),
+        assertThat(newNode.getPropertyValueAsString(session, "stringProperty"),
                    is("value"));
 
-        assertThat(loadedNode.getPropertyAsString(session, "stringProperty"),
+        assertThat(loadedNode.getPropertyValueAsString(session, "stringProperty"),
                    is("value"));
 
         final StorageNode anotherLoadedNode =
@@ -1083,51 +1113,6 @@ public abstract class AbstractStorageSessionTest {
                                           .buildCriteria().andFindUnique(session);
 
         assertThat(noLoadedNode, is(nullValue()));
-    }
-
-    public static class PojoClass implements Serializable {
-
-        private String aString;
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PojoClass pojoClass = (PojoClass) o;
-
-            if (anInt != pojoClass.anInt) { return false; }
-            if (aString != null ? !aString.equals(pojoClass.aString)
-                    : pojoClass.aString != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = aString != null ? aString.hashCode() : 0;
-            result = 31 * result + anInt;
-            return result;
-        }
-
-        public String getaString() {
-            return aString;
-        }
-
-        public void setaString(final String aString) {
-            this.aString = aString;
-        }
-
-        public int getAnInt() {
-            return anInt;
-        }
-
-        public void setAnInt(final int anInt) {
-            this.anInt = anInt;
-        }
-
-        private int anInt;
-
     }
 
     @Test
@@ -1162,17 +1147,17 @@ public abstract class AbstractStorageSessionTest {
                                         .buildCriteria().andFindUnique(session);
 
         stream.reset();
-        assertThat(IOUtils.contentEquals(newNode.getPropertyAsStream(session,
+        assertThat(IOUtils.contentEquals(newNode.getPropertyValueAsStream(session,
                                                                      "streamProperty"), stream), is(true));
 
-        final InputStream loaded1 = loadedNode.getPropertyAsStream(session,
+        final InputStream loaded1 = loadedNode.getPropertyValueAsStream(session,
                                                              "streamProperty");
 
         final ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
         IOUtils.copy(loaded1, temporary1);
         final String asString1 = new String(temporary1.toByteArray());
         final ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
-        final InputStream loaded2 = loadedNode.getPropertyAsStream(session,
+        final InputStream loaded2 = loadedNode.getPropertyValueAsStream(session,
                                                              "streamProperty");
 
         IOUtils.copy(loaded2, temporary2);
@@ -1204,17 +1189,17 @@ public abstract class AbstractStorageSessionTest {
                                         .buildCriteria().andFindUnique(session);
 
         stream.reset();
-        assertThat(IOUtils.contentEquals(newNode.getPropertyAsStream(session,
+        assertThat(IOUtils.contentEquals(newNode.getPropertyValueAsStream(session,
                                                                      "streamProperty"), stream), is(true));
 
-        final InputStream loaded1 = loadedNode.getPropertyAsStream(session,
+        final InputStream loaded1 = loadedNode.getPropertyValueAsStream(session,
                                                              "streamProperty");
 
         final ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
         IOUtils.copy(loaded1, temporary1);
         final String asString1 = new String(temporary1.toByteArray());
         final ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
-        final InputStream loaded2 = loadedNode.getPropertyAsStream(session,
+        final InputStream loaded2 = loadedNode.getPropertyValueAsStream(session,
                                                              "streamProperty");
 
         IOUtils.copy(loaded2, temporary2);
@@ -1398,6 +1383,9 @@ public abstract class AbstractStorageSessionTest {
         final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithType("newNode1").withSimpleKey("sequence", "1")
                                       .withSimpleKey("name", "name").andCreate();
+
+        assertThat(newNode1.getProperty(session, "parameter"), is(nullValue()));
+
         newNode1.setIndexedProperty(session, "parameter", "firstValue");
         final List<StorageNode> found =
             iterableToList(session
@@ -1448,6 +1436,51 @@ public abstract class AbstractStorageSessionTest {
                                       .withSimpleKey("name", "name").andCreate();
         newNode1.setSimpleProperty(session, "sequence", "3");
 
+        newNode1.getProperty(session, "sequence");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotSetKeyPropertyII()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+
+        newNode1.getProperty(session, "sequence").setStringValue(session, "33");
+    }
+
+    public void shouldReturnKeysOnPropertyList()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+
+        assertThat(newNode1.getProperties(session).size(), is(2));
+        for (Property activeProperty: newNode1.getProperties(session)) {
+            assertThat(activeProperty.isKey(), is(true));
+            assertThat(activeProperty.getPropertyName().equals("sequence") ||
+                       activeProperty.getPropertyName().equals("name"), is(true));
+        }
+
+        assertThat(newNode1.getProperty(session, "sequence").getValueAsString(session), is("1"));
+        assertThat(newNode1.getProperty(session, "name").getValueAsString(session), is("name"));
+
+        assertThat(newNode1.getPropertyValueAsString(session, "sequence"), is("1"));
+        assertThat(newNode1.getPropertyValueAsString(session, "name"), is("name"));
+
+        assertThat(newNode1.getPropertyValueAsStream(session, "sequence"), is(newNode1.getProperty(session, "sequence")
+            .getValueAsStream(session)));
+        assertThat(newNode1.getPropertyValueAsStream(session, "name"),
+            is(newNode1.getProperty(session, "name").getValueAsStream(session)));
+
+        assertThat(newNode1.getPropertyValueAsBytes(session, "sequence"), is(newNode1.getProperty(session, "sequence")
+            .getValueAsBytes(session)));
+        assertThat(newNode1.getPropertyValueAsBytes(session, "name"),
+            is(newNode1.getProperty(session, "name").getValueAsBytes(session)));
     }
 
     @Test
@@ -1651,11 +1684,15 @@ public abstract class AbstractStorageSessionTest {
         final StorageNode a = b.getParent(session);
 
         final StorageLink aToCLink = session.addLink(a, c, "AtoC");
+        final StorageLink aToALink = session.addLink(a, a, "AtoA");
         final StorageLink aToBLink = session.addLink(a, b, "AtoB");
         final StorageLink cToALink = session.addLink(c, a, "CtoA");
 
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
+
+        assertThat(aToALink.getOrigin(), is(a));
+        assertThat(aToALink.getTarget(), is(a));
 
         assertThat(aToBLink.getOrigin(), is(a));
         assertThat(aToBLink.getTarget(), is(b));
@@ -1665,9 +1702,14 @@ public abstract class AbstractStorageSessionTest {
 
         final StorageLink foundCtoALink = session.getLink(c, a, "CtoA");
         assertThat(cToALink, is(foundCtoALink));
+
+        final StorageLink foundAtoALink = session.getLink(a, a, "AtoA");
+        assertThat(aToALink, is(foundAtoALink));
+
         final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
-        assertThat(foundALinks.size(), is(2));
+        assertThat(foundALinks.size(), is(3));
         assertThat(foundALinks.contains(aToCLink), is(true));
+        assertThat(foundALinks.contains(aToALink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
         final List<StorageLink> foundBLinks = iterableToList(session.findLinks(b));
@@ -1683,7 +1725,6 @@ public abstract class AbstractStorageSessionTest {
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
-
     }
 
     @Test
@@ -1699,11 +1740,15 @@ public abstract class AbstractStorageSessionTest {
                                .createNewSimpleNode("c");
 
         final StorageLink aToCLink = session.addLink(a, c, "AtoC");
+        final StorageLink aToALink = session.addLink(a, a, "AtoA");
         final StorageLink aToBLink = session.addLink(a, b, "AtoB");
         final StorageLink cToALink = session.addLink(c, a, "CtoA");
 
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
+
+        assertThat(aToALink.getOrigin(), is(a));
+        assertThat(aToALink.getTarget(), is(a));
 
         assertThat(aToBLink.getOrigin(), is(a));
         assertThat(aToBLink.getTarget(), is(b));
@@ -1713,9 +1758,14 @@ public abstract class AbstractStorageSessionTest {
 
         final StorageLink foundCtoALink = session.getLink(c, a, "CtoA");
         assertThat(cToALink, is(foundCtoALink));
+
+        final StorageLink foundAtoALink = session.getLink(a, a, "AtoA");
+        assertThat(aToALink, is(foundAtoALink));
+
         final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
-        assertThat(foundALinks.size(), is(2));
+        assertThat(foundALinks.size(), is(3));
         assertThat(foundALinks.contains(aToCLink), is(true));
+        assertThat(foundALinks.contains(aToALink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
         final List<StorageLink> foundBLinks = iterableToList(session.findLinks(b));
@@ -1731,7 +1781,6 @@ public abstract class AbstractStorageSessionTest {
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
-
     }
 
     @Test
@@ -1746,11 +1795,15 @@ public abstract class AbstractStorageSessionTest {
         final StorageNode a = b.getParent(session);
 
         final StorageLink aToCLink = session.addLink(a, c, "AtoC");
+        final StorageLink aToALink = session.addLink(a, a, "AtoA");
         final StorageLink aToBLink = session.addLink(a, b, "AtoB");
         final StorageLink cToALink = session.addLink(c, a, "CtoA");
         session.flushTransient();
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
+
+        assertThat(aToALink.getOrigin(), is(a));
+        assertThat(aToALink.getTarget(), is(a));
 
         assertThat(aToBLink.getOrigin(), is(a));
         assertThat(aToBLink.getTarget(), is(b));
@@ -1759,10 +1812,15 @@ public abstract class AbstractStorageSessionTest {
         assertThat(cToALink.getTarget(), is(a));
 
         final StorageLink foundCtoALink = session.getLink(c, a, "CtoA");
-        final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
         assertThat(cToALink, is(foundCtoALink));
-        assertThat(foundALinks.size(), is(2));
+
+        final StorageLink foundAtoALink = session.getLink(a, a, "AtoA");
+        assertThat(aToALink, is(foundAtoALink));
+
+        final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
+        assertThat(foundALinks.size(), is(3));
         assertThat(foundALinks.contains(aToCLink), is(true));
+        assertThat(foundALinks.contains(aToALink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
         final List<StorageLink> foundBLinks = iterableToList(session.findLinks(b));
@@ -1778,7 +1836,6 @@ public abstract class AbstractStorageSessionTest {
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
-
     }
 
     @Test
@@ -1794,11 +1851,15 @@ public abstract class AbstractStorageSessionTest {
                                .createNewSimpleNode("c");
 
         final StorageLink aToCLink = session.addLink(a, c, "AtoC");
+        final StorageLink aToALink = session.addLink(a, a, "AtoA");
         final StorageLink aToBLink = session.addLink(a, b, "AtoB");
         final StorageLink cToALink = session.addLink(c, a, "CtoA");
         session.flushTransient();
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
+
+        assertThat(aToALink.getOrigin(), is(a));
+        assertThat(aToALink.getTarget(), is(a));
 
         assertThat(aToBLink.getOrigin(), is(a));
         assertThat(aToBLink.getTarget(), is(b));
@@ -1808,9 +1869,14 @@ public abstract class AbstractStorageSessionTest {
 
         final StorageLink foundCtoALink = session.getLink(c, a, "CtoA");
         assertThat(cToALink, is(foundCtoALink));
+
+        final StorageLink foundAtoALink = session.getLink(a, a, "AtoA");
+        assertThat(aToALink, is(foundAtoALink));
+
         final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
-        assertThat(foundALinks.size(), is(2));
+        assertThat(foundALinks.size(), is(3));
         assertThat(foundALinks.contains(aToCLink), is(true));
+        assertThat(foundALinks.contains(aToALink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
         final List<StorageLink> foundBLinks = iterableToList(session.findLinks(b));
@@ -1826,7 +1892,6 @@ public abstract class AbstractStorageSessionTest {
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
-
     }
 
     @Test
@@ -1842,15 +1907,19 @@ public abstract class AbstractStorageSessionTest {
 
         final StorageLink link = session.addLink(a, b, "AtoB");
         final StorageLink link2 = session.addLink(a, b, "AtoB2");
+        final StorageLink linkR = session.addLink(a, a, "AtoA");
+        final StorageLink linkR2 = session.addLink(a, a, "AtoA2");
+
         link.setIndexedProperty(session, "sample", "value");
+        linkR.setIndexedProperty(session, "sample", "value");
 
         final StorageLink foundLink = session.getLink(a, b, "AtoB");
         final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
-        assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
-                                                                            .getPropertyAsString(session, "sample")));
-        assertThat(foundLink.getPropertyAsString(session, "sample"),
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
                    is("value"));
 
         session.removeLink(a, b, "AtoB");
@@ -1861,6 +1930,24 @@ public abstract class AbstractStorageSessionTest {
 
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));
+
+        final StorageLink foundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink foundLinkR2 = session.getLink(a, a, "AtoA2");
+        assertThat(foundLinkR, is(linkR));
+        assertThat(foundLinkR2, is(linkR2));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"), is(linkR
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"),
+                   is("value"));
+
+        session.removeLink(a, a, "AtoA");
+        session.removeLink(linkR2);
+
+        final StorageLink notfoundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink notfoundLinkR2 = session.getLink(a, a, "AtoA2");
+
+        assertThat(notfoundLinkR, is(nullValue()));
+        assertThat(notfoundLinkR2, is(nullValue()));
 
     }
 
@@ -1883,9 +1970,9 @@ public abstract class AbstractStorageSessionTest {
         final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
-        assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
-                                                                            .getPropertyAsString(session, "sample")));
-        assertThat(foundLink.getPropertyAsString(session, "sample"),
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
                    is("value"));
 
         session.removeLink(a, b, "AtoB");
@@ -1918,9 +2005,9 @@ public abstract class AbstractStorageSessionTest {
         final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
-        assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
-                                                                            .getPropertyAsString(session, "sample")));
-        assertThat(foundLink.getPropertyAsString(session, "sample"),
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
                    is("value"));
 
         session.removeLink(a, b, "AtoB");
@@ -1932,6 +2019,27 @@ public abstract class AbstractStorageSessionTest {
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));
 
+        final StorageLink linkR = session.addLink(a, a, "AtoA");
+        final StorageLink linkR2 = session.addLink(a, a, "AtoA2");
+        linkR.setIndexedProperty(session, "sample", "value");
+
+        final StorageLink foundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink foundLinkR2 = session.getLink(a, a, "AtoA2");
+        assertThat(foundLinkR, is(linkR));
+        assertThat(foundLinkR2, is(linkR2));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"), is(linkR
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"),
+                   is("value"));
+
+        session.removeLink(a, a, "AtoA");
+        session.removeLink(linkR2);
+
+        final StorageLink notfoundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink notfoundLinkR2 = session.getLink(a, a, "AtoA2");
+
+        assertThat(notfoundLinkR, is(nullValue()));
+        assertThat(notfoundLinkR2, is(nullValue()));
     }
 
     @Test
@@ -1953,9 +2061,9 @@ public abstract class AbstractStorageSessionTest {
         final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
-        assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
-                                                                            .getPropertyAsString(session, "sample")));
-        assertThat(foundLink.getPropertyAsString(session, "sample"),
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
                    is("value"));
 
         session.removeLink(a, b, "AtoB");
@@ -1967,6 +2075,29 @@ public abstract class AbstractStorageSessionTest {
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));
 
+        final StorageLink linkR = session.addLink(a, a, "AtoA");
+        final StorageLink linkR2 = session.addLink(a, a, "AtoA2");
+        linkR.setIndexedProperty(session, "sample", "value");
+        session.flushTransient();
+
+        final StorageLink foundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink foundLinkR2 = session.getLink(a, a, "AtoA2");
+        assertThat(foundLinkR, is(linkR));
+        assertThat(foundLinkR2, is(linkR2));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"), is(linkR
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"),
+                   is("value"));
+
+        session.removeLink(a, a, "AtoA");
+        session.removeLink(linkR2);
+        session.flushTransient();
+
+        final StorageLink notfoundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink notfoundLinkR2 = session.getLink(a, a, "AtoA2");
+
+        assertThat(notfoundLinkR, is(nullValue()));
+        assertThat(notfoundLinkR2, is(nullValue()));
     }
 
 }

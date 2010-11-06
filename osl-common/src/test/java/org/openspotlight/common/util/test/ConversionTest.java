@@ -49,14 +49,14 @@
 
 package org.openspotlight.common.util.test;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Test class for {@link Conversion}.

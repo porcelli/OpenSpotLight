@@ -48,17 +48,17 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import org.junit.After;
-import org.junit.Test;
-import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.AbstractCommandTest;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.junit.After;
+import org.junit.Test;
+import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 
 public class TestSaveQueryCommand extends AbstractCommandTest {
 

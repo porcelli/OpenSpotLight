@@ -1,4 +1,4 @@
-/*
+/**
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -79,7 +79,6 @@ import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -90,294 +89,268 @@ import com.google.inject.Provider;
 
 public class ExampleRemoteServerWithData {
 
-	private static class ExampleDataSupport {
+    private static class ExampleDataSupport {
 
-		/**
-		 * Adds the class implements interface links.
-		 * 
-		 * @param root
-		 *            the root
-		 * @param clazz
-		 *            the clazz
-		 * @param javaClass
-		 *            the java class
-		 * @param session
-		 *            the session
-		 */
-		private void addClassImplementsInterfaceLinks(
-				final GraphWriter session, final Context root,
-				final Class<?> clazz, final JavaClass javaClass) {
-			final Class<?>[] iFaces = clazz.getInterfaces();
-			for (final Class<?> iFace : iFaces) {
-				final Package iFacePack = iFace.getPackage();
-				final JavaPackage javaPackage = session.addNode(root,
-						JavaPackage.class, iFacePack.getName());
-				javaPackage.setCaption(iFacePack.getName());
-				final JavaInterface javaInterface = session.addChildNode(
-						javaPackage, JavaInterface.class, iFace.getName());
-				javaInterface.setCaption(iFace.getName());
-				session.addLink(ClassImplementsInterface.class, javaClass,
-						javaInterface);
-			}
-		}
+        /**
+         * Adds the class implements interface links.
+         * 
+         * @param root the root
+         * @param clazz the clazz
+         * @param javaClass the java class
+         * @param session the session
+         */
+        private void addClassImplementsInterfaceLinks(
+                                                      final GraphWriter session, final Context root,
+                                                      final Class<?> clazz, final JavaClass javaClass) {
+            final Class<?>[] iFaces = clazz.getInterfaces();
+            for (final Class<?> iFace: iFaces) {
+                final Package iFacePack = iFace.getPackage();
+                final JavaPackage javaPackage = session.addNode(root,
+                        JavaPackage.class, iFacePack.getName());
+                javaPackage.setCaption(iFacePack.getName());
+                final JavaInterface javaInterface = session.addChildNode(
+                        javaPackage, JavaInterface.class, iFace.getName());
+                javaInterface.setCaption(iFace.getName());
+                session.addLink(ClassImplementsInterface.class, javaClass,
+                        javaInterface);
+            }
+        }
 
-		/**
-		 * Adds the java class contains java class method.
-		 * 
-		 * @param clazz
-		 *            the clazz
-		 * @param javaClass
-		 *            the java class
-		 * @param session
-		 *            the session
-		 */
-		private void addJavaClassContainsJavaClassMethod(
-				final GraphWriter session, final Class<?> clazz,
-				final JavaClass javaClass) {
-			final Method[] methods = clazz.getDeclaredMethods();
-			for (final Method method : methods) {
-				final JavaTypeMethod javaTypeMethod = session.addChildNode(
-						javaClass, JavaTypeMethod.class, method.getName());
-				javaTypeMethod.setCaption(method.getName());
-				session.addLink(TypeContainsMethod.class, javaClass,
-						javaTypeMethod);
-			}
-		}
+        /**
+         * Adds the java class contains java class method.
+         * 
+         * @param clazz the clazz
+         * @param javaClass the java class
+         * @param session the session
+         */
+        private void addJavaClassContainsJavaClassMethod(
+                                                         final GraphWriter session, final Class<?> clazz,
+                                                         final JavaClass javaClass) {
+            final Method[] methods = clazz.getDeclaredMethods();
+            for (final Method method: methods) {
+                final JavaTypeMethod javaTypeMethod = session.addChildNode(
+                        javaClass, JavaTypeMethod.class, method.getName());
+                javaTypeMethod.setCaption(method.getName());
+                session.addLink(TypeContainsMethod.class, javaClass,
+                        javaTypeMethod);
+            }
+        }
 
-		/**
-		 * Adds the java class hirarchy links.
-		 * 
-		 * @param root
-		 *            the root
-		 * @param clazz
-		 *            the clazz
-		 * @param javaClass
-		 *            the java class
-		 * @param session
-		 *            the session
-		 */
-		private void addJavaClassHirarchyLinks(final GraphWriter session,
-				final Context root, final Class<?> clazz,
-				final JavaClass javaClass) {
-			final Class<?> superClass = clazz.getSuperclass();
-			if (superClass != null) {
-				final Package classPack = clazz.getPackage();
-				final JavaPackage javaPackage = session.addNode(root,
-						JavaPackage.class, classPack.getName());
-				javaPackage.setCaption(classPack.getName());
-				final JavaClass superJavaClass = session.addChildNode(
-						javaPackage, JavaClass.class, superClass.getName());
-				session.addLink(PackageContainsType.class, javaPackage,
-						superJavaClass);
-				session.addLink(JavaClassHierarchy.class, javaClass,
-						superJavaClass);
-				this.addJavaClassHirarchyLinks(session, root, superClass,
-						superJavaClass);
-			}
-		}
+        /**
+         * Adds the java class hirarchy links.
+         * 
+         * @param root the root
+         * @param clazz the clazz
+         * @param javaClass the java class
+         * @param session the session
+         */
+        private void addJavaClassHirarchyLinks(final GraphWriter session,
+                                               final Context root, final Class<?> clazz,
+                                               final JavaClass javaClass) {
+            final Class<?> superClass = clazz.getSuperclass();
+            if (superClass != null) {
+                final Package classPack = clazz.getPackage();
+                final JavaPackage javaPackage = session.addNode(root,
+                        JavaPackage.class, classPack.getName());
+                javaPackage.setCaption(classPack.getName());
+                final JavaClass superJavaClass = session.addChildNode(
+                        javaPackage, JavaClass.class, superClass.getName());
+                session.addLink(PackageContainsType.class, javaPackage,
+                        superJavaClass);
+                session.addLink(JavaClassHierarchy.class, javaClass,
+                        superJavaClass);
+                this.addJavaClassHirarchyLinks(session, root, superClass,
+                        superJavaClass);
+            }
+        }
 
-		/**
-		 * Adds the java interface contains java method.
-		 * 
-		 * @param iFace
-		 *            the i face
-		 * @param javaInterface
-		 *            the java interface
-		 * @param session
-		 *            the session
-		 */
-		private void addJavaInterfaceContainsJavaMethod(
-				final GraphWriter session, final Class<?> iFace,
-				final JavaInterface javaInterface) {
-			final Method[] methods = iFace.getDeclaredMethods();
-			for (final Method method : methods) {
-				final JavaTypeMethod javaTypeMethod = session.addChildNode(
-						javaInterface, JavaTypeMethod.class, method.getName());
-				javaTypeMethod.setCaption(method.getName());
-				session.addLink(TypeContainsMethod.class, javaInterface,
-						javaTypeMethod);
-			}
-		}
+        /**
+         * Adds the java interface contains java method.
+         * 
+         * @param iFace the i face
+         * @param javaInterface the java interface
+         * @param session the session
+         */
+        private void addJavaInterfaceContainsJavaMethod(
+                                                        final GraphWriter session, final Class<?> iFace,
+                                                        final JavaInterface javaInterface) {
+            final Method[] methods = iFace.getDeclaredMethods();
+            for (final Method method: methods) {
+                final JavaTypeMethod javaTypeMethod = session.addChildNode(
+                        javaInterface, JavaTypeMethod.class, method.getName());
+                javaTypeMethod.setCaption(method.getName());
+                session.addLink(TypeContainsMethod.class, javaInterface,
+                        javaTypeMethod);
+            }
+        }
 
-		/**
-		 * Adds the java interface hirarchy links.
-		 * 
-		 * @param root
-		 *            the root
-		 * @param iFace
-		 *            the i face
-		 * @param javaInterface
-		 *            the java interface
-		 * @param session
-		 *            the session
-		 */
-		private void addJavaInterfaceHirarchyLinks(final GraphWriter session,
-				final Context root, final Class<?> iFace,
-				final JavaInterface javaInterface) {
-			final Class<?>[] superIFaces = iFace.getInterfaces();
-			for (final Class<?> superIFace : superIFaces) {
-				final Package iFacePack = iFace.getPackage();
-				final JavaPackage javaPackage = session.addNode(root,
-						JavaPackage.class, iFacePack.getName());
-				javaPackage.setCaption(iFacePack.getName());
-				final JavaInterface superJavaInterface = session.addChildNode(
-						javaPackage, JavaInterface.class, superIFace.getName());
-				session.addLink(PackageContainsType.class, javaPackage,
-						superJavaInterface);
-				superJavaInterface.setCaption(superIFace.getName());
-				session.addLink(JavaInterfaceHierarchy.class, javaInterface,
-						superJavaInterface);
-				this.addJavaInterfaceHirarchyLinks(session, root, superIFace,
-						superJavaInterface);
-			}
-		}
+        /**
+         * Adds the java interface hirarchy links.
+         * 
+         * @param root the root
+         * @param iFace the i face
+         * @param javaInterface the java interface
+         * @param session the session
+         */
+        private void addJavaInterfaceHirarchyLinks(final GraphWriter session,
+                                                   final Context root, final Class<?> iFace,
+                                                   final JavaInterface javaInterface) {
+            final Class<?>[] superIFaces = iFace.getInterfaces();
+            for (final Class<?> superIFace: superIFaces) {
+                final Package iFacePack = iFace.getPackage();
+                final JavaPackage javaPackage = session.addNode(root,
+                        JavaPackage.class, iFacePack.getName());
+                javaPackage.setCaption(iFacePack.getName());
+                final JavaInterface superJavaInterface = session.addChildNode(
+                        javaPackage, JavaInterface.class, superIFace.getName());
+                session.addLink(PackageContainsType.class, javaPackage,
+                        superJavaInterface);
+                superJavaInterface.setCaption(superIFace.getName());
+                session.addLink(JavaInterfaceHierarchy.class, javaInterface,
+                        superJavaInterface);
+                this.addJavaInterfaceHirarchyLinks(session, root, superIFace,
+                        superJavaInterface);
+            }
+        }
 
-		/**
-		 * Load classes.
-		 * 
-		 * @param fileName
-		 *            the file name
-		 * @return the collection< class<?>>
-		 * @throws SLException
-		 *             the SL exception
-		 * @throws IOException
-		 *             Signals that an I/O exception has occurred.
-		 * @throws ClassNotFoundException
-		 *             the class not found exception
-		 */
-		private Collection<Class<?>> loadClasses(final String fileName)
-				throws SLException, IOException, ClassNotFoundException {
-			final Collection<Class<?>> classes = new ArrayList<Class<?>>();
-			final String packagePath = GraphConnection.class.getPackage()
-					.getName().replace('.', '/');
-			final String filePath = packagePath + '/' + fileName;
-			final InputStream inputStream = getResourceFromClassPath(filePath);
-			final Collection<String> names = Files.readLines(inputStream);
-			inputStream.close();
-			for (final String name : names) {
-				final String className = "java.util.".concat(name).trim();
-				final Class<?> clazz = Class.forName(className);
-				classes.add(clazz);
-			}
-			return classes;
-		}
+        /**
+         * Load classes.
+         * 
+         * @param fileName the file name
+         * @return the collection< class<?>>
+         * @throws SLException the SL exception
+         * @throws IOException Signals that an I/O exception has occurred.
+         * @throws ClassNotFoundException the class not found exception
+         */
+        private Collection<Class<?>> loadClasses(final String fileName)
+                throws SLException, IOException, ClassNotFoundException {
+            final Collection<Class<?>> classes = new ArrayList<Class<?>>();
+            final String packagePath = GraphConnection.class.getPackage()
+                    .getName().replace('.', '/');
+            final String filePath = packagePath + '/' + fileName;
+            final InputStream inputStream = getResourceFromClassPath(filePath);
+            final Collection<String> names = Files.readLines(inputStream);
+            inputStream.close();
+            for (final String name: names) {
+                final String className = "java.util.".concat(name).trim();
+                final Class<?> clazz = Class.forName(className);
+                classes.add(clazz);
+            }
+            return classes;
+        }
 
-		/**
-		 * Gets the populated graph. This method is temporary and used just for
-		 * testing purpose!
-		 * 
-		 * @return the populated graph
-		 * @throws SLException
-		 *             the SL exception
-		 * @throws IOException
-		 *             Signals that an I/O exception has occurred.
-		 * @throws ClassNotFoundException
-		 *             the class not found exception
-		 */
-		public Pair<GraphSessionFactory, Provider<StorageSession>> populateGraph()
-				throws Exception {
+        /**
+         * Gets the populated graph. This method is temporary and used just for testing purpose!
+         * 
+         * @return the populated graph
+         * @throws SLException the SL exception
+         * @throws IOException Signals that an I/O exception has occurred.
+         * @throws ClassNotFoundException the class not found exception
+         */
+        public Pair<GraphSessionFactory, Provider<StorageSession>> populateGraph()
+                throws Exception {
 
-			Injector injector = Guice.createInjector(
-					new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-							ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-							RepositoryPath.repositoryPath("default")),
-					new SimplePersistModule(), new GraphModule());
+            Injector injector = Guice.createInjector(
+                    new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                            ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                    new SimplePersistModule(), new GraphModule());
 
-			final SecurityFactory securityFactory = injector
-					.getInstance(SecurityFactory.class);
-			final User simpleUser = securityFactory.createUser("testUser");
+            final SecurityFactory securityFactory = injector
+                    .getInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
 
-			final Collection<Class<?>> iFaces = this
-					.loadClasses("java-util-interfaces.txt");
-			final Collection<Class<?>> classes = this
-					.loadClasses("java-util-classes.txt");
-			GraphWriter writer = injector.getInstance(GraphWriter.class);
-			GraphReader reader = injector.getInstance(GraphReader.class);
-			Context root = reader.getContext("queryTest");
+            final Collection<Class<?>> iFaces = this
+                    .loadClasses("java-util-interfaces.txt");
+            final Collection<Class<?>> classes = this
+                    .loadClasses("java-util-classes.txt");
+            GraphWriter writer = injector.getInstance(GraphWriter.class);
+            GraphReader reader = injector.getInstance(GraphReader.class);
+            Context root = reader.getContext("queryTest");
 
-			final Package pack = java.util.Date.class.getPackage();
-			final JavaPackage utilJavaPackage = writer.addNode(root,
-					JavaPackage.class, pack.getName());
-			utilJavaPackage.setCaption(pack.getName());
+            final Package pack = java.util.Date.class.getPackage();
+            final JavaPackage utilJavaPackage = writer.addNode(root,
+                    JavaPackage.class, pack.getName());
+            utilJavaPackage.setCaption(pack.getName());
 
-			int count = 0;
-			final float floatValue = 0.3F;
-			for (final Class<?> iFace : iFaces) {
-				final JavaInterface javaInterface = writer.addChildNode(
-						utilJavaPackage, JavaInterface.class, iFace.getName());
-				writer.addLink(PackageContainsType.class, utilJavaPackage,
-						javaInterface);
-				javaInterface.setCaption(iFace.getName());
-				javaInterface.setIntValue(count);
-				javaInterface.setDecValue(new Float(count + floatValue));
-				javaInterface.setBoolValue(new Boolean(true));
-				this.addJavaInterfaceHirarchyLinks(writer, root, iFace,
-						javaInterface);
-				this.addJavaInterfaceContainsJavaMethod(writer, iFace,
-						javaInterface);
-				count++;
-			}
+            int count = 0;
+            final float floatValue = 0.3F;
+            for (final Class<?> iFace: iFaces) {
+                final JavaInterface javaInterface = writer.addChildNode(
+                        utilJavaPackage, JavaInterface.class, iFace.getName());
+                writer.addLink(PackageContainsType.class, utilJavaPackage,
+                        javaInterface);
+                javaInterface.setCaption(iFace.getName());
+                javaInterface.setIntValue(count);
+                javaInterface.setDecValue(new Float(count + floatValue));
+                javaInterface.setBoolValue(new Boolean(true));
+                this.addJavaInterfaceHirarchyLinks(writer, root, iFace,
+                        javaInterface);
+                this.addJavaInterfaceContainsJavaMethod(writer, iFace,
+                        javaInterface);
+                count++;
+            }
 
-			count = 0;
-			for (final Class<?> clazz : classes) {
-				// context = session.createContext("queryTest2");
-				final JavaClass javaClass = writer.addChildNode(
-						utilJavaPackage, JavaClass.class, clazz.getName());
-				writer.addLink(PackageContainsType.class, utilJavaPackage,
-						javaClass);
-				javaClass.setCaption(clazz.getName());
-				javaClass.setIntValue(count);
-				javaClass.setDecValue(new Float(count + floatValue));
-				javaClass.setBoolValue(new Boolean(false));
-				this.addJavaClassHirarchyLinks(writer, root, clazz, javaClass);
-				this.addClassImplementsInterfaceLinks(writer, root, clazz,
-						javaClass);
-				this.addJavaClassContainsJavaClassMethod(writer, clazz,
-						javaClass);
-				count++;
-			}
+            count = 0;
+            for (final Class<?> clazz: classes) {
+                // context = session.createContext("queryTest2");
+                final JavaClass javaClass = writer.addChildNode(
+                        utilJavaPackage, JavaClass.class, clazz.getName());
+                writer.addLink(PackageContainsType.class, utilJavaPackage,
+                        javaClass);
+                javaClass.setCaption(clazz.getName());
+                javaClass.setIntValue(count);
+                javaClass.setDecValue(new Float(count + floatValue));
+                javaClass.setBoolValue(new Boolean(false));
+                this.addJavaClassHirarchyLinks(writer, root, clazz, javaClass);
+                this.addClassImplementsInterfaceLinks(writer, root, clazz,
+                        javaClass);
+                this.addJavaClassContainsJavaClassMethod(writer, clazz,
+                        javaClass);
+                count++;
+            }
 
-			writer.flush();
-			return Pair.newPair(
-					injector.getInstance(GraphSessionFactory.class),
-					injector.getProvider(StorageSession.class));
-		}
+            writer.flush();
+            return Pair.newPair(
+                    injector.getInstance(GraphSessionFactory.class),
+                    injector.getProvider(StorageSession.class));
+        }
 
-	}
+    }
 
-	public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+        throws Exception {
 
-		RemoteGraphSessionServer server = null;
-		try {
-			server = populateSomeDataAndStartTheServer();
-			while (true) {
-				Thread.sleep(5000);
-			}
-		} finally {
-			if (server != null) {
-				server.shutdown();
-			}
-		}
+        RemoteGraphSessionServer server = null;
+        try {
+            server = populateSomeDataAndStartTheServer();
+            while (true) {
+                Thread.sleep(5000);
+            }
+        } finally {
+            if (server != null) {
+                server.shutdown();
+            }
+        }
 
-	}
+    }
 
-	public static RemoteGraphSessionServer populateSomeDataAndStartTheServer()
-			throws Exception {
-		Pair<GraphSessionFactory, Provider<StorageSession>> pair = new ExampleDataSupport()
-				.populateGraph();
+    public static RemoteGraphSessionServer populateSomeDataAndStartTheServer()
+            throws Exception {
+        Pair<GraphSessionFactory, Provider<StorageSession>> pair = new ExampleDataSupport()
+                .populateGraph();
 
-		return new RemoteGraphSessionServer(new UserAuthenticator() {
+        return new RemoteGraphSessionServer(new UserAuthenticator() {
 
-			public boolean canConnect(final String userName,
-					final String password, final String clientHost) {
-				return true;
-			}
+            public boolean canConnect(final String userName,
+                                      final String password, final String clientHost) {
+                return true;
+            }
 
-			public boolean equals(final Object o) {
-				return this.getClass().equals(o.getClass());
-			}
-		}, 7070, 60 * 1000 * 10L, pair.getK1(), pair.getK2());
+            public boolean equals(final Object o) {
+                return this.getClass().equals(o.getClass());
+            }
+        }, 7070, 60 * 1000 * 10L, pair.getK1(), pair.getK2());
 
-	}
+    }
 
 }
