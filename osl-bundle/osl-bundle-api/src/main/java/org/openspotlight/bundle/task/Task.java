@@ -48,8 +48,12 @@
  */
 package org.openspotlight.bundle.task;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
+
+import org.openspotlight.bundle.context.ExecutionContext;
 
 public interface Task extends Callable<Void>, Comparable<Task> {
 
+    boolean isValid(ExecutionContext context, Map<String, String> properties);
 }

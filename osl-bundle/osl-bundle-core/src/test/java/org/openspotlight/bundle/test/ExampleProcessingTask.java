@@ -1,5 +1,7 @@
 package org.openspotlight.bundle.test;
 
+import java.util.Map;
+
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextProvider;
 import org.openspotlight.bundle.task.ProcessingTask;
@@ -12,12 +14,18 @@ import org.openspotlight.bundle.task.ProcessingTask;
  * To change this template use File | Settings | File Templates.
  */
 public class ExampleProcessingTask extends ProcessingTask {
-    protected ExampleProcessingTask(ExecutionContextProvider provider) {
-        super(provider);
+
+    protected ExampleProcessingTask(ExecutionContextProvider provider, Map<String, String> properties) {
+        super(provider, properties);
     }
 
     @Override
-    protected void execute(ExecutionContext context) throws Exception {
+    protected void execute() throws Exception {
         ExampleExecutionHistory.add(this.getClass(), null, null);
+    }
+
+    @Override
+    public boolean isValid(ExecutionContext context, Map<String, String> properties) {
+        return true;
     }
 }
