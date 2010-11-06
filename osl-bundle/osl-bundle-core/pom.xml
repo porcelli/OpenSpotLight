@@ -29,7 +29,11 @@
             <groupId>opensymphony</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
-        
+		<dependency>
+			<groupId>org.clapper</groupId>
+			<artifactId>ocutil</artifactId>
+		</dependency>
+
         
         <dependency>
             <groupId>org.openspotlight</groupId>

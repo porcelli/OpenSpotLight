@@ -46,50 +46,14 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.common.metrics;
+package org.openspotlight.bundle.task;
 
-import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.bundle.context.ExecutionContextProvider;
 
-public class SLBundleException extends SLRuntimeException {
+public abstract class AfterProcessingTask extends ProcessingTask {
 
-    private static final long serialVersionUID = 3010250675462782477L;
-
-    /**
-     * Default inherited constructor.
-     */
-    public SLBundleException() {
-        super();
-    }
-
-    /**
-     * Default inherited constructor.
-     * 
-     * @param message
-     */
-    public SLBundleException(
-                              final String message ) {
-        super(message);
-    }
-
-    /**
-     * Default inherited constructor.
-     * 
-     * @param message
-     * @param cause
-     */
-    public SLBundleException(
-                              final String message, final Throwable cause ) {
-        super(message, cause);
-    }
-
-    /**
-     * Default inherited constructor.
-     * 
-     * @param cause
-     */
-    public SLBundleException(
-                              final Throwable cause ) {
-        super(cause);
+    public AfterProcessingTask(ExecutionContextProvider provider) {
+        super(provider);
     }
 
 }
