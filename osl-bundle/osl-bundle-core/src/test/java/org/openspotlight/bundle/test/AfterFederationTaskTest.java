@@ -28,6 +28,7 @@ public class AfterFederationTaskTest extends AbstractBundleTest {
         getScheduler().fireSchedulable(null,null,getArtifactSource());
         Iterator<Triple<Class<? extends Callable>, Artifact, String>> it = getData().iterator();
         assertThat(it.next().getK1(),is(ExampleArtifactTask.class));
+        //FIXME pegar do claspath usando a mesma forma que foi feita no SLQL
         fail();// needs more assertions
     }
 

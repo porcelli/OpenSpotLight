@@ -1,12 +1,31 @@
 package org.openspotlight.bundle.test;
 
+import com.google.inject.Guice;
 import org.junit.Before;
+import org.openspotlight.bundle.context.ExecutionContextModule;
+import org.openspotlight.bundle.scheduler.SchedulableTaskFactory;
 import org.openspotlight.bundle.scheduler.Scheduler;
+import org.openspotlight.bundle.scheduler.SchedulerModule;
 import org.openspotlight.domain.Group;
 import org.openspotlight.domain.Repository;
+import org.openspotlight.domain.Schedulable;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 import com.google.inject.Injector;
+import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
+import org.openspotlight.federation.loader.PersistentConfigurationManagerModule;
+import org.openspotlight.graph.GraphModule;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,7 +79,19 @@ public abstract class AbstractBundleTest {
 
 
     protected Injector createInjector() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
+//                    schedulableMap.put(Group.class, SampleGroupSchedulableCommand.class);
+                    List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
+                    loaderRegistry.add(FileSystemOriginArtifactLoader.class);
+                    Injector injector = Guice.createInjector(
+                            new SchedulerModule(schedulableMap), new ExecutionContextModule(loaderRegistry),
+                            new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                            new PersistentConfigurationManagerModule(),
+                            new SimplePersistModule(),
+                            new GraphModule());
+
+        return injector;
     }
 
 
