@@ -10,16 +10,9 @@ import com.google.inject.AbstractModule;
  * To change this template use File | Settings | File Templates.
  */
 public class BundleModule extends AbstractModule{
-    private final int numberOfThreads;
-
-    public BundleModule(int numberOfThreads) {
-        this.numberOfThreads = numberOfThreads;
-    }
-
 
     @Override
     protected void configure() {
-        bind(int.class).annotatedWith(NumberOfThreads.class).toInstance(numberOfThreads);
         bind(BundleExecutor.class).to(BundleExecutorImpl.class);
     }
 }

@@ -3,10 +3,11 @@ package org.openspotlight.bundle.execution;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
+import org.openspotlight.federation.loader.ConfigurationManagerFactory;
+import org.openspotlight.federation.loader.ImmutableConfigurationManager;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,9 +25,13 @@ public class BundleExecutorImpl implements BundleExecutor {
 
     private final ExecutorService executor;
 
+
     @Inject
-    public BundleExecutorImpl(ExecutionContextFactory factory, @NumberOfThreads int numberOfThreads) {
+    public BundleExecutorImpl(ExecutionContextFactory factory, ConfigurationManagerFactory configurationManagerFactory) {
         this.factory = factory;
+        ImmutableConfigurationManager configurationManager = configurationManagerFactory.createImmutable();
+        int numberOfThreads = configurationManager.getGlobalSettings().getParallelThreads();
+        configurationManager.closeResources();
         this.executor = Executors.newFixedThreadPool(numberOfThreads);
     }
 
