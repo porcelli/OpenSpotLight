@@ -88,7 +88,7 @@ public class DynamicCommandSupport {
         finder.addClassPath();
 
         ClassFilter filter = new AndClassFilter(
-        // Must not be an interface
+                                                // Must not be an interface
                                                 new NotClassFilter(new InterfaceOnlyClassFilter()),
                                                 // Must implement the ClassFilter interface
                                                 new SubclassClassFilter(DynamicCommand.class),

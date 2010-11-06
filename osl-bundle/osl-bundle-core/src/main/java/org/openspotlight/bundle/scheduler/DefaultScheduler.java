@@ -98,8 +98,6 @@ public class DefaultScheduler implements Scheduler {
 
         private final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap;
 
-        @SuppressWarnings("unchecked")
-
         public OslInternalImmediateCommand(
                 final Schedulable schedulable,
                 final ExecutionContextFactory executionContextFactory,
@@ -136,7 +134,6 @@ public class DefaultScheduler implements Scheduler {
 
         private final ExecutionContextFactory factory;
 
-        @SuppressWarnings("unchecked")
         public OslInternalSchedulerCommand(
                 final Schedulable schedulable,
                 final ExecutionContextFactory executionContextFactory,
@@ -272,7 +269,6 @@ public class DefaultScheduler implements Scheduler {
         return command;
     }
 
-    @SuppressWarnings("unchecked")
     private Map<String, OslInternalSchedulerCommand> groupJobsByCronInformation(final GlobalSettings settings,
                                                                                 final Iterable<Repository> repositories) {
 
