@@ -83,10 +83,9 @@ public interface StorageSession extends Disposable {
         NodeKey createNewSimpleKey(String... nodePaths);
 
         StorageNode createNewSimpleNode(String... nodePaths);
-
     }
 
-    StorageNode findNodeByStringId(String idAsString);
+    StorageNode findNodeByStringKey(String key);
 
     void removeNode(StorageNode StorageNode);
 

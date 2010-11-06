@@ -700,11 +700,11 @@ public class GraphReaderImpl implements GraphReader {
                     String rawAnotherOriginId = StringKeysSupport.getOriginKeyAsStringFromLinkKey(linkId);
                     if (linkType != null) {
                         StorageLink found =
-                            session.getLink(session.findNodeByStringId(rawAnotherOriginId), stNode, linkType.getName());
+                            session.getLink(session.findNodeByStringKey(rawAnotherOriginId), stNode, linkType.getName());
                         if (found != null) foundBidLinks.add(found);
                     } else {
                         Iterable<StorageLink> found =
-                            session.findLinks(session.findNodeByStringId(rawAnotherOriginId));
+                            session.findLinks(session.findNodeByStringKey(rawAnotherOriginId));
                         if (found != null) foundBidLinks.addAll(SLCollections.iterableToList(found));
                     }
                 }
@@ -713,18 +713,18 @@ public class GraphReaderImpl implements GraphReader {
 
         if (rawTarget != null && linkType != null) {
             links = SLCollections.iterableOfOne(
-                session.getLink(session.findNodeByStringId(rawOrigin
-                .getId()), session.findNodeByStringId(rawTarget
+                session.getLink(session.findNodeByStringKey(rawOrigin
+                .getId()), session.findNodeByStringKey(rawTarget
                 .getId()), linkType.getName()));
         } else if (rawTarget != null) {
-            links = session.findLinks(session.findNodeByStringId(rawOrigin
-                .getId()), session.findNodeByStringId(rawTarget.getId()));
+            links = session.findLinks(session.findNodeByStringKey(rawOrigin
+                .getId()), session.findNodeByStringKey(rawTarget.getId()));
         } else if (linkType != null) {
-            links = session.findLinks(session.findNodeByStringId(rawOrigin
+            links = session.findLinks(session.findNodeByStringKey(rawOrigin
                 .getId()), linkType.getName());
 
         } else {
-            links = session.findLinks(session.findNodeByStringId(rawOrigin
+            links = session.findLinks(session.findNodeByStringKey(rawOrigin
                 .getId()));
 
         }

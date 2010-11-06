@@ -62,7 +62,8 @@ import org.openspotlight.storage.domain.StorageNode;
  * <li>its parent node (that can be null)
  * <li>and its {@link CompositeKey} (that aggregates simple keys and node type)
  * </ul>
- * NodeKeys shouldn't be instantiated direclty, they should be used inside {@link StorageNode}.<br>
+ * NodeKeys shouldn't be instantiated direclty, to create new instances of NodeKeys you should use the
+ * {@link org.openspotlight.storage.StorageSession.NodeKeyBuilder} interface.<br>
  * 
  * @author feuteston
  * @author porcelli

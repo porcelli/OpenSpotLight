@@ -100,7 +100,7 @@ import com.google.common.collect.Multimap;
 public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
-    public StorageNode findNodeByStringId(
+    public StorageNode findNodeByStringKey(
                                           final String idAsString) {
 
         final Partition partition = partitionFactory

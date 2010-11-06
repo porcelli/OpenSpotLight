@@ -60,7 +60,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -933,6 +932,12 @@ public abstract class AbstractStorageSessionTest {
         assertThat(childrenType1.contains(child3), is(true));
         assertThat(childrenType1.contains(child4), is(true));
 
+    }
+
+    @Test
+    public void shouldCheckPartitionsFactoryBehavior() {
+        final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
+        
     }
 
     @Test

@@ -376,9 +376,9 @@ public class NodeAndLinkSupport {
         String linkId = null;
         if (session != null) {
             final StorageNode originAsSTNode = session
-                    .findNodeByStringId(origin.getId());
+                    .findNodeByStringKey(origin.getId());
             final StorageNode targetAsSTNode = session
-                    .findNodeByStringId(target.getId());
+                    .findNodeByStringKey(target.getId());
             if (originAsSTNode == null && createIfDontExists)
                 throw new IllegalStateException();
             if (originAsSTNode != null) {

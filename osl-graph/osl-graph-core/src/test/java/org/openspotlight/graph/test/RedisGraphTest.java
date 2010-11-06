@@ -68,13 +68,10 @@ public class RedisGraphTest extends AbstractGraphTest {
     private enum JRedisServerConfigExample implements JRedisServerDetail {
 
         GRAPH("localhost", 6379, 0, true),
-        FEDERATION("localhost", 6379, 1,
-                false),
+        FEDERATION("localhost", 6379, 1, false),
         SYNTAX_HIGHLIGHT("localhost", 6379, 2, false),
-        LINE_REFERENCE(
-                "localhost", 6379, 3, false),
-        SECURITY("localhost", 6379, 4,
-                false),
+        LINE_REFERENCE("localhost", 6379, 3, false),
+        SECURITY("localhost", 6379, 4, false),
         LOG("localhost", 6379, 5, false);
 
         private JRedisServerConfigExample(final String serverName, final int serverPort,

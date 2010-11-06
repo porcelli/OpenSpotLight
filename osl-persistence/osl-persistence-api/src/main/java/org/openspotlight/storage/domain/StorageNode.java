@@ -53,8 +53,7 @@ import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.key.NodeKey;
 
-public interface StorageNode extends StorageDataMarker, NodeFactory,
-        PropertyContainer {
+public interface StorageNode extends StorageDataMarker, NodeFactory, PropertyContainer {
 
     public void forceReload();
 
