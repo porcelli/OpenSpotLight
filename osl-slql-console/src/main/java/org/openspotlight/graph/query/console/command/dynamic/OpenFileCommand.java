@@ -69,29 +69,28 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
-        String fileName = state.getInput().substring(3).trim();
+        if (!accept(state)) { return; }
+        final String fileName = state.getInput().substring(3).trim();
 
-        File file = new File(fileName);
+        final File file = new File(fileName);
         if (file.exists() && file.isFile()) {
             try {
                 state.clearBuffer();
-                LineNumberReader fileReader = new LineNumberReader(new FileReader(file));
+                final LineNumberReader fileReader = new LineNumberReader(new FileReader(file));
                 while (fileReader.ready()) {
                     state.appendLineBuffer(fileReader.readLine());
                 }
                 state.setLastQuery(state.getBuffer());
                 state.clearBuffer();
                 out.println("query loaded into buffer.");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 state.clearBuffer();
                 out.print("ERROR: ");
                 out.println(e.getMessage());
@@ -108,6 +107,7 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "get";
     }
@@ -115,6 +115,7 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return "get";
     }
@@ -122,6 +123,7 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "gets the slql query from file";
     }
@@ -129,6 +131,7 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return "get";
     }
@@ -136,6 +139,7 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return FileCompletionMode.STARTS_WITH;
     }
@@ -143,6 +147,7 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return true;
     }
@@ -150,11 +155,10 @@ public class OpenFileCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("get ")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("get ")) { return true; }
         return false;
     }
 }

@@ -65,8 +65,10 @@ public class HelloWebCommand implements WebCommand {
     /**
      * {@inheritDoc}
      */
-    public String execute( final ExecutionContext context,
-                           final Map<String, String> parameters ) throws WebException {
+    @Override
+    public String execute(final ExecutionContext context,
+                           final Map<String, String> parameters)
+        throws WebException {
         final Message message = new Message();
         message.setMessage("hello world!");
         return JSONObject.fromObject(message).toString();

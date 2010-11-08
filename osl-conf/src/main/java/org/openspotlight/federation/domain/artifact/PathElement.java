@@ -71,13 +71,11 @@ public class PathElement implements Comparable<PathElement>, Serializable {
      * @param pathString the path string
      * @return the path element
      */
-    public static PathElement createFromPathString( final String pathString ) {
+    public static PathElement createFromPathString(final String pathString) {
         Assertions.checkNotEmpty("pathString", pathString);
         final StringTokenizer tok = new StringTokenizer(pathString, "/");
 
-        if (!tok.hasMoreTokens()) {
-            return null;
-        }
+        if (!tok.hasMoreTokens()) { return null; }
 
         PathElement lastPath = new PathElement();
         lastPath.setName(tok.nextToken());
@@ -97,8 +95,8 @@ public class PathElement implements Comparable<PathElement>, Serializable {
 
     }
 
-    public static PathElement createRelativePath( final PathElement initialPathElement,
-                                                  final String pathString ) {
+    public static PathElement createRelativePath(final PathElement initialPathElement,
+                                                  final String pathString) {
         final String newPathString = pathString.startsWith("/") ? Strings.removeBegginingFrom("/", pathString) : pathString;
 
         return createFromPathString(initialPathElement.getCompletePath() + Artifact.SEPARATOR + newPathString);
@@ -109,7 +107,7 @@ public class PathElement implements Comparable<PathElement>, Serializable {
     private String                    name;
 
     /** The parent. */
-    private PathElement     parent;
+    private PathElement               parent;
 
     /** The hashcode. */
     private volatile transient int    hashcode;
@@ -121,31 +119,28 @@ public class PathElement implements Comparable<PathElement>, Serializable {
     }
 
     public PathElement(
-                        final String name, final PathElement parent ) {
+                        final String name, final PathElement parent) {
         this.name = name;
         this.parent = parent;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo( final PathElement o ) {
+    @Override
+    public int compareTo(final PathElement o) {
         return getCompletePath().compareTo(o.getCompletePath());
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @Override
-    public boolean equals( final Object o ) {
-        if (!(o instanceof PathElement)) {
-            return false;
-        }
-        final PathElement that = (PathElement)o;
+    public boolean equals(final Object o) {
+        if (!(o instanceof PathElement)) { return false; }
+        final PathElement that = (PathElement) o;
         return Equals.eachEquality(name, that.name) && Equals.eachEquality(parent, that.parent);
 
     }
@@ -190,7 +185,6 @@ public class PathElement implements Comparable<PathElement>, Serializable {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -215,18 +209,19 @@ public class PathElement implements Comparable<PathElement>, Serializable {
         return parent == null;
     }
 
-    public void setCompletePath( final String s ) {
+    public void setCompletePath(final String s) {
 
     }
 
-    public void setName( final String name ) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setParent( final PathElement parent ) {
+    public void setParent(final PathElement parent) {
         this.parent = parent;
     }
 
+    @Override
     public String toString() {
         return "PathElement: " + getCompletePath();
     }

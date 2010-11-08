@@ -66,20 +66,19 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         out.println("additional properties:");
         if (state.getAdditionalProperties().size() == 0) {
             out.println("\t(none)");
         } else {
-            for (String propertyName : state.getAdditionalProperties()) {
+            for (final String propertyName: state.getAdditionalProperties()) {
                 out.print("\t- ");
                 out.println(propertyName);
             }
@@ -92,6 +91,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "display properties";
     }
@@ -99,6 +99,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return "display properties";
     }
@@ -106,6 +107,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "display slql properties output";
     }
@@ -113,6 +115,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
@@ -120,6 +123,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
@@ -127,6 +131,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }
@@ -134,11 +139,10 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("display properties")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("display properties")) { return true; }
         return false;
     }
 }

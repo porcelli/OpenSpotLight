@@ -90,7 +90,7 @@ public final class LazyProperty<T> implements Serializable {
     private final Class<T> type;
 
     private String         sha1;
-    private StorageNode           node;
+    private StorageNode    node;
 
     /**
      * Factory class.

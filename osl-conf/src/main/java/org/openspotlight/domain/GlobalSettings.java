@@ -60,72 +60,70 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name("configuration")
 public class GlobalSettings implements SimpleNodeType, Serializable {
 
-	private static final long serialVersionUID = 3443359462450366393L;
+    private static final long serialVersionUID = 3443359462450366393L;
 
-	private int parallelThreads = Runtime.getRuntime().availableProcessors() * 2;
+    private int               parallelThreads  = Runtime.getRuntime().availableProcessors() * 2;
 
-	public int getParallelThreads() {
-		return parallelThreads;
-	}
+    public int getParallelThreads() {
+        return parallelThreads;
+    }
 
-	public void setParallelThreads(int parallelThreads) {
-		this.parallelThreads = parallelThreads;
-	}
+    public void setParallelThreads(final int parallelThreads) {
+        this.parallelThreads = parallelThreads;
+    }
 
-	private long defaultSleepingIntervalInMilliseconds;
+    private long   defaultSleepingIntervalInMilliseconds;
 
-	/** The max result list size. */
-	private int maxResultListSize;
+    /** The max result list size. */
+    private int    maxResultListSize;
 
-	private String systemUser;
+    private String systemUser;
 
-	private String systemPassword;
+    private String systemPassword;
 
-	public GlobalSettings() {
-	}
+    public GlobalSettings() {}
 
-	public long getDefaultSleepingIntervalInMilliseconds() {
-		return defaultSleepingIntervalInMilliseconds;
-	}
+    public long getDefaultSleepingIntervalInMilliseconds() {
+        return defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Gets the max result list size.
-	 * 
-	 * @return the max result list size
-	 */
-	public int getMaxResultListSize() {
-		return maxResultListSize;
-	}
+    /**
+     * Gets the max result list size.
+     * 
+     * @return the max result list size
+     */
+    public int getMaxResultListSize() {
+        return maxResultListSize;
+    }
 
-	public String getSystemPassword() {
-		return systemPassword;
-	}
+    public String getSystemPassword() {
+        return systemPassword;
+    }
 
-	public String getSystemUser() {
-		return systemUser;
-	}
+    public String getSystemUser() {
+        return systemUser;
+    }
 
-	public void setDefaultSleepingIntervalInMilliseconds(
-			final long defaultSleepingIntervalInMilliseconds) {
-		this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
-	}
+    public void setDefaultSleepingIntervalInMilliseconds(
+                                                         final long defaultSleepingIntervalInMilliseconds) {
+        this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Sets the max result list size.
-	 * 
-	 * @param maxResultListSize
-	 *            the new max result list size
-	 */
-	public void setMaxResultListSize(final int maxResultListSize) {
-		this.maxResultListSize = maxResultListSize;
-	}
+    /**
+     * Sets the max result list size.
+     * 
+     * @param maxResultListSize the new max result list size
+     */
+    public void setMaxResultListSize(final int maxResultListSize) {
+        this.maxResultListSize = maxResultListSize;
+    }
 
-	public void setSystemPassword(final String systemPassword) {
-		this.systemPassword = systemPassword;
-	}
+    public void setSystemPassword(final String systemPassword) {
+        this.systemPassword = systemPassword;
+    }
 
-	public void setSystemUser(final String systemUser) {
-		this.systemUser = systemUser;
-	}
+    public void setSystemUser(final String systemUser) {
+        this.systemUser = systemUser;
+    }
 
 }

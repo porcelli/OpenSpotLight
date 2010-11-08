@@ -75,7 +75,7 @@ import com.thoughtworks.xstream.XStream;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class DatabaseMetadataScriptManagerTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -94,7 +94,8 @@ public class DatabaseMetadataScriptManagerTest {
         script.setDatabase(DatabaseType.ORACLE);
         script.setScriptType(ScriptType.TABLE);
         script.setStreamHandlerClass(PostgresRoutineStreamHandler.class);
-        final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(
+        final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap =
+            new EnumMap<ColumnsNamesForMetadataSelect, String>(
                                                                                                                                  ColumnsNamesForMetadataSelect.class);
         columnAliasMap.put(ColumnsNamesForMetadataSelect.catalog_name, "newName");
         script.setColumnAliasMap(columnAliasMap);
@@ -102,7 +103,8 @@ public class DatabaseMetadataScriptManagerTest {
     }
 
     @Test
-    public void shouldLoadScript() throws Exception {
+    public void shouldLoadScript()
+        throws Exception {
         final DatabaseMetadataScript script = DatabaseMetadataScriptManager.INSTANCE.getScript(DatabaseType.H2,
                                                                                                ScriptType.FUNCTION);
         assertThat(script, is(notNullValue()));
@@ -110,11 +112,12 @@ public class DatabaseMetadataScriptManagerTest {
 
     @Test
     public void shouldLogValidXmlFromXStream() {
-        System.out.println("valid xml config script: \n" + this.createSample());
+        System.out.println("valid xml config script: \n" + createSample());
     }
 
     @Test
-    public void shouldReplaceTemplateInACorrectWay() throws Exception {
+    public void shouldReplaceTemplateInACorrectWay()
+        throws Exception {
         final DatabaseMetadataScript tableScript = DatabaseMetadataScriptManager.INSTANCE.getScript(DatabaseType.MY_SQL,
                                                                                                     ScriptType.TABLE);
         final StringTemplate template = new StringTemplate(tableScript.getTemplate(), DefaultTemplateLexer.class);

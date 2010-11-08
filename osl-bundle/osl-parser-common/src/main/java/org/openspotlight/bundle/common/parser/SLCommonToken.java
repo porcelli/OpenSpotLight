@@ -60,7 +60,7 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
     private int               endLine               = -1;
 
     public SLCommonToken(
-                          final CharStream input, final int type, final int channel, final int start, final int stop ) {
+                          final CharStream input, final int type, final int channel, final int start, final int stop) {
         super(type);
         this.input = input;
         this.channel = channel;
@@ -69,19 +69,19 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
     }
 
     public SLCommonToken(
-                          final int type ) {
+                          final int type) {
         super(type);
     }
 
     public SLCommonToken(
-                          final int type, final String text ) {
+                          final int type, final String text) {
         super(type);
         channel = DEFAULT_CHANNEL;
         this.text = text;
     }
 
     public SLCommonToken(
-                          final Token oldToken ) {
+                          final Token oldToken) {
         super(oldToken.getType());
         text = oldToken.getText();
         line = oldToken.getLine();
@@ -90,42 +90,45 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
         channel = oldToken.getChannel();
         input = oldToken.getInputStream();
         if (oldToken instanceof CommonToken) {
-            start = ((CommonToken)oldToken).getStartIndex();
-            stop = ((CommonToken)oldToken).getStopIndex();
+            start = ((CommonToken) oldToken).getStartIndex();
+            stop = ((CommonToken) oldToken).getStopIndex();
         }
         if (oldToken instanceof SLCommonToken) {
-            endLine = ((SLCommonToken)oldToken).getEndLine();
-            endCharPositionInLine = ((SLCommonToken)oldToken).getEndCharPositionInLine();
+            endLine = ((SLCommonToken) oldToken).getEndLine();
+            endCharPositionInLine = ((SLCommonToken) oldToken).getEndCharPositionInLine();
         }
     }
 
+    @Override
     public SLArtifactStream getArtifact() {
-        if (input instanceof SLArtifactStream) {
-            return (SLArtifactStream)input;
-        }
+        if (input instanceof SLArtifactStream) { return (SLArtifactStream) input; }
         return null;
     }
 
+    @Override
     public int getEndCharPositionInLine() {
         return endCharPositionInLine;
     }
 
+    @Override
     public int getEndLine() {
         return endLine;
     }
 
-    public void setEndCharPositionInLine( final int endCharPositionInLine ) {
+    public void setEndCharPositionInLine(final int endCharPositionInLine) {
         this.endCharPositionInLine = endCharPositionInLine;
     }
 
-    public void setEndLine( final int endLine ) {
+    public void setEndLine(final int endLine) {
         this.endLine = endLine;
     }
 
+    @Override
     public int getStartCharPositionInLine() {
         return getCharPositionInLine();
     }
 
+    @Override
     public int getStartLine() {
         return getLine();
     }

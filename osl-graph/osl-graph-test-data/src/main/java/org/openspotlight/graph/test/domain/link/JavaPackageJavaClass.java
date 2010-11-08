@@ -57,5 +57,4 @@ import org.openspotlight.graph.annotation.LinkAutoBidirectional;
  * @author Vitor Hugo Chagas
  */
 @LinkAutoBidirectional
-public abstract class JavaPackageJavaClass extends Link {
-}
+public abstract class JavaPackageJavaClass extends Link {}

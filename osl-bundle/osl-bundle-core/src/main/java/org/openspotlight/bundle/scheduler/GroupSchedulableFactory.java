@@ -63,7 +63,7 @@ public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
 
     private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
-        private final Logger logger = LoggerFactory.getLogger(getClass());
+        private final Logger     logger            = LoggerFactory.getLogger(getClass());
 
         private final Set<Group> groupsWithBundles = new LinkedHashSet<Group>();
 
@@ -71,18 +71,19 @@ public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
             return groupsWithBundles;
         }
 
-        public void visitBean(Group bean) {
-//            if (bean.getBundleTypes().size() != 0) {
-//                groupsWithBundles.add(bean);
-//                if (logger.isDebugEnabled()) {
-//                    logger.debug("adding group " + bean + " because it has " + bean.getBundleTypes().size() + "  bundles");
-//                }
-//            } else {
-//                if (logger.isDebugEnabled()) {
-//                    logger.debug("ignoring group " + bean + " because it has no bundles");
-//                }
-//
-//            }
+        @Override
+        public void visitBean(final Group bean) {
+            //            if (bean.getBundleTypes().size() != 0) {
+            //                groupsWithBundles.add(bean);
+            //                if (logger.isDebugEnabled()) {
+            //                    logger.debug("adding group " + bean + " because it has " + bean.getBundleTypes().size() + "  bundles");
+            //                }
+            //            } else {
+            //                if (logger.isDebugEnabled()) {
+            //                    logger.debug("ignoring group " + bean + " because it has no bundles");
+            //                }
+            //
+            //            }
             throw new UnsupportedOperationException();//FIXME
         }
 
@@ -97,14 +98,14 @@ public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
             }
 
             @Override
-            public Void call() throws Exception {
+            public Void call()
+                throws Exception {
                 final GroupVisitor visitor = new GroupVisitor();
                 SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable, visitor, TransientProperty.class);
-                Set<Group> groupsToExecute = visitor.getGroupsWithBundles();
+                final Set<Group> groupsToExecute = visitor.getGroupsWithBundles();
                 throw new UnsupportedOperationException();//Needs to re-implement bundle processing
             }
-        });  //To change body of implemented methods use File | Settings | File Templates.
+        }); //To change body of implemented methods use File | Settings | File Templates.
     }
-
 
 }

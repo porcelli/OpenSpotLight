@@ -70,7 +70,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name("repository")
 public class Repository implements SimpleNodeType, Serializable {
 
-    public static Builder newRepositoryNamed(String name) {
+    public static Builder newRepositoryNamed(final String name) {
         return new Builder(name);
     }
 
@@ -78,21 +78,21 @@ public class Repository implements SimpleNodeType, Serializable {
 
         private ArtifactSourceMapping currentMapping;
 
-        private Builder(String name) {
+        private Builder(final String name) {
             repository = new Repository();
             repository.setName(name);
             repository.setActive(true);
         }
 
-        private Repository repository;
+        private final Repository repository;
 
-        private Group      currentGroup;
+        private Group            currentGroup;
 
         public Repository andCreate() {
             return repository;
         }
 
-        public Builder withGroup(String groupName) {
+        public Builder withGroup(final String groupName) {
             currentGroup = new Group();
             currentGroup.setActive(true);
             currentGroup.setName(groupName);
@@ -100,9 +100,9 @@ public class Repository implements SimpleNodeType, Serializable {
             return this;
         }
 
-        public Builder withSubGroup(String groupName) {
+        public Builder withSubGroup(final String groupName) {
 
-            Group group = new Group();
+            final Group group = new Group();
             group.setActive(true);
             group.setName(groupName);
             currentGroup.getGroups().add(currentGroup);
@@ -111,26 +111,27 @@ public class Repository implements SimpleNodeType, Serializable {
             return this;
         }
 
-        public Builder withArtifactSource(String artifactSourceName, String rootFolder, String initialLookup) {
-            ArtifactSource source = new ArtifactSource();
+        public Builder withArtifactSource(final String artifactSourceName, final String rootFolder, final String initialLookup) {
+            final ArtifactSource source = new ArtifactSource();
             source.setActive(true);
             source.setName(artifactSourceName);
             source.setInitialLookup(initialLookup);
             source.setRootFolder(rootFolder);
-            ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+            final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
             mapping.getIncludeds().add("**/*");
             source.getMappings().add(mapping);
-            this.currentGroup.getArtifactSources().add(source);
-            this.currentMapping = mapping;
+            currentGroup.getArtifactSources().add(source);
+            currentMapping = mapping;
             return this;
         }
 
-        public Builder withBundleConfig(String name, Class<? extends Callable<Void>>... taskType) {
-            BundleConfig bundleProcessorType = new BundleConfig();
+        public Builder withBundleConfig(final String name, final Class<? extends Callable<Void>>... taskType) {
+            final BundleConfig bundleProcessorType = new BundleConfig();
             bundleProcessorType.setActive(true);
             bundleProcessorType.setName(name);
-            for (Class<? extends Callable<Void>> t: taskType)
+            for (final Class<? extends Callable<Void>> t: taskType) {
                 bundleProcessorType.getTasks().add(t);
+            }
             currentMapping.getBundleConfig().add(bundleProcessorType);
             return this;
         }
@@ -166,6 +167,7 @@ public class Repository implements SimpleNodeType, Serializable {
         }
     }
 
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof Repository)) { return false; }
         final Repository that = (Repository) o;
@@ -191,6 +193,7 @@ public class Repository implements SimpleNodeType, Serializable {
         return name;
     }
 
+    @Override
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {

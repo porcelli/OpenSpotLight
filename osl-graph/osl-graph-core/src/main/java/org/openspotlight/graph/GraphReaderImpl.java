@@ -101,7 +101,7 @@ public class GraphReaderImpl implements GraphReader {
     }
 
     @SuppressWarnings("unchecked")
-	private Iterable<Node> internalGetChildrenNodes(
+    private Iterable<Node> internalGetChildrenNodes(
                                                     final Node node,
                                                     final Class<?> clazz, final String name) {
         final StorageSession session = sessionProvider.get();
@@ -126,27 +126,27 @@ public class GraphReaderImpl implements GraphReader {
         return IteratorBuilder.<Node, StorageNode>createIteratorBuilder()
             .withConverter(new Converter<Node, StorageNode>() {
 
-            @Override
-            public Node convert(
-                                final StorageNode o)
-                throws Exception {
-                return convertToSLNode(node.getId(), o.getKey()
-                    .getPartition().getPartitionName(), o, false);
-            }
-        }).withItems(children).withReferee(
-            new NextItemReferee<StorageNode>() {
-            @Override
-            public boolean canAcceptAsNewItem(
-                                              final StorageNode o)
-                throws Exception {
-                if (name == null) {
+                @Override
+                public Node convert(
+                                    final StorageNode o)
+                    throws Exception {
+                    return convertToSLNode(node.getId(), o.getKey()
+                        .getPartition().getPartitionName(), o, false);
+                }
+            }).withItems(children).withReferee(
+                new NextItemReferee<StorageNode>() {
+                    @Override
+                    public boolean canAcceptAsNewItem(
+                                                      final StorageNode o)
+                        throws Exception {
+                        if (name == null) {
                 return true;
                 }
                 return name.equals(o.getPropertyValueAsString(
                     session, NodeAndLinkSupport.NAME));
 
             }
-        }).andBuild();
+                }).andBuild();
 
     }
 
@@ -181,7 +181,7 @@ public class GraphReaderImpl implements GraphReader {
                     .createNewSimpleNode(id);
                 contextNode.setIndexedProperty(session,
                     NodeAndLinkSupport.WEIGTH_VALUE, convert(weigth,
-                    String.class));
+                        String.class));
                 session.flushTransient();
             } else {
                 caption = contextNode.getPropertyValueAsString(session,
@@ -221,7 +221,7 @@ public class GraphReaderImpl implements GraphReader {
             final Node node = NodeAndLinkSupport.createNode(factory, session,
                 contextId, parentId, (Class<? extends Node>) clazz,
                 rawStNode.getPropertyValueAsString(session,
-                NodeAndLinkSupport.NAME), needsToVerifyType, null,
+                    NodeAndLinkSupport.NAME), needsToVerifyType, null,
                 null);
             return node;
         } catch (final Exception e) {
@@ -313,7 +313,7 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         final Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
             returnSubTypes, null, null, null, caption, SLCollections
-            .iterableOf(context, aditionalContexts));
+                .iterableOf(context, aditionalContexts));
         return result;
     }
 
@@ -357,7 +357,7 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         final Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
             returnSubTypes, propertyName, value, null, null, SLCollections
-            .iterableOf(context, aditionalContexts));
+                .iterableOf(context, aditionalContexts));
         return result;
     }
 
@@ -381,7 +381,7 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         final Iterable<Node> result = internalFindNodes(null, true, propertyName,
             value, null, null, SLCollections.iterableOf(context,
-            aditionalContexts));
+                aditionalContexts));
         return result;
     }
 
@@ -404,7 +404,7 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         final Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
             returnSubTypes, null, null, name, null, SLCollections
-            .iterableOf(context, aditionalContexts));
+                .iterableOf(context, aditionalContexts));
         return result;
     }
 
@@ -440,18 +440,18 @@ public class GraphReaderImpl implements GraphReader {
         for (final Iterable<StorageNode> results: resultBuilder.build()) {
             result.add(IteratorBuilder
                 .<Node, StorageNode>createIteratorBuilder().withConverter(
-                new Converter<Node, StorageNode>() {
+                    new Converter<Node, StorageNode>() {
 
-                @Override
-                public Node convert(
-                                    final StorageNode o)
-                    throws Exception {
-                    return convertToSLNode(o.getKey()
-                        .getParentKeyAsString(), o
-                        .getKey().getPartition()
-                        .getPartitionName(), o, false);
-                }
-            }).withItems(results).andBuild());
+                        @Override
+                        public Node convert(
+                                            final StorageNode o)
+                            throws Exception {
+                            return convertToSLNode(o.getKey()
+                                .getParentKeyAsString(), o
+                                .getKey().getPartition()
+                                .getPartitionName(), o, false);
+                        }
+                    }).withItems(results).andBuild());
 
         }
 
@@ -484,7 +484,7 @@ public class GraphReaderImpl implements GraphReader {
         if (!returnSubTypes) {
             criteriaBuilder.and()
                 .withProperty(NodeAndLinkSupport.CORRECT_CLASS).equals(
-                clzz.getName());
+                    clzz.getName());
         }
         resultBuilder.add(criteriaBuilder.buildCriteria().andFind(session));
     }
@@ -583,23 +583,23 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         return IteratorBuilder
             .<Node, Link>createIteratorBuilder().withItems(
-            internalGetLinks(null, node, null, linkDirection))
+                internalGetLinks(null, node, null, linkDirection))
             .withConverter(new Converter<Node, Link>() {
-            @Override
-            public Node convert(
-                                final Link o)
-                throws Exception {
-                return o.getTarget();
-            }
-        }).withReferee(new NextItemReferee<Link>() {
+                @Override
+                public Node convert(
+                                    final Link o)
+                    throws Exception {
+                    return o.getTarget();
+                }
+            }).withReferee(new NextItemReferee<Link>() {
 
-            @Override
-            public boolean canAcceptAsNewItem(
-                                              final Link o)
-                throws Exception {
-                return o.getClass().equals(linkClass);
-            }
-        }).andBuild();
+                @Override
+                public boolean canAcceptAsNewItem(
+                                                  final Link o)
+                    throws Exception {
+                    return o.getClass().equals(linkClass);
+                }
+            }).andBuild();
     }
 
     @SuppressWarnings("unchecked")
@@ -611,27 +611,27 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         return IteratorBuilder
             .<Node, Link>createIteratorBuilder().withItems(
-            internalGetLinks(null, node, null, linkDirection))
+                internalGetLinks(null, node, null, linkDirection))
             .withConverter(new Converter<Node, Link>() {
-            @Override
-            public Node convert(
-                                final Link o)
-                throws Exception {
-                return o.getTarget();
-            }
-        }).withReferee(new NextItemReferee<Link>() {
-
-            @Override
-            public boolean canAcceptAsNewItem(
-                                              final Link o)
-                throws Exception {
-                if (!returnSubTypes) {
-                    o.getTarget().getClass().equals(nodeClass);
+                @Override
+                public Node convert(
+                                    final Link o)
+                    throws Exception {
+                    return o.getTarget();
                 }
-                return o.getTarget().getClass().isAssignableFrom(
-                    nodeClass);
-            }
-        }).andBuild();
+            }).withReferee(new NextItemReferee<Link>() {
+
+                @Override
+                public boolean canAcceptAsNewItem(
+                                                  final Link o)
+                    throws Exception {
+                    if (!returnSubTypes) {
+                        o.getTarget().getClass().equals(nodeClass);
+                    }
+                    return o.getTarget().getClass().isAssignableFrom(
+                        nodeClass);
+                }
+            }).andBuild();
 
     }
 
@@ -642,15 +642,15 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         return IteratorBuilder
             .<Node, Link>createIteratorBuilder().withItems(
-            internalGetLinks(null, node, null, linkDirection))
+                internalGetLinks(null, node, null, linkDirection))
             .withConverter(new Converter<Node, Link>() {
-            @Override
-            public Node convert(
-                                final Link o)
-                throws Exception {
-                return o.getTarget();
-            }
-        }).andBuild();
+                @Override
+                public Node convert(
+                                    final Link o)
+                    throws Exception {
+                    return o.getTarget();
+                }
+            }).andBuild();
     }
 
     @Override
@@ -672,13 +672,13 @@ public class GraphReaderImpl implements GraphReader {
                                             final Class<? extends Link> linkType,
                                             final Node rawOrigin, final Node rawTarget, final LinkDirection linkDirection) {
 
-        if (rawOrigin == null) throw new NullPointerException();
+        if (rawOrigin == null) { throw new NullPointerException(); }
         if (LinkDirection.ANY.equals(linkDirection)) { return SLCollections.iterableOfAll(internalGetLinks(linkType,
             rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL),
             internalGetLinks(linkType, rawOrigin, rawTarget,
-            LinkDirection.UNIDIRECTIONAL)); }
+                LinkDirection.UNIDIRECTIONAL)); }
 
-        if (rawTarget != null && rawOrigin.compareTo(rawTarget) == 0) throw new IllegalStateException();
+        if (rawTarget != null && rawOrigin.compareTo(rawTarget) == 0) { throw new IllegalStateException(); }
 
         if (rawTarget != null && LinkDirection.BIDIRECTIONAL.equals(linkDirection)
             && rawOrigin.compareTo(rawTarget) < 0) { return internalGetLinks(linkType, rawTarget, rawOrigin,
@@ -686,26 +686,31 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         Iterable<StorageLink> links;
 
-        StorageNode stNode =
+        final StorageNode stNode =
             NodeAndLinkSupport.retrievePreviousNode(factory, session, getContext(rawOrigin.getContextId()), rawOrigin, false);
         stNode.forceReload();
 
-        List<StorageLink> foundBidLinks =
+        final List<StorageLink> foundBidLinks =
             new LinkedList<StorageLink>();
         if (LinkDirection.BIDIRECTIONAL.equals(linkDirection)) {
-            List<String> linkIds =
-                SerializationUtil.deserialize(stNode.getPropertyValueAsStream(session, NodeAndLinkSupport.BIDIRECTIONAL_LINK_IDS));
+            final List<String> linkIds =
+                SerializationUtil
+                    .deserialize(stNode.getPropertyValueAsStream(session, NodeAndLinkSupport.BIDIRECTIONAL_LINK_IDS));
             if (linkIds != null) {
-                for (String linkId: linkIds) {
-                    String rawAnotherOriginId = StringKeysSupport.getOriginKeyAsStringFromLinkKey(linkId);
+                for (final String linkId: linkIds) {
+                    final String rawAnotherOriginId = StringKeysSupport.getOriginKeyAsStringFromLinkKey(linkId);
                     if (linkType != null) {
-                        StorageLink found =
+                        final StorageLink found =
                             session.getLink(session.findNodeByStringKey(rawAnotherOriginId), stNode, linkType.getName());
-                        if (found != null) foundBidLinks.add(found);
+                        if (found != null) {
+                            foundBidLinks.add(found);
+                        }
                     } else {
-                        Iterable<StorageLink> found =
+                        final Iterable<StorageLink> found =
                             session.findLinks(session.findNodeByStringKey(rawAnotherOriginId));
-                        if (found != null) foundBidLinks.addAll(SLCollections.iterableToList(found));
+                        if (found != null) {
+                            foundBidLinks.addAll(SLCollections.iterableToList(found));
+                        }
                     }
                 }
             }
@@ -714,8 +719,8 @@ public class GraphReaderImpl implements GraphReader {
         if (rawTarget != null && linkType != null) {
             links = SLCollections.iterableOfOne(
                 session.getLink(session.findNodeByStringKey(rawOrigin
-                .getId()), session.findNodeByStringKey(rawTarget
-                .getId()), linkType.getName()));
+                    .getId()), session.findNodeByStringKey(rawTarget
+                    .getId()), linkType.getName()));
         } else if (rawTarget != null) {
             links = session.findLinks(session.findNodeByStringKey(rawOrigin
                 .getId()), session.findNodeByStringKey(rawTarget.getId()));
@@ -729,36 +734,38 @@ public class GraphReaderImpl implements GraphReader {
 
         }
 
-        Iterable<Link> result = IteratorBuilder.<Link, StorageLink>createIteratorBuilder()
+        final Iterable<Link> result = IteratorBuilder.<Link, StorageLink>createIteratorBuilder()
             .withConverter(
-            new IteratorBuilder.Converter<Link, StorageLink>() {
+                new IteratorBuilder.Converter<Link, StorageLink>() {
 
-            @Override
-            public Link convert(
-                                final StorageLink o)
-                throws Exception {
-                final Class<? extends Link> linkType = (Class<? extends Link>) Class
-                    .forName(o.getLinkType());
-                final Node origin = findNode(o.getOrigin());
-                final Node target = findNode(o.getTarget());
-                final Link result = NodeAndLinkSupport.createLink(
-                    factory, session, linkType, origin,
-                    target, LinkDirection.UNIDIRECTIONAL, false);
-                return result;
-            }
-        }).withReferee(new NextItemReferee<StorageLink>() {
+                    @Override
+                    public Link convert(
+                                        final StorageLink o)
+                        throws Exception {
+                        final Class<? extends Link> linkType = (Class<? extends Link>) Class
+                            .forName(o.getLinkType());
+                        final Node origin = findNode(o.getOrigin());
+                        final Node target = findNode(o.getTarget());
+                        final Link result = NodeAndLinkSupport.createLink(
+                            factory, session, linkType, origin,
+                            target, LinkDirection.UNIDIRECTIONAL, false);
+                        return result;
+                    }
+                }).withReferee(new NextItemReferee<StorageLink>() {
 
-            @Override
-            public boolean canAcceptAsNewItem(
-                                              final StorageLink o)
-                throws Exception {
-                try {
-                    final Class<?> clazz = Class.forName(o.getLinkType());
-                    if (!Link.class.isAssignableFrom(clazz)) {
+                @Override
+                public boolean canAcceptAsNewItem(
+                                                  final StorageLink o)
+                    throws Exception {
+                    try {
+                        final Class<?> clazz = Class.forName(o.getLinkType());
+                        if (!Link.class.isAssignableFrom(clazz)) {
                     return false;
                     }
-                    if (LinkDirection.ANY.equals(linkDirection)) return true;
-                    LinkDirection retrievedLinkDirection =
+                    if (LinkDirection.ANY.equals(linkDirection)) {
+                        return true;
+                    }
+                    final LinkDirection retrievedLinkDirection =
                         LinkDirection.valueOf(o.getPropertyValueAsString(session, NodeAndLinkSupport.LINK_DIRECTION));
                     return retrievedLinkDirection.equals(linkDirection);
                 } catch (final ClassNotFoundException e) {
@@ -766,7 +773,7 @@ public class GraphReaderImpl implements GraphReader {
                 }
 
             }
-        }).withItems(SLCollections.iterableOfAll(links, foundBidLinks)).andBuild();
+            }).withItems(SLCollections.iterableOfAll(links, foundBidLinks)).andBuild();
 
         return result;
 
@@ -783,7 +790,7 @@ public class GraphReaderImpl implements GraphReader {
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
-        return (Node) convertToSLNode(parentStNode
+        return convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
             parentStNode, false);
 
@@ -798,7 +805,7 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         return (Iterable<T>) internalFindNodes(clazz, returnSubTypes, null,
             null, null, null, SLCollections.iterableOf(context,
-            aditionalContexts));
+                aditionalContexts));
     }
 
     @SuppressWarnings("unchecked")
@@ -807,10 +814,11 @@ public class GraphReaderImpl implements GraphReader {
                                                   final Class<T> clazz,
                                                   final boolean returnSubTypes)
         throws IllegalArgumentException {
-        Iterable<Partition> partitions = filterGraphPartitions(this.factory.getValues());
-        LinkedList<Context> contexts = new LinkedList<Context>();
-        for (Partition p: partitions)
+        final Iterable<Partition> partitions = filterGraphPartitions(factory.getValues());
+        final LinkedList<Context> contexts = new LinkedList<Context>();
+        for (final Partition p: partitions) {
             contexts.add(getContext(p.getPartitionName()));
+        }
         return (Iterable<T>) internalFindNodes(clazz, returnSubTypes, null, null, null, null, contexts);
     }
 
@@ -839,42 +847,43 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         return IteratorBuilder.<N, Link>createIteratorBuilder().withItems(internalGetLinks(linkClass, node, null, linkDirection))
             .withConverter(
-            new Converter<N, Link>() {
+                new Converter<N, Link>() {
 
-            @Override
-            public N convert(
-                             Link o)
-                throws Exception {
-                return (N) o.getTarget();
-            }
-        }).withReferee(new NextItemReferee<Link>() {
+                    @Override
+                    public N convert(
+                                     final Link o)
+                        throws Exception {
+                        return (N) o.getTarget();
+                    }
+                }).withReferee(new NextItemReferee<Link>() {
 
-            @Override
-            public boolean canAcceptAsNewItem(
-                                              Link o)
-                throws Exception {
-                return nodeClass.isInstance(o.getTarget());
-            }
-        }).andBuild();
+                @Override
+                public boolean canAcceptAsNewItem(
+                                                  final Link o)
+                    throws Exception {
+                    return nodeClass.isInstance(o.getTarget());
+                }
+            }).andBuild();
     }
 
     @Override
     public TreeLineReference getTreeLineReferences(
-                                                   Element e) {
-        return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), this.factory, e, null);
+                                                   final Element e) {
+        return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), factory, e, null);
     }
 
     @Override
     public TreeLineReference getTreeLineReferences(
-                                                   Element e, String artifactId) {
-        return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), this.factory, e, artifactId);
+                                                   final Element e, final String artifactId) {
+        return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), factory, e, artifactId);
     }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Node> Iterable<T> getChildrenNodes(Context context,
-			Class<T> clazz) throws IllegalArgumentException {
-		return (Iterable<T>) internalFindNodes(clazz,true,null,null,null,null,SLCollections.iterableOfOne(context));
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Node> Iterable<T> getChildrenNodes(final Context context,
+                                                         final Class<T> clazz)
+        throws IllegalArgumentException {
+        return (Iterable<T>) internalFindNodes(clazz, true, null, null, null, null, SLCollections.iterableOfOne(context));
+    }
 
 }

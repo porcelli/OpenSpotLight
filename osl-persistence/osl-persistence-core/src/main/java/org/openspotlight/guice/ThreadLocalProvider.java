@@ -74,7 +74,7 @@ public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable 
             disposables = new ArrayList<Disposable>(disposableItems);
             disposableItems.clear();
         }
-        for (Disposable d: disposables) {
+        for (final Disposable d: disposables) {
             d.closeResources();
         }
     }

@@ -64,14 +64,13 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Override
     protected void setupCommand() {
-        this.command = new OpenFileCommand();
+        command = new OpenFileCommand();
         try {
-            PrintWriter fileOut = new PrintWriter("out.slql");
+            final PrintWriter fileOut = new PrintWriter("out.slql");
             fileOut.append("select *;");
             fileOut.flush();
             fileOut.close();
-        } catch (FileNotFoundException e) {
-        }
+        } catch (final FileNotFoundException e) {}
     }
 
     @After
@@ -79,19 +78,19 @@ public class TestOpenFileCommand extends AbstractCommandTest {
         new File("out.slql").delete();
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testAcceptNull() {
         assertThat(command.accept(null), is(false));
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testExecuteNull() {
         command.execute(null, null, null);
     }
 
     @Test
     public void testAcceptNullInout() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput(null);
 
         assertThat(command.accept(state), is(false));
@@ -99,7 +98,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("get filename.slql");
 
         assertThat(command.accept(state), is(true));
@@ -107,7 +106,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("get something");
 
         assertThat(command.accept(state), is(true));
@@ -115,7 +114,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("get ");
 
         assertThat(command.accept(state), is(false));
@@ -123,7 +122,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("getx property");
 
         assertThat(command.accept(state), is(false));
@@ -131,7 +130,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter3() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("add get");
 
         assertThat(command.accept(state), is(false));
@@ -139,7 +138,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter4() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("getx property ");
 
         assertThat(command.accept(state), is(false));
@@ -147,7 +146,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("get filename.slql");
         state.appendBuffer("something");
 
@@ -160,7 +159,7 @@ public class TestOpenFileCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("get out.slql");
         state.appendBuffer("something");
 

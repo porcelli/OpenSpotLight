@@ -51,7 +51,7 @@ package org.openspotlight.federation.domain.artifact.db;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 
-@Name( "database" )
+@Name("database")
 public abstract class DatabaseCustomArtifact extends Artifact {
 
     private String            serverName;
@@ -77,19 +77,19 @@ public abstract class DatabaseCustomArtifact extends Artifact {
         return url;
     }
 
-    public void setDatabaseName( final String databaseName ) {
+    public void setDatabaseName(final String databaseName) {
         this.databaseName = databaseName;
     }
 
-    public void setDatabaseType( final DatabaseType databaseType ) {
+    public void setDatabaseType(final DatabaseType databaseType) {
         this.databaseType = databaseType;
     }
 
-    public void setServerName( final String serverName ) {
+    public void setServerName(final String serverName) {
         this.serverName = serverName;
     }
 
-    public void setUrl( final String url ) {
+    public void setUrl(final String url) {
         this.url = url;
     }
 

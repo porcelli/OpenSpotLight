@@ -83,37 +83,37 @@ public class DynamicCommandSupport {
      */
     public static List<Command> getRegisteredDynamicCommands()
         throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        List<Command> result = new LinkedList<Command>();
-        ClassFinder finder = new ClassFinder();
+        final List<Command> result = new LinkedList<Command>();
+        final ClassFinder finder = new ClassFinder();
         finder.addClassPath();
 
-        ClassFilter filter = new AndClassFilter(
+        final ClassFilter filter = new AndClassFilter(
                                                 // Must not be an interface
-                                                new NotClassFilter(new InterfaceOnlyClassFilter()),
+            new NotClassFilter(new InterfaceOnlyClassFilter()),
                                                 // Must implement the ClassFilter interface
-                                                new SubclassClassFilter(DynamicCommand.class),
+            new SubclassClassFilter(DynamicCommand.class),
                                                 // Must not be abstract
-                                                new NotClassFilter(new AbstractClassFilter()));
+            new NotClassFilter(new AbstractClassFilter()));
 
-        Collection<ClassInfo> foundClasses = new ArrayList<ClassInfo>();
+        final Collection<ClassInfo> foundClasses = new ArrayList<ClassInfo>();
         finder.findClasses(foundClasses, filter);
 
-        for (ClassInfo classInfo : foundClasses) {
-            Class<?> clasz = Class.forName(classInfo.getClassName());
+        for (final ClassInfo classInfo: foundClasses) {
+            final Class<?> clasz = Class.forName(classInfo.getClassName());
 
-            DynamicCommand generatedCommand = (DynamicCommand)clasz.newInstance();
+            final DynamicCommand generatedCommand = (DynamicCommand) clasz.newInstance();
             result.add(generatedCommand);
         }
-        Command clear = new ClearSystemCommand();
+        final Command clear = new ClearSystemCommand();
         result.add(clear);
 
-        ExitSystemCommand exit = new ExitSystemCommand();
+        final ExitSystemCommand exit = new ExitSystemCommand();
         result.add(exit);
 
-        VersionSystemCommand version = new VersionSystemCommand();
+        final VersionSystemCommand version = new VersionSystemCommand();
         result.add(version);
 
-        Command help = new HelpSystemCommand(result);
+        final Command help = new HelpSystemCommand(result);
         result.add(help);
 
         return result;

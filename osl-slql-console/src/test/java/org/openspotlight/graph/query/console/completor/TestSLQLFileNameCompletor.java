@@ -62,28 +62,30 @@ public class TestSLQLFileNameCompletor {
 
     @Test
     public void testCompletorNonCondidates() {
-        SLQLFileNameCompletor completor = new SLQLFileNameCompletor(null);
-        List<?> candidates = new LinkedList<Object>();
+        final SLQLFileNameCompletor completor = new SLQLFileNameCompletor(null);
+        final List<?> candidates = new LinkedList<Object>();
         completor.complete("get ", 4, candidates);
 
         assertThat(candidates.size(), is(0));
     }
 
     @Test
-    public void testCompletorNonCondidates2() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public void testCompletorNonCondidates2()
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
-        SLQLFileNameCompletor completor = new SLQLFileNameCompletor(DynamicCommandSupport.getRegisteredDynamicCommands());
-        List<?> candidates = new LinkedList<Object>();
+        final SLQLFileNameCompletor completor = new SLQLFileNameCompletor(DynamicCommandSupport.getRegisteredDynamicCommands());
+        final List<?> candidates = new LinkedList<Object>();
         completor.complete("list ", 4, candidates);
 
         assertThat(candidates.size(), is(0));
     }
 
     @Test
-    public void testCompletorSomeCondidates() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public void testCompletorSomeCondidates()
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
-        SLQLFileNameCompletor completor = new SLQLFileNameCompletor(DynamicCommandSupport.getRegisteredDynamicCommands());
-        List<?> candidates = new LinkedList<Object>();
+        final SLQLFileNameCompletor completor = new SLQLFileNameCompletor(DynamicCommandSupport.getRegisteredDynamicCommands());
+        final List<?> candidates = new LinkedList<Object>();
         completor.complete("get ", 4, candidates);
 
         assertThat(candidates.size(), is(not(0)));

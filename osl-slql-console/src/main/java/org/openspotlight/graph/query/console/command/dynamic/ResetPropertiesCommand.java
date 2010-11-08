@@ -66,15 +66,14 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         state.resetAdditionalProperties();
         out.println("properties reset.");
         out.flush();
@@ -85,6 +84,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "reset properties";
     }
@@ -92,6 +92,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return "reset properties";
     }
@@ -99,6 +100,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "resets slql properties output";
     }
@@ -106,6 +108,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
@@ -113,6 +116,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
@@ -120,6 +124,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }
@@ -127,11 +132,10 @@ public class ResetPropertiesCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("reset properties")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("reset properties")) { return true; }
         return false;
     }
 }

@@ -74,6 +74,4 @@ public interface Schedulable extends SimpleNodeType {
      */
     public String toUniqueJobString();
 
-
-
 }

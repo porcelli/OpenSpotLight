@@ -65,23 +65,23 @@ import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 
 public class FileSystemOriginArtifactLoaderEncodingTest {
 
-
     @Test
-    public void storeAndLoadAFileEncodedInAnotherEncoding() throws Exception {
-        String encoding = "ISO-8859-1";
-        String strangeContent = new String("çãçãà");
-        byte[] inAnotherEncoding = strangeContent.getBytes(encoding);
-        byte[] inUnicode = strangeContent.getBytes();
-        String file = "test-file.txt";
+    public void storeAndLoadAFileEncodedInAnotherEncoding()
+        throws Exception {
+        final String encoding = "ISO-8859-1";
+        final String strangeContent = new String("çãçãà");
+        final byte[] inAnotherEncoding = strangeContent.getBytes(encoding);
+        final byte[] inUnicode = strangeContent.getBytes();
+        final String file = "test-file.txt";
         assertThat(Arrays.equals(inAnotherEncoding, inUnicode), is(false));
-        String path = "./target/FileSystemOriginArtifactLoaderEncodingTest/test-data";
+        final String path = "./target/FileSystemOriginArtifactLoaderEncodingTest/test-data";
         new File(path).mkdirs();
-        FileOutputStream fos = new FileOutputStream(concatPaths(path, file));
+        final FileOutputStream fos = new FileOutputStream(concatPaths(path, file));
         fos.write(inAnotherEncoding);
         fos.flush();
         fos.close();
 
-        FileSystemOriginArtifactLoader loader = new FileSystemOriginArtifactLoader();
+        final FileSystemOriginArtifactLoader loader = new FileSystemOriginArtifactLoader();
         ArtifactSource stringArtifactSource;
 
         final Repository repository = new Repository();

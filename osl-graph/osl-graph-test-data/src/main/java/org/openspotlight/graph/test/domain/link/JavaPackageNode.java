@@ -56,7 +56,7 @@ import org.openspotlight.graph.test.domain.node.JavaElementNode;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@Description( "Java Package" )
+@Description("Java Package")
 public abstract class JavaPackageNode extends JavaElementNode {
 
 }

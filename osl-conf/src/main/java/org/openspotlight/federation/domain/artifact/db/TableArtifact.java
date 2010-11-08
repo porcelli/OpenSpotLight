@@ -57,7 +57,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "database" )
+@Name("database")
 public class TableArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
     private static final long serialVersionUID = -4527063248944852023L;
 
@@ -67,11 +67,9 @@ public class TableArtifact extends DatabaseCustomArtifact implements SimpleNodeT
     private Set<Column>       columns          = new HashSet<Column>();
 
     @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!(other instanceof TableArtifact)) {
-            return false;
-        }
-        final TableArtifact that = (TableArtifact)other;
+    public boolean contentEquals(final Artifact other) {
+        if (!(other instanceof TableArtifact)) { return false; }
+        final TableArtifact that = (TableArtifact) other;
         return Equals.eachEquality(getColumns(), that.getColumns());
     }
 
@@ -91,19 +89,19 @@ public class TableArtifact extends DatabaseCustomArtifact implements SimpleNodeT
         return tableName;
     }
 
-    public void setCatalogName( final String catalogName ) {
+    public void setCatalogName(final String catalogName) {
         this.catalogName = catalogName;
     }
 
-    public void setColumns( final Set<Column> columns ) {
+    public void setColumns(final Set<Column> columns) {
         this.columns = columns;
     }
 
-    public void setSchemaName( final String schemaName ) {
+    public void setSchemaName(final String schemaName) {
         this.schemaName = schemaName;
     }
 
-    public void setTableName( final String tableName ) {
+    public void setTableName(final String tableName) {
         this.tableName = tableName;
     }
 

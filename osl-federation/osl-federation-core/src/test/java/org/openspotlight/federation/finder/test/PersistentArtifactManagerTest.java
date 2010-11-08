@@ -78,90 +78,93 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class PersistentArtifactManagerTest {
-	/**
-	 * The provider.
-	 */
+    /**
+     * The provider.
+     */
 
-	private static ArtifactSource artifactSource;
+    private static ArtifactSource                artifactSource;
 
-	private static Repository repository;
+    private static Repository                    repository;
 
-	private static PersistentArtifactManagerImpl persistenArtifactManager;
-	private static JRedis jredis;
+    private static PersistentArtifactManagerImpl persistenArtifactManager;
+    private static JRedis                        jredis;
 
-	/**
-	 * Setup.
-	 * 
-	 * @throws Exception
-	 *             the exception
-	 */
-	@BeforeClass
-	public static void setup() throws Exception {
-		Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
-		jredis = injector.getInstance(JRedisFactory.class).getFrom(
-				RegularPartitions.FEDERATION);
-		jredis.flushall();
+    /**
+     * Setup.
+     * 
+     * @throws Exception the exception
+     */
+    @BeforeClass
+    public static void setup()
+        throws Exception {
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
+        jredis = injector.getInstance(JRedisFactory.class).getFrom(
+                RegularPartitions.FEDERATION);
+        jredis.flushall();
 
-		artifactSource = new ArtifactSource();
-		artifactSource.setName("classpath");
-		artifactSource.setInitialLookup("./src");
-		repository = new Repository();
-		repository.setName("name");
-		artifactSource.setRepository(repository);
-		final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
-		final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
-				StringArtifact.class, artifactSource, null, null);
-		persistenArtifactManager = new PersistentArtifactManagerImpl(
-				repository, injector.getInstance(SimplePersistFactory.class));
-		for (StringArtifact artifact : artifacts) {
-			artifact.setMappedTo("/src");
-			persistenArtifactManager.addTransient(artifact);
-		}
-		persistenArtifactManager.saveTransientData();
+        artifactSource = new ArtifactSource();
+        artifactSource.setName("classpath");
+        artifactSource.setInitialLookup("./src");
+        repository = new Repository();
+        repository.setName("name");
+        artifactSource.setRepository(repository);
+        final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
+        final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
+                StringArtifact.class, artifactSource, null, null);
+        persistenArtifactManager = new PersistentArtifactManagerImpl(
+                repository, injector.getInstance(SimplePersistFactory.class));
+        for (final StringArtifact artifact: artifacts) {
+            artifact.setMappedTo("/src");
+            persistenArtifactManager.addTransient(artifact);
+        }
+        persistenArtifactManager.saveTransientData();
 
-	}
+    }
 
-	@AfterClass
-	public static void closeResources() {
-		persistenArtifactManager.closeResources();
-	}
+    @AfterClass
+    public static void closeResources() {
+        persistenArtifactManager.closeResources();
+    }
 
-	@Test
-	public void shouldFindArtifacts() throws Exception {
-		final StringArtifact sa = persistenArtifactManager.findByPath(
-				StringArtifact.class,
-				"/test/resources/artifacts/included/folder/file_included2");
-		assertThat(sa, is(notNullValue()));
-		assertThat(sa.getContent(), is(notNullValue()));
+    @Test
+    public void shouldFindArtifacts()
+        throws Exception {
+        final StringArtifact sa = persistenArtifactManager.findByPath(
+                StringArtifact.class,
+                "/test/resources/artifacts/included/folder/file_included2");
+        assertThat(sa, is(notNullValue()));
+        assertThat(sa.getContent(), is(notNullValue()));
 
-	}
+    }
 
-	@Test
-	public void shouldListArtifactNames() throws Exception {
-		final Iterable<String> artifacts = persistenArtifactManager
-				.getInternalMethods().retrieveNames(StringArtifact.class, null);
+    @Test
+    public void shouldListArtifactNames()
+        throws Exception {
+        final Iterable<String> artifacts = persistenArtifactManager
+                .getInternalMethods().retrieveNames(StringArtifact.class, null);
 
-		assertThat(artifacts, is(notNullValue()));
-		assertThat(SLCollections.iterableToList(artifacts).size(), is(not(0)));
-		for (final String s : artifacts) {
-			assertThat(s, is(notNullValue()));
-		}
-	}
+        assertThat(artifacts, is(notNullValue()));
+        assertThat(SLCollections.iterableToList(artifacts).size(), is(not(0)));
+        for (final String s: artifacts) {
+            assertThat(s, is(notNullValue()));
+        }
+    }
 
-	@Test
-	public void shouldListArtifacts() throws Exception {
-		final Iterable<StringArtifact> artifacts = persistenArtifactManager
-				.listByInitialPath(StringArtifact.class, "/src");
+    @Test
+    public void shouldListArtifacts()
+        throws Exception {
+        final Iterable<StringArtifact> artifacts = persistenArtifactManager
+                .listByInitialPath(StringArtifact.class, "/src");
 
-		assertThat(artifacts, is(notNullValue()));
-		assertThat(SLCollections.iterableToList(artifacts).size(), is(not(0)));
-		for (final StringArtifact sa : artifacts) {
-			assertThat(sa, is(notNullValue()));
-			assertThat(sa.getContent(), is(notNullValue()));
-		}
-	}
+        assertThat(artifacts, is(notNullValue()));
+        assertThat(SLCollections.iterableToList(artifacts).size(), is(not(0)));
+        for (final StringArtifact sa: artifacts) {
+            assertThat(sa, is(notNullValue()));
+            assertThat(sa.getContent(), is(notNullValue()));
+        }
+    }
 
 }

@@ -58,85 +58,93 @@ import org.openspotlight.storage.domain.StorageNode;
 
 public final class DetailedLoggerImpl implements DetailedLogger {
 
-	private final StorageNode rootNode;
+    private final StorageNode                                       rootNode;
 
-	private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-	public DetailedLoggerImpl(
-			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-		try {
-			this.simplePersist = simplePersist;
-			rootNode = this.simplePersist.getCurrentSession()
-					.withPartition(this.simplePersist.getCurrentPartition())
-					.createNewSimpleNode("log");
+    public DetailedLoggerImpl(
+                              final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+        try {
+            this.simplePersist = simplePersist;
+            rootNode = this.simplePersist.getCurrentSession()
+                    .withPartition(this.simplePersist.getCurrentPartition())
+                    .createNewSimpleNode("log");
 
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final ErrorCode errorCode, final String detailedMessage,
-			final Object... anotherNodes) {
+    @Override
+    public void log(final AuthenticatedUser user, final LogEventType type,
+                    final ErrorCode errorCode, final String detailedMessage,
+                    final Object... anotherNodes) {
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final ErrorCode errorCode, final String message,
-			final String detailedMessage, final Object... anotherNodes) {
-		this.log(user, null, type, errorCode, message, detailedMessage,
-				anotherNodes);
+    @Override
+    public void log(final AuthenticatedUser user, final LogEventType type,
+                    final ErrorCode errorCode, final String message,
+                    final String detailedMessage, final Object... anotherNodes) {
+        this.log(user, null, type, errorCode, message, detailedMessage,
+                anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final String message, final Object... anotherNodes) {
-		this.log(user, null, type, null, message, null, anotherNodes);
+    @Override
+    public void log(final AuthenticatedUser user, final LogEventType type,
+                    final String message, final Object... anotherNodes) {
+        this.log(user, null, type, null, message, null, anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final String message, final String detailedMessage,
-			final Object... anotherNodes) {
-		this.log(user, null, type, null, message, detailedMessage, anotherNodes);
+    @Override
+    public void log(final AuthenticatedUser user, final LogEventType type,
+                    final String message, final String detailedMessage,
+                    final Object... anotherNodes) {
+        this.log(user, null, type, null, message, detailedMessage, anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final ErrorCode errorCode,
-			final String detailedMessage, final Object... anotherNodes) {
-		this.log(user, repository, type, errorCode, null, detailedMessage,
-				anotherNodes);
+    @Override
+    public void log(final AuthenticatedUser user, final String repository,
+                    final LogEventType type, final ErrorCode errorCode,
+                    final String detailedMessage, final Object... anotherNodes) {
+        this.log(user, repository, type, errorCode, null, detailedMessage,
+                anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final ErrorCode errorCode,
-			final String message, final String detailedMessage,
-			final Object... anotherNodes) {
-		final org.openspotlight.federation.log.LogEntry entry = new org.openspotlight.federation.log.LogEntry(
-				errorCode, System.currentTimeMillis(), type, message,
-				detailedMessage,
-				LoggedObjectInformation.getHierarchyFrom(anotherNodes));
+    @Override
+    public void log(final AuthenticatedUser user, final String repository,
+                    final LogEventType type, final ErrorCode errorCode,
+                    final String message, final String detailedMessage,
+                    final Object... anotherNodes) {
+        final org.openspotlight.federation.log.LogEntry entry = new org.openspotlight.federation.log.LogEntry(
+                errorCode, System.currentTimeMillis(), type, message,
+                detailedMessage,
+                LoggedObjectInformation.getHierarchyFrom(anotherNodes));
 
-		simplePersist.convertBeanToNode(rootNode, entry);
-		simplePersist.getCurrentSession().flushTransient();
+        simplePersist.convertBeanToNode(rootNode, entry);
+        simplePersist.getCurrentSession().flushTransient();
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final String message,
-			final Object... anotherNodes) {
-		this.log(user, repository, type, null, message, null, anotherNodes);
+    @Override
+    public void log(final AuthenticatedUser user, final String repository,
+                    final LogEventType type, final String message,
+                    final Object... anotherNodes) {
+        this.log(user, repository, type, null, message, null, anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final String message,
-			final String detailedMessage, final Object... anotherNodes) {
-		this.log(user, repository, type, null, message, detailedMessage,
-				anotherNodes);
-	}
+    @Override
+    public void log(final AuthenticatedUser user, final String repository,
+                    final LogEventType type, final String message,
+                    final String detailedMessage, final Object... anotherNodes) {
+        this.log(user, repository, type, null, message, detailedMessage,
+                anotherNodes);
+    }
 
 }

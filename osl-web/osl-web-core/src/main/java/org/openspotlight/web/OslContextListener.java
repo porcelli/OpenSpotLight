@@ -89,6 +89,7 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
     /**
      * {@inheritDoc}
      */
+    @Override
     public void contextDestroyed(final ServletContextEvent arg0) {
         scheduler.stopScheduler();
         server.shutdown();
@@ -97,9 +98,10 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
     /**
      * {@inheritDoc}
      */
+    @Override
     public void contextInitialized(final ServletContextEvent sce) {
         try {
-            Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+            final Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
 

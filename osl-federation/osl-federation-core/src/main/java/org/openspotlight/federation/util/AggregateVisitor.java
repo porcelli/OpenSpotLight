@@ -57,11 +57,12 @@ public class AggregateVisitor<A extends SimpleNodeType> implements SimpleNodeTyp
     private final Set<A> sources;
 
     public AggregateVisitor(
-                             final Set<A> sources ) {
+                             final Set<A> sources) {
         this.sources = sources;
     }
 
-    public void visitBean( final A bean ) {
+    @Override
+    public void visitBean(final A bean) {
         sources.add(bean);
     }
 }

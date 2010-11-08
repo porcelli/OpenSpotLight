@@ -82,9 +82,9 @@ public interface Command {
      * @param out the out
      * @param state the state
      */
-    public void execute( ConsoleReader reader,
+    public void execute(ConsoleReader reader,
                          PrintWriter out,
-                         ConsoleState state );
+                         ConsoleState state);
 
     /**
      * Gets the console command.
@@ -134,6 +134,6 @@ public interface Command {
      * @param state the state
      * @return true, if successful
      */
-    public boolean accept( ConsoleState state );
+    public boolean accept(ConsoleState state);
 
 }

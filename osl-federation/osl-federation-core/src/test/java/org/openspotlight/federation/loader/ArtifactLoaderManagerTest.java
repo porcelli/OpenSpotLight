@@ -82,61 +82,62 @@ import com.google.inject.Injector;
 
 public class ArtifactLoaderManagerTest {
 
-	@Test
-	public void shouldLoad() throws Exception {
-		Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
-		injector.getInstance(JRedisFactory.class)
-				.getFrom(RegularPartitions.FEDERATION).flushall();
-		final GlobalSettings settings = new GlobalSettings();
-		settings.setDefaultSleepingIntervalInMilliseconds(250);
-		final String initialRawPath = Files
-				.getNormalizedFileName(new File("."));
-		final String initial = initialRawPath.substring(0,
-				initialRawPath.lastIndexOf('/'));
-		final String finalStr = initialRawPath.substring(initial.length());
-		final ArtifactSource source = new ArtifactSource();
-		final Repository repository = new Repository();
-		repository.setName("repository");
-		source.setRepository(repository);
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setFrom(finalStr);
-		mapping.setTo("/sources/java/myProject");
-		mapping.setIncludeds(new HashSet<String>());
-		mapping.setExcludeds(new HashSet<String>());
-		mapping.getIncludeds().add("*.java");
-		mapping.setSource(source);
-		source.setMappings(new HashSet<ArtifactSourceMapping>());
-		source.getMappings().add(mapping);
-		source.setActive(true);
-		source.setBinary(false);
-		source.setInitialLookup(initial);
-		source.setName("sourceName");
-		PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
-				injector.getInstance(SimplePersistFactory.class), repository);
-		List<Class<? extends OriginArtifactLoader>> loaderRegistry = new ArrayList<Class<? extends OriginArtifactLoader>>();
-		loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-		ArtifactLoaderManager.INSTANCE.refreshResources(source,
-				provider, loaderRegistry);
-		Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(
-				StringArtifact.class, null);
-		provider.closeResources();
-		boolean hasAny = false;
+    @Test
+    public void shouldLoad()
+        throws Exception {
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
+        injector.getInstance(JRedisFactory.class)
+                .getFrom(RegularPartitions.FEDERATION).flushall();
+        final GlobalSettings settings = new GlobalSettings();
+        settings.setDefaultSleepingIntervalInMilliseconds(250);
+        final String initialRawPath = Files
+                .getNormalizedFileName(new File("."));
+        final String initial = initialRawPath.substring(0,
+                initialRawPath.lastIndexOf('/'));
+        final String finalStr = initialRawPath.substring(initial.length());
+        final ArtifactSource source = new ArtifactSource();
+        final Repository repository = new Repository();
+        repository.setName("repository");
+        source.setRepository(repository);
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setFrom(finalStr);
+        mapping.setTo("/sources/java/myProject");
+        mapping.setIncludeds(new HashSet<String>());
+        mapping.setExcludeds(new HashSet<String>());
+        mapping.getIncludeds().add("*.java");
+        mapping.setSource(source);
+        source.setMappings(new HashSet<ArtifactSourceMapping>());
+        source.getMappings().add(mapping);
+        source.setActive(true);
+        source.setBinary(false);
+        source.setInitialLookup(initial);
+        source.setName("sourceName");
+        final PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
+                injector.getInstance(SimplePersistFactory.class), repository);
+        final List<Class<? extends OriginArtifactLoader>> loaderRegistry = new ArrayList<Class<? extends OriginArtifactLoader>>();
+        loaderRegistry.add(FileSystemOriginArtifactLoader.class);
+        ArtifactLoaderManager.INSTANCE.refreshResources(source,
+                provider, loaderRegistry);
+        final Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(
+                StringArtifact.class, null);
+        provider.closeResources();
+        boolean hasAny = false;
 
-		for (final Artifact a : artifacts) {
-			assertThat(a, is(notNullValue()));
-			assertThat(
-					a.getArtifactCompleteName().startsWith(
-							mapping.getTo() + "/"), is(true));
-			assertThat(
-					a.getArtifactCompleteName().contains(
-							mapping.getFrom() + "/"), is(false));
-			hasAny = true;
-		}
-		assertThat(hasAny, is(true));
-		provider.closeResources();
-	}
+        for (final Artifact a: artifacts) {
+            assertThat(a, is(notNullValue()));
+            assertThat(
+                    a.getArtifactCompleteName().startsWith(
+                            mapping.getTo() + "/"), is(true));
+            assertThat(
+                    a.getArtifactCompleteName().contains(
+                            mapping.getFrom() + "/"), is(false));
+            hasAny = true;
+        }
+        assertThat(hasAny, is(true));
+        provider.closeResources();
+    }
 
 }

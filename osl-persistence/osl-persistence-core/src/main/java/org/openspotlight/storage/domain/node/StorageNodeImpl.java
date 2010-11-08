@@ -82,7 +82,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
         super(resetTimeout);
         nodeType = uniqueKey.getCompositeKey().getNodeType();
         if (nodeType == null) { throw new IllegalArgumentException(); }
-        this.nodeKey = uniqueKey;
+        nodeKey = uniqueKey;
         propertiesByName = newHashMap();
         if (properties != null) {
             for (final Property property: properties) {

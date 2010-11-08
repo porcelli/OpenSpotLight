@@ -65,13 +65,14 @@ import org.junit.Test;
 public class ITHelloWeb {
 
     @Test
-    public void testHelloWorld() throws ClientProtocolException, IOException {
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet("http://localhost:8080/osl-web-war/?action=hello");
-        HttpResponse response = httpclient.execute(httpget);
-        HttpEntity entity = response.getEntity();
+    public void testHelloWorld()
+        throws ClientProtocolException, IOException {
+        final HttpClient httpclient = new DefaultHttpClient();
+        final HttpGet httpget = new HttpGet("http://localhost:8080/osl-web-war/?action=hello");
+        final HttpResponse response = httpclient.execute(httpget);
+        final HttpEntity entity = response.getEntity();
 
-        String result = EntityUtils.toString(entity);
+        final String result = EntityUtils.toString(entity);
 
         assertThat(result, is("{\"message\":\"hello world!\"}"));
     }

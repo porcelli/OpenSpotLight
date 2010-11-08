@@ -62,16 +62,16 @@ import org.openspotlight.common.util.HashCodes;
 public class SelectByNodeTypeInfo extends SelectInfo {
 
     /** The Constant serialVersionUID. */
-    private static final long      serialVersionUID = 1L;
+    private static final long            serialVersionUID = 1L;
 
     /** The type info list. */
-    private List<SLSelectTypeInfo> typeInfoList;
+    private final List<SLSelectTypeInfo> typeInfoList;
 
     /** The where statement info. */
-    private WhereByNodeTypeInfo  whereStatementInfo;
+    private WhereByNodeTypeInfo          whereStatementInfo;
 
     /** The all types info. */
-    private AllTypesInfo         allTypesInfo;
+    private AllTypesInfo                 allTypesInfo;
 
     /**
      * Instantiates a new sL select by node type info.
@@ -107,8 +107,8 @@ public class SelectByNodeTypeInfo extends SelectInfo {
      * @param name the name
      * @return the sL select type info
      */
-    public SLSelectTypeInfo addType( String name ) {
-        SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
+    public SLSelectTypeInfo addType(final String name) {
+        final SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
         typeInfoList.add(typeInfo);
         return typeInfo;
     }
@@ -136,18 +136,17 @@ public class SelectByNodeTypeInfo extends SelectInfo {
      * 
      * @param whereStatementInfo the new where statement info
      */
-    public void setWhereStatementInfo( WhereByNodeTypeInfo whereStatementInfo ) {
+    public void setWhereStatementInfo(final WhereByNodeTypeInfo whereStatementInfo) {
         this.whereStatementInfo = whereStatementInfo;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
 
         if (allTypesInfo == null) {
             buffer.append("\nSELECT\n");
@@ -161,10 +160,14 @@ public class SelectByNodeTypeInfo extends SelectInfo {
 
         // types ...
         for (int i = 0; i < typeInfoList.size(); i++) {
-            SLSelectTypeInfo typeInfo = typeInfoList.get(i);
-            if (i > 0) buffer.append(",\n");
+            final SLSelectTypeInfo typeInfo = typeInfoList.get(i);
+            if (i > 0) {
+                buffer.append(",\n");
+            }
             buffer.append('\t').append('"').append(typeInfo.getName());
-            if (typeInfo.isSubTypes()) buffer.append(".*");
+            if (typeInfo.isSubTypes()) {
+                buffer.append(".*");
+            }
             buffer.append('"');
         }
 
@@ -200,7 +203,7 @@ public class SelectByNodeTypeInfo extends SelectInfo {
          * @param name the name
          */
         public SLSelectTypeInfo(
-                                 String name ) {
+                                 final String name) {
             setName(name);
         }
 
@@ -218,7 +221,7 @@ public class SelectByNodeTypeInfo extends SelectInfo {
          * 
          * @param name the new name
          */
-        public void setName( String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -236,7 +239,7 @@ public class SelectByNodeTypeInfo extends SelectInfo {
          * 
          * @param subTypes the new sub types
          */
-        public void setSubTypes( boolean subTypes ) {
+        public void setSubTypes(final boolean subTypes) {
             this.subTypes = subTypes;
         }
 
@@ -254,17 +257,16 @@ public class SelectByNodeTypeInfo extends SelectInfo {
          * 
          * @param comma the new comma
          */
-        public void setComma( boolean comma ) {
+        public void setComma(final boolean comma) {
             this.comma = comma;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see java.lang.Object#equalsTo(java.lang.Object)
          */
         @Override
-        public boolean equals( Object obj ) {
+        public boolean equals(final Object obj) {
             return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
         }
 

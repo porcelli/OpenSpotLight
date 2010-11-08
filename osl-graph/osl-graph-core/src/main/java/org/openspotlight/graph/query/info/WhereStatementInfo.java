@@ -75,7 +75,7 @@ public class WhereStatementInfo {
      * @param selectStatementInfo the select statement info
      */
     public WhereStatementInfo(
-                                 SelectStatementInfo selectStatementInfo ) {
+                                 final SelectStatementInfo selectStatementInfo) {
         this.selectStatementInfo = selectStatementInfo;
     }
 
@@ -93,7 +93,7 @@ public class WhereStatementInfo {
      * 
      * @param whereTypeInfoList the new where type info list
      */
-    public void setWhereTypeInfoList( List<WhereTypeInfo> whereTypeInfoList ) {
+    public void setWhereTypeInfoList(final List<WhereTypeInfo> whereTypeInfoList) {
         this.whereTypeInfoList = whereTypeInfoList;
     }
 
@@ -111,7 +111,7 @@ public class WhereStatementInfo {
      * 
      * @param whereLinkTypeInfoList the new where link type info list
      */
-    public void setWhereLinkTypeInfoList( List<WhereLinkTypeInfo> whereLinkTypeInfoList ) {
+    public void setWhereLinkTypeInfoList(final List<WhereLinkTypeInfo> whereLinkTypeInfoList) {
         this.whereLinkTypeInfoList = whereLinkTypeInfoList;
     }
 
@@ -129,23 +129,22 @@ public class WhereStatementInfo {
      * 
      * @param selectStatementInfo the new select statement
      */
-    public void setSelectStatement( SelectStatementInfo selectStatementInfo ) {
+    public void setSelectStatement(final SelectStatementInfo selectStatementInfo) {
         this.selectStatementInfo = selectStatementInfo;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("\nWHERE\n");
-        for (WhereTypeInfo typeInfo : whereTypeInfoList) {
+        for (final WhereTypeInfo typeInfo: whereTypeInfoList) {
             StringBuilderUtil.append(buffer, typeInfo.getTypeStatementInfo());
         }
-        for (WhereLinkTypeInfo typeInfo : whereLinkTypeInfoList) {
+        for (final WhereLinkTypeInfo typeInfo: whereLinkTypeInfoList) {
             StringBuilderUtil.append(buffer, typeInfo.getLinkTypeStatementInfo());
         }
         return buffer.toString();

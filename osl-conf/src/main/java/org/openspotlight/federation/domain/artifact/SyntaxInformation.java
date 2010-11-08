@@ -57,8 +57,8 @@ import org.openspotlight.persist.internal.StreamPropertyWithParent;
 public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Comparable<SyntaxInformation> {
     private static final long serialVersionUID = 9056717121341748618L;
 
-    private static int compare( final int anotherVal,
-                                final int thisVal ) {
+    private static int compare(final int anotherVal,
+                                final int thisVal) {
         return thisVal < anotherVal ? -1 : thisVal == anotherVal ? 0 : 1;
     }
 
@@ -83,12 +83,11 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
     /** The type. */
     private SyntaxInformationType  type;
 
-    public SyntaxInformation() {
-    }
+    public SyntaxInformation() {}
 
     public SyntaxInformation(
                               final Artifact parent, final int lineStart, final int lineEnd, final int columnStart,
-                              final int columnEnd, final SyntaxInformationType type ) {
+                              final int columnEnd, final SyntaxInformationType type) {
         this.parent = parent;
         this.lineStart = lineStart;
         this.lineEnd = lineEnd;
@@ -97,53 +96,31 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
         this.type = type;
     }
 
-    public int compareTo( final SyntaxInformation o ) {
+    @Override
+    public int compareTo(final SyntaxInformation o) {
         int compare = 0;
-        if ((compare = compare(lineStart, o.lineStart)) != 0) {
-            return compare;
-        }
-        if ((compare = compare(lineEnd, o.lineEnd)) != 0) {
-            return compare;
-        }
-        if ((compare = compare(columnStart, o.columnStart)) != 0) {
-            return compare;
-        }
-        if ((compare = compare(columnEnd, o.columnEnd)) != 0) {
-            return compare;
-        }
+        if ((compare = compare(lineStart, o.lineStart)) != 0) { return compare; }
+        if ((compare = compare(lineEnd, o.lineEnd)) != 0) { return compare; }
+        if ((compare = compare(columnStart, o.columnStart)) != 0) { return compare; }
+        if ((compare = compare(columnEnd, o.columnEnd)) != 0) { return compare; }
         return 0;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
-    @SuppressWarnings( "boxing" )
+    @SuppressWarnings("boxing")
     @Override
-    public boolean equals( final Object o ) {
-        if (!(o instanceof SyntaxInformation)) {
-            return false;
-        }
-        final SyntaxInformation that = (SyntaxInformation)o;
-        if (!Equals.eachEquality(parent, that.parent)) {
-            return false;
-        }
-        if (!Equals.eachEquality(type, that.type)) {
-            return false;
-        }
-        if (!Equals.eachEquality(lineStart, that.lineStart)) {
-            return false;
-        }
-        if (!Equals.eachEquality(lineEnd, that.lineEnd)) {
-            return false;
-        }
-        if (!Equals.eachEquality(columnStart, that.columnStart)) {
-            return false;
-        }
-        if (!Equals.eachEquality(columnEnd, that.columnEnd)) {
-            return false;
-        }
+    public boolean equals(final Object o) {
+        if (!(o instanceof SyntaxInformation)) { return false; }
+        final SyntaxInformation that = (SyntaxInformation) o;
+        if (!Equals.eachEquality(parent, that.parent)) { return false; }
+        if (!Equals.eachEquality(type, that.type)) { return false; }
+        if (!Equals.eachEquality(lineStart, that.lineStart)) { return false; }
+        if (!Equals.eachEquality(lineEnd, that.lineEnd)) { return false; }
+        if (!Equals.eachEquality(columnStart, that.columnStart)) { return false; }
+        if (!Equals.eachEquality(columnEnd, that.columnEnd)) { return false; }
         return true;
     }
 
@@ -189,6 +166,7 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
      * 
      * @return the stream artifact
      */
+    @Override
     public Artifact getParent() {
         return parent;
     }
@@ -204,7 +182,6 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -223,27 +200,28 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
         return result;
     }
 
-    public void setColumnEnd( final int columnEnd ) {
+    public void setColumnEnd(final int columnEnd) {
         this.columnEnd = columnEnd;
     }
 
-    public void setColumnStart( final int columnStart ) {
+    public void setColumnStart(final int columnStart) {
         this.columnStart = columnStart;
     }
 
-    public void setLineEnd( final int lineEnd ) {
+    public void setLineEnd(final int lineEnd) {
         this.lineEnd = lineEnd;
     }
 
-    public void setLineStart( final int lineStart ) {
+    public void setLineStart(final int lineStart) {
         this.lineStart = lineStart;
     }
 
-    public void setParent( final Artifact parent ) {
+    @Override
+    public void setParent(final Artifact parent) {
         this.parent = parent;
     }
 
-    public void setType( final SyntaxInformationType type ) {
+    public void setType(final SyntaxInformationType type) {
         this.type = type;
     }
 

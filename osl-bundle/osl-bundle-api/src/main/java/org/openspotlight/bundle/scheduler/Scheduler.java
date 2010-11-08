@@ -54,16 +54,16 @@ import org.openspotlight.domain.Schedulable;
 
 public interface Scheduler {
 
-    public <T extends Schedulable> void fireSchedulable( String username,
+    public <T extends Schedulable> void fireSchedulable(String username,
                                                          String password,
-                                                         final T... schedulable );
+                                                         final T... schedulable);
 
-    public <T extends Schedulable> void fireSchedulableInBackground( String username,
+    public <T extends Schedulable> void fireSchedulableInBackground(String username,
                                                                      String password,
-                                                                     final T... schedulable );
+                                                                     final T... schedulable);
 
-    public void refreshJobs( GlobalSettings settings,
-                             Iterable<Repository> repositories );
+    public void refreshJobs(GlobalSettings settings,
+                             Iterable<Repository> repositories);
 
     public void startScheduler();
 

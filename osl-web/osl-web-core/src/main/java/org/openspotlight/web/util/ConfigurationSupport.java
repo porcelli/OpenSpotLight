@@ -60,7 +60,8 @@ import org.openspotlight.federation.loader.MutableConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 
 /**
- * The Class ConfigurationSupport contains methods to be used on {@link org.openspotlight.federation.loader.MutableConfigurationManager} saved data.
+ * The Class ConfigurationSupport contains methods to be used on
+ * {@link org.openspotlight.federation.loader.MutableConfigurationManager} saved data.
  */
 public class ConfigurationSupport {
 
@@ -68,7 +69,8 @@ public class ConfigurationSupport {
      * Initialize configuration.
      */
     public static boolean initializeConfiguration(final boolean forceReload,
-                                                  final MutableConfigurationManager jcrConfigurationManager) throws Exception {
+                                                  final MutableConfigurationManager jcrConfigurationManager)
+        throws Exception {
         final boolean firstTime = jcrConfigurationManager.getAllRepositories().iterator().hasNext();
         boolean reloaded = false;
         if (firstTime || forceReload) {
@@ -80,11 +82,12 @@ public class ConfigurationSupport {
 
     /**
      * Save xml on jcr.
-     *
+     * 
      * @param manager the manager
      * @return the configuration
      */
-    private static void saveXmlOnJcr(final MutableConfigurationManager manager) throws Exception {
+    private static void saveXmlOnJcr(final MutableConfigurationManager manager)
+        throws Exception {
         GlobalSettings settings;
         Iterable<Repository> repositories;
         final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
@@ -96,7 +99,7 @@ public class ConfigurationSupport {
         settings = xmlManager.getGlobalSettings();
         repositories = xmlManager.getAllRepositories();
         manager.saveGlobalSettings(settings);
-        for (final Repository repository : repositories) {
+        for (final Repository repository: repositories) {
             manager.saveRepository(repository);
         }
     }

@@ -62,16 +62,17 @@ public class SqlServerTableFilterNameHandler implements DatabaseArtifactNameHand
     /**
      * {@inheritDoc}
      */
-    public boolean shouldIncludeName( String artifactName,
-                                      ScriptType type,
-                                      ResultSet resultSet ) throws Exception {
-        if ("TABLE".equals(resultSet.getString("TABLE_TYPE"))) {
-            return true;
-        }
+    @Override
+    public boolean shouldIncludeName(final String artifactName,
+                                      final ScriptType type,
+                                      final ResultSet resultSet)
+        throws Exception {
+        if ("TABLE".equals(resultSet.getString("TABLE_TYPE"))) { return true; }
         return false;
     }
 
-    public String fixName( String oldName ) {
+    @Override
+    public String fixName(final String oldName) {
         return oldName;
     }
 

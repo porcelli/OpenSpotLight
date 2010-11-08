@@ -59,53 +59,53 @@ import org.openspotlight.graph.Node;
  * @author Vitor Hugo Chagas
  */
 public class QueryResultImpl implements QueryResult {
-	/** The nodes. */
-	private final List<Node> nodes;
+    /** The nodes. */
+    private final List<Node> nodes;
 
-	/** The query id. */
-	private final String queryId;
+    /** The query id. */
+    private final String     queryId;
 
-	/**
-	 * Instantiates a new sL query result impl.
-	 * 
-	 * @param nodes
-	 *            the nodes
-	 */
-	public QueryResultImpl(final List<Node> nodes, final String queryId) {
-		this.nodes = nodes != null ? nodes : new ArrayList<Node>();
-		this.queryId = queryId;
+    /**
+     * Instantiates a new sL query result impl.
+     * 
+     * @param nodes the nodes
+     */
+    public QueryResultImpl(final List<Node> nodes, final String queryId) {
+        this.nodes = nodes != null ? nodes : new ArrayList<Node>();
+        this.queryId = queryId;
 
-	}
+    }
 
-	/**
-	 * Instantiates a new sL query result impl.
-	 * 
-	 * @param nodes
-	 *            the nodes
-	 */
-	public QueryResultImpl(final Node[] nodes, final String queryId) {
-		this.queryId = queryId;
-		this.nodes = nodes != null ? new ArrayList<Node>(nodes.length)
-				: new ArrayList();
-		for (final Node Node : nodes) {
-			this.nodes.add(Node);
-		}
+    /**
+     * Instantiates a new sL query result impl.
+     * 
+     * @param nodes the nodes
+     */
+    public QueryResultImpl(final Node[] nodes, final String queryId) {
+        this.queryId = queryId;
+        this.nodes = nodes != null ? new ArrayList<Node>(nodes.length)
+                : new ArrayList();
+        for (final Node Node: nodes) {
+            this.nodes.add(Node);
+        }
 
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
-	 */
-	public List<Node> getNodes() throws QueryException {
-		return nodes;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
+     */
+    @Override
+    public List<Node> getNodes()
+        throws QueryException {
+        return nodes;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getQueryId() {
-		return queryId;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getQueryId() {
+        return queryId;
+    }
 }

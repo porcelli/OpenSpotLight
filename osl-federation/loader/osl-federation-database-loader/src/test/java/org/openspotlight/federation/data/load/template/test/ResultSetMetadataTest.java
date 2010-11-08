@@ -65,16 +65,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.db.test.H2Support;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class ResultSetMetadataTest {
 
     @BeforeClass
-    public static void loadDriver() throws Exception {
+    public static void loadDriver()
+        throws Exception {
         forName("org.h2.Driver");
     }
 
     @Before
-    public void cleanAndFillFreshDatabase() throws Exception {
+    public void cleanAndFillFreshDatabase()
+        throws Exception {
         delete("./target/test-data/ResultSetMetadataTest/h2");
         final Connection conn = DriverManager.getConnection("jdbc:h2:./target/test-data/ResultSetMetadataTest/h2/db");
         H2Support.fillDatabaseArtifacts(conn);
@@ -82,12 +84,15 @@ public class ResultSetMetadataTest {
         conn.close();
     }
 
-    @SuppressWarnings( "boxing" )
+    @SuppressWarnings("boxing")
     @Test
-    public void shouldReadMetadataFromSelect() throws Exception {
+    public void shouldReadMetadataFromSelect()
+        throws Exception {
         final Connection conn = DriverManager.getConnection("jdbc:h2:./target/test-data/ResultSetMetadataTest/h2/db");
-        final ResultSet resultSet = conn.prepareStatement(
-                                                          " select TABLE_CATALOG AS CATALOG_NAME, TABLE_SCHEMA AS SCHEMA_NAME, TABLE_NAME AS NAME from INFORMATION_SCHEMA.TABLES where TABLE_TYPE='TABLE'").executeQuery();
+        final ResultSet resultSet =
+            conn.prepareStatement(
+                                                          " select TABLE_CATALOG AS CATALOG_NAME, TABLE_SCHEMA AS SCHEMA_NAME, TABLE_NAME AS NAME from INFORMATION_SCHEMA.TABLES where TABLE_TYPE='TABLE'")
+                .executeQuery();
         final ResultSetMetaData metadata = resultSet.getMetaData();
         final List<String> columnNames = Arrays.asList("CATALOG_NAME", "SCHEMA_NAME", "NAME");
 

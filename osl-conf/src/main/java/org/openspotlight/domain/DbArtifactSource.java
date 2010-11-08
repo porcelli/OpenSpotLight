@@ -92,31 +92,31 @@ public class DbArtifactSource extends ArtifactSource {
         return user;
     }
 
-    public void setDatabaseName( final String databaseName ) {
+    public void setDatabaseName(final String databaseName) {
         this.databaseName = databaseName;
     }
 
-    public void setDriverClass( final String driverClass ) {
+    public void setDriverClass(final String driverClass) {
         this.driverClass = driverClass;
     }
 
-    public void setMaxConnections( final int maxConnections ) {
+    public void setMaxConnections(final int maxConnections) {
         this.maxConnections = maxConnections;
     }
 
-    public void setPassword( final String password ) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
-    public void setServerName( final String serverName ) {
+    public void setServerName(final String serverName) {
         this.serverName = serverName;
     }
 
-    public void setType( final DatabaseType type ) {
+    public void setType(final DatabaseType type) {
         this.type = type;
     }
 
-    public void setUser( final String user ) {
+    public void setUser(final String user) {
         this.user = user;
     }
 }

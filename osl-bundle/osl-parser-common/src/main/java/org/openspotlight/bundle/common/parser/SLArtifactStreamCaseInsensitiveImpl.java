@@ -64,29 +64,27 @@ public class SLArtifactStreamCaseInsensitiveImpl extends SLArtifactStreamBasicIm
 
     public SLArtifactStreamCaseInsensitiveImpl(
                                                 final String fedaratedArtifactPath, final List<String> artifactContent,
-                                                final String version ) throws IOException {
+                                                final String version)
+        throws IOException {
         super(fedaratedArtifactPath, artifactContent, version);
-        this.caseMode = CaseMode.LOWER;
+        caseMode = CaseMode.LOWER;
     }
 
     public SLArtifactStreamCaseInsensitiveImpl(
                                                 final String fedaratedArtifactPath, final List<String> artifactContent,
-                                                final String version, final CaseMode mode ) throws IOException {
+                                                final String version, final CaseMode mode)
+        throws IOException {
         super(fedaratedArtifactPath, artifactContent, version);
-        this.caseMode = mode;
+        caseMode = mode;
     }
 
-    public int LA( int i ) {
-        int result = super.LA(i);
-        if (result == 0) {
-            return 0; // undefined
+    @Override
+    public int LA(final int i) {
+        final int result = super.LA(i);
+        if (result == 0) { return 0; // undefined
         }
-        if (result == CharStream.EOF) {
-            return CharStream.EOF;
-        }
-        if (caseMode == CaseMode.UPPER) {
-            return Character.toUpperCase(result);
-        }
+        if (result == CharStream.EOF) { return CharStream.EOF; }
+        if (caseMode == CaseMode.UPPER) { return Character.toUpperCase(result); }
         return Character.toLowerCase(result);
     }
 }

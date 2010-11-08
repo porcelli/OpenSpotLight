@@ -64,13 +64,13 @@ import org.openspotlight.graph.query.info.WhereByLinkCountInfo;
 public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGetter {
 
     /** The select info. */
-    private SelectByLinkCountInfo selectInfo;
+    private final SelectByLinkCountInfo selectInfo;
 
     /** The types. */
-    private List<Type>              types;
+    private final List<Type>            types;
 
     /** The select end. */
-    private End                     selectEnd;
+    private final End                   selectEnd;
 
     /**
      * Instantiates a new sL select by link count impl.
@@ -78,18 +78,19 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
      * @param selectFacade the select facade
      */
     public SelectByLinkCountImpl(
-                                    SelectFacade selectFacade ) {
-        this.selectInfo = new SelectByLinkCountInfo();
-        this.types = new ArrayList<Type>();
-        this.selectEnd = new EndImpl(selectFacade, selectInfo);
+                                    final SelectFacade selectFacade) {
+        selectInfo = new SelectByLinkCountInfo();
+        types = new ArrayList<Type>();
+        selectEnd = new EndImpl(selectFacade, selectInfo);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
-        Type type = new TypeImpl(this, typeInfo);
+    @Override
+    public Type type(final String typeName) {
+        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        final Type type = new TypeImpl(this, typeInfo);
         types.add(type);
         return type;
     }
@@ -97,6 +98,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
     /**
      * {@inheritDoc}
      */
+    @Override
     public End end() {
         verifyIfLastItemTerminatedWithComma();
         return selectEnd;
@@ -105,6 +107,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
     /**
      * {@inheritDoc}
      */
+    @Override
     public SelectInfo getSelectInfo() {
         return selectInfo;
     }
@@ -119,7 +122,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
      */
     private void verifyIfLastItemTerminatedWithComma() {
         int commaCount = 0;
-        for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
+        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
             commaCount += typeInfo.isComma() ? 1 : 0;
         }
     }
@@ -132,10 +135,10 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
     public static class TypeImpl implements Type {
 
         /** The select by link count. */
-        private SelectByLinkCount selectByLinkCount;
+        private final SelectByLinkCount selectByLinkCount;
 
         /** The type info. */
-        private SLSelectTypeInfo    typeInfo;
+        private final SLSelectTypeInfo  typeInfo;
 
         /**
          * Instantiates a new type impl.
@@ -144,14 +147,15 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
          * @param typeInfo the type info
          */
         TypeImpl(
-                  SelectByLinkCount selectByNodeType, SLSelectTypeInfo typeInfo ) {
-            this.selectByLinkCount = selectByNodeType;
+                  final SelectByLinkCount selectByNodeType, final SLSelectTypeInfo typeInfo) {
+            selectByLinkCount = selectByNodeType;
             this.typeInfo = typeInfo;
         }
 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount comma() {
             typeInfo.setComma(true);
             return selectByLinkCount;
@@ -160,6 +164,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return selectByLinkCount.end();
         }
@@ -167,6 +172,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public Type subTypes() {
             typeInfo.setSubTypes(true);
             return this;
@@ -182,16 +188,16 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
     public static class EndImpl implements End {
 
         /** The select facade. */
-        private SelectFacade          selectFacade;
+        private final SelectFacade          selectFacade;
 
         /** The select info. */
-        private SelectByLinkCountInfo selectInfo;
+        private final SelectByLinkCountInfo selectInfo;
 
         /** The where. */
-        private WhereByLinkCount      where;
+        private WhereByLinkCount            where;
 
         /** The order by. */
-        private OrderByStatement      orderBy;
+        private OrderByStatement            orderBy;
 
         /**
          * Instantiates a new end impl.
@@ -200,7 +206,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
          * @param selectInfo the select info
          */
         EndImpl(
-                 SelectFacade selectFacade, SelectByLinkCountInfo selectInfo ) {
+                 final SelectFacade selectFacade, final SelectByLinkCountInfo selectInfo) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
             // this.orderBy = new SLOrderByStatementImpl();
@@ -209,11 +215,12 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public WhereByLinkCount where() {
-            if (this.where == null) {
-                WhereByLinkCountInfo whereStatementInfo = new WhereByLinkCountInfo(selectInfo);
+            if (where == null) {
+                final WhereByLinkCountInfo whereStatementInfo = new WhereByLinkCountInfo(selectInfo);
                 selectInfo.setWhereStatementInfo(whereStatementInfo);
-                this.where = new WhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
+                where = new WhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
             }
             return where;
         }
@@ -221,6 +228,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public OrderByStatement orderBy() {
             return orderBy;
         }
@@ -228,6 +236,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             selectInfo.setKeepResult(true);
             return this;
@@ -236,7 +245,8 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             selectInfo.setLimit(limit);
             return this;
         }
@@ -244,8 +254,9 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             selectInfo.setLimit(limit);
             selectInfo.setOffset(offset);
             return this;
@@ -253,9 +264,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
 
         /*
          * (non-Javadoc)
-         * 
-         * @see
-         * org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
+         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
          */
         /**
          * Execute x times.
@@ -269,10 +278,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
 
         /*
          * (non-Javadoc)
-         * 
-         * @see
-         * org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes
-         * (int)
+         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes (int)
          */
         /**
          * Execute x times.
@@ -280,7 +286,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
          * @param x the x
          * @return the end
          */
-        public End executeXTimes( int x ) {
+        public End executeXTimes(final int x) {
             selectInfo.setXTimes(x);
             return this;
         }
@@ -288,6 +294,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -295,6 +302,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
@@ -302,6 +310,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -309,6 +318,7 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }

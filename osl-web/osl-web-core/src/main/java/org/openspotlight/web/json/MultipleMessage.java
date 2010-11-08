@@ -58,7 +58,7 @@ public class MultipleMessage {
         return messages;
     }
 
-    public void setMessages( final Set<String> messages ) {
+    public void setMessages(final Set<String> messages) {
         this.messages = messages;
     }
 }

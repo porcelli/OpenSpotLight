@@ -90,27 +90,23 @@ public enum DatabaseMetadataScriptManager {
         private final ScriptType   scriptType;
 
         public MapKey(
-                       final DatabaseType databaseType, final ScriptType scriptType ) {
+                       final DatabaseType databaseType, final ScriptType scriptType) {
             this.databaseType = databaseType;
             this.scriptType = scriptType;
-            this.hashCode = hashOf(databaseType, scriptType);
+            hashCode = hashOf(databaseType, scriptType);
         }
 
         @Override
-        public boolean equals( final Object o ) {
-            if (o == this) {
-                return true;
-            }
-            if (!(o instanceof MapKey)) {
-                return false;
-            }
-            final MapKey that = (MapKey)o;
-            return eachEquality(of(this.databaseType, this.scriptType), andOf(that.databaseType, that.scriptType));
+        public boolean equals(final Object o) {
+            if (o == this) { return true; }
+            if (!(o instanceof MapKey)) { return false; }
+            final MapKey that = (MapKey) o;
+            return eachEquality(of(databaseType, scriptType), andOf(that.databaseType, that.scriptType));
         }
 
         @Override
         public int hashCode() {
-            return this.hashCode;
+            return hashCode;
         }
 
     }
@@ -124,19 +120,17 @@ public enum DatabaseMetadataScriptManager {
      * @param scriptType
      * @return the database metadata script or null if there's no script for that db and type
      */
-    public DatabaseMetadataScript getScript( final DatabaseType databaseType,
-                                             final ScriptType scriptType ) {
-        if (this.scriptMap.size() == 0) {
-            this.reloadScripts();
+    public DatabaseMetadataScript getScript(final DatabaseType databaseType,
+                                             final ScriptType scriptType) {
+        if (scriptMap.size() == 0) {
+            reloadScripts();
         }
-        DatabaseMetadataScript script = this.scriptMap.get(new MapKey(databaseType, scriptType));
+        DatabaseMetadataScript script = scriptMap.get(new MapKey(databaseType, scriptType));
         DatabaseType internalType = databaseType;
         while (script == null) {
             internalType = internalType.getParent();
-            if (internalType == null) {
-                return null;
-            }
-            script = this.scriptMap.get(new MapKey(internalType, scriptType));
+            if (internalType == null) { return null; }
+            script = scriptMap.get(new MapKey(internalType, scriptType));
         }
         return script;
     }
@@ -146,21 +140,22 @@ public enum DatabaseMetadataScriptManager {
      * 
      * @throws ConfigurationException
      */
-    public synchronized void reloadScripts() throws ConfigurationException {
+    public synchronized void reloadScripts()
+        throws ConfigurationException {
         try {
-            this.scriptMap.clear();
+            scriptMap.clear();
             final XStream xstream = new XStream();
             xstream.alias("script", DatabaseMetadataScript.class); //$NON-NLS-1$
             xstream.alias("column", ColumnsNamesForMetadataSelect.class);//$NON-NLS-1$
             xstream.omitField(DatabaseMetadataScript.class, "immutable"); //$NON-NLS-1$
-            for (final ScriptType scriptType : ScriptType.values()) {
-                for (final DatabaseType databaseType : DatabaseType.values()) {
+            for (final ScriptType scriptType: ScriptType.values()) {
+                for (final DatabaseType databaseType: DatabaseType.values()) {
                     final String fileName = format("/configuration/{0}-{1}.xml", databaseType, scriptType);
                     final InputStream stream = getResourceFromClassPath(fileName);
                     if (stream == null) {
                         continue;
                     }
-                    final DatabaseMetadataScript newScript = (DatabaseMetadataScript)xstream.fromXML(stream);
+                    final DatabaseMetadataScript newScript = (DatabaseMetadataScript) xstream.fromXML(stream);
                     if (!databaseType.equals(newScript.getDatabase())) {
                         logAndReturn(new IllegalStateException(format("Wrong database on {0}", fileName)));
                     }
@@ -185,7 +180,7 @@ public enum DatabaseMetadataScriptManager {
                                                                       fileName)));
                     }
 
-                    this.scriptMap.put(new MapKey(newScript.getDatabase(), newScript.getScriptType()), newScript);
+                    scriptMap.put(new MapKey(newScript.getDatabase(), newScript.getScriptType()), newScript);
                 }
             }
         } catch (final Exception e) {

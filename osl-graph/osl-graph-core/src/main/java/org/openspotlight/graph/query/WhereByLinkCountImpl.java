@@ -61,10 +61,10 @@ import org.openspotlight.graph.query.info.WhereByLinkCountInfo.SLWhereTypeInfo.S
 public class WhereByLinkCountImpl implements WhereByLinkCount {
 
     /** The end. */
-    private End                    end;
+    private final End                  end;
 
     /** The where by link count info. */
-    private WhereByLinkCountInfo whereByLinkCountInfo;
+    private final WhereByLinkCountInfo whereByLinkCountInfo;
 
     /**
      * Instantiates a new sL where by link count impl.
@@ -74,8 +74,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
      * @param whereByLinkCountInfo the where by link count info
      */
     public WhereByLinkCountImpl(
-                                   SelectFacade selectFacade, OrderByStatement orderBy,
-                                   WhereByLinkCountInfo whereByLinkCountInfo ) {
+                                   final SelectFacade selectFacade, final OrderByStatement orderBy,
+                                   final WhereByLinkCountInfo whereByLinkCountInfo) {
         this(new EndImpl(selectFacade, whereByLinkCountInfo, orderBy), whereByLinkCountInfo);
     }
 
@@ -86,16 +86,14 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
      * @param whereByLinkCountInfo the where by link count info
      */
     public WhereByLinkCountImpl(
-                                   End end, WhereByLinkCountInfo whereByLinkCountInfo ) {
+                                   final End end, final WhereByLinkCountInfo whereByLinkCountInfo) {
         this.end = end;
         this.whereByLinkCountInfo = whereByLinkCountInfo;
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @seeorg.openspotlight.graph.query.SLWhereByLinkCountInfoGetter#
-     * getWhereStatementInfo()
+     * @seeorg.openspotlight.graph.query.SLWhereByLinkCountInfoGetter# getWhereStatementInfo()
      */
     /**
      * Gets the where statement info.
@@ -109,8 +107,9 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
+    @Override
+    public Type type(final String typeName) {
+        final SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
         whereByLinkCountInfo.getWhereTypeInfoList().add(typeInfo);
         return new TypeImpl(this, typeInfo);
     }
@@ -118,6 +117,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
     /**
      * {@inheritDoc}
      */
+    @Override
     public End whereEnd() {
         return end;
     }
@@ -131,13 +131,13 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
     public static class EndImpl implements End {
 
         /** The where by link count info. */
-        private WhereByLinkCountInfo whereByLinkCountInfo;
+        private final WhereByLinkCountInfo whereByLinkCountInfo;
 
         /** The order by statement. */
-        private OrderByStatement     orderByStatement;
+        private final OrderByStatement     orderByStatement;
 
         /** The select facade. */
-        private SelectFacade         selectFacade;
+        private final SelectFacade         selectFacade;
 
         /**
          * Instantiates a new end impl.
@@ -147,8 +147,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
          * @param orderByStatement the order by statement
          */
         public EndImpl(
-                        SelectFacade selectFacade, WhereByLinkCountInfo whereByLinkCountInfo,
-                        OrderByStatement orderByStatement ) {
+                        final SelectFacade selectFacade, final WhereByLinkCountInfo whereByLinkCountInfo,
+                        final OrderByStatement orderByStatement) {
             this.selectFacade = selectFacade;
             this.whereByLinkCountInfo = whereByLinkCountInfo;
             this.orderByStatement = orderByStatement;
@@ -157,6 +157,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public OrderByStatement orderBy() {
             return orderByStatement;
         }
@@ -164,6 +165,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             whereByLinkCountInfo.getSelectByLinkCountInfo().setKeepResult(true);
             return this;
@@ -172,7 +174,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             whereByLinkCountInfo.getSelectByLinkCountInfo().setLimit(limit);
             return this;
         }
@@ -180,8 +183,9 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             whereByLinkCountInfo.getSelectByLinkCountInfo().setLimit(limit);
             whereByLinkCountInfo.getSelectByLinkCountInfo().setOffset(offset);
             return this;
@@ -190,6 +194,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public End executeXTimes() {
             whereByLinkCountInfo.getSelectByLinkCountInfo().setXTimes(0);
             return this;
@@ -198,7 +203,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
-        public End executeXTimes( int x ) {
+        @Override
+        public End executeXTimes(final int x) {
             whereByLinkCountInfo.getSelectByLinkCountInfo().setXTimes(x);
             return this;
         }
@@ -206,6 +212,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -213,6 +220,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
@@ -220,6 +228,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -227,6 +236,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }
@@ -240,10 +250,10 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
     public static class TypeImpl implements Type {
 
         /** The where statement. */
-        private WhereByLinkCount whereStatement;
+        private final WhereByLinkCount whereStatement;
 
         /** The type info. */
-        private SLWhereTypeInfo    typeInfo;
+        private final SLWhereTypeInfo  typeInfo;
 
         /**
          * Instantiates a new type impl.
@@ -252,7 +262,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
          * @param typeInfo the type info
          */
         public TypeImpl(
-                         WhereByLinkCount whereStatement, SLWhereTypeInfo typeInfo ) {
+                         final WhereByLinkCount whereStatement, final SLWhereTypeInfo typeInfo) {
             this.whereStatement = whereStatement;
             this.typeInfo = typeInfo;
         }
@@ -260,6 +270,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SubTypes subTypes() {
             typeInfo.setSubTypes(true);
             return new SubTypesImpl(whereStatement, typeInfo);
@@ -268,10 +279,11 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Each each() {
-            SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo);
+            final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo);
             typeInfo.setTypeStatementInfo(whereStatementInfo);
-            SLConditionInfo conditionInfo = whereStatementInfo.addCondition();
+            final SLConditionInfo conditionInfo = whereStatementInfo.addCondition();
             return new EachImpl(whereStatement, conditionInfo);
         }
 
@@ -283,10 +295,10 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         public static class SubTypesImpl implements SubTypes {
 
             /** The where statement. */
-            private WhereByLinkCount whereStatement;
+            private final WhereByLinkCount whereStatement;
 
             /** The type info. */
-            private SLWhereTypeInfo    typeInfo;
+            private final SLWhereTypeInfo  typeInfo;
 
             /**
              * Instantiates a new sub types impl.
@@ -295,7 +307,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
              * @param typeInfo the type info
              */
             public SubTypesImpl(
-                                 WhereByLinkCount whereStatement, SLWhereTypeInfo typeInfo ) {
+                                 final WhereByLinkCount whereStatement, final SLWhereTypeInfo typeInfo) {
                 this.whereStatement = whereStatement;
                 this.typeInfo = typeInfo;
             }
@@ -303,10 +315,11 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
             /**
              * {@inheritDoc}
              */
+            @Override
             public Each each() {
-                SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo);
+                final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo);
                 typeInfo.setTypeStatementInfo(whereStatementInfo);
-                SLConditionInfo conditionInfo = whereStatementInfo.addCondition();
+                final SLConditionInfo conditionInfo = whereStatementInfo.addCondition();
                 return new EachImpl(whereStatement, conditionInfo);
             }
         }
@@ -319,13 +332,13 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
         public static class EachImpl implements Each {
 
             /** The where statement. */
-            private WhereByLinkCount whereStatement;
+            private final WhereByLinkCount whereStatement;
 
             /** The condition info. */
-            private SLConditionInfo    conditionInfo;
+            private final SLConditionInfo  conditionInfo;
 
             /** The outer each. */
-            private Each               outerEach;
+            private final Each             outerEach;
 
             /**
              * Instantiates a new each impl.
@@ -334,7 +347,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
              * @param conditionInfo the condition info
              */
             public EachImpl(
-                             WhereByLinkCount whereStatement, SLConditionInfo conditionInfo ) {
+                             final WhereByLinkCount whereStatement, final SLConditionInfo conditionInfo) {
                 this(whereStatement, conditionInfo, null);
             }
 
@@ -346,7 +359,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
              * @param outerEach the outer each
              */
             public EachImpl(
-                             WhereByLinkCount whereStatement, SLConditionInfo conditionInfo, Each outerEach ) {
+                             final WhereByLinkCount whereStatement, final SLConditionInfo conditionInfo, final Each outerEach) {
                 this.whereStatement = whereStatement;
                 this.conditionInfo = conditionInfo;
                 this.outerEach = outerEach;
@@ -355,7 +368,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
             /**
              * {@inheritDoc}
              */
-            public Link link( String name ) {
+            @Override
+            public Link link(final String name) {
                 conditionInfo.setLinkTypeName(name);
                 return new LinkImpl(whereStatement, this, outerEach, conditionInfo);
             }
@@ -368,16 +382,16 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
             public static class LinkImpl implements Link {
 
                 /** The where statement. */
-                private WhereByLinkCount whereStatement;
+                private final WhereByLinkCount whereStatement;
 
                 /** The each. */
-                private Each               each;
+                private final Each             each;
 
                 /** The outer each. */
-                private Each               outerEach;
+                private final Each             outerEach;
 
                 /** The condition info. */
-                private SLConditionInfo    conditionInfo;
+                private final SLConditionInfo  conditionInfo;
 
                 /**
                  * Instantiates a new link impl.
@@ -388,7 +402,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                  * @param conditionInfo the condition info
                  */
                 public LinkImpl(
-                                 WhereByLinkCount whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                 final WhereByLinkCount whereStatement, final Each each, final Each outerEach,
+                                final SLConditionInfo conditionInfo) {
                     this.whereStatement = whereStatement;
                     this.each = each;
                     this.outerEach = outerEach;
@@ -398,6 +413,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Side a() {
                     conditionInfo.setSide(SideType.A_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
@@ -406,6 +422,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Side b() {
                     conditionInfo.setSide(SideType.B_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
@@ -419,16 +436,16 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                 public static class SideImpl implements Side {
 
                     /** The where statement. */
-                    private WhereByLinkCount whereStatement;
+                    private final WhereByLinkCount whereStatement;
 
                     /** The each. */
-                    private Each               each;
+                    private final Each             each;
 
                     /** The outer each. */
-                    private Each               outerEach;
+                    private final Each             outerEach;
 
                     /** The condition info. */
-                    private SLConditionInfo    conditionInfo;
+                    private final SLConditionInfo  conditionInfo;
 
                     /**
                      * Instantiates a new side impl.
@@ -439,7 +456,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                      * @param conditionInfo the condition info
                      */
                     public SideImpl(
-                                     WhereByLinkCount whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                     final WhereByLinkCount whereStatement, final Each each, final Each outerEach,
+                                    final SLConditionInfo conditionInfo) {
                         this.whereStatement = whereStatement;
                         this.each = each;
                         this.outerEach = outerEach;
@@ -449,6 +467,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                     /**
                      * {@inheritDoc}
                      */
+                    @Override
                     public Count count() {
                         return new CountImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -461,16 +480,16 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                     public static class CountImpl implements Count {
 
                         /** The each. */
-                        private Each               each;
+                        private final Each             each;
 
                         /** The outer each. */
-                        private Each               outerEach;
+                        private final Each             outerEach;
 
                         /** The where statement. */
-                        private WhereByLinkCount whereStatement;
+                        private final WhereByLinkCount whereStatement;
 
                         /** The condition info. */
-                        private SLConditionInfo    conditionInfo;
+                        private final SLConditionInfo  conditionInfo;
 
                         /**
                          * Instantiates a new count impl.
@@ -481,8 +500,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                          * @param conditionInfo the condition info
                          */
                         public CountImpl(
-                                          WhereByLinkCount whereStatement, Each each, Each outerEach,
-                                          SLConditionInfo conditionInfo ) {
+                                          final WhereByLinkCount whereStatement, final Each each, final Each outerEach,
+                                          final SLConditionInfo conditionInfo) {
                             this.each = each;
                             this.whereStatement = whereStatement;
                             this.conditionInfo = conditionInfo;
@@ -492,6 +511,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Count not() {
                             conditionInfo.setRelationalNotOperator(true);
                             return this;
@@ -500,6 +520,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator lesserThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -508,6 +529,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator greaterThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -516,6 +538,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator equalsTo() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -524,6 +547,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator lesserOrEqualThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -532,6 +556,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator greaterOrEqualThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -575,16 +600,16 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                         public static class OperatorImpl implements Operator {
 
                             /** The each. */
-                            private Each               each;
+                            private final Each             each;
 
                             /** The outer each. */
-                            private Each               outerEach;
+                            private final Each             outerEach;
 
                             /** The where statement. */
-                            private WhereByLinkCount whereStatement;
+                            private final WhereByLinkCount whereStatement;
 
                             /** The condition info. */
-                            private SLConditionInfo    conditionInfo;
+                            private final SLConditionInfo  conditionInfo;
 
                             /**
                              * Instantiates a new operator impl.
@@ -595,8 +620,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                              * @param conditionInfo the condition info
                              */
                             public OperatorImpl(
-                                                 WhereByLinkCount whereStatement, Each each, Each outerEach,
-                                                 SLConditionInfo conditionInfo ) {
+                                                 final WhereByLinkCount whereStatement, final Each each, final Each outerEach,
+                                                 final SLConditionInfo conditionInfo) {
                                 this.each = each;
                                 this.outerEach = outerEach;
                                 this.whereStatement = whereStatement;
@@ -606,7 +631,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                             /**
                              * {@inheritDoc}
                              */
-                            public Value value( Integer value ) {
+                            @Override
+                            public Value value(final Integer value) {
                                 conditionInfo.setValue(value);
                                 return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                             }
@@ -619,16 +645,16 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                             public static class ValueImpl implements Value {
 
                                 /** The each. */
-                                private Each               each;
+                                private final Each             each;
 
                                 /** The outer each. */
-                                private Each               outerEach;
+                                private final Each             outerEach;
 
                                 /** The where statement. */
-                                private WhereByLinkCount whereStatement;
+                                private final WhereByLinkCount whereStatement;
 
                                 /** The condition info. */
-                                private SLConditionInfo    conditionInfo;
+                                private final SLConditionInfo  conditionInfo;
 
                                 /**
                                  * Instantiates a new value impl.
@@ -639,8 +665,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                  * @param conditionInfo the condition info
                                  */
                                 public ValueImpl(
-                                                  WhereByLinkCount whereStatement, Each each, Each outerEach,
-                                                  SLConditionInfo conditionInfo ) {
+                                                  final WhereByLinkCount whereStatement, final Each each, final Each outerEach,
+                                                  final SLConditionInfo conditionInfo) {
                                     this.each = each;
                                     this.outerEach = outerEach;
                                     this.whereStatement = whereStatement;
@@ -650,6 +676,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public WhereByLinkCount typeEnd() {
                                     return whereStatement;
                                 }
@@ -657,26 +684,31 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public RelationalOperator or() {
-                                    SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                    SLConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                    Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLConditionInfo newConditionInfo =
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                                     return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                                 }
 
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public RelationalOperator and() {
-                                    SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                    SLConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                    Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLConditionInfo newConditionInfo =
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                                     return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                                 }
 
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public CloseBracket closeBracket() {
                                     return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
                                 }
@@ -689,13 +721,13 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                 public static class RelationalOperatorImpl implements RelationalOperator {
 
                                     /** The each. */
-                                    private Each               each;
+                                    private final Each             each;
 
                                     /** The where statement. */
-                                    private WhereByLinkCount whereStatement;
+                                    private final WhereByLinkCount whereStatement;
 
                                     /** The condition info. */
-                                    private SLConditionInfo    conditionInfo;
+                                    private final SLConditionInfo  conditionInfo;
 
                                     /**
                                      * Instantiates a new relational operator impl.
@@ -705,8 +737,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                      * @param conditionInfo the condition info
                                      */
                                     public RelationalOperatorImpl(
-                                                                   WhereByLinkCount whereStatement, Each each,
-                                                                   SLConditionInfo conditionInfo ) {
+                                                                   final WhereByLinkCount whereStatement, final Each each,
+                                                                   final SLConditionInfo conditionInfo) {
                                         this.each = each;
                                         this.whereStatement = whereStatement;
                                         this.conditionInfo = conditionInfo;
@@ -715,6 +747,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public RelationalOperator not() {
                                         conditionInfo.setConditionalNotOperator(true);
                                         return this;
@@ -723,26 +756,31 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public WhereByLinkCount comma() {
-                                        return this.whereStatement;
+                                        return whereStatement;
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public Each each() {
-                                        return this.each;
+                                        return each;
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public OpenBracket openBracket() {
-                                        SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(
-                                                                                                       conditionInfo.getTypeInfo());
+                                        final SLTypeStatementInfo newStatementInfo =
+                                            new SLTypeStatementInfo(
+                                                                                                       conditionInfo
+                                                                                                           .getTypeInfo());
                                         conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                        SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                        Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                        final SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                        final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
                                         return new OpenBracketImpl(each);
                                     }
 
@@ -754,7 +792,7 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                     public static class OpenBracketImpl implements OpenBracket {
 
                                         /** The each. */
-                                        private Each each;
+                                        private final Each each;
 
                                         /**
                                          * Instantiates a new open bracket impl.
@@ -762,13 +800,14 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                          * @param each the each
                                          */
                                         public OpenBracketImpl(
-                                                                Each each ) {
+                                                                final Each each) {
                                             this.each = each;
                                         }
 
                                         /**
                                          * {@inheritDoc}
                                          */
+                                        @Override
                                         public Each each() {
                                             return each;
                                         }
@@ -783,13 +822,13 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                 public static class CloseBracketImpl implements CloseBracket {
 
                                     /** The where statement. */
-                                    private WhereByLinkCount whereStatement;
+                                    private final WhereByLinkCount whereStatement;
 
                                     /** The outer each. */
-                                    private Each               outerEach;
+                                    private final Each             outerEach;
 
                                     /** The condition info. */
-                                    private SLConditionInfo    conditionInfo;
+                                    private final SLConditionInfo  conditionInfo;
 
                                     /**
                                      * Instantiates a new close bracket impl.
@@ -799,8 +838,8 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                      * @param conditionInfo the condition info
                                      */
                                     public CloseBracketImpl(
-                                                             WhereByLinkCount whereStatement, Each outerEach,
-                                                             SLConditionInfo conditionInfo ) {
+                                                             final WhereByLinkCount whereStatement, final Each outerEach,
+                                                             final SLConditionInfo conditionInfo) {
                                         this.whereStatement = whereStatement;
                                         this.outerEach = outerEach;
                                         this.conditionInfo = conditionInfo;
@@ -809,26 +848,29 @@ public class WhereByLinkCountImpl implements WhereByLinkCount {
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public RelationalOperator or() {
-                                        SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                         outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                        Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                         return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public RelationalOperator and() {
-                                        SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                         outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                        Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                         return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public WhereByLinkCount typeEnd() {
                                         return whereStatement;
                                     }

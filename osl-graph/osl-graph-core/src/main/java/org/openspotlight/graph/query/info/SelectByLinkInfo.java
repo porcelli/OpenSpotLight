@@ -66,7 +66,7 @@ public class SelectByLinkInfo {
     private String            name;
 
     /** The side. */
-    private SideType        side;
+    private SideType          side;
 
     /** The comma. */
     private boolean           comma;
@@ -77,7 +77,7 @@ public class SelectByLinkInfo {
      * @param name the name
      */
     public SelectByLinkInfo(
-                               String name ) {
+                               final String name) {
         setName(name);
     }
 
@@ -95,7 +95,7 @@ public class SelectByLinkInfo {
      * 
      * @param name the new name
      */
-    public void setName( String name ) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -113,7 +113,7 @@ public class SelectByLinkInfo {
      * 
      * @param comma the new comma
      */
-    public void setComma( boolean comma ) {
+    public void setComma(final boolean comma) {
         this.comma = comma;
     }
 
@@ -131,23 +131,21 @@ public class SelectByLinkInfo {
      * 
      * @param side the new side
      */
-    public void setSide( SideType side ) {
+    public void setSide(final SideType side) {
         this.side = side;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @Override
-    public boolean equals( Object obj ) {
+    public boolean equals(final Object obj) {
         return Equals.eachEquality(SelectByLinkInfo.class, this, obj, "name");
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -157,12 +155,11 @@ public class SelectByLinkInfo {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append('"').append(name).append('"').append(' ');
         buffer.append('(').append(side).append(')');
         return buffer.toString();

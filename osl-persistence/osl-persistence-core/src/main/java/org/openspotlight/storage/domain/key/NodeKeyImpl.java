@@ -92,13 +92,13 @@ public class NodeKeyImpl implements NodeKey {
 
     }
 
-    private final Partition      partition;
+    private final Partition    partition;
 
-    private final CompositeKey   localKey;
+    private final CompositeKey localKey;
 
-    private final String         parentKeyAsString;
+    private final String       parentKeyAsString;
 
-    private transient String     keyAsString = null;
+    private transient String   keyAsString = null;
 
     @Override
     public String getKeyAsString() {

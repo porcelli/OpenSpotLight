@@ -89,53 +89,62 @@ import com.google.inject.Injector;
 public class DatabaseCustomTest {
 
     @BeforeClass
-    public static void loadDriver() throws Exception {
+    public static void loadDriver()
+        throws Exception {
         Class.forName("org.h2.Driver");
     }
 
-    private DatabaseCustomArtifactFinder finder;
-    private DbArtifactSource bundle;
+    private DatabaseCustomArtifactFinder          finder;
+    private DbArtifactSource                      bundle;
     private PersistentArtifactManagerProviderImpl persistentManagerProvider;
 
     @Before
-    public void setup() throws Exception {
+    public void setup()
+        throws Exception {
         delete("./target/test-data"); //$NON-NLS-1$
 
         final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
 
-        bundle = (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().iterator().next().getArtifactSources().iterator().next();
+        bundle =
+            (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().iterator().next()
+                .getArtifactSources().iterator().next();
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         finder = new DatabaseCustomArtifactFinder();
 
-        Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
-		injector.getInstance(JRedisFactory.class)
-				.getFrom(RegularPartitions.FEDERATION).flushall();
-		
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
+        injector.getInstance(JRedisFactory.class)
+                .getFrom(RegularPartitions.FEDERATION).flushall();
+
+        final PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
                 injector.getInstance(SimplePersistFactory.class),
                 bundle.getRepository());
 
     }
 
     @Test
-    public void shouldLoadProceduresAndFunctions() throws Exception {
+    public void shouldLoadProceduresAndFunctions()
+        throws Exception {
         Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
 
-        connection.prepareStatement(
-                "newPair alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ").execute();
-        connection.prepareStatement(
-                "newPair alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"").execute();
+        connection
+            .prepareStatement(
+                "newPair alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ")
+            .execute();
+        connection
+            .prepareStatement(
+                "newPair alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"")
+            .execute();
         connection.commit();
         connection.close();
 
         final RoutineArtifact exampleProcedure = (RoutineArtifact) finder.findByPath(RoutineArtifact.class, bundle,
-                "/PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE",null);
+                "/PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE", null);
         final RoutineArtifact exampleFunction = (RoutineArtifact) finder.findByPath(RoutineArtifact.class, bundle,
-                "/PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION",null);
+                "/PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION", null);
         assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
         assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
         connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
@@ -148,14 +157,19 @@ public class DatabaseCustomTest {
     }
 
     @Test
-    public void shouldLoadTablesAndViews() throws Exception {
-        final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().iterator().next().getArtifactSources().iterator().next();
+    public void shouldLoadTablesAndViews()
+        throws Exception {
+        final DbArtifactSource bundle =
+            (DbArtifactSource) createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().iterator().next()
+                .getArtifactSources().iterator().next();
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         final Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
                 "sa", "");
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
-        connection.prepareStatement(
-                "newPair table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+        connection
+            .prepareStatement(
+                "newPair table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+            .execute();
         connection.prepareStatement(
                 "newPair view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable").execute();
         connection.prepareStatement("newPair table anotherTable(i int not null primary key, i_fk int)").execute();
@@ -166,19 +180,20 @@ public class DatabaseCustomTest {
         connection.commit();
         connection.close();
 
-        final TableArtifact exampleTable = finder.findByPath(TableArtifact.class, bundle, "/PUBLIC/DB/TABLE/EXAMPLETABLE",null);
+        final TableArtifact exampleTable = finder.findByPath(TableArtifact.class, bundle, "/PUBLIC/DB/TABLE/EXAMPLETABLE", null);
         final TableArtifact exampleView = (TableArtifact) finder.findByPath(TableArtifact.class, bundle,
-                "/PUBLIC/DB/VIEW/EXAMPLEVIEW",null);
+                "/PUBLIC/DB/VIEW/EXAMPLEVIEW", null);
         assertThat(exampleTable, is(TableArtifact.class));
         final Set<DatabaseCustomArtifact> pks = finder.listByPath(DatabaseCustomArtifact.class, bundle,
-                Constraints.PRIMARY_KEY.toString(),null);
+                Constraints.PRIMARY_KEY.toString(), null);
         final Set<DatabaseCustomArtifact> fks = finder.listByPath(DatabaseCustomArtifact.class, bundle,
-                Constraints.FOREIGN_KEY.toString(),null);
+                Constraints.FOREIGN_KEY.toString(), null);
 
-        Set<String> names = finder.getInternalMethods().retrieveOriginalNames(DatabaseCustomArtifact.class, bundle, null);
+        final Set<String> names = finder.getInternalMethods().retrieveOriginalNames(DatabaseCustomArtifact.class, bundle, null);
 
-        for (String name : names)
+        for (final String name: names) {
             System.err.println(name);
+        }
 
         assertThat(fks, is(notNullValue()));
         assertThat(fks.size(), is(not(0)));

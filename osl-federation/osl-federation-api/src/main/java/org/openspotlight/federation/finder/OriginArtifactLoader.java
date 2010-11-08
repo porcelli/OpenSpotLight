@@ -64,8 +64,8 @@ public interface OriginArtifactLoader extends Disposable {
 
     public interface LoaderInternalMethods {
 
-        public <A extends Artifact> boolean accept( ArtifactSource source,
-                                                    Class<A> type );
+        public <A extends Artifact> boolean accept(ArtifactSource source,
+                                                    Class<A> type);
 
         /**
          * Retrieve all artifact names.
@@ -73,13 +73,13 @@ public interface OriginArtifactLoader extends Disposable {
          * @param artifactSource the artifact source
          * @return the set< string>
          */
-        public <A extends Artifact> Set<String> retrieveOriginalNames( Class<A> type,
+        public <A extends Artifact> Set<String> retrieveOriginalNames(Class<A> type,
                                                                        ArtifactSource source,
-                                                                       String initialPath );
+                                                                       String initialPath);
 
         public Set<Class<? extends Artifact>> getAvailableTypes();
 
-        public boolean isTypeSupported( Class<? extends Artifact> type );
+        public boolean isTypeSupported(Class<? extends Artifact> type);
 
         /**
          * This method verifies if the artifact with given name is changed comparing with the old one. It may return false yes,
@@ -89,9 +89,9 @@ public interface OriginArtifactLoader extends Disposable {
          * @param oldOne
          * @return
          */
-        public <A extends Artifact> boolean isMaybeChanged( ArtifactSource source,
+        public <A extends Artifact> boolean isMaybeChanged(ArtifactSource source,
                                                             String artifactName,
-                                                            A oldOne );
+                                                            A oldOne);
 
     }
 
@@ -102,9 +102,9 @@ public interface OriginArtifactLoader extends Disposable {
      * @param source the artifact source
      * @return the stream artifact
      */
-    public <A extends Artifact> A findByPath( Class<A> type,
+    public <A extends Artifact> A findByPath(Class<A> type,
                                               ArtifactSource source,
-                                              String path, String encoding );
+                                              String path, String encoding);
 
     /**
      * Find by relative path.
@@ -114,10 +114,10 @@ public interface OriginArtifactLoader extends Disposable {
      * @param source the artifact source
      * @return the stream artifact
      */
-    public <A extends Artifact> A findByRelativePath( Class<A> type,
+    public <A extends Artifact> A findByRelativePath(Class<A> type,
                                                       ArtifactSource source,
                                                       A relativeTo,
-                                                      String path, String encoding );
+                                                      String path, String encoding);
 
     /**
      * List by path.
@@ -126,8 +126,8 @@ public interface OriginArtifactLoader extends Disposable {
      * @param source the artifact source
      * @return the set< stream artifact>
      */
-    public <A extends Artifact> Set<A> listByPath( Class<A> type,
+    public <A extends Artifact> Set<A> listByPath(Class<A> type,
                                                    ArtifactSource source,
-                                                   String path, String encoding );
+                                                   String path, String encoding);
 
 }

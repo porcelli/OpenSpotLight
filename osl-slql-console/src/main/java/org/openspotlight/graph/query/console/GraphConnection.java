@@ -77,15 +77,16 @@ public class GraphConnection {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    public SimpleGraphSession connect( final String serverName,
-                                   final int portNumber,
-                                   final String userName,
-                                   final String passw,
-                                   final String repositoryName ) throws SLException, IOException, ClassNotFoundException {
+    public SimpleGraphSession connect(final String serverName,
+                                      final int portNumber,
+                                      final String userName,
+                                      final String passw,
+                                      final String repositoryName)
+        throws SLException, IOException, ClassNotFoundException {
 
-        this.factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionDataImpl(serverName, userName, passw,
+        factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionDataImpl(serverName, userName, passw,
                                                                                               portNumber));
-        return this.factory.createRemoteGraphSession(userName, passw, repositoryName);
+        return factory.createRemoteGraphSession(userName, passw, repositoryName);
 
     }
 

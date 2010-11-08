@@ -69,7 +69,8 @@ public class DatabaseSupport {
      * @return the connection itself
      * @throws Exception
      */
-    public static Connection createConnection( DbArtifactSource dbBundle ) throws Exception {
+    public static Connection createConnection(final DbArtifactSource dbBundle)
+        throws Exception {
         checkNotNull("dbBundle", dbBundle); //$NON-NLS-1$
         Connection connection = null;
         forName(dbBundle.getDriverClass());

@@ -85,7 +85,7 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     protected Map<Integer, String>      stringConstants  = null;
 
     /** The target query. */
-    protected QueryTextInternal       targetQuery      = null;
+    protected QueryTextInternal         targetQuery      = null;
 
     /** The id. */
     protected String                    id               = null;
@@ -94,7 +94,7 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     protected String                    outputModelName  = null;
 
     /** The target. */
-    protected QueryTextInternal       target           = null;
+    protected QueryTextInternal         target           = null;
 
     /**
      * Instantiates a new abstract sl query text internal.
@@ -107,7 +107,7 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      */
     public AbstractSLQueryTextInternal(
                                         final String id, final Set<SLQLVariable> variables, final String outputModelName,
-                                        final QueryTextInternal target, final Map<Integer, String> stringConstants ) {
+                                        final QueryTextInternal target, final Map<Integer, String> stringConstants) {
         Assertions.checkNotEmpty("id", id);
 
         this.id = id;
@@ -120,7 +120,7 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
 
         if (variables != null && variables.size() > 0) {
             this.variables = new HashMap<String, SLQLVariable>();
-            for (final SLQLVariable slqlVariable : variables) {
+            for (final SLQLVariable slqlVariable: variables) {
                 this.variables.put(slqlVariable.getName(), slqlVariable);
             }
         }
@@ -129,13 +129,14 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     /**
      * {@inheritDoc}
      */
-    public abstract QueryResult execute( final GraphReader session,
+    @Override
+    public abstract QueryResult execute(final GraphReader session,
                                            final Map<String, ?> variableValues,
                                            final String[] inputNodesIDs,
                                            SortMode sortMode,
                                            boolean showSLQL,
                                            Integer limit,
-                                           Integer offset )
+                                           Integer offset)
         throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
 
     /**
@@ -144,10 +145,9 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      * @param variableName the variable name
      * @return the boolean value
      */
-    protected Boolean getBooleanValue( final String variableName ) {
-        if (this.variables.containsKey(variableName)) {
-            return ((SLQLVariableBoolean)this.variables.get(variableName)).getValue();
-        }
+    protected Boolean getBooleanValue(final String variableName) {
+        if (variables.containsKey(variableName)) { return ((SLQLVariableBoolean) variables.get(variableName))
+            .getValue(); }
         return false;
     }
 
@@ -157,18 +157,17 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      * @param variableName the variable name
      * @return the dec value
      */
-    protected Float getDecValue( final String variableName ) {
-        if (this.variables.containsKey(variableName)) {
-            return ((SLQLVariableFloat)this.variables.get(variableName)).getValue();
-        }
+    protected Float getDecValue(final String variableName) {
+        if (variables.containsKey(variableName)) { return ((SLQLVariableFloat) variables.get(variableName)).getValue(); }
         return new Float(-1);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -177,18 +176,18 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      * @param variableName the variable name
      * @return the int value
      */
-    protected Integer getIntValue( final String variableName ) {
-        if (this.variables.containsKey(variableName)) {
-            return ((SLQLVariableInteger)this.variables.get(variableName)).getValue();
-        }
+    protected Integer getIntValue(final String variableName) {
+        if (variables.containsKey(variableName)) { return ((SLQLVariableInteger) variables.get(variableName))
+            .getValue(); }
         return -1;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getOutputModelName() {
-        return this.outputModelName;
+        return outputModelName;
     }
 
     /**
@@ -197,10 +196,8 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      * @param variableName the variable name
      * @return the string value
      */
-    protected String getStringValue( final String variableName ) {
-        if (this.variables.containsKey(variableName)) {
-            return ((SLQLVariableString)this.variables.get(variableName)).getValue();
-        }
+    protected String getStringValue(final String variableName) {
+        if (variables.containsKey(variableName)) { return ((SLQLVariableString) variables.get(variableName)).getValue(); }
         return "";
     }
 
@@ -210,49 +207,50 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      * @param variableName the variable name
      * @return the string value
      */
-    protected String getStringValue( final int element ) {
-        if (this.stringConstants.containsKey(element)) {
-            return stringConstants.get(element);
-        }
+    protected String getStringValue(final int element) {
+        if (stringConstants.containsKey(element)) { return stringConstants.get(element); }
         return "";
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public QueryTextInternal getTarget() {
-        return this.target;
+        return target;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Collection<SLQLVariable> getVariables() {
-        if (this.variables == null) {
-            return null;
-        }
-        return new ArrayList<SLQLVariable>(this.variables.values());
+        if (variables == null) { return null; }
+        return new ArrayList<SLQLVariable>(variables.values());
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasOutputModel() {
-        return this.outputModelName != null;
+        return outputModelName != null;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasTarget() {
-        return this.target != null;
+        return target != null;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasVariables() {
-        return this.variables != null;
+        return variables != null;
     }
 
     /**
@@ -263,27 +261,28 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
      * @param inputNodesIDs the input nodes i ds
      * @throws InvalidQueryElementException the SL invalid query element exception
      */
-    protected void validateAndInit( final GraphReader session,
+    protected void validateAndInit(final GraphReader session,
                                     final Map<String, ? extends Serializable> variableValues,
-                                    final String[] inputNodesIDs ) throws InvalidQueryElementException {
+                                    final String[] inputNodesIDs)
+        throws InvalidQueryElementException {
         Assertions.checkNotNull("session", session);
 
-        if (this.hasVariables()) {
+        if (hasVariables()) {
             Assertions.checkNotEmpty("variableValues", variableValues);
         } else {
             Assertions.checkNullMandatory("variableValues", variableValues);
         }
 
-        if (this.hasTarget()) {
+        if (hasTarget()) {
             Assertions.checkNotEmpty("inputNodes", inputNodesIDs);
         } else {
             Assertions.checkNullMandatory("inputNodes", inputNodesIDs);
         }
 
         if (variableValues != null && variableValues.size() > 0) {
-            for (final Entry<String, ? extends Serializable> activeVariableValue : variableValues.entrySet()) {
-                if (this.variables.containsKey(activeVariableValue.getKey())) {
-                    final SLQLVariable activeVar = this.variables.get(activeVariableValue.getKey());
+            for (final Entry<String, ? extends Serializable> activeVariableValue: variableValues.entrySet()) {
+                if (variables.containsKey(activeVariableValue.getKey())) {
+                    final SLQLVariable activeVar = variables.get(activeVariableValue.getKey());
                     if (activeVar.hasDomainValues() && !activeVar.isValidDomainValue(activeVariableValue.getValue())) {
                         Exceptions.logAndThrow(new InvalidQueryElementException("Variable value not Allowed"));
                     }

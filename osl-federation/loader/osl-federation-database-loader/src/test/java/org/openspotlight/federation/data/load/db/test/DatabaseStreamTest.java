@@ -188,24 +188,24 @@ public abstract class DatabaseStreamTest {
             conn.close();
         }
 
-        Injector injector = Guice.createInjector(
+        final Injector injector = Guice.createInjector(
                 new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                 new SimplePersistModule(), new DetailedLoggerModule());
         injector.getInstance(JRedisFactory.class)
                 .getFrom(RegularPartitions.FEDERATION).flushall();
 
-        SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
+        final SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
                 .getInstance(SimplePersistFactory.class).createSimplePersist(
                         RegularPartitions.FEDERATION);
 
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+        final PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
                 injector.getInstance(SimplePersistFactory.class),
                 bundle.getRepository());
 
         refreshResources(configuration, bundle, provider);
 
-        Iterable<StringArtifact> loadedArtifacts = provider.get()
+        final Iterable<StringArtifact> loadedArtifacts = provider.get()
                 .listByInitialPath(StringArtifact.class, null);
         final Set<String> failMessages = new HashSet<String>();
         lookingTypes: for (final ScriptType typeToAssert: typesToAssert()) {
@@ -237,8 +237,8 @@ public abstract class DatabaseStreamTest {
             new File(dirName).mkdirs();
             final OutputStream fos = new BufferedOutputStream(
                     new FileOutputStream(name + ".sql"));
-            StringBuilder sb = new StringBuilder();
-            for (String s: streamArtifact.getContent().get(simplePersist)) {
+            final StringBuilder sb = new StringBuilder();
+            for (final String s: streamArtifact.getContent().get(simplePersist)) {
                 sb.append(s);
             }
             final InputStream is = new ByteArrayInputStream(sb.toString()
@@ -256,8 +256,8 @@ public abstract class DatabaseStreamTest {
 
     }
 
-    private void refreshResources(GlobalSettings configuration,
-                                  DbArtifactSource bundle, PersistentArtifactManagerProvider provider) {
+    private void refreshResources(final GlobalSettings configuration,
+                                  final DbArtifactSource bundle, final PersistentArtifactManagerProvider provider) {
         throw new UnsupportedOperationException();
         // configuration.getLoaderRegistry().add(DatabaseStreamArtifactFinder.class);
 

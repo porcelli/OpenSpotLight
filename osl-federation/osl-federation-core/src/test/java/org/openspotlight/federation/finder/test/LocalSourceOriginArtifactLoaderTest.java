@@ -65,11 +65,12 @@ import org.openspotlight.federation.finder.LocalSourceOriginArtifactLoader;
 
 public class LocalSourceOriginArtifactLoaderTest {
 
-    private LocalSourceOriginArtifactLoader loader = new LocalSourceOriginArtifactLoader();
-    private ArtifactSource                  artifactSource;
+    private final LocalSourceOriginArtifactLoader loader = new LocalSourceOriginArtifactLoader();
+    private ArtifactSource                        artifactSource;
 
     @Before
-    public void prepareArtifactSource() throws Exception {
+    public void prepareArtifactSource()
+        throws Exception {
         artifactSource = new ArtifactSource();
         final Repository repo = new Repository();
         repo.setName("name");
@@ -84,13 +85,14 @@ public class LocalSourceOriginArtifactLoaderTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindByRelativePath() throws Exception {
+    public void shouldFindByRelativePath()
+        throws Exception {
         final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/file_included1",null);
+                                                                 "folder/subfolder/file_included1", null);
         assertThat(streamArtifact1, is(notNullValue()));
 
         final StringArtifact streamArtifact2 = loader.findByRelativePath(StringArtifact.class, artifactSource, streamArtifact1,
-                                                                         "../file_included1",null);
+                                                                         "../file_included1", null);
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_included1"));
     }
@@ -101,12 +103,14 @@ public class LocalSourceOriginArtifactLoaderTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldLoadAddedArtifact() throws Exception {
-        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, artifactSource, "folder/file_included1",null);
+    public void shouldLoadAddedArtifact()
+        throws Exception {
+        final StringArtifact streamArtifact1 =
+            loader.findByPath(StringArtifact.class, artifactSource, "folder/file_included1", null);
         final StringArtifact streamArtifact2 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/file_included1",null);
+                                                                 "folder/subfolder/file_included1", null);
         final StringArtifact streamArtifact3 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/anothersubfolder/file_included1",null);
+                                                                 "folder/subfolder/anothersubfolder/file_included1", null);
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));
@@ -118,12 +122,14 @@ public class LocalSourceOriginArtifactLoaderTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldLoadChangedArtifact() throws Exception {
-        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, artifactSource, "folder/file_changed1",null);
+    public void shouldLoadChangedArtifact()
+        throws Exception {
+        final StringArtifact streamArtifact1 =
+            loader.findByPath(StringArtifact.class, artifactSource, "folder/file_changed1", null);
         final StringArtifact streamArtifact2 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/file_changed1",null);
+                                                                 "folder/subfolder/file_changed1", null);
         final StringArtifact streamArtifact3 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/anothersubfolder/file_changed1",null);
+                                                                 "folder/subfolder/anothersubfolder/file_changed1", null);
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));
@@ -135,12 +141,14 @@ public class LocalSourceOriginArtifactLoaderTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldLoadExcludedArtifact() throws Exception {
-        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, artifactSource, "folder/file_excluded1",null);
+    public void shouldLoadExcludedArtifact()
+        throws Exception {
+        final StringArtifact streamArtifact1 =
+            loader.findByPath(StringArtifact.class, artifactSource, "folder/file_excluded1", null);
         final StringArtifact streamArtifact2 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/file_excluded1",null);
+                                                                 "folder/subfolder/file_excluded1", null);
         final StringArtifact streamArtifact3 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/anothersubfolder/file_excluded1",null);
+                                                                 "folder/subfolder/anothersubfolder/file_excluded1", null);
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));
@@ -152,12 +160,14 @@ public class LocalSourceOriginArtifactLoaderTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldLoadNotChangedArtifact() throws Exception {
-        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, artifactSource, "folder/file_not_changed1",null);
+    public void shouldLoadNotChangedArtifact()
+        throws Exception {
+        final StringArtifact streamArtifact1 =
+            loader.findByPath(StringArtifact.class, artifactSource, "folder/file_not_changed1", null);
         final StringArtifact streamArtifact2 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/file_not_changed1",null);
+                                                                 "folder/subfolder/file_not_changed1", null);
         final StringArtifact streamArtifact3 = loader.findByPath(StringArtifact.class, artifactSource,
-                                                                 "folder/subfolder/anothersubfolder/file_not_changed1",null);
+                                                                 "folder/subfolder/anothersubfolder/file_not_changed1", null);
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));
@@ -169,8 +179,9 @@ public class LocalSourceOriginArtifactLoaderTest {
      * @throws Exception the exception
      */
     @Test
-    public void souldListAllKindsOfFiles() throws Exception {
-        final Set<StringArtifact> listedFiles = loader.listByPath(StringArtifact.class, artifactSource, "/folder",null);
+    public void souldListAllKindsOfFiles()
+        throws Exception {
+        final Set<StringArtifact> listedFiles = loader.listByPath(StringArtifact.class, artifactSource, "/folder", null);
         assertThat(listedFiles.contains(Artifact.createArtifact(StringArtifact.class, "/folder/file_included1",
                                                                 ChangeType.INCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StringArtifact.class, "/folder/file_included2",
@@ -194,13 +205,16 @@ public class LocalSourceOriginArtifactLoaderTest {
         "/folder/subfolder/anothersubfolder/file_included3", ChangeType.INCLUDED)), is(true));
 
         assertThat(
-                   listedFiles.contains(Artifact.createArtifact(StringArtifact.class, "/folder/file_changed1", ChangeType.CHANGED)),
+                   listedFiles.contains(Artifact
+                       .createArtifact(StringArtifact.class, "/folder/file_changed1", ChangeType.CHANGED)),
                    is(true));
         assertThat(
-                   listedFiles.contains(Artifact.createArtifact(StringArtifact.class, "/folder/file_changed2", ChangeType.CHANGED)),
+                   listedFiles.contains(Artifact
+                       .createArtifact(StringArtifact.class, "/folder/file_changed2", ChangeType.CHANGED)),
                    is(true));
         assertThat(
-                   listedFiles.contains(Artifact.createArtifact(StringArtifact.class, "/folder/file_changed3", ChangeType.CHANGED)),
+                   listedFiles.contains(Artifact
+                       .createArtifact(StringArtifact.class, "/folder/file_changed3", ChangeType.CHANGED)),
                    is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StringArtifact.class, "/folder/subfolder/file_changed1",
                                                                 ChangeType.CHANGED)), is(true));

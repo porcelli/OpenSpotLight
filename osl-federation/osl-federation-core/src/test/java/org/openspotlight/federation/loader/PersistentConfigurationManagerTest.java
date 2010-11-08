@@ -78,69 +78,74 @@ import com.google.inject.Injector;
  * The Class PersistentConfigurationManagerTest.
  */
 public class PersistentConfigurationManagerTest extends
-		AbstractConfigurationManagerTest {
+        AbstractConfigurationManagerTest {
 
-	private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+    private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-	private static JRedis jredis;
+    private static JRedis                                            jredis;
 
-	@BeforeClass
-	public static void setupJcrRepo() throws Exception {
-		Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule());
-		simplePersist = injector.getInstance(SimplePersistFactory.class)
-				.createSimplePersist(RegularPartitions.FEDERATION);
-		jredis = injector.getInstance(JRedisFactory.class).getFrom(
-				RegularPartitions.FEDERATION);
-	}
+    @BeforeClass
+    public static void setupJcrRepo()
+        throws Exception {
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule());
+        simplePersist = injector.getInstance(SimplePersistFactory.class)
+                .createSimplePersist(RegularPartitions.FEDERATION);
+        jredis = injector.getInstance(JRedisFactory.class).getFrom(
+                RegularPartitions.FEDERATION);
+    }
 
-	@Before
-	public void clean() throws Exception {
-		jredis.flushall();
-	}
+    @Before
+    public void clean()
+        throws Exception {
+        jredis.flushall();
+    }
 
-	@After
-	public void closeSession() throws Exception {
-		// TODO
-	}
+    @After
+    public void closeSession()
+        throws Exception {
+        // TODO
+    }
 
-	@Override
-	protected MutableConfigurationManager createNewConfigurationManager() {
-		return PersistentConfigurationManagerFactoryImpl
-				.createMutableUsingSession(simplePersist);
-	}
+    @Override
+    protected MutableConfigurationManager createNewConfigurationManager() {
+        return PersistentConfigurationManagerFactoryImpl
+                .createMutableUsingSession(simplePersist);
+    }
 
-	@Before
-	public void setupSession() throws Exception {
-		// TODO
-	}
+    @Before
+    public void setupSession()
+        throws Exception {
+        // TODO
+    }
 
-	@Test
-	public void shouldFindGroupDeltas() throws Exception {
+    @Test
+    public void shouldFindGroupDeltas()
+        throws Exception {
 
-		final Repository repository = new Repository();
-		repository.setName("newRepository");
-		final Group group = new Group();
-		group.setName("willBeRemoved");
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		final MutableConfigurationManager manager1 = createNewConfigurationManager();
-		manager1.saveRepository(repository);
-		final Group group2 = new Group();
-		group2.setName("new");
-		group2.setRepository(repository);
-		repository.getGroups().add(group2);
-		repository.getGroups().remove(group);
-		manager1.saveRepository(repository);
+        final Repository repository = new Repository();
+        repository.setName("newRepository");
+        final Group group = new Group();
+        group.setName("willBeRemoved");
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        final MutableConfigurationManager manager1 = createNewConfigurationManager();
+        manager1.saveRepository(repository);
+        final Group group2 = new Group();
+        group2.setName("new");
+        group2.setRepository(repository);
+        repository.getGroups().add(group2);
+        repository.getGroups().remove(group);
+        manager1.saveRepository(repository);
 
-		final GroupDifferences differences = GroupSupport.getDifferences(
-				simplePersist, repository.getName());
-		final Set<String> added = differences.getAddedGroups();
+        final GroupDifferences differences = GroupSupport.getDifferences(
+                simplePersist, repository.getName());
+        final Set<String> added = differences.getAddedGroups();
 
-		Assert.assertThat(added.contains("newRepository/new"), Is.is(true));
+        Assert.assertThat(added.contains("newRepository/new"), Is.is(true));
 
-	}
+    }
 
 }

@@ -50,7 +50,6 @@ package org.openspotlight.graph.query.console.test.domain;
 
 import org.openspotlight.graph.Link;
 
-
 /**
  * The Interface ClassImplementsInterface.
  * 
@@ -60,13 +59,12 @@ public abstract class ClassImplementsInterface extends Link {
 
     private Integer tag;
 
-	public Integer getTag() {
-		return tag;
-	}
+    public Integer getTag() {
+        return tag;
+    }
 
-	public void setTag(Integer tag) {
-		this.tag = tag;
-	}
-
+    public void setTag(final Integer tag) {
+        this.tag = tag;
+    }
 
 }

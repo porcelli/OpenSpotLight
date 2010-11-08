@@ -60,7 +60,7 @@ import java.util.List;
 public class OrderByStatementInfo implements Serializable {
 
     /** The Constant serialVersionUID. */
-    private static final long       serialVersionUID    = 1L;
+    private static final long     serialVersionUID    = 1L;
 
     /** The select statement info. */
     private SelectStatementInfo   selectStatementInfo;
@@ -74,7 +74,7 @@ public class OrderByStatementInfo implements Serializable {
      * @param selectStatementInfo the select statement info
      */
     public OrderByStatementInfo(
-                                   SelectStatementInfo selectStatementInfo ) {
+                                   final SelectStatementInfo selectStatementInfo) {
         this.selectStatementInfo = selectStatementInfo;
     }
 
@@ -92,7 +92,7 @@ public class OrderByStatementInfo implements Serializable {
      * 
      * @param selectStatementInfo the new select statement info
      */
-    public void setSelectStatementInfo( SelectStatementInfo selectStatementInfo ) {
+    public void setSelectStatementInfo(final SelectStatementInfo selectStatementInfo) {
         this.selectStatementInfo = selectStatementInfo;
     }
 
@@ -110,17 +110,18 @@ public class OrderByStatementInfo implements Serializable {
      * 
      * @param orderByTypeInfoList the new order by type info list
      */
-    public void setOrderByTypeInfoList( List<OrderByTypeInfo> orderByTypeInfoList ) {
+    public void setOrderByTypeInfoList(final List<OrderByTypeInfo> orderByTypeInfoList) {
         this.orderByTypeInfoList = orderByTypeInfoList;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("\nORDER BY\n");
-        for (OrderByTypeInfo orderByType : orderByTypeInfoList) {
+        for (final OrderByTypeInfo orderByType: orderByTypeInfoList) {
             buffer.append(orderByType.toString());
         }
 

@@ -74,24 +74,24 @@ public class SLQLVariableBoolean extends SLQLVariable {
      * @param name the name
      */
     public SLQLVariableBoolean(
-                                final String name ) {
+                                final String name) {
         super(name);
-        this.domainValue.add(true);
-        this.domainValue.add(false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void addDomainValue( final Serializable value ) {
+        domainValue.add(true);
+        domainValue.add(false);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    public void addDomainValue(final Serializable value) {}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Collection<Serializable> getDomainValues() {
-        return this.domainValue;
+        return domainValue;
     }
 
     /**
@@ -99,7 +99,7 @@ public class SLQLVariableBoolean extends SLQLVariable {
      */
     @Override
     public Boolean getValue() {
-        return (Boolean)this.value;
+        return (Boolean) value;
     }
 
     /**
@@ -113,29 +113,26 @@ public class SLQLVariableBoolean extends SLQLVariable {
     /**
      * {@inheritDoc}
      */
-    public boolean isValidDomainValue( final Serializable value ) {
+    @Override
+    public boolean isValidDomainValue(final Serializable value) {
         return true;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean isValidValue( final Serializable value ) {
-        if (value == null) {
-            return false;
-        }
-        if (value.getClass().getName().equals(boolean.class.getName())) {
-            return true;
-        }
-        if (value instanceof Boolean) {
-            return true;
-        }
+    @Override
+    public boolean isValidValue(final Serializable value) {
+        if (value == null) { return false; }
+        if (value.getClass().getName().equals(boolean.class.getName())) { return true; }
+        if (value instanceof Boolean) { return true; }
         return false;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public SLQLVariableType getType() {
         return SLQLVariableType.BOOLEAN;
     }

@@ -959,7 +959,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
 
     @Override
     public void closeResources() {
-        this.mongo.close();
+        mongo.close();
     }
 
 }

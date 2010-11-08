@@ -59,13 +59,13 @@ import org.openspotlight.common.util.HashCodes;
 public class SelectTypeInfo {
 
     /** The name. */
-    private String                name;
+    private String              name;
 
     /** The sub types. */
-    private boolean               subTypes;
+    private boolean             subTypes;
 
     /** The comma. */
-    private boolean               comma;
+    private boolean             comma;
 
     /** The select statement info. */
     private SelectStatementInfo selectStatementInfo;
@@ -77,7 +77,7 @@ public class SelectTypeInfo {
      * @param name the name
      */
     public SelectTypeInfo(
-                             SelectStatementInfo selectStatementInfo, String name ) {
+                             final SelectStatementInfo selectStatementInfo, final String name) {
         this.selectStatementInfo = selectStatementInfo;
         setName(name);
     }
@@ -88,7 +88,7 @@ public class SelectTypeInfo {
      * @param name the name
      */
     public SelectTypeInfo(
-                             String name ) {
+                             final String name) {
         setName(name);
     }
 
@@ -115,7 +115,7 @@ public class SelectTypeInfo {
      * 
      * @param name the new name
      */
-    public void setName( String name ) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -133,7 +133,7 @@ public class SelectTypeInfo {
      * 
      * @param subTypes the new sub types
      */
-    public void setSubTypes( boolean subTypes ) {
+    public void setSubTypes(final boolean subTypes) {
         this.subTypes = subTypes;
     }
 
@@ -151,23 +151,21 @@ public class SelectTypeInfo {
      * 
      * @param comma the new comma
      */
-    public void setComma( boolean comma ) {
+    public void setComma(final boolean comma) {
         this.comma = comma;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @Override
-    public boolean equals( Object obj ) {
+    public boolean equals(final Object obj) {
         return Equals.eachEquality(SelectTypeInfo.class, this, obj, "name");
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

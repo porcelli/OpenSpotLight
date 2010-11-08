@@ -69,7 +69,7 @@ public abstract class WebException extends Exception {
      * @param message the message
      */
     public WebException(
-                         final String message ) {
+                         final String message) {
         super(message);
     }
 
@@ -80,7 +80,7 @@ public abstract class WebException extends Exception {
      * @param cause the cause
      */
     public WebException(
-                         final String message, final Throwable cause ) {
+                         final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -90,7 +90,7 @@ public abstract class WebException extends Exception {
      * @param cause the cause
      */
     public WebException(
-                         final Throwable cause ) {
+                         final Throwable cause) {
         super(cause);
     }
 

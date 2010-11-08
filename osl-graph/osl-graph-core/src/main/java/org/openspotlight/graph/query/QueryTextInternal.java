@@ -78,13 +78,13 @@ public interface QueryTextInternal extends Serializable {
      * @throws QueryException the SL query exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    public QueryResult execute( final GraphReader session,
+    public QueryResult execute(final GraphReader session,
                                   final Map<String, ?> variableValues,
                                   final String[] inputNodesIDs,
                                   SortMode sortMode,
                                   boolean showSLQL,
                                   Integer limit,
-                                  Integer offset )
+                                  Integer offset)
         throws InvalidQueryElementException, QueryException, InvalidQuerySyntaxException;
 
     /**

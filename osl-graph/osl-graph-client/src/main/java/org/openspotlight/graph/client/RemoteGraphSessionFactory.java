@@ -107,25 +107,29 @@ public class RemoteGraphSessionFactory {
 
         public RemoteGraphFactoryConnectionDataImpl(
                                                      final String host, final String userName, final String password,
-                                                     final int port ) {
+                                                     final int port) {
             this.host = host;
             this.password = password;
             this.port = port;
             this.userName = userName;
         }
 
+        @Override
         public String getHost() {
             return host;
         }
 
+        @Override
         public String getPassword() {
             return password;
         }
 
+        @Override
         public int getPort() {
             return port;
         }
 
+        @Override
         public String getUserName() {
             return userName;
         }
@@ -148,7 +152,7 @@ public class RemoteGraphSessionFactory {
      * @throws AccessDeniedException the access denied exception
      */
     public RemoteGraphSessionFactory(
-                                      final RemoteGraphFactoryConnectionData connectionData )
+                                      final RemoteGraphFactoryConnectionData connectionData)
         throws CantConnectException, AccessDeniedException {
         remoteObjectFactory = new RemoteObjectFactory(connectionData.getHost(), connectionData.getPort(),
                                                       connectionData.getUserName(), connectionData.getPassword());
@@ -157,11 +161,11 @@ public class RemoteGraphSessionFactory {
     /**
      * Creates a new RemoteGraphSession object.
      * 
-     * @return the  graph session
+     * @return the graph session
      */
-    public SimpleGraphSession createRemoteGraphSession( final String username,
-                                                    final String password,
-                                                    final String repository ) {
+    public SimpleGraphSession createRemoteGraphSession(final String username,
+                                                       final String password,
+                                                       final String repository) {
         try {
             return remoteObjectFactory.createRemoteObject(SimpleGraphSession.class, username, password, repository);
         } catch (final InvalidReferenceTypeException e) {

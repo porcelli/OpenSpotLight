@@ -30,5 +30,5 @@ package org.openspotlight.graph.annotation;
  */
 public @interface RenderHints {
 
-   RenderHint[] value();
+    RenderHint[] value();
 }

@@ -27,7 +27,7 @@ public class BundleExecutionSchedulableCommand implements SchedulableTaskFactory
         private List
 
         @Override
-        public void visitGroup(Group group) {
+        public void visitGroup(final Group group) {
             tasks.put(group,new LinkedList<Class<? extends Callable<Void>>>());
             group.get
 
@@ -37,14 +37,14 @@ public class BundleExecutionSchedulableCommand implements SchedulableTaskFactory
     }
 
     @Override
-    public SchedulerTask[] createTasks(Group schedulable, ExecutionContextFactory factory) {
+    public SchedulerTask[] createTasks(final Group schedulable, final ExecutionContextFactory factory) {
 
-        GroupTaskCollector taskCollector = new GroupTaskCollector();
+        final GroupTaskCollector taskCollector = new GroupTaskCollector();
         schedulable.acceptVisitor(taskCollector);
 
         iterable
-                corre umas 2x o numbOfThr e insere os artifacts da task corrente
-                aguarda
+                final corre umas 2final x o numbOfThr final e insere os artifacts da task corrente
+                final aguarda
                         continua...
         
 

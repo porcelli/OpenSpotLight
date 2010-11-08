@@ -70,10 +70,11 @@ import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData;
 
 public class TestExecuteLastQueryCommand extends AbstractCommandTest {
-    private static final String DEFAULT_REPOSITORY_NAME="default";
-	
-	@BeforeClass
-    public static void setupServer() throws Exception {
+    private static final String DEFAULT_REPOSITORY_NAME = "default";
+
+    @BeforeClass
+    public static void setupServer()
+        throws Exception {
         ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
     }
 
@@ -84,12 +85,12 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
      */
     @Before
     public void deleteFile() {
-        File f = new File("out.txt");
+        final File f = new File("out.txt");
         while (f.exists()) {
             f.delete();
             try {
                 Thread.sleep(250);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // ignore
             }
         }
@@ -97,13 +98,13 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
 
     @After
     public void deleteTestFile() {
-//        if (this.state.getSession() != null) {
-//            this.state.getSession().close();
-//        }
+        //        if (this.state.getSession() != null) {
+        //            this.state.getSession().close();
+        //        }
         new File("out.txt").delete();
     }
 
-    private String getFileContent( final File in ) {
+    private String getFileContent(final File in) {
         final StringBuilder sb = new StringBuilder();
         LineNumberReader fileReader;
         try {
@@ -120,17 +121,17 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
 
     @Override
     protected void setupCommand() {
-        if (this.state == null) {
-            this.state = new ConsoleState(null);
-            this.command = new ExecuteLastQueryCommand();
+        if (state == null) {
+            state = new ConsoleState(null);
+            command = new ExecuteLastQueryCommand();
         }
     }
 
     @Test
     public void testAcceptInValidParameter() {
-        this.state.setInput("/x ");
+        state.setInput("/x ");
 
-        assertThat(this.command.accept(this.state), is(false));
+        assertThat(command.accept(state), is(false));
     }
 
     @Test
@@ -138,7 +139,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         final ConsoleState state = new ConsoleState(null);
         state.setInput("add /");
 
-        assertThat(this.command.accept(state), is(false));
+        assertThat(command.accept(state), is(false));
     }
 
     @Test
@@ -146,7 +147,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         final ConsoleState state = new ConsoleState(null);
         state.setInput("/ > ");
 
-        assertThat(this.command.accept(state), is(false));
+        assertThat(command.accept(state), is(false));
     }
 
     @Test
@@ -154,53 +155,56 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         final ConsoleState state = new ConsoleState(null);
         state.setInput("/ < ");
 
-        assertThat(this.command.accept(state), is(false));
+        assertThat(command.accept(state), is(false));
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testAcceptNull() {
-        assertThat(this.command.accept(null), is(false));
+        assertThat(command.accept(null), is(false));
     }
 
     @Test
     public void testAcceptNullInout() {
-        this.state.setInput(null);
+        state.setInput(null);
 
-        assertThat(this.command.accept(this.state), is(false));
+        assertThat(command.accept(state), is(false));
     }
 
     @Test
     public void testAcceptValidParameter() {
-        this.state.setInput("/ > test.out");
+        state.setInput("/ > test.out");
 
-        assertThat(this.command.accept(this.state), is(true));
+        assertThat(command.accept(state), is(true));
     }
 
     @Test
     public void testAcceptValidParameter2() {
-        this.state.setInput("/");
+        state.setInput("/");
 
-        assertThat(this.command.accept(this.state), is(true));
+        assertThat(command.accept(state), is(true));
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testExecuteNull() {
-        this.command.execute(null, null, null);
+        command.execute(null, null, null);
     }
 
     @Test
-    public void testInvalidQueryWithTargetError() throws SLException, IOException, ClassNotFoundException {
+    public void testInvalidQueryWithTargetError()
+        throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", "sample").from(GraphLocation.SERVER));
+        state =
+            new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", "sample").from(GraphLocation.SERVER));
 
-        this.state.setLastQuery("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);");
-        this.state.setInput("/ > out,txt");
+        state
+            .setLastQuery("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);");
+        state.setInput("/ > out,txt");
 
-        this.command.execute(this.reader, this.out, this.state);
+        command.execute(reader, out, state);
 
-        assertThat(this.state.getBuffer().length(), is(0));
+        assertThat(state.getBuffer().length(), is(0));
         assertThat(
-                   this.state.getLastQuery(),
+                   state.getLastQuery(),
                    is("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);"));
 
         final File generatedFile = new File("out.txt");
@@ -208,18 +212,22 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     }
 
     @Test
-    public void testInvalidQueryWithVariablesError() throws SLException, IOException, ClassNotFoundException {
+    public void testInvalidQueryWithVariablesError()
+        throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
+        state =
+            new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(
+                GraphLocation.SERVER));
 
-        this.state.setLastQuery("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;");
-        this.state.setInput("/ > out,txt");
+        state
+            .setLastQuery("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;");
+        state.setInput("/ > out,txt");
 
-        this.command.execute(this.reader, this.out, this.state);
+        command.execute(reader, out, state);
 
-        assertThat(this.state.getBuffer().length(), is(0));
+        assertThat(state.getBuffer().length(), is(0));
         assertThat(
-                   this.state.getLastQuery(),
+                   state.getLastQuery(),
                    is("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;"));
 
         final File generatedFile = new File("out.txt");
@@ -227,53 +235,62 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     }
 
     @Test
-    public void testValidParameter() throws SLException, IOException, ClassNotFoundException {
+    public void testValidParameter()
+        throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
+        state =
+            new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(
+                GraphLocation.SERVER));
 
-        this.state.setLastQuery("select *;");
-        this.state.setInput("/");
+        state.setLastQuery("select *;");
+        state.setInput("/");
 
-        this.command.execute(this.reader, this.out, this.state);
+        command.execute(reader, out, state);
 
-        assertThat(this.state.getBuffer().length(), is(0));
-        assertThat(this.state.getLastQuery(), is("select *;"));
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select *;"));
 
     }
 
     @Test
-    public void testValidParameter2() throws SLException, IOException, ClassNotFoundException {
+    public void testValidParameter2()
+        throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
+        state =
+            new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(
+                GraphLocation.SERVER));
 
-        this.state.setLastQuery("select *;");
-        this.state.setInput("/ > out.txt");
+        state.setLastQuery("select *;");
+        state.setInput("/ > out.txt");
 
-        this.command.execute(this.reader, this.out, this.state);
+        command.execute(reader, out, state);
 
-        assertThat(this.state.getBuffer().length(), is(0));
-        assertThat(this.state.getLastQuery(), is("select *;"));
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select *;"));
 
         final File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(true));
-        final String fileContent = this.getFileContent(generatedFile);
+        final String fileContent = getFileContent(generatedFile);
         assertThat(fileContent, is(notNullValue()));
         assertThat(fileContent.length(), is(not(0)));
 
     }
 
     @Test
-    public void testValidParameterSyntaxError() throws SLException, IOException, ClassNotFoundException {
+    public void testValidParameterSyntaxError()
+        throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
+        state =
+            new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(
+                GraphLocation.SERVER));
 
-        this.state.setLastQuery("select *?*;");
-        this.state.setInput("/ > out.txt");
+        state.setLastQuery("select *?*;");
+        state.setInput("/ > out.txt");
 
-        this.command.execute(this.reader, this.out, this.state);
+        command.execute(reader, out, state);
 
-        assertThat(this.state.getBuffer().length(), is(0));
-        assertThat(this.state.getLastQuery(), is("select *?*;"));
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select *?*;"));
 
         final File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(false));

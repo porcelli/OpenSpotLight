@@ -67,8 +67,7 @@ public class Messages {
     /**
      * Instantiates a new messages.
      */
-    private Messages() {
-    }
+    private Messages() {}
 
     /**
      * Gets the string.
@@ -76,10 +75,10 @@ public class Messages {
      * @param key the key
      * @return the string
      */
-    public static String getString( String key ) {
+    public static String getString(final String key) {
         try {
             return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
+        } catch (final MissingResourceException e) {
             return '!' + key + '!';
         }
     }

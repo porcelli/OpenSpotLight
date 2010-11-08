@@ -65,9 +65,11 @@ public class InitialImportWebCommand implements WebCommand {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings( "boxing" )
-    public String execute( final ExecutionContext context,
-                           final Map<String, String> parameters ) throws WebException {
+    @Override
+    @SuppressWarnings("boxing")
+    public String execute(final ExecutionContext context,
+                           final Map<String, String> parameters)
+        throws WebException {
         try {
             final String forceReloadString = parameters.get("forceReload");
             final boolean forceReload = forceReloadString == null ? false : Boolean.valueOf(forceReloadString);

@@ -58,7 +58,7 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "column" )
+@Name("column")
 public class Column implements SimpleNodeType, Serializable {
     private static final long         serialVersionUID = -1495010016475838851L;
 
@@ -78,11 +78,10 @@ public class Column implements SimpleNodeType, Serializable {
 
     private volatile transient int    hashCode;
 
-    public boolean equals( final Object o ) {
-        if (!(o instanceof Column)) {
-            return false;
-        }
-        final Column that = (Column)o;
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof Column)) { return false; }
+        final Column that = (Column) o;
         return Equals.eachEquality(Arrays.of(table, name), Arrays.andOf(that.table, that.name));
     }
 
@@ -112,6 +111,7 @@ public class Column implements SimpleNodeType, Serializable {
         return type;
     }
 
+    @Override
     public int hashCode() {
         int res = hashCode;
         if (res == 0) {
@@ -121,30 +121,31 @@ public class Column implements SimpleNodeType, Serializable {
         return res;
     }
 
-    public void setColumnSize( final int columnSize ) {
+    public void setColumnSize(final int columnSize) {
         this.columnSize = columnSize;
     }
 
-    public void setDecimalSize( final int decimalSize ) {
+    public void setDecimalSize(final int decimalSize) {
         this.decimalSize = decimalSize;
     }
 
-    public void setName( final String name ) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setNullable( final NullableSqlType nullable ) {
+    public void setNullable(final NullableSqlType nullable) {
         this.nullable = nullable;
     }
 
-    public void setTable( final TableArtifact table ) {
+    public void setTable(final TableArtifact table) {
         this.table = table;
     }
 
-    public void setType( final ColumnType type ) {
+    public void setType(final ColumnType type) {
         this.type = type;
     }
 
+    @Override
     public String toString() {
         String toString = description;
         if (toString == null) {

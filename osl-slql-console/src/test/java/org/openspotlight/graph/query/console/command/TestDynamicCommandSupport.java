@@ -60,7 +60,8 @@ import org.junit.Test;
 public class TestDynamicCommandSupport {
 
     @Test
-    public void testDynamicCommandLoader() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public void testDynamicCommandLoader()
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         List<Command> commands = null;
 
         assertThat(commands, is(nullValue()));

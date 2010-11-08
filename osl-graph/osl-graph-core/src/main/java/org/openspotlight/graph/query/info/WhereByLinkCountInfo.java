@@ -72,7 +72,7 @@ public class WhereByLinkCountInfo {
     private SelectByLinkCountInfo selectByLinkCountInfo;
 
     /** The where type info list. */
-    private List<SLWhereTypeInfo>   whereTypeInfoList = new ArrayList<SLWhereTypeInfo>();
+    private List<SLWhereTypeInfo> whereTypeInfoList = new ArrayList<SLWhereTypeInfo>();
 
     /**
      * Instantiates a new sL where by link count info.
@@ -80,7 +80,7 @@ public class WhereByLinkCountInfo {
      * @param selectByNodeTypeInfo the select by node type info
      */
     public WhereByLinkCountInfo(
-                                   SelectByLinkCountInfo selectByLinkCountInfo ) {
+                                   final SelectByLinkCountInfo selectByLinkCountInfo) {
         this.selectByLinkCountInfo = selectByLinkCountInfo;
     }
 
@@ -98,7 +98,7 @@ public class WhereByLinkCountInfo {
      * 
      * @param whereTypeInfoList the new where type info list
      */
-    public void setWhereTypeInfoList( List<SLWhereTypeInfo> whereTypeInfoList ) {
+    public void setWhereTypeInfoList(final List<SLWhereTypeInfo> whereTypeInfoList) {
         this.whereTypeInfoList = whereTypeInfoList;
     }
 
@@ -116,20 +116,19 @@ public class WhereByLinkCountInfo {
      * 
      * @param selectByLinkCountInfo the new select by node type info
      */
-    public void setSelectByLinkCountInfo( SelectByLinkCountInfo selectByLinkCountInfo ) {
+    public void setSelectByLinkCountInfo(final SelectByLinkCountInfo selectByLinkCountInfo) {
         this.selectByLinkCountInfo = selectByLinkCountInfo;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("\nWHERE\n");
-        for (SLWhereTypeInfo typeInfo : whereTypeInfoList) {
+        for (final SLWhereTypeInfo typeInfo: whereTypeInfoList) {
             StringBuilderUtil.append(buffer, typeInfo.getTypeStatementInfo());
         }
         return buffer.toString();
@@ -157,7 +156,7 @@ public class WhereByLinkCountInfo {
          * @param name the name
          */
         public SLWhereTypeInfo(
-                                String name ) {
+                                final String name) {
             this.name = name;
         }
 
@@ -175,7 +174,7 @@ public class WhereByLinkCountInfo {
          * 
          * @param name the new name
          */
-        public void setName( String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -193,7 +192,7 @@ public class WhereByLinkCountInfo {
          * 
          * @param subTypes the new sub types
          */
-        public void setSubTypes( boolean subTypes ) {
+        public void setSubTypes(final boolean subTypes) {
             this.subTypes = subTypes;
         }
 
@@ -211,13 +210,12 @@ public class WhereByLinkCountInfo {
          * 
          * @param whereStatementInfo the new type statement info
          */
-        public void setTypeStatementInfo( SLTypeStatementInfo whereStatementInfo ) {
-            this.typeStatementInfo = whereStatementInfo;
+        public void setTypeStatementInfo(final SLTypeStatementInfo whereStatementInfo) {
+            typeStatementInfo = whereStatementInfo;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -253,7 +251,7 @@ public class WhereByLinkCountInfo {
              * @param typeInfo the type info
              */
             public SLTypeStatementInfo(
-                                        SLWhereTypeInfo typeInfo ) {
+                                        final SLWhereTypeInfo typeInfo) {
                 setOpened(true);
                 conditionInfoList = new ArrayList<SLConditionInfo>();
                 this.typeInfo = typeInfo;
@@ -289,7 +287,7 @@ public class WhereByLinkCountInfo {
              * 
              * @param typeInfo the new type info
              */
-            public void setTypeInfo( SLWhereTypeInfo typeInfo ) {
+            public void setTypeInfo(final SLWhereTypeInfo typeInfo) {
                 this.typeInfo = typeInfo;
             }
 
@@ -299,7 +297,7 @@ public class WhereByLinkCountInfo {
              * @return the sL condition info
              */
             public SLConditionInfo addCondition() {
-                SLConditionInfo conditionInfo = new SLConditionInfo(typeInfo);
+                final SLConditionInfo conditionInfo = new SLConditionInfo(typeInfo);
                 conditionInfoList.add(conditionInfo);
                 conditionInfo.setOuterStatementInfo(this);
                 return conditionInfo;
@@ -311,8 +309,8 @@ public class WhereByLinkCountInfo {
              * @param operator the operator
              * @return the sL condition info
              */
-            public SLConditionInfo addCondition( ConditionalOperatorType operator ) {
-                SLConditionInfo conditionInfo = new SLConditionInfo(typeInfo, operator);
+            public SLConditionInfo addCondition(final ConditionalOperatorType operator) {
+                final SLConditionInfo conditionInfo = new SLConditionInfo(typeInfo, operator);
                 conditionInfoList.add(conditionInfo);
                 conditionInfo.setOuterStatementInfo(this);
                 return conditionInfo;
@@ -332,8 +330,8 @@ public class WhereByLinkCountInfo {
              * 
              * @param conditionalInfoList the new condition info list
              */
-            public void setConditionInfoList( List<SLConditionInfo> conditionalInfoList ) {
-                this.conditionInfoList = conditionalInfoList;
+            public void setConditionInfoList(final List<SLConditionInfo> conditionalInfoList) {
+                conditionInfoList = conditionalInfoList;
             }
 
             /**
@@ -350,7 +348,7 @@ public class WhereByLinkCountInfo {
              * 
              * @param closed the new closed
              */
-            public void setClosed( boolean closed ) {
+            public void setClosed(final boolean closed) {
                 this.closed = closed;
             }
 
@@ -368,18 +366,17 @@ public class WhereByLinkCountInfo {
              * 
              * @param opened the new opened
              */
-            public void setOpened( boolean opened ) {
+            public void setOpened(final boolean opened) {
                 this.opened = opened;
             }
 
             /*
              * (non-Javadoc)
-             * 
              * @see java.lang.Object#toString()
              */
             @Override
             public String toString() {
-                StringBuilder buffer = new StringBuilder();
+                final StringBuilder buffer = new StringBuilder();
                 printWhereStatement(buffer, this, 1);
                 return buffer.toString();
             }
@@ -391,12 +388,12 @@ public class WhereByLinkCountInfo {
              * @param statementInfo the statement info
              * @param tabLevel the tab level
              */
-            private void printWhereStatement( StringBuilder buffer,
-                                              SLTypeStatementInfo statementInfo,
-                                              int tabLevel ) {
+            private void printWhereStatement(final StringBuilder buffer,
+                                              final SLTypeStatementInfo statementInfo,
+                                              final int tabLevel) {
                 for (int i = 0; i < statementInfo.conditionInfoList.size(); i++) {
-                    SLConditionInfo conditionInfo = statementInfo.conditionInfoList.get(i);
-                    String tabs = StringUtils.repeat("\t", tabLevel);
+                    final SLConditionInfo conditionInfo = statementInfo.conditionInfoList.get(i);
+                    final String tabs = StringUtils.repeat("\t", tabLevel);
                     append(buffer, tabs, conditionInfo);
                     if (conditionInfo.getInnerStatementInfo() != null) {
                         append(buffer, '(', '\n');
@@ -416,7 +413,7 @@ public class WhereByLinkCountInfo {
             public static class SLConditionInfo {
 
                 /** The type info. */
-                private SLWhereTypeInfo           typeInfo;
+                private SLWhereTypeInfo         typeInfo;
 
                 /** The relational operator. */
                 private RelationalOperatorType  relationalOperator;
@@ -425,28 +422,28 @@ public class WhereByLinkCountInfo {
                 private ConditionalOperatorType conditionalOperator;
 
                 /** The inner statement info. */
-                private SLTypeStatementInfo       innerStatementInfo;
+                private SLTypeStatementInfo     innerStatementInfo;
 
                 /** The outer statement info. */
-                private SLTypeStatementInfo       outerStatementInfo;
+                private SLTypeStatementInfo     outerStatementInfo;
 
                 /** The side. */
                 private SideType                side;
 
                 /** The link type name. */
-                private String                    linkTypeName;
+                private String                  linkTypeName;
 
                 /** The value. */
-                private Integer                   value;
+                private Integer                 value;
 
                 /** The closed. */
-                private boolean                   closed;
+                private boolean                 closed;
 
                 /** The relational not operator. */
-                private boolean                   relationalNotOperator;
+                private boolean                 relationalNotOperator;
 
                 /** The conditional not operator. */
-                private boolean                   conditionalNotOperator;
+                private boolean                 conditionalNotOperator;
 
                 /**
                  * Instantiates a new sL condition info.
@@ -454,7 +451,7 @@ public class WhereByLinkCountInfo {
                  * @param typeInfo the type info
                  */
                 public SLConditionInfo(
-                                        SLWhereTypeInfo typeInfo ) {
+                                        final SLWhereTypeInfo typeInfo) {
                     this(typeInfo, null);
                 }
 
@@ -465,7 +462,7 @@ public class WhereByLinkCountInfo {
                  * @param conditionalOperator the conditional operator
                  */
                 public SLConditionInfo(
-                                        SLWhereTypeInfo typeInfo, ConditionalOperatorType conditionalOperator ) {
+                                        final SLWhereTypeInfo typeInfo, final ConditionalOperatorType conditionalOperator) {
                     this.typeInfo = typeInfo;
                     this.conditionalOperator = conditionalOperator;
                 }
@@ -484,7 +481,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param value the new value
                  */
-                public void setValue( Integer value ) {
+                public void setValue(final Integer value) {
                     this.value = value;
                     setClosed(true);
                 }
@@ -503,7 +500,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param side the new side
                  */
-                public void setSide( SideType side ) {
+                public void setSide(final SideType side) {
                     this.side = side;
                 }
 
@@ -521,7 +518,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param linkTypeName the new link type name
                  */
-                public void setLinkTypeName( String linkTypeName ) {
+                public void setLinkTypeName(final String linkTypeName) {
                     this.linkTypeName = linkTypeName;
                 }
 
@@ -539,8 +536,8 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param statementInfo the new inner statement info
                  */
-                public void setInnerStatementInfo( SLTypeStatementInfo statementInfo ) {
-                    this.innerStatementInfo = statementInfo;
+                public void setInnerStatementInfo(final SLTypeStatementInfo statementInfo) {
+                    innerStatementInfo = statementInfo;
                 }
 
                 /**
@@ -557,7 +554,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param closed the new closed
                  */
-                public void setClosed( boolean closed ) {
+                public void setClosed(final boolean closed) {
                     this.closed = closed;
                 }
 
@@ -575,7 +572,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param relationalOperator the new relational operator
                  */
-                public void setRelationalOperator( RelationalOperatorType relationalOperator ) {
+                public void setRelationalOperator(final RelationalOperatorType relationalOperator) {
                     this.relationalOperator = relationalOperator;
                 }
 
@@ -593,7 +590,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param conditionalOperator the new conditional operator
                  */
-                public void setConditionalOperator( ConditionalOperatorType conditionalOperator ) {
+                public void setConditionalOperator(final ConditionalOperatorType conditionalOperator) {
                     this.conditionalOperator = conditionalOperator;
                 }
 
@@ -611,7 +608,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param outerStatementInfo the new outer statement info
                  */
-                public void setOuterStatementInfo( SLTypeStatementInfo outerStatementInfo ) {
+                public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
                     this.outerStatementInfo = outerStatementInfo;
                 }
 
@@ -629,22 +626,21 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param typeInfo the new type info
                  */
-                public void setTypeInfo( SLWhereTypeInfo typeInfo ) {
+                public void setTypeInfo(final SLWhereTypeInfo typeInfo) {
                     this.typeInfo = typeInfo;
                 }
 
                 /*
                  * (non-Javadoc)
-                 * 
                  * @see java.lang.Object#toString()
                  */
                 @Override
                 public String toString() {
 
-                    String typeName = typeInfo.getName();
-                    boolean subTypes = typeInfo.isSubTypes();
+                    final String typeName = typeInfo.getName();
+                    final boolean subTypes = typeInfo.isSubTypes();
 
-                    StringBuilder buffer = new StringBuilder();
+                    final StringBuilder buffer = new StringBuilder();
                     appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""),
                                     ' ');
                     appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
@@ -674,7 +670,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param relationalNotOperator the new relational not operator
                  */
-                public void setRelationalNotOperator( boolean relationalNotOperator ) {
+                public void setRelationalNotOperator(final boolean relationalNotOperator) {
                     this.relationalNotOperator = relationalNotOperator;
                 }
 
@@ -692,7 +688,7 @@ public class WhereByLinkCountInfo {
                  * 
                  * @param conditionalNotOperator the new conditional not operator
                  */
-                public void setConditionalNotOperator( boolean conditionalNotOperator ) {
+                public void setConditionalNotOperator(final boolean conditionalNotOperator) {
                     this.conditionalNotOperator = conditionalNotOperator;
                 }
 

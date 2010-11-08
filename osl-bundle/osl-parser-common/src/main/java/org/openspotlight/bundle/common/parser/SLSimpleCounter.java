@@ -54,10 +54,10 @@ import java.util.Map;
 public class SLSimpleCounter {
     private final Map<String, Integer> counters = new HashMap<String, Integer>();
 
-    public int getNextValue( String countName ) {
-        Integer value = counters.get(countName);
+    public int getNextValue(final String countName) {
+        final Integer value = counters.get(countName);
         if (value != null) {
-            int intValue = value.intValue() + 1;
+            final int intValue = value.intValue() + 1;
             counters.put(countName, new Integer(intValue));
 
             return intValue;
@@ -67,8 +67,8 @@ public class SLSimpleCounter {
         }
     }
 
-    public int getActiveValue( String countName ) {
-        Integer value = counters.get(countName);
+    public int getActiveValue(final String countName) {
+        final Integer value = counters.get(countName);
         if (value != null) {
             return value;
         } else {
@@ -78,12 +78,12 @@ public class SLSimpleCounter {
         }
     }
 
-    public void resetCounter( String countName ) {
+    public void resetCounter(final String countName) {
         counters.put(countName, -1);
     }
 
-    public void resetCounter( String countName,
-                              int value ) {
+    public void resetCounter(final String countName,
+                              final int value) {
         counters.put(countName, value);
     }
 

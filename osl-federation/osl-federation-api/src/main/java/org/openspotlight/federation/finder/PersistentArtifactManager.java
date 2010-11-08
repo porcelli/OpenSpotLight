@@ -80,7 +80,7 @@ public interface PersistentArtifactManager extends Disposable {
          * @param type
          * @return true if the given type is supported
          */
-        public <A extends Artifact> boolean isTypeSupported( Class<A> type );
+        public <A extends Artifact> boolean isTypeSupported(Class<A> type);
 
         /**
          * This method returns the original names as it was before any mapping.
@@ -90,9 +90,9 @@ public interface PersistentArtifactManager extends Disposable {
          * @param type
          * @return
          */
-        public <A extends Artifact> Iterable<String> retrieveOriginalNames( ArtifactSource source,
-                                                                       Class<A> type,
-                                                                       String initialPath );
+        public <A extends Artifact> Iterable<String> retrieveOriginalNames(ArtifactSource source,
+                                                                           Class<A> type,
+                                                                           String initialPath);
 
         /**
          * This method returns the current names as it is.
@@ -102,8 +102,8 @@ public interface PersistentArtifactManager extends Disposable {
          * @param type
          * @return
          */
-        public <A extends Artifact> Iterable<String> retrieveNames( Class<A> type,
-                                                               String initialPath );
+        public <A extends Artifact> Iterable<String> retrieveNames(Class<A> type,
+                                                                   String initialPath);
 
         /**
          * This method finds an artifact by its name before any mapping.
@@ -114,9 +114,9 @@ public interface PersistentArtifactManager extends Disposable {
          * @param originName
          * @return
          */
-        public <A extends Artifact> A findByOriginalName( ArtifactSource source,
+        public <A extends Artifact> A findByOriginalName(ArtifactSource source,
                                                           Class<A> type,
-                                                          String originName );
+                                                          String originName);
 
         /**
          * @param <A>
@@ -125,9 +125,9 @@ public interface PersistentArtifactManager extends Disposable {
          * @param originName
          * @return
          */
-        public <A extends Artifact> Iterable<A> listByOriginalNames( ArtifactSource source,
-                                                                Class<A> type,
-                                                                String originName );
+        public <A extends Artifact> Iterable<A> listByOriginalNames(ArtifactSource source,
+                                                                    Class<A> type,
+                                                                    String originName);
 
     }
 
@@ -137,7 +137,7 @@ public interface PersistentArtifactManager extends Disposable {
      * @param <A>
      * @param artifact
      */
-    public <A extends Artifact> void addTransient( A artifact );
+    public <A extends Artifact> void addTransient(A artifact);
 
     /**
      * Marks an artifact to be removed on next save
@@ -145,7 +145,7 @@ public interface PersistentArtifactManager extends Disposable {
      * @param <A>
      * @param artifact
      */
-    public <A extends Artifact> void markAsRemoved( A artifact );
+    public <A extends Artifact> void markAsRemoved(A artifact);
 
     /**
      * find method
@@ -155,8 +155,8 @@ public interface PersistentArtifactManager extends Disposable {
      * @param path
      * @return
      */
-    public <A extends Artifact> A findByPath( Class<A> type,
-                                              String path );
+    public <A extends Artifact> A findByPath(Class<A> type,
+                                              String path);
 
     /**
      * list method
@@ -166,8 +166,8 @@ public interface PersistentArtifactManager extends Disposable {
      * @param path
      * @return
      */
-    public <A extends Artifact> Iterable<A> listByInitialPath( Class<A> type,
-                                                   String path );
+    public <A extends Artifact> Iterable<A> listByInitialPath(Class<A> type,
+                                                              String path);
 
     /**
      * Saves or flush transient data to the persistent store

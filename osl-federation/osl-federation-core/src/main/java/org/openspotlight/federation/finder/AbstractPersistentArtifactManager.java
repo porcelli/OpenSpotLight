@@ -70,178 +70,207 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
 
     private final class PersistentArtifactInternalMethodsImpl implements PersistentArtifactInternalMethods {
 
-        public <A extends Artifact> A findByOriginalName( ArtifactSource source,
-                                                          Class<A> type,
-                                                          String originName ) {
+        @Override
+        public <A extends Artifact> A findByOriginalName(final ArtifactSource source,
+                                                          final Class<A> type,
+                                                          final String originName) {
             try {
                 return internalFindByOriginalName(source, type, originName);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
 
-        public <A extends Artifact> boolean isTypeSupported( Class<A> type ) {
+        @Override
+        public <A extends Artifact> boolean isTypeSupported(final Class<A> type) {
             try {
                 return internalIsTypeSupported(type);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
 
-        public <A extends Artifact> Iterable<A> listByOriginalNames( ArtifactSource source,
-                                                                Class<A> type,
-                                                                String originName ) {
+        @Override
+        public <A extends Artifact> Iterable<A> listByOriginalNames(final ArtifactSource source,
+                                                                    final Class<A> type,
+                                                                    final String originName) {
             try {
                 return internalListByOriginalNames(source, type, originName);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
 
-        public <A extends Artifact> Iterable<String> retrieveOriginalNames( ArtifactSource source,
-                                                                       Class<A> type,
-                                                                       String initialPath ) {
+        @Override
+        public <A extends Artifact> Iterable<String> retrieveOriginalNames(final ArtifactSource source,
+                                                                           final Class<A> type,
+                                                                           final String initialPath) {
             try {
                 return internalRetrieveOriginalNames(source, type, initialPath);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
 
-        public <A extends Artifact> Iterable<String> retrieveNames( Class<A> type,
-                                                               String initialPath ) {
+        @Override
+        public <A extends Artifact> Iterable<String> retrieveNames(final Class<A> type,
+                                                                   final String initialPath) {
             try {
                 return internalRetrieveNames(type, initialPath);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
 
     }
 
-    public <A extends Artifact> void addTransient( A artifact ) {
+    @Override
+    public <A extends Artifact> void addTransient(final A artifact) {
         try {
             internalAddTransient(artifact);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public <A extends Artifact> A findByPath( Class<A> type,
-                                              String path ) {
+    @Override
+    public <A extends Artifact> A findByPath(final Class<A> type,
+                                              final String path) {
         try {
             return internalFindByPath(type, path);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
+    @Override
     public PersistentArtifactInternalMethods getInternalMethods() {
         return internalMethods;
     }
 
-    public <A extends Artifact> Iterable<A> listByInitialPath( Class<A> type,
-                                                   String path ) {
+    @Override
+    public <A extends Artifact> Iterable<A> listByInitialPath(final Class<A> type,
+                                                              final String path) {
         try {
             return internalListByPath(type, path);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public <A extends Artifact> void markAsRemoved( A artifact ) {
+    @Override
+    public <A extends Artifact> void markAsRemoved(final A artifact) {
         try {
             internalMarkAsRemoved(artifact);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
+    @Override
     public void saveTransientData() {
         try {
             internalSaveTransientData();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
+    @Override
     public void closeResources() {
         try {
             internalCloseResources();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    protected abstract <A extends Artifact> A internalFindByOriginalName( ArtifactSource source,
+    protected abstract <A extends Artifact> A internalFindByOriginalName(ArtifactSource source,
                                                                           Class<A> type,
-                                                                          String originName ) throws Exception;
+                                                                          String originName)
+        throws Exception;
 
-    protected abstract <A extends Artifact> boolean internalIsTypeSupported( Class<A> type ) throws Exception;
+    protected abstract <A extends Artifact> boolean internalIsTypeSupported(Class<A> type)
+        throws Exception;
 
-    protected abstract <A extends Artifact> Iterable<String> internalRetrieveOriginalNames( ArtifactSource source,
-                                                                                       Class<A> type,
-                                                                                       String initialPath ) throws Exception;
+    protected abstract <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(ArtifactSource source,
+                                                                                           Class<A> type,
+                                                                                           String initialPath)
+        throws Exception;
 
-    protected abstract <A extends Artifact> Iterable<String> internalRetrieveNames( Class<A> type,
-                                                                               String initialPath ) throws Exception;
+    protected abstract <A extends Artifact> Iterable<String> internalRetrieveNames(Class<A> type,
+                                                                                   String initialPath)
+        throws Exception;
 
-    protected abstract <A extends Artifact> void internalAddTransient( A artifact ) throws Exception;
+    protected abstract <A extends Artifact> void internalAddTransient(A artifact)
+        throws Exception;
 
-    protected abstract <A extends Artifact> A internalFindByPath( Class<A> type,
-                                                                  String path ) throws Exception;
+    protected abstract <A extends Artifact> A internalFindByPath(Class<A> type,
+                                                                  String path)
+        throws Exception;
 
-    protected abstract <A extends Artifact> void internalMarkAsRemoved( A artifact ) throws Exception;
+    protected abstract <A extends Artifact> void internalMarkAsRemoved(A artifact)
+        throws Exception;
 
-    protected abstract void internalSaveTransientData() throws Exception;
+    protected abstract void internalSaveTransientData()
+        throws Exception;
 
-    protected abstract void internalCloseResources() throws Exception;
+    protected abstract void internalCloseResources()
+        throws Exception;
 
-    protected final <A extends Artifact> Iterable<A> internalListByOriginalNames( final ArtifactSource source,
-                                                                             final Class<A> type,
-                                                                             String initialPath ) throws Exception {
-        Iterable<String> paths = getInternalMethods().retrieveOriginalNames(source, type, initialPath);
-        HashSet<A> result = new HashSet<A>();
+    protected final <A extends Artifact> Iterable<A> internalListByOriginalNames(final ArtifactSource source,
+                                                                                 final Class<A> type,
+                                                                                 final String initialPath)
+        throws Exception {
+        final Iterable<String> paths = getInternalMethods().retrieveOriginalNames(source, type, initialPath);
+        final HashSet<A> result = new HashSet<A>();
         if (isMultithreaded()) {
-            List<Callable<A>> tasks = new ArrayList<Callable<A>>();
-            for (final String path : paths) {
-                Callable<A> callable = new Callable<A>() {
-                    public A call() throws Exception {
+            final List<Callable<A>> tasks = new ArrayList<Callable<A>>();
+            for (final String path: paths) {
+                final Callable<A> callable = new Callable<A>() {
+                    @Override
+                    public A call()
+                        throws Exception {
                         return internalFindByOriginalName(source, type, path);
                     }
                 };
                 tasks.add(callable);
             }
-            List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
-            for (Future<A> f : futures)
+            final List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
+            for (final Future<A> f: futures) {
                 result.add(f.get());
+            }
         } else {
-            for (final String path : paths) {
+            for (final String path: paths) {
                 result.add(internalFindByOriginalName(source, type, path));
             }
         }
         return result;
     }
 
-    protected final <A extends Artifact> Iterable<A> internalListByPath( final Class<A> type,
-                                                                    String initialPath ) throws Exception {
-        Iterable<String> paths = getInternalMethods().retrieveNames(type, initialPath);
-        Set<A> result = new HashSet<A>();
+    protected final <A extends Artifact> Iterable<A> internalListByPath(final Class<A> type,
+                                                                        final String initialPath)
+        throws Exception {
+        final Iterable<String> paths = getInternalMethods().retrieveNames(type, initialPath);
+        final Set<A> result = new HashSet<A>();
         if (isMultithreaded()) {
-            List<Callable<A>> tasks = new ArrayList<Callable<A>>();
-            for (final String path : paths) {
-                Callable<A> callable = new Callable<A>() {
-                    public A call() throws Exception {
+            final List<Callable<A>> tasks = new ArrayList<Callable<A>>();
+            for (final String path: paths) {
+                final Callable<A> callable = new Callable<A>() {
+                    @Override
+                    public A call()
+                        throws Exception {
                         return internalFindByPath(type, path);
                     }
                 };
                 tasks.add(callable);
             }
-            List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
-            for (Future<A> f : futures)
+            final List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
+            for (final Future<A> f: futures) {
                 result.add(f.get());
+            }
         } else {
-            for (final String path : paths) {
+            for (final String path: paths) {
                 result.add(internalFindByPath(type, path));
             }
         }

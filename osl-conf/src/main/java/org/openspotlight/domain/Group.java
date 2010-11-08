@@ -120,6 +120,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     private List<Class<? extends Callable<Void>>> tasks           = new ArrayList<Class<? extends Callable<Void>>>();
 
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof Group)) { return false; }
         final Group that = (Group) o;
@@ -128,6 +129,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return result;
     }
 
+    @Override
     public List<String> getCronInformation() {
         return cronInformation;
     }
@@ -189,6 +191,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return result;
     }
 
+    @Override
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
@@ -262,10 +265,12 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     public void setUniqueName(final String s) {}
 
+    @Override
     public String toString() {
         return "Group: " + getUniqueName();
     }
 
+    @Override
     public String toUniqueJobString() {
         return getUniqueName();
     }
@@ -274,10 +279,11 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return tasks;
     }
 
-    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
         this.tasks = tasks;
     }
 
+    @Override
     @TransientProperty
     public Repository getRepositoryForSchedulable() {
         return getRootRepository();
@@ -289,5 +295,5 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
             g.acceptVisitor(visitor);
         }
     }
-    
+
 }

@@ -62,26 +62,28 @@ import org.slf4j.Logger;
 public abstract class SLParser extends Parser {
 
     public SLParser(
-                     TokenStream input ) {
+                     final TokenStream input) {
         super(input);
     }
 
     public SLParser(
-                     TokenStream input, RecognizerSharedState state ) {
+                     final TokenStream input, final RecognizerSharedState state) {
         super(input, state);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void reportError( RecognitionException paramRecognitionException ) {
+    @Override
+    public void reportError(final RecognitionException paramRecognitionException) {
         getLogger().warn(paramRecognitionException.toString());
     }
 
     /**
      * {@inheritDoc}
      */
-    public void emitErrorMessage( String msg ) {
+    @Override
+    public void emitErrorMessage(final String msg) {
         getLogger().warn(msg);
     }
 

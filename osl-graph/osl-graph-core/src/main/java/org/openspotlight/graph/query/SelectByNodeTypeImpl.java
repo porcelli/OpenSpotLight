@@ -65,13 +65,13 @@ import org.openspotlight.graph.query.info.WhereByNodeTypeInfo;
 public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter {
 
     /** The select info. */
-    private SelectByNodeTypeInfo selectInfo;
+    private final SelectByNodeTypeInfo selectInfo;
 
     /** The types. */
-    private List<Type>             types;
+    private final List<Type>           types;
 
     /** The select end. */
-    private End                    selectEnd;
+    private final End                  selectEnd;
 
     /**
      * Instantiates a new sL select by node type impl.
@@ -79,26 +79,28 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
      * @param selectFacade the select facade
      */
     public SelectByNodeTypeImpl(
-                                   SelectFacade selectFacade ) {
-        this.selectInfo = new SelectByNodeTypeInfo();
-        this.types = new ArrayList<Type>();
-        this.selectEnd = new EndImpl(selectFacade, selectInfo);
+                                   final SelectFacade selectFacade) {
+        selectInfo = new SelectByNodeTypeInfo();
+        types = new ArrayList<Type>();
+        selectEnd = new EndImpl(selectFacade, selectInfo);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public AllTypes allTypes() {
-        AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
+        final AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
         return new AllTypesImpl(this, allTypesInfo);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
-        Type type = new TypeImpl(this, typeInfo);
+    @Override
+    public Type type(final String typeName) {
+        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        final Type type = new TypeImpl(this, typeInfo);
         types.add(type);
         return type;
     }
@@ -106,6 +108,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
     /**
      * {@inheritDoc}
      */
+    @Override
     public End end() {
         verifyIfLastItemTerminatedWithComma();
         return selectEnd;
@@ -114,6 +117,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
     /**
      * {@inheritDoc}
      */
+    @Override
     public SelectInfo getSelectInfo() {
         return selectInfo;
     }
@@ -128,7 +132,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
      */
     private void verifyIfLastItemTerminatedWithComma() {
         int commaCount = 0;
-        for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
+        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
             commaCount += typeInfo.isComma() ? 1 : 0;
         }
     }
@@ -141,10 +145,10 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
     public static class AllTypesImpl implements AllTypes {
 
         /** The select by node type. */
-        private SelectByNodeType selectByNodeType;
+        private final SelectByNodeType selectByNodeType;
 
         /** The all types info. */
-        private AllTypesInfo     allTypesInfo;
+        private final AllTypesInfo     allTypesInfo;
 
         /**
          * Instantiates a new all types impl.
@@ -153,7 +157,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
          * @param allTypesInfo the all types info
          */
         public AllTypesImpl(
-                             SelectByNodeType selectByNodeType, AllTypesInfo allTypesInfo ) {
+                             final SelectByNodeType selectByNodeType, final AllTypesInfo allTypesInfo) {
             this.selectByNodeType = selectByNodeType;
             this.allTypesInfo = allTypesInfo;
         }
@@ -161,6 +165,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public AllTypes onWhere() {
             allTypesInfo.setOnWhere(true);
             return this;
@@ -169,6 +174,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return selectByNodeType.end();
         }
@@ -182,10 +188,10 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
     public static class TypeImpl implements Type {
 
         /** The select by node type. */
-        private SelectByNodeType selectByNodeType;
+        private final SelectByNodeType selectByNodeType;
 
         /** The type info. */
-        private SLSelectTypeInfo   typeInfo;
+        private final SLSelectTypeInfo typeInfo;
 
         /**
          * Instantiates a new type impl.
@@ -194,7 +200,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
          * @param typeInfo the type info
          */
         TypeImpl(
-                  SelectByNodeType selectByNodeType, SLSelectTypeInfo typeInfo ) {
+                  final SelectByNodeType selectByNodeType, final SLSelectTypeInfo typeInfo) {
             this.selectByNodeType = selectByNodeType;
             this.typeInfo = typeInfo;
         }
@@ -202,6 +208,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType comma() {
             typeInfo.setComma(true);
             return selectByNodeType;
@@ -210,6 +217,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return selectByNodeType.end();
         }
@@ -217,6 +225,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public Type subTypes() {
             typeInfo.setSubTypes(true);
             return this;
@@ -232,16 +241,16 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
     public static class EndImpl implements End {
 
         /** The select facade. */
-        private SelectFacade         selectFacade;
+        private final SelectFacade         selectFacade;
 
         /** The select info. */
-        private SelectByNodeTypeInfo selectInfo;
+        private final SelectByNodeTypeInfo selectInfo;
 
         /** The where. */
-        private WhereByNodeType      where;
+        private WhereByNodeType            where;
 
         /** The order by. */
-        private OrderByStatement     orderBy;
+        private OrderByStatement           orderBy;
 
         /**
          * Instantiates a new end impl.
@@ -250,7 +259,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
          * @param selectInfo the select info
          */
         EndImpl(
-                 SelectFacade selectFacade, SelectByNodeTypeInfo selectInfo ) {
+                 final SelectFacade selectFacade, final SelectByNodeTypeInfo selectInfo) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
             // this.orderBy = new SLOrderByStatementImpl();
@@ -259,11 +268,12 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public WhereByNodeType where() {
-            if (this.where == null) {
-                WhereByNodeTypeInfo whereStatementInfo = new WhereByNodeTypeInfo(selectInfo);
+            if (where == null) {
+                final WhereByNodeTypeInfo whereStatementInfo = new WhereByNodeTypeInfo(selectInfo);
                 selectInfo.setWhereStatementInfo(whereStatementInfo);
-                this.where = new WhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
+                where = new WhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
             }
             return where;
         }
@@ -271,6 +281,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public OrderByStatement orderBy() {
             return orderBy;
         }
@@ -278,6 +289,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             selectInfo.setKeepResult(true);
             return this;
@@ -286,7 +298,8 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             selectInfo.setLimit(limit);
             return this;
         }
@@ -294,8 +307,9 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             selectInfo.setLimit(limit);
             selectInfo.setOffset(offset);
             return this;
@@ -304,6 +318,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End executeXTimes() {
             selectInfo.setXTimes(0);
             return this;
@@ -312,7 +327,8 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
-        public End executeXTimes( int x ) {
+        @Override
+        public End executeXTimes(final int x) {
             selectInfo.setXTimes(x);
             return this;
         }
@@ -320,6 +336,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -327,6 +344,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
@@ -334,6 +352,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -341,6 +360,7 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }

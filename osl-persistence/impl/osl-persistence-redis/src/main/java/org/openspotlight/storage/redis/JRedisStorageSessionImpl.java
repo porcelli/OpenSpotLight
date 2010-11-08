@@ -856,7 +856,7 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
 
     @Override
     public void closeResources() {
-        this.factory.closeResources();
+        factory.closeResources();
     }
 
 }

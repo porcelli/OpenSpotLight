@@ -53,9 +53,8 @@ import org.openspotlight.common.concurrent.MultipleProvider;
 public class PersistentArtifactManagerProvider extends MultipleProvider<PersistentArtifactManager> {
 
     public PersistentArtifactManagerProvider(
-                                              ItemFactory<PersistentArtifactManager> factory ) {
+                                              final ItemFactory<PersistentArtifactManager> factory) {
         super(factory);
     }
 
 }
- 

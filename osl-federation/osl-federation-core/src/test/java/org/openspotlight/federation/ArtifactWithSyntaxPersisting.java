@@ -75,94 +75,96 @@ import com.google.inject.Injector;
 
 public class ArtifactWithSyntaxPersisting {
 
-	public static void main(final String... args) throws Exception {
-		final ArtifactWithSyntaxPersisting test = new ArtifactWithSyntaxPersisting();
-		test.shouldPersistLotsOfStuff();
-	}
+    public static void main(final String... args)
+        throws Exception {
+        final ArtifactWithSyntaxPersisting test = new ArtifactWithSyntaxPersisting();
+        test.shouldPersistLotsOfStuff();
+    }
 
-	Random r = new Random();
+    Random               r           = new Random();
 
-	String[] sampleLines = {
-			"ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD\n",
-			"     SDFSDFSDFSDFS FDS DFSDF\n", "     sdfsfasdfasd FDS DFSDF\n",
-			"\n" };
+    String[]             sampleLines = {
+                                     "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD\n",
+                                     "     SDFSDFSDFSDFS FDS DFSDF\n", "     sdfsfasdfasd FDS DFSDF\n",
+                                     "\n"};
 
-	String[] samplePaths = { "dir1", "dir2", "dirthreebigger", "anotherPath" };
+    String[]             samplePaths = {"dir1", "dir2", "dirthreebigger", "anotherPath"};
 
-	int maxPath = 16;
+    int                  maxPath     = 16;
 
-	private List<String> content = null;
+    private List<String> content     = null;
 
-	Set<StringArtifact> createLotsOfStuff() {
-		final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
-		for (int i = 0; i < 100; i++) {
-			final StringArtifact sa = createNewDummyArtifact();
-			stuffList.add(sa);
-		}
-		return stuffList;
-	}
+    Set<StringArtifact> createLotsOfStuff() {
+        final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
+        for (int i = 0; i < 100; i++) {
+            final StringArtifact sa = createNewDummyArtifact();
+            stuffList.add(sa);
+        }
+        return stuffList;
+    }
 
-	private StringArtifact createNewDummyArtifact() {
-		final int pathListSize = r.nextInt(maxPath - 2) + 2;
-		final StringBuilder path = new StringBuilder();
-		for (int i = 0; i < pathListSize; i++) {
-			final int pathIndex = r.nextInt(samplePaths.length);
-			path.append(samplePaths[pathIndex]);
-			if (i + 1 != pathListSize) {
-				path.append("/");
-			}
-		}
-		final StringArtifact sa = Artifact.createArtifact(StringArtifact.class,
-				path.toString(), ChangeType.INCLUDED);
-		sa.getContent().setTransient(getContent());
-		for (int i = 0; i < 16000; i++) {
-			sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT,
-					null);
-		}
+    private StringArtifact createNewDummyArtifact() {
+        final int pathListSize = r.nextInt(maxPath - 2) + 2;
+        final StringBuilder path = new StringBuilder();
+        for (int i = 0; i < pathListSize; i++) {
+            final int pathIndex = r.nextInt(samplePaths.length);
+            path.append(samplePaths[pathIndex]);
+            if (i + 1 != pathListSize) {
+                path.append("/");
+            }
+        }
+        final StringArtifact sa = Artifact.createArtifact(StringArtifact.class,
+                path.toString(), ChangeType.INCLUDED);
+        sa.getContent().setTransient(getContent());
+        for (int i = 0; i < 16000; i++) {
+            sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT,
+                    null);
+        }
 
-		return sa;
-	}
+        return sa;
+    }
 
-	private List<String> getContent() {
+    private List<String> getContent() {
 
-		if (content == null) {
-			final List<String> list = newLinkedList();
-			for (int i = 0; i < 4000; i++) {
-				final String line = sampleLines[r.nextInt(sampleLines.length)];
-				list.add(line);
-			}
-			content = list;
-		}
-		return content;
-	}
+        if (content == null) {
+            final List<String> list = newLinkedList();
+            for (int i = 0; i < 4000; i++) {
+                final String line = sampleLines[r.nextInt(sampleLines.length)];
+                list.add(line);
+            }
+            content = list;
+        }
+        return content;
+    }
 
-	@Test
-	public void shouldPersistLotsOfStuff() throws Exception {
-		final Set<StringArtifact> lotsOfStuff = createLotsOfStuff();
+    @Test
+    public void shouldPersistLotsOfStuff()
+        throws Exception {
+        final Set<StringArtifact> lotsOfStuff = createLotsOfStuff();
 
-		Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
 
-		StorageSession session = injector.getProvider(StorageSession.class)
-				.get();
-		SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
-				.getInstance(SimplePersistFactory.class).createSimplePersist(
-						RegularPartitions.FEDERATION);
+        final StorageSession session = injector.getProvider(StorageSession.class)
+                .get();
+        final SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
+                .getInstance(SimplePersistFactory.class).createSimplePersist(
+                        RegularPartitions.FEDERATION);
 
-		int count = 0;
-		final long start = System.currentTimeMillis();
-		for (final StringArtifact a : lotsOfStuff) {
-			count++;
-			simplePersist.convertBeanToNode(a);
-			if (count % 10 == 0) {
-				System.out.println(count);
-			}
-		}
-		final long end = System.currentTimeMillis();
-		System.out.println("spent on jcr convert and saving: " + (end - start)
-				/ 1000 + "s");
-	}
+        int count = 0;
+        final long start = System.currentTimeMillis();
+        for (final StringArtifact a: lotsOfStuff) {
+            count++;
+            simplePersist.convertBeanToNode(a);
+            if (count % 10 == 0) {
+                System.out.println(count);
+            }
+        }
+        final long end = System.currentTimeMillis();
+        System.out.println("spent on jcr convert and saving: " + (end - start)
+                / 1000 + "s");
+    }
 
 }

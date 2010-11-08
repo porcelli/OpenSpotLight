@@ -56,7 +56,7 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 
-@Name( "database" )
+@Name("database")
 public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
     /**
 	 * 
@@ -81,26 +81,23 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
     private String            toColumnName;
 
     @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!equals(other)) {
-            return false;
-        }
-        final ForeignKeyConstraintArtifact that = (ForeignKeyConstraintArtifact)other;
+    public boolean contentEquals(final Artifact other) {
+        if (!equals(other)) { return false; }
+        final ForeignKeyConstraintArtifact that = (ForeignKeyConstraintArtifact) other;
         return eachEquality(
 
-                            of(fromCatalogName, fromSchemaName, toCatalogName, toSchemaName, fromTableName, fromColumnName,
+        of(fromCatalogName, fromSchemaName, toCatalogName, toSchemaName, fromTableName, fromColumnName,
                                toTableName, toColumnName),
 
-                            andOf(that.fromCatalogName, that.fromSchemaName, that.toCatalogName, that.toSchemaName,
+        andOf(that.fromCatalogName, that.fromSchemaName, that.toCatalogName, that.toSchemaName,
                                   that.fromTableName, that.fromColumnName, that.toTableName, that.toColumnName));
     }
 
-    @SuppressWarnings( "unchecked" )
-    public boolean equals( final Object o ) {
-        if (!(o instanceof ForeignKeyConstraintArtifact)) {
-            return false;
-        }
-        final ForeignKeyConstraintArtifact that = (ForeignKeyConstraintArtifact)o;
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(final Object o) {
+        if (!(o instanceof ForeignKeyConstraintArtifact)) { return false; }
+        final ForeignKeyConstraintArtifact that = (ForeignKeyConstraintArtifact) o;
 
         return eachEquality(
 
@@ -145,43 +142,44 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
         return toTableName;
     }
 
+    @Override
     public int hashCode() {
         return HashCodes.hashOf(constraintName, getDatabaseName(), getDatabaseType(), getServerName(), getUrl());
     }
 
-    public void setConstraintName( final String constraintName ) {
+    public void setConstraintName(final String constraintName) {
         this.constraintName = constraintName;
     }
 
-    public void setFromCatalogName( final String fromCatalogName ) {
+    public void setFromCatalogName(final String fromCatalogName) {
         this.fromCatalogName = fromCatalogName;
     }
 
-    public void setFromColumnName( final String fromColumnName ) {
+    public void setFromColumnName(final String fromColumnName) {
         this.fromColumnName = fromColumnName;
     }
 
-    public void setFromSchemaName( final String fromSchemaName ) {
+    public void setFromSchemaName(final String fromSchemaName) {
         this.fromSchemaName = fromSchemaName;
     }
 
-    public void setFromTableName( final String fromTableName ) {
+    public void setFromTableName(final String fromTableName) {
         this.fromTableName = fromTableName;
     }
 
-    public void setToCatalogName( final String toCatalogName ) {
+    public void setToCatalogName(final String toCatalogName) {
         this.toCatalogName = toCatalogName;
     }
 
-    public void setToColumnName( final String toColumnName ) {
+    public void setToColumnName(final String toColumnName) {
         this.toColumnName = toColumnName;
     }
 
-    public void setToSchemaName( final String toSchemaName ) {
+    public void setToSchemaName(final String toSchemaName) {
         this.toSchemaName = toSchemaName;
     }
 
-    public void setToTableName( final String toTableName ) {
+    public void setToTableName(final String toTableName) {
         this.toTableName = toTableName;
     }
 

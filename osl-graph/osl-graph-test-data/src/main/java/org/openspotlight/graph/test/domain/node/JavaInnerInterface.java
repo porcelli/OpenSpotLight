@@ -53,5 +53,4 @@ package org.openspotlight.graph.test.domain.node;
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class JavaInnerInterface extends JavaInterface {
-}
+public abstract class JavaInnerInterface extends JavaInterface {}

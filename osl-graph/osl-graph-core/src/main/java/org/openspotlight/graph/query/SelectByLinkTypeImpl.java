@@ -69,16 +69,16 @@ import org.openspotlight.graph.query.info.WhereByLinkTypeInfo;
 public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter {
 
     /** The select info. */
-    private SelectByLinkTypeInfo selectInfo;
+    private final SelectByLinkTypeInfo selectInfo;
 
     /** The types. */
-    private List<Type>             types;
+    private final List<Type>           types;
 
     /** The by links. */
-    private List<ByLink>           byLinks;
+    private final List<ByLink>         byLinks;
 
     /** The select end. */
-    private End                    selectEnd;
+    private final End                  selectEnd;
 
     /**
      * Instantiates a new sL select statement impl.
@@ -86,16 +86,17 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
      * @param selectFacade the select facade
      */
     public SelectByLinkTypeImpl(
-                                   SelectFacade selectFacade ) {
-        this.selectInfo = new SelectByLinkTypeInfo();
-        this.types = new ArrayList<Type>();
-        this.byLinks = new ArrayList<ByLink>();
-        this.selectEnd = new EndImpl(selectFacade, selectInfo);
+                                   final SelectFacade selectFacade) {
+        selectInfo = new SelectByLinkTypeInfo();
+        types = new ArrayList<Type>();
+        byLinks = new ArrayList<ByLink>();
+        selectEnd = new EndImpl(selectFacade, selectInfo);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public SelectByLinkTypeInfo getSelectInfo() {
         return selectInfo;
     }
@@ -103,9 +104,10 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
-        Type type = new TypeImpl(this, typeInfo);
+    @Override
+    public Type type(final String typeName) {
+        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        final Type type = new TypeImpl(this, typeInfo);
         types.add(type);
         return type;
     }
@@ -113,9 +115,10 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
     /**
      * {@inheritDoc}
      */
-    public ByLink byLink( String typeName ) {
-        SLSelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
-        ByLink byLink = new ByLinkImpl(this, byLinkInfo);
+    @Override
+    public ByLink byLink(final String typeName) {
+        final SLSelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
+        final ByLink byLink = new ByLinkImpl(this, byLinkInfo);
         byLinks.add(byLink);
         return byLink;
     }
@@ -123,6 +126,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
     /**
      * {@inheritDoc}
      */
+    @Override
     public End end() {
         verifyIfLastItemTerminatedWithComma();
         return selectEnd;
@@ -147,15 +151,14 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
      */
     private void verifyIfLastItemTerminatedWithComma() {
         int commaCount = 0;
-        for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
+        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
             commaCount += typeInfo.isComma() ? 1 : 0;
         }
-        for (SLSelectByLinkInfo byLinkInfo : selectInfo.getByLinkInfoList()) {
+        for (final SLSelectByLinkInfo byLinkInfo: selectInfo.getByLinkInfoList()) {
             commaCount += byLinkInfo.isComma() ? 1 : 0;
         }
-        if (commaCount == selectInfo.getTypeInfoList().size() + selectInfo.getByLinkInfoList().size()) {
-            throw new InvalidQuerySyntaxRuntimeException("last SELECT clause item must not preceed comma.");
-        }
+        if (commaCount == selectInfo.getTypeInfoList().size() + selectInfo.getByLinkInfoList().size()) { throw new InvalidQuerySyntaxRuntimeException(
+            "last SELECT clause item must not preceed comma."); }
     }
 
     /**
@@ -166,10 +169,10 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
     public static class TypeImpl implements Type {
 
         /** The select by link type. */
-        private SelectByLinkType selectByLinkType;
+        private final SelectByLinkType selectByLinkType;
 
         /** The type info. */
-        private SLSelectTypeInfo   typeInfo;
+        private final SLSelectTypeInfo typeInfo;
 
         /**
          * Instantiates a new type impl.
@@ -178,14 +181,15 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
          * @param typeInfo the type info
          */
         TypeImpl(
-                  SelectByLinkType selectByNodeType, SLSelectTypeInfo typeInfo ) {
-            this.selectByLinkType = selectByNodeType;
+                  final SelectByLinkType selectByNodeType, final SLSelectTypeInfo typeInfo) {
+            selectByLinkType = selectByNodeType;
             this.typeInfo = typeInfo;
         }
 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType comma() {
             typeInfo.setComma(true);
             return selectByLinkType;
@@ -194,6 +198,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return selectByLinkType.end();
         }
@@ -201,6 +206,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public Type subTypes() {
             typeInfo.setSubTypes(true);
             return this;
@@ -216,16 +222,16 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
     public static class EndImpl implements End {
 
         /** The select info. */
-        private SelectByLinkTypeInfo selectInfo;
+        private final SelectByLinkTypeInfo selectInfo;
 
         /** The where. */
-        private WhereByLinkType      where;
+        private WhereByLinkType            where;
 
         /** The order by. */
-        private OrderByStatement     orderBy;
+        private OrderByStatement           orderBy;
 
         /** The select facade. */
-        private SelectFacade         selectFacade;
+        private final SelectFacade         selectFacade;
 
         /**
          * Instantiates a new end impl.
@@ -234,7 +240,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
          * @param selectInfo the select info
          */
         EndImpl(
-                 SelectFacade selectFacade, SelectByLinkTypeInfo selectInfo ) {
+                 final SelectFacade selectFacade, final SelectByLinkTypeInfo selectInfo) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
             // this.orderBy = new SLOrderByStatementImpl();
@@ -243,11 +249,12 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public WhereByLinkType where() {
-            if (this.where == null) {
-                WhereByLinkTypeInfo whereByLinkType = new WhereByLinkTypeInfo(selectInfo);
+            if (where == null) {
+                final WhereByLinkTypeInfo whereByLinkType = new WhereByLinkTypeInfo(selectInfo);
                 selectInfo.setWhereByLinkTypeInfo(whereByLinkType);
-                this.where = new WhereByLinkTypeImpl(orderBy, whereByLinkType);
+                where = new WhereByLinkTypeImpl(orderBy, whereByLinkType);
             }
             return where;
         }
@@ -255,6 +262,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public OrderByStatement orderBy() {
             return orderBy;
         }
@@ -262,6 +270,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             selectInfo.setKeepResult(true);
             return this;
@@ -270,7 +279,8 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             selectInfo.setLimit(limit);
             return this;
         }
@@ -278,8 +288,9 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             selectInfo.setLimit(limit);
             selectInfo.setOffset(offset);
             return this;
@@ -288,6 +299,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End executeXTimes() {
             selectInfo.setXTimes(0);
             return this;
@@ -296,7 +308,8 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
-        public End executeXTimes( int x ) {
+        @Override
+        public End executeXTimes(final int x) {
             selectInfo.setXTimes(x);
             return this;
         }
@@ -304,6 +317,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -311,6 +325,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
@@ -318,6 +333,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -325,6 +341,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }
@@ -338,10 +355,10 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
     public static class ByLinkImpl implements ByLink {
 
         /** The select. */
-        private SelectByLinkType select;
+        private final SelectByLinkType   select;
 
         /** The by link info. */
-        private SLSelectByLinkInfo byLinkInfo;
+        private final SLSelectByLinkInfo byLinkInfo;
 
         /**
          * Instantiates a new by link impl.
@@ -350,7 +367,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
          * @param byLinkInfo the by link info
          */
         public ByLinkImpl(
-                           SelectByLinkType select, SLSelectByLinkInfo byLinkInfo ) {
+                           final SelectByLinkType select, final SLSelectByLinkInfo byLinkInfo) {
             this.select = select;
             this.byLinkInfo = byLinkInfo;
         }
@@ -358,6 +375,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public ByLink a() {
             byLinkInfo.setSide(A_SIDE);
             return this;
@@ -366,6 +384,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public ByLink b() {
             byLinkInfo.setSide(B_SIDE);
             return this;
@@ -374,6 +393,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public ByLink any() {
             byLinkInfo.setSide(ANY_SIDE);
             return this;
@@ -392,6 +412,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType comma() {
             byLinkInfo.setComma(true);
             return select;
@@ -400,6 +421,7 @@ public class SelectByLinkTypeImpl implements SelectByLinkType, SelectInfoGetter 
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return select.end();
         }

@@ -73,11 +73,11 @@ public class SLQLFileNameCompletor extends FileNameCompletor {
      * @param commands the commands
      */
     public SLQLFileNameCompletor(
-                                  Collection<Command> commands ) {
+                                  final Collection<Command> commands) {
         super();
         this.commands = new LinkedList<Command>();
         if (commands != null && commands.size() > 0) {
-            for (Command command : commands) {
+            for (final Command command: commands) {
                 if (command != null && command.hasFileCompletion()) {
                     this.commands.add(command);
                 }
@@ -88,10 +88,11 @@ public class SLQLFileNameCompletor extends FileNameCompletor {
     /**
      * {@inheritDoc}
      */
-    public int complete( String buf,
+    @Override
+    public int complete(String buf,
                          final int cursor,
-                         @SuppressWarnings( "unchecked" ) final List candidates ) {
-        for (Command activeCommand : commands) {
+                         @SuppressWarnings("unchecked") final List candidates) {
+        for (final Command activeCommand: commands) {
             int complementCursorPosition = 0;
             boolean commandAccepted = false;
             if (activeCommand.getFileCompletionMode() == FileCompletionMode.STARTS_WITH) {
@@ -111,9 +112,7 @@ public class SLQLFileNameCompletor extends FileNameCompletor {
                 }
             }
 
-            if (commandAccepted) {
-                return super.complete(buf, cursor, candidates) + complementCursorPosition;
-            }
+            if (commandAccepted) { return super.complete(buf, cursor, candidates) + complementCursorPosition; }
         }
         return cursor;
     }

@@ -59,29 +59,31 @@ import org.h2.api.Trigger;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class H2Trigger implements Trigger {
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings( "boxing" )
-    public void fire( final Connection arg0,
+    @SuppressWarnings("boxing")
+    public void fire(final Connection arg0,
                       final Object[] arg1,
-                      final Object[] arg2 ) throws SQLException {
-        arg2[1] = ((Integer)arg2[0]) + 2;
+                      final Object[] arg2)
+        throws SQLException {
+        arg2[1] = ((Integer) arg2[0]) + 2;
 
     }
 
     /***
      * {@inheritDoc}
      */
-    public void init( final Connection arg0,
+    public void init(final Connection arg0,
                       final String arg1,
                       final String arg2,
                       final String arg3,
                       final boolean arg4,
-                      final int arg5 ) throws SQLException {
+                      final int arg5)
+        throws SQLException {
         //
 
     }

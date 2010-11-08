@@ -66,7 +66,8 @@ public interface WebCommand {
      * @return the string
      * @throws WebException the web exception
      */
-    String execute( ExecutionContext context,
-                    Map<String, String> parameters ) throws WebException;
+    String execute(ExecutionContext context,
+                    Map<String, String> parameters)
+        throws WebException;
 
 }

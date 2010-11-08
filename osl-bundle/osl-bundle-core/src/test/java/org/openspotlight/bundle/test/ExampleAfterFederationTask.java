@@ -13,7 +13,8 @@ import org.openspotlight.federation.domain.artifact.Artifact;
  */
 public class ExampleAfterFederationTask extends AfterFederationTask {
 
-    protected ExampleAfterFederationTask(ExecutionContextProvider provider, Artifact artifact, Map<String, String> properties) {
+    protected ExampleAfterFederationTask(final ExecutionContextProvider provider, final Artifact artifact,
+                                         final Map<String, String> properties) {
         super(provider, artifact, properties);
     }
 
@@ -24,7 +25,7 @@ public class ExampleAfterFederationTask extends AfterFederationTask {
     }
 
     @Override
-    public boolean isValid(ExecutionContext context, Map<String, String> properties) {
+    public boolean isValid(final ExecutionContext context, final Map<String, String> properties) {
         return true;
     }
 }

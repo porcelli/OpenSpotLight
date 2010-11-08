@@ -60,7 +60,6 @@ import org.openspotlight.federation.loader.ArtifactLoaderManager;
  */
 public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<ArtifactSource> {
 
-    
     @Override
     public SchedulerTask[] createTasks(final ArtifactSource schedulable, final ExecutionContextFactory factory) {
 
@@ -71,10 +70,12 @@ public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<
             }
 
             @Override
-            public Void call() throws Exception {
-                ExecutionContext ctx = factory.get();
+            public Void call()
+                throws Exception {
+                final ExecutionContext ctx = factory.get();
 
-                PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
+                final PersistentArtifactManagerProvider provider =
+                    new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
                         schedulable.getRepositoryForSchedulable());
                 ArtifactLoaderManager.INSTANCE.refreshResources(schedulable, provider, ctx.getLoaderRegistry());
                 return null;

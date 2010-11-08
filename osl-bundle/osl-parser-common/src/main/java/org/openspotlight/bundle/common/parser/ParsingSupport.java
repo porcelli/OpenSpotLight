@@ -63,49 +63,44 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public class ParsingSupport {
 
-	private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-	public ParsingSupport(SimplePersistFactory simplePersistFactory) {
-		this.simplePersist = simplePersistFactory
-				.createSimplePersist(RegularPartitions.LINE_REFERENCE);
-	}
+    public ParsingSupport(final SimplePersistFactory simplePersistFactory) {
+        simplePersist = simplePersistFactory
+                .createSimplePersist(RegularPartitions.LINE_REFERENCE);
+    }
 
-	/**
-	 * Creates the line reference.
-	 * 
-	 * @param lineInfo
-	 *            the line info
-	 * @param statement
-	 *            the statement
-	 * @param nodes
-	 *            the nodes
-	 */
-	public void createLineReference(final SLLineInfo lineInfo,
-			final String statement, final Node... nodes) {
-		try {
-			if (lineInfo == null || lineInfo.getArtifact() == null) {
-				return;
-			}
-			if (nodes != null) {
-				for (final Node node : nodes) {
-					if (node != null) {
-						try {
-							node.createLineReference(lineInfo.getStartLine(),
-									lineInfo.getEndLine(), lineInfo
-											.getStartCharPositionInLine(),
-									lineInfo.getEndCharPositionInLine(),
-									statement, lineInfo.getArtifact()
-											.getSourceName());
-						} catch (final Exception e) {
-							Exceptions.catchAndLog(e);
-						}
-					}
-				}
+    /**
+     * Creates the line reference.
+     * 
+     * @param lineInfo the line info
+     * @param statement the statement
+     * @param nodes the nodes
+     */
+    public void createLineReference(final SLLineInfo lineInfo,
+                                    final String statement, final Node... nodes) {
+        try {
+            if (lineInfo == null || lineInfo.getArtifact() == null) { return; }
+            if (nodes != null) {
+                for (final Node node: nodes) {
+                    if (node != null) {
+                        try {
+                            node.createLineReference(lineInfo.getStartLine(),
+                                    lineInfo.getEndLine(), lineInfo
+                                            .getStartCharPositionInLine(),
+                                    lineInfo.getEndCharPositionInLine(),
+                                    statement, lineInfo.getArtifact()
+                                            .getSourceName());
+                        } catch (final Exception e) {
+                            Exceptions.catchAndLog(e);
+                        }
+                    }
+                }
 
-			}
-		} catch (final Exception e) {
-			Exceptions.logAndReturn(e);
-		}
-	}
+            }
+        } catch (final Exception e) {
+            Exceptions.logAndReturn(e);
+        }
+    }
 
 }

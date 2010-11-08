@@ -75,7 +75,7 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 
     private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(this);
 
-    private final StorageNode                          rootNode;
+    private final StorageNode                   rootNode;
 
     @Inject
     public SLIdentityStoreSessionImpl(

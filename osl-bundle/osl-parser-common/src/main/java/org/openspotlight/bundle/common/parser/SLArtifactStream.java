@@ -54,6 +54,7 @@ public interface SLArtifactStream extends CharStream {
 
     public int getPhysicalLineCount();
 
+    @Override
     public String getSourceName();
 
     public String getVersion();

@@ -75,26 +75,26 @@ public class HelpSystemCommand implements SystemCommand {
      * @param commands all the commands (system and dynamic)
      */
     public HelpSystemCommand(
-                              Collection<Command> commands ) {
+                              final Collection<Command> commands) {
         int maxSize = 4;
         if (commands != null) {
 
             int size = 0;
-            for (Command command : commands) {
+            for (final Command command: commands) {
                 if (command != null) {
                     size++;
                 }
             }
 
             descriptions = new String[size + 1];
-            for (Command command : commands) {
+            for (final Command command: commands) {
                 if (command != null && command.getCommand().length() > maxSize) {
                     maxSize = command.getCommand().length();
                 }
             }
 
             int i = 0;
-            for (Command command : commands) {
+            for (final Command command: commands) {
                 if (command != null) {
                     descriptions[i] = StringUtils.leftPad(command.getCommand(), maxSize) + " - " + command.getDescription();
                     i++;
@@ -109,16 +109,15 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
-        for (String activeDesc : descriptions) {
+        if (!accept(state)) { return; }
+        for (final String activeDesc: descriptions) {
             out.println(activeDesc);
         }
         out.flush();
@@ -129,6 +128,7 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "help";
     }
@@ -136,6 +136,7 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return getCommand();
     }
@@ -143,6 +144,7 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "display these instructions";
     }
@@ -150,6 +152,7 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
@@ -157,6 +160,7 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
@@ -164,6 +168,7 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }
@@ -171,11 +176,10 @@ public class HelpSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("help")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("help")) { return true; }
         return false;
     }
 }

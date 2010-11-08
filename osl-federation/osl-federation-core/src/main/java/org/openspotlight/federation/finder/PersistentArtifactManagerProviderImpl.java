@@ -61,16 +61,19 @@ public class PersistentArtifactManagerProviderImpl extends PersistentArtifactMan
         private final SimplePersistFactory simplePersistFactory;
 
         private PersistentArtifactManagerItemFactoryImpl(
-                                                          Repository repository, SimplePersistFactory simplePersistFactory ) {
+                                                          final Repository repository,
+                                                         final SimplePersistFactory simplePersistFactory) {
             this.repository = repository;
             this.simplePersistFactory = simplePersistFactory;
         }
 
+        @Override
         public PersistentArtifactManager createNew() {
-            PersistentArtifactManagerImpl manager = new PersistentArtifactManagerImpl(repository, simplePersistFactory);
+            final PersistentArtifactManagerImpl manager = new PersistentArtifactManagerImpl(repository, simplePersistFactory);
             return manager;
         }
 
+        @Override
         public boolean useOnePerThread() {
             return false;
         }
@@ -79,7 +82,7 @@ public class PersistentArtifactManagerProviderImpl extends PersistentArtifactMan
 
     @Inject
     public PersistentArtifactManagerProviderImpl(
-                                                  SimplePersistFactory simplePersistFactory, Repository repository ) {
+                                                  final SimplePersistFactory simplePersistFactory, final Repository repository) {
         super(new PersistentArtifactManagerItemFactoryImpl(repository, simplePersistFactory));
     }
 

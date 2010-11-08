@@ -72,7 +72,7 @@ public interface ExecutionContext extends Disposable, GraphSessionFactory {
 
     public String getUserName();
 
-    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist( Partition partition );
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(Partition partition);
 
     public SimplePersistFactory getSimplePersistFactory();
 

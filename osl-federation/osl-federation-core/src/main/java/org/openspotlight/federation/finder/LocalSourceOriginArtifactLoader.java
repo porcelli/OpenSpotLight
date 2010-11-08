@@ -81,26 +81,28 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    protected <A extends Artifact> A internalFindByPath( Class<A> type,
-                                                         ArtifactSource source,
-                                                         String rawPath, String encodding) {
+    @SuppressWarnings("unchecked")
+    protected <A extends Artifact> A internalFindByPath(final Class<A> type,
+                                                         final ArtifactSource source,
+                                                         final String rawPath, final String encodding) {
         Assertions.checkNotEmpty("rawPath", rawPath);
         Assertions.checkCondition("validTypeAndConfig", (type.equals(StringArtifact.class) && !source.isBinary())
                                                         || (type.equals(StreamArtifact.class) && source.isBinary()));
         try {
-            for (final ChangeType changeType : ChangeType.values()) {
+            for (final ChangeType changeType: ChangeType.values()) {
 
                 final String location = fixPathInformation(source, rawPath, changeType);
 
                 final File file = new File(location);
-                if (!file.exists()) continue;
+                if (!file.exists()) {
+                    continue;
+                }
                 if (StringArtifact.class.equals(type)) {
                     final FileInputStream resource = new FileInputStream(file);
-                    final BufferedReader reader = new BufferedReader(encodding!=null?
-                            new InputStreamReader(resource,encodding):new InputStreamReader(resource));
-                    List<String> lines = newLinkedList();
-                    String line=null;
+                    final BufferedReader reader = new BufferedReader(encodding != null ?
+                            new InputStreamReader(resource, encodding) : new InputStreamReader(resource));
+                    final List<String> lines = newLinkedList();
+                    String line = null;
                     while ((line = reader.readLine()) != null) {
                         lines.add(line);
                     }
@@ -108,16 +110,16 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
                                                                             ChangeType.INCLUDED);
                     artifact.getContent().setTransient(lines);
                     artifact.setChangeType(changeType);
-                    return (A)artifact;
+                    return (A) artifact;
                 } else {// StreamArtifact
                     final FileInputStream resource = new FileInputStream(file);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     IOUtils.copy(resource, baos);
                     final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, "/" + rawPath,
                                                                             ChangeType.INCLUDED);
                     artifact.getContent().setTransient(new ByteArrayInputStream(baos.toByteArray()));
                     artifact.setChangeType(changeType);
-                    return (A)artifact;
+                    return (A) artifact;
                 }
             }
             return null;
@@ -126,8 +128,10 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    private static final Set<Class<? extends Artifact>> availableTypes = SLCollections.<Class<? extends Artifact>>setOf(
+    @SuppressWarnings("unchecked")
+    private static final Set<Class<? extends Artifact>> availableTypes =
+                                                                           SLCollections
+                                                                               .<Class<? extends Artifact>>setOf(
                                                                                                                         StringArtifact.class,
                                                                                                                         StreamArtifact.class);
 
@@ -137,36 +141,30 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
     }
 
     @Override
-    protected <A extends Artifact> boolean internalIsMaybeChanged( ArtifactSource source,
-                                                                   String artifactName,
-                                                                   A oldOne ) {
-        String location = fixPathInformation(source, artifactName, oldOne.getChangeType());
+    protected <A extends Artifact> boolean internalIsMaybeChanged(final ArtifactSource source,
+                                                                   final String artifactName,
+                                                                   final A oldOne) {
+        final String location = fixPathInformation(source, artifactName, oldOne.getChangeType());
 
         final File file = new File(location);
-        if (!file.exists()) {
-            return true;
-        }
-        if (!file.isFile()) {
-            return true;
-        }
-        if (file.lastModified() != oldOne.getLastChange()) {
-            return true;
-        }
+        if (!file.exists()) { return true; }
+        if (!file.isFile()) { return true; }
+        if (file.lastModified() != oldOne.getLastChange()) { return true; }
         return false;
     }
 
     @Override
-    protected boolean internalIsTypeSupported( Class<? extends Artifact> type ) {
+    protected boolean internalIsTypeSupported(final Class<? extends Artifact> type) {
         return availableTypes.contains(type);
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames( Class<A> type,
-                                                                              ArtifactSource artifactSource,
-                                                                              String initialPath ) {
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(final Class<A> type,
+                                                                              final ArtifactSource artifactSource,
+                                                                              final String initialPath) {
         try {
             final Set<String> result = new HashSet<String>();
-            for (ChangeType change : ChangeType.values()) {
+            for (final ChangeType change: ChangeType.values()) {
 
                 final String rawPath = initialPath == null ? "." : initialPath;
 
@@ -180,7 +178,7 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
 
                 final Set<String> pathList = Files.listFileNamesFrom(location, true);
 
-                for (final String p : pathList) {
+                for (final String p: pathList) {
                     if (new File(p).isFile()) {
                         final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
                         result.add(correctRelativePath);
@@ -194,21 +192,21 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
         }
     }
 
-    private String fixPathInformation( ArtifactSource artifactSource,
+    private String fixPathInformation(final ArtifactSource artifactSource,
                                        final String rawPath,
-                                       final ChangeType change ) {
+                                       final ChangeType change) {
         final String location = Strings.concatPaths(artifactSource.getInitialLookup(), change.toString().toLowerCase(), rawPath);
         return location;
     }
 
     @Override
-    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
-                                                           Class<A> type ) {
-        if (!availableTypes.contains(source)) return false;
-        File f = new File(source.getInitialLookup());
-        if (!f.exists() || !f.isDirectory()) return false;
-        if (type.equals(StringArtifact.class) && !source.isBinary()) return true;
-        if (type.equals(StreamArtifact.class) && source.isBinary()) return true;
+    protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
+                                                           final Class<A> type) {
+        if (!availableTypes.contains(source)) { return false; }
+        final File f = new File(source.getInitialLookup());
+        if (!f.exists() || !f.isDirectory()) { return false; }
+        if (type.equals(StringArtifact.class) && !source.isBinary()) { return true; }
+        if (type.equals(StreamArtifact.class) && source.isBinary()) { return true; }
         return false;
     }
 

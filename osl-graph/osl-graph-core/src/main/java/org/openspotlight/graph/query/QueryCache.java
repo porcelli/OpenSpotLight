@@ -62,52 +62,42 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public interface QueryCache {
 
-	/**
-	 * Adds content to the cache.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @param nodes
-	 *            the nodes
-	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<StorageNode> nodes);
+    /**
+     * Adds content to the cache.
+     * 
+     * @param queryId the query id
+     * @param nodes the nodes
+     */
+    public abstract void add2Cache(final String queryId,
+                                   final Collection<StorageNode> nodes);
 
-	/**
-	 * Builds a unique query id.
-	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	public abstract String buildQueryId(final List<Select> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
+    /**
+     * Builds a unique query id.
+     * 
+     * @param selects the selects
+     * @param collatorStrength the collator strength
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param limit the limit
+     * @param offset the offset
+     * @return the string
+     * @throws SLException the SL exception
+     */
+    public abstract String buildQueryId(final List<Select> selects,
+                                        final Integer collatorStrength, final String[] inputNodesIDs,
+                                        final SortMode sortMode, final Integer limit, final Integer offset)
+            throws SLException;
 
-	/**
-	 * Gets the cache content. Returns null if not found.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
-	 */
-	public abstract QueryResult getCache(final String queryId);
+    /**
+     * Gets the cache content. Returns null if not found.
+     * 
+     * @param queryId the query id
+     * @return the cache
+     */
+    public abstract QueryResult getCache(final String queryId);
 
-	/**
-	 * Flush cache.
-	 */
-	public void flush();
+    /**
+     * Flush cache.
+     */
+    public void flush();
 }

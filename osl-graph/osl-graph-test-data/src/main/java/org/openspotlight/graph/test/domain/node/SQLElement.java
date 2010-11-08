@@ -50,22 +50,20 @@ package org.openspotlight.graph.test.domain.node;
 
 import org.openspotlight.graph.Node;
 
-
 /**
  * The Interface SQLElement.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class  SQLElement extends Node{
-	private String selecao;
+public abstract class SQLElement extends Node {
+    private String selecao;
 
-	public String getSelecao() {
-		return selecao;
-	}
+    public String getSelecao() {
+        return selecao;
+    }
 
-	public void setSelecao(String selecao) {
-		this.selecao = selecao;
-	}
-
+    public void setSelecao(final String selecao) {
+        this.selecao = selecao;
+    }
 
 }

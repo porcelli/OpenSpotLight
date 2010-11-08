@@ -34,7 +34,7 @@ public class InvalidQueryElementException extends GraphRuntimeException {
 
     /**
      * Instantiates a new sL invalid query element exception.
-     * 	
+     * 
      * @param message the message
      * @param cause the cause
      */

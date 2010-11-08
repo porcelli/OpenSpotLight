@@ -57,14 +57,14 @@ import org.openspotlight.graph.Link;
  */
 public abstract class ClassImplementsInterface extends Link {
 
-	private Integer tag;
+    private Integer tag;
 
-	public Integer getTag() {
-		return tag;
-	}
+    public Integer getTag() {
+        return tag;
+    }
 
-	public void setTag(Integer tag) {
-		this.tag = tag;
-	}
+    public void setTag(final Integer tag) {
+        this.tag = tag;
+    }
 
 }

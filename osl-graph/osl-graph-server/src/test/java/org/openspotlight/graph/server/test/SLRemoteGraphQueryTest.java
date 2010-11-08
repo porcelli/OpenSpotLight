@@ -60,18 +60,18 @@ import org.openspotlight.graph.query.AbstractGeneralQueryTest;
  */
 public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
-	@Override
-	protected Callable<Void> createStartUpHandler() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected Callable<Void> createShutdownHandler() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected GraphReader graphReader() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected GraphReader graphReader() {
+        throw new UnsupportedOperationException();
+    }
 }

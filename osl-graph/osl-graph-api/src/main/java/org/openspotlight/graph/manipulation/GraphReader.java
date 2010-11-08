@@ -183,6 +183,7 @@ public interface GraphReader {
                                                   Node node,
                                                   Class<T> clazz)
         throws IllegalArgumentException;
+
     /**
      * Returns the children node list of the parameter node type.
      * 

@@ -101,7 +101,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     @Override
     public StorageNode findNodeByStringKey(
-                                          final String idAsString) {
+                                           final String idAsString) {
 
         final Partition partition = partitionFactory
             .getPartitionByName(StringKeysSupport

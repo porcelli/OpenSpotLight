@@ -67,8 +67,10 @@ public class ListRepositoryNamesWebCommand implements WebCommand {
     /**
      * {@inheritDoc}
      */
-    public String execute( final ExecutionContext context,
-                           final Map<String, String> parameters ) throws WebException {
+    @Override
+    public String execute(final ExecutionContext context,
+                           final Map<String, String> parameters)
+        throws WebException {
         try {
             final Set<String> repositryNames = context.getDefaultConfigurationManager().getAllRepositoryNames();
             final MultipleMessage messages = new MultipleMessage();

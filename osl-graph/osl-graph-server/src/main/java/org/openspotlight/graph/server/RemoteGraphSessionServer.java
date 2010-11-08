@@ -69,113 +69,105 @@ import com.google.inject.Provider;
  */
 public class RemoteGraphSessionServer {
 
-	/**
-	 * A factory for creating InternalGraphSession objects.
-	 */
-	private static class InternalGraphSessionFactory implements
-	InternalObjectFactory<GraphSessionFactory> {
+    /**
+     * A factory for creating InternalGraphSession objects.
+     */
+    private static class InternalGraphSessionFactory implements
+        InternalObjectFactory<GraphSessionFactory> {
 
-		private final GraphSessionFactory graph;
-		private final Provider<StorageSession> sessionProvider;
+        private final GraphSessionFactory      graph;
+        private final Provider<StorageSession> sessionProvider;
 
-		/**
-		 * Instantiates a new internal graph session factory.
-		 */
-		public InternalGraphSessionFactory(final GraphSessionFactory graph,
-				final Provider<StorageSession> sessionProvider) {
-			this.graph = graph;
-			this.sessionProvider = sessionProvider;
-		}
+        /**
+         * Instantiates a new internal graph session factory.
+         */
+        public InternalGraphSessionFactory(final GraphSessionFactory graph,
+                                           final Provider<StorageSession> sessionProvider) {
+            this.graph = graph;
+            this.sessionProvider = sessionProvider;
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory
-		 * #createNewInstance(java.lang.Object[])
-		 */
-		public synchronized GraphSessionFactory createNewInstance(
-				final Object... parameters) throws Exception {
-			checkNotNull("parameters", parameters);
-			checkCondition("correctParamSize", parameters.length == 3);
-			checkCondition("correctTypeForFirstParam",
-					parameters[0] instanceof String);
-			checkCondition("correctTypeForSecondParam",
-					parameters[1] instanceof String);
-			checkCondition("correctTypeForThirdParam",
-					parameters[2] instanceof String);
-			final String user = (String) parameters[0];
-			final String pass = (String) parameters[1];
-			final String repository = (String) parameters[2];
-			final SecurityFactory securityFactory = AbstractFactory
-			.getDefaultInstance(SecurityFactory.class);
-			final User simpleUser = securityFactory.createUser(user);
-			final AuthenticatedUser authenticatedUser = securityFactory
-			.createIdentityManager(sessionProvider.get()).authenticate(
-					simpleUser, pass);
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory #createNewInstance(java.lang.Object[])
+         */
+        @Override
+        public synchronized GraphSessionFactory createNewInstance(
+                                                                  final Object... parameters)
+            throws Exception {
+            checkNotNull("parameters", parameters);
+            checkCondition("correctParamSize", parameters.length == 3);
+            checkCondition("correctTypeForFirstParam",
+                    parameters[0] instanceof String);
+            checkCondition("correctTypeForSecondParam",
+                    parameters[1] instanceof String);
+            checkCondition("correctTypeForThirdParam",
+                    parameters[2] instanceof String);
+            final String user = (String) parameters[0];
+            final String pass = (String) parameters[1];
+            final String repository = (String) parameters[2];
+            final SecurityFactory securityFactory = AbstractFactory
+                .getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser(user);
+            final AuthenticatedUser authenticatedUser = securityFactory
+                .createIdentityManager(sessionProvider.get()).authenticate(
+                    simpleUser, pass);
 
-			return graph;
-		}
+            return graph;
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory
-		 * #getTargetObjectType()
-		 */
-		public Class<GraphSessionFactory> getTargetObjectType() {
-			return GraphSessionFactory.class;
-		}
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory #getTargetObjectType()
+         */
+        @Override
+        public Class<GraphSessionFactory> getTargetObjectType() {
+            return GraphSessionFactory.class;
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory
-		 * #shutdown()
-		 */
-		public void shutdown() {
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory #shutdown()
+         */
+        @Override
+        public void shutdown() {
 
-		}
-	}
+        }
+    }
 
-	/** The remote object server. */
-	private final RemoteObjectServer remoteObjectServer;
+    /** The remote object server. */
+    private final RemoteObjectServer remoteObjectServer;
 
-	/**
-	 * Instantiates a new remote graph session server.
-	 * 
-	 * @param userAutenticator
-	 *            the user autenticator
-	 * @param portToUse
-	 *            the port to use
-	 * @param timeoutInMilliseconds
-	 *            the timeout in milliseconds
-	 */
-	public RemoteGraphSessionServer(final UserAuthenticator userAutenticator,
-			final Integer portToUse, final Long timeoutInMilliseconds,
-			final GraphSessionFactory graph,
-			final Provider<StorageSession> sessionProvider) {
-		checkNotNull("userAutenticator", userAutenticator);
-		checkNotNull("portToUse", portToUse);
-		checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
-		remoteObjectServer = RemoteObjectServerImpl.getDefault(
-				userAutenticator, portToUse, timeoutInMilliseconds);
-		remoteObjectServer.registerInternalObjectFactory(
-				GraphSessionFactory.class, new InternalGraphSessionFactory(
-						graph, sessionProvider));
-	}
+    /**
+     * Instantiates a new remote graph session server.
+     * 
+     * @param userAutenticator the user autenticator
+     * @param portToUse the port to use
+     * @param timeoutInMilliseconds the timeout in milliseconds
+     */
+    public RemoteGraphSessionServer(final UserAuthenticator userAutenticator,
+                                    final Integer portToUse, final Long timeoutInMilliseconds,
+                                    final GraphSessionFactory graph,
+                                    final Provider<StorageSession> sessionProvider) {
+        checkNotNull("userAutenticator", userAutenticator);
+        checkNotNull("portToUse", portToUse);
+        checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
+        remoteObjectServer = RemoteObjectServerImpl.getDefault(
+                userAutenticator, portToUse, timeoutInMilliseconds);
+        remoteObjectServer.registerInternalObjectFactory(
+                GraphSessionFactory.class, new InternalGraphSessionFactory(
+                        graph, sessionProvider));
+    }
 
-	public void removeAllObjectsFromServer() {
-		remoteObjectServer.closeAllObjects();
-	}
+    public void removeAllObjectsFromServer() {
+        remoteObjectServer.closeAllObjects();
+    }
 
-	/**
-	 * Shutdown. This method should be called <b>only one time during the VM
-	 * life cycle</b>. This is necessary due some static garbage on RMI.
-	 */
-	public void shutdown() {
-		remoteObjectServer.shutdown();
-	}
+    /**
+     * Shutdown. This method should be called <b>only one time during the VM life cycle</b>. This is necessary due some static
+     * garbage on RMI.
+     */
+    public void shutdown() {
+        remoteObjectServer.shutdown();
+    }
 }

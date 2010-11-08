@@ -92,13 +92,14 @@ public enum RelationalOperatorType implements OperatorType {
      * @param symbol the symbol
      */
     RelationalOperatorType(
-                              String symbol ) {
+                              final String symbol) {
         this.symbol = symbol;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String symbol() {
         return symbol;
     }
@@ -111,15 +112,15 @@ public enum RelationalOperatorType implements OperatorType {
      * @param applyNot the apply not
      * @return the string
      */
-    public String xPathExpression( Object leftOperand,
-                                   Object rightOperand,
-                                   boolean applyNot ) {
-        StringBuilder buffer = new StringBuilder();
-        if (this.equals(STARTS_WITH)) {
+    public String xPathExpression(final Object leftOperand,
+                                   final Object rightOperand,
+                                   final boolean applyNot) {
+        final StringBuilder buffer = new StringBuilder();
+        if (equals(STARTS_WITH)) {
             StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '", rightOperand, "%')");
-        } else if (this.equals(ENDS_WITH)) {
+        } else if (equals(ENDS_WITH)) {
             StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "')");
-        } else if (this.equals(CONTAINS)) {
+        } else if (equals(CONTAINS)) {
             StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "%')");
         } else {
             StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));

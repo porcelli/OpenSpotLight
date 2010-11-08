@@ -55,5 +55,4 @@ import org.openspotlight.graph.Node;
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class JavaPackage extends Node {
-}
+public abstract class JavaPackage extends Node {}

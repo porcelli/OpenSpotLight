@@ -66,15 +66,14 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         out.println("query: ");
         out.println(state.getLastQuery());
         out.flush();
@@ -85,6 +84,7 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "show query";
     }
@@ -92,6 +92,7 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return "show query";
     }
@@ -99,6 +100,7 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "shows last slql query";
     }
@@ -106,6 +108,7 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
@@ -113,6 +116,7 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
@@ -120,6 +124,7 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }
@@ -127,11 +132,10 @@ public class ShowQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("show query")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("show query")) { return true; }
         return false;
     }
 }

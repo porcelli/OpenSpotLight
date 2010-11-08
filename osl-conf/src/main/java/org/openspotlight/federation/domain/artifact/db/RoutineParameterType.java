@@ -83,7 +83,7 @@ public enum RoutineParameterType {
      */
     private static final Map<Integer, RoutineParameterType> cache = new HashMap<Integer, RoutineParameterType>();
     static {
-        for (final RoutineParameterType n : values()) {
+        for (final RoutineParameterType n: values()) {
             cache.put(n.getSqlTypeValue(), n);
         }
     }
@@ -94,14 +94,14 @@ public enum RoutineParameterType {
      * @param sqlType
      * @return the correct RoutineParameter type by sql int constant
      */
-    public static RoutineParameterType getTypeByInt( final int sqlType ) {
+    public static RoutineParameterType getTypeByInt(final int sqlType) {
         return cache.get(sqlType);
     }
 
     private final int sqlTypeValue;
 
     private RoutineParameterType(
-                                  final int sqlTypeValue ) {
+                                  final int sqlTypeValue) {
         this.sqlTypeValue = sqlTypeValue;
     }
 
@@ -109,6 +109,6 @@ public enum RoutineParameterType {
      * @return the int value equivalent to {@link Types} constants
      */
     public int getSqlTypeValue() {
-        return this.sqlTypeValue;
+        return sqlTypeValue;
     }
 }

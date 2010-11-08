@@ -66,7 +66,7 @@ public class MessageWebException extends WebException {
      * @param message the message
      */
     public MessageWebException(
-                                final String message ) {
+                                final String message) {
         super(message);
     }
 
@@ -77,7 +77,7 @@ public class MessageWebException extends WebException {
      * @param cause the cause
      */
     public MessageWebException(
-                                final String message, final Throwable cause ) {
+                                final String message, final Throwable cause) {
         super(message, cause);
     }
 

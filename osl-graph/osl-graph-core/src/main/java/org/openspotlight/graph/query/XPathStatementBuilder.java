@@ -77,8 +77,7 @@ public class XPathStatementBuilder {
     /**
      * Instantiates a new sLX path statement builder.
      */
-    public XPathStatementBuilder() {
-    }
+    public XPathStatementBuilder() {}
 
     /**
      * Instantiates a new sLX path statement builder.
@@ -86,7 +85,7 @@ public class XPathStatementBuilder {
      * @param path the path
      */
     public XPathStatementBuilder(
-                                    String path ) {
+                                    final String path) {
         this.path = path;
     }
 
@@ -95,7 +94,7 @@ public class XPathStatementBuilder {
      * 
      * @param path the new path
      */
-    public void setPath( String path ) {
+    public void setPath(final String path) {
         this.path = path;
     }
 
@@ -104,7 +103,7 @@ public class XPathStatementBuilder {
      * 
      * @param orderBy the new order by
      */
-    public void setOrderBy( String orderBy ) {
+    public void setOrderBy(final String orderBy) {
         this.orderBy = orderBy;
     }
 
@@ -126,8 +125,8 @@ public class XPathStatementBuilder {
      * @return the x path
      */
     public String getXPath() {
-        StringBuilder buffer = new StringBuilder();
-        StringBuilder statementBuffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
+        final StringBuilder statementBuffer = new StringBuilder();
         printStatement(statementBuffer, rootStatement, 0);
         append(buffer, path, "\n[\n", statementBuffer, "]");
         appendIfNotNull(buffer, orderBy, "\norder by @", orderBy);
@@ -153,14 +152,14 @@ public class XPathStatementBuilder {
      * @param statement the statement
      * @param identLevel the ident level
      */
-    private void printStatement( StringBuilder buffer,
-                                 Statement statement,
-                                 int identLevel ) {
+    private void printStatement(final StringBuilder buffer,
+                                 final Statement statement,
+                                 final int identLevel) {
         validate(rootStatement);
-        StringBuilder statementBuffer = new StringBuilder();
-        String tabs0 = StringUtils.repeat("\t", identLevel);
-        String tabs1 = StringUtils.repeat("\t", identLevel + 1);
-        for (Condition condition : statement.conditions) {
+        final StringBuilder statementBuffer = new StringBuilder();
+        final String tabs0 = StringUtils.repeat("\t", identLevel);
+        final String tabs1 = StringUtils.repeat("\t", identLevel + 1);
+        for (final Condition condition: statement.conditions) {
             append(statementBuffer, tabs0);
             if (condition.innerStatement == null) {
                 if (condition.conditionalOperator != null) {
@@ -174,7 +173,7 @@ public class XPathStatementBuilder {
                 if (condition.inexistent) {
                     append(statementBuffer, "not(@", condition.leftOperandValue, ")\n");
                 } else {
-                    String expression = condition.relationalOperator.xPathExpression(condition.leftOperandValue,
+                    final String expression = condition.relationalOperator.xPathExpression(condition.leftOperandValue,
                                                                                      condition.rightOperandValue,
                                                                                      condition.relationalOperatorApplyNot);
                     append(statementBuffer, expression, '\n');
@@ -203,11 +202,11 @@ public class XPathStatementBuilder {
      * 
      * @param statement the statement
      */
-    private void validate( Statement statement ) {
+    private void validate(final Statement statement) {
         if (statement != null) {
-            for (Condition condition : statement.conditions) {
+            for (final Condition condition: statement.conditions) {
                 if (!condition.closed) {
-                    RuntimeException e = new SLRuntimeException("All conditions must be closed.");
+                    final RuntimeException e = new SLRuntimeException("All conditions must be closed.");
                     e.setStackTrace(condition.stackTrace);
                     throw e;
                 }
@@ -224,10 +223,10 @@ public class XPathStatementBuilder {
     public static class Statement {
 
         /** The parent. */
-        private Condition       parent;
+        private final Condition       parent;
 
         /** The conditions. */
-        private List<Condition> conditions = new ArrayList<Condition>();
+        private final List<Condition> conditions = new ArrayList<Condition>();
 
         /**
          * Instantiates a new statement.
@@ -235,7 +234,7 @@ public class XPathStatementBuilder {
          * @param parent the parent
          */
         private Statement(
-                           Condition parent ) {
+                           final Condition parent) {
             this.parent = parent;
         }
 
@@ -254,7 +253,7 @@ public class XPathStatementBuilder {
          * @return the condition
          */
         public Condition condition() {
-            Condition condition = new Condition(this);
+            final Condition condition = new Condition(this);
             conditions.add(condition);
             return condition;
         }
@@ -265,7 +264,7 @@ public class XPathStatementBuilder {
          * @param conditionalOperator the conditional operator
          * @return the conditional operator
          */
-        public ConditionalOperator operator( ConditionalOperatorType conditionalOperator ) {
+        public ConditionalOperator operator(final ConditionalOperatorType conditionalOperator) {
             return operator(conditionalOperator, false);
         }
 
@@ -276,8 +275,8 @@ public class XPathStatementBuilder {
          * @param applyNot the apply not
          * @return the conditional operator
          */
-        public ConditionalOperator operator( ConditionalOperatorType conditionalOperator,
-                                             boolean applyNot ) {
+        public ConditionalOperator operator(final ConditionalOperatorType conditionalOperator,
+                                             final boolean applyNot) {
             return new ConditionalOperator(this, conditionalOperator, applyNot);
         }
 
@@ -287,9 +286,9 @@ public class XPathStatementBuilder {
          * @return the statement
          */
         public Statement openBracket() {
-            Condition condition = new Condition(this);
-            this.conditions.add(condition);
-            Statement innerStatement = new Statement(condition);
+            final Condition condition = new Condition(this);
+            conditions.add(condition);
+            final Statement innerStatement = new Statement(condition);
             condition.innerStatement = innerStatement;
             return innerStatement;
         }
@@ -312,13 +311,13 @@ public class XPathStatementBuilder {
         public static class ConditionalOperator {
 
             /** The statement. */
-            private Statement                 statement;
+            private final Statement               statement;
 
             /** The conditional operator. */
-            private ConditionalOperatorType conditionalOperator;
+            private final ConditionalOperatorType conditionalOperator;
 
             /** The apply not. */
-            private boolean                   applyNot;
+            private final boolean                 applyNot;
 
             /**
              * Instantiates a new conditional operator.
@@ -328,7 +327,8 @@ public class XPathStatementBuilder {
              * @param applyNot the apply not
              */
             private ConditionalOperator(
-                                         Statement statement, ConditionalOperatorType conditionalOperator, boolean applyNot ) {
+                                         final Statement statement, final ConditionalOperatorType conditionalOperator,
+                                        final boolean applyNot) {
                 this.statement = statement;
                 this.conditionalOperator = conditionalOperator;
                 this.applyNot = applyNot;
@@ -340,7 +340,7 @@ public class XPathStatementBuilder {
              * @return the condition
              */
             public Condition condition() {
-                Condition condition = new Condition(statement);
+                final Condition condition = new Condition(statement);
                 condition.conditionalOperator = conditionalOperator;
                 condition.conditionalOperatorApplyNot = applyNot;
                 condition.outerStatement = statement;
@@ -354,11 +354,11 @@ public class XPathStatementBuilder {
              * @return the statement
              */
             public Statement openBracket() {
-                Condition condition = new Condition(statement);
+                final Condition condition = new Condition(statement);
                 condition.conditionalOperator = conditionalOperator;
                 condition.conditionalOperatorApplyNot = applyNot;
                 statement.conditions.add(condition);
-                Statement innerStatement = new Statement(condition);
+                final Statement innerStatement = new Statement(condition);
                 condition.innerStatement = innerStatement;
                 return innerStatement;
             }
@@ -390,10 +390,10 @@ public class XPathStatementBuilder {
             private Object                    rightOperandValue;
 
             /** The relational operator. */
-            private RelationalOperatorType  relationalOperator;
+            private RelationalOperatorType    relationalOperator;
 
             /** The conditional operator. */
-            private ConditionalOperatorType conditionalOperator;
+            private ConditionalOperatorType   conditionalOperator;
 
             /** The relational operator apply not. */
             private boolean                   relationalOperatorApplyNot;
@@ -402,7 +402,7 @@ public class XPathStatementBuilder {
             private boolean                   conditionalOperatorApplyNot;
 
             /** The stack trace. */
-            private StackTraceElement[]       stackTrace;
+            private final StackTraceElement[] stackTrace;
 
             /**
              * Instantiates a new condition.
@@ -410,7 +410,7 @@ public class XPathStatementBuilder {
              * @param outerStatement the outer statement
              */
             private Condition(
-                               Statement outerStatement ) {
+                               final Statement outerStatement) {
                 stackTrace = Thread.currentThread().getStackTrace();
                 this.outerStatement = outerStatement;
             }
@@ -421,8 +421,8 @@ public class XPathStatementBuilder {
              * @param value the value
              * @return the left operand
              */
-            public LeftOperand leftOperand( Object value ) {
-                this.leftOperandValue = value;
+            public LeftOperand leftOperand(final Object value) {
+                leftOperandValue = value;
                 return new LeftOperand(this);
             }
 
@@ -434,7 +434,7 @@ public class XPathStatementBuilder {
             public static class LeftOperand {
 
                 /** The condition. */
-                private Condition condition;
+                private final Condition condition;
 
                 /**
                  * Instantiates a new left operand.
@@ -442,7 +442,7 @@ public class XPathStatementBuilder {
                  * @param condition the condition
                  */
                 private LeftOperand(
-                                     Condition condition ) {
+                                     final Condition condition) {
                     this.condition = condition;
                 }
 
@@ -463,7 +463,7 @@ public class XPathStatementBuilder {
                  * @param relationalOperator the relational operator
                  * @return the relational operator
                  */
-                public RelationalOperator operator( RelationalOperatorType relationalOperator ) {
+                public RelationalOperator operator(final RelationalOperatorType relationalOperator) {
                     return operator(relationalOperator, false);
                 }
 
@@ -474,8 +474,8 @@ public class XPathStatementBuilder {
                  * @param applyNot the apply not
                  * @return the relational operator
                  */
-                public RelationalOperator operator( RelationalOperatorType relationalOperator,
-                                                    boolean applyNot ) {
+                public RelationalOperator operator(final RelationalOperatorType relationalOperator,
+                                                    final boolean applyNot) {
                     condition.relationalOperator = relationalOperator;
                     condition.relationalOperatorApplyNot = applyNot;
                     return new RelationalOperator(condition);
@@ -489,7 +489,7 @@ public class XPathStatementBuilder {
                 public static class RelationalOperator {
 
                     /** The condition. */
-                    private Condition condition;
+                    private final Condition condition;
 
                     /**
                      * Instantiates a new relational operator.
@@ -497,7 +497,7 @@ public class XPathStatementBuilder {
                      * @param condition the condition
                      */
                     private RelationalOperator(
-                                                Condition condition ) {
+                                                final Condition condition) {
                         this.condition = condition;
                     }
 
@@ -507,7 +507,7 @@ public class XPathStatementBuilder {
                      * @param value the value
                      * @return the statement
                      */
-                    public Statement rightOperand( Object value ) {
+                    public Statement rightOperand(final Object value) {
                         condition.rightOperandValue = value;
                         condition.closed = true;
                         return condition.outerStatement;

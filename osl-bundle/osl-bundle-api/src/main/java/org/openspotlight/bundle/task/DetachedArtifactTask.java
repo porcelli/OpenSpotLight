@@ -55,7 +55,8 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 
 public abstract class DetachedArtifactTask extends ArtifactTask {
 
-    protected DetachedArtifactTask(ExecutionContextProvider provider, Artifact artifact, Map<String, String> properties) {
+    protected DetachedArtifactTask(final ExecutionContextProvider provider, final Artifact artifact,
+                                   final Map<String, String> properties) {
         super(provider, artifact, properties);
     }
 

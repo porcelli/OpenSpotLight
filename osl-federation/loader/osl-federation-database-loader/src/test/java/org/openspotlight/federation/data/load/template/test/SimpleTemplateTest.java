@@ -56,11 +56,12 @@ import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class SimpleTemplateTest {
 
     @Test
-    public void shouldCreateMultiLineFromTemplate() throws Exception {
+    public void shouldCreateMultiLineFromTemplate()
+        throws Exception {
         final CustomizedStringTemplate template = new CustomizedStringTemplate("$detail:{$it.text$\n}$",
                                                                                DefaultTemplateLexer.class);
         template.setAttributeArray("detail.{text}", "line 1");
@@ -72,7 +73,8 @@ public class SimpleTemplateTest {
     }
 
     @Test
-    public void shouldLoadTemplates() throws Exception {
+    public void shouldLoadTemplates()
+        throws Exception {
         final StringTemplate hello = new StringTemplate("Hello $name$", DefaultTemplateLexer.class);
         hello.setAttribute("name", "World");
         assertThat(hello.toString(), is("Hello World"));

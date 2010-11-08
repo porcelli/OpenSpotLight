@@ -59,7 +59,7 @@ public class RepositorySet implements SimpleNodeType {
         return repositories;
     }
 
-    public void setRepositories( final Iterable<Repository> repositories ) {
+    public void setRepositories(final Iterable<Repository> repositories) {
         this.repositories = repositories;
     }
 }

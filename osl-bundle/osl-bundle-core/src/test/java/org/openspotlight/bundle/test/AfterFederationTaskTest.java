@@ -14,20 +14,17 @@ import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
- * Created by IntelliJ IDEA.
- * User: feu
- * Date: Oct 4, 2010
- * Time: 3:08:11 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: feu Date: Oct 4, 2010 Time: 3:08:11 PM To change this template use File | Settings | File
+ * Templates.
  */
 public class AfterFederationTaskTest extends AbstractBundleTest {
 
-
     @Test
-    public void shouldProcessFederatedSources() throws Exception {
-        getScheduler().fireSchedulable(null,null,getArtifactSource());
-        Iterator<Triple<Class<? extends Callable>, Artifact, String>> it = getData().iterator();
-        assertThat(it.next().getK1(),is(ExampleArtifactTask.class));
+    public void shouldProcessFederatedSources()
+        throws Exception {
+        getScheduler().fireSchedulable(null, null, getArtifactSource());
+        final Iterator<Triple<Class<? extends Callable>, Artifact, String>> it = getData().iterator();
+        assertThat(it.next().getK1(), is(ExampleArtifactTask.class));
         //FIXME pegar do claspath usando a mesma forma que foi feita no SLQL
         fail();// needs more assertions
     }

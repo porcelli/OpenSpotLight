@@ -54,6 +54,6 @@ package org.openspotlight.graph.test.domain.node;
  * @author porcelli
  */
 public abstract class SubJavaClassNodeWithoutDescription extends
-		JavaClassNodeWithoutDescription {
+        JavaClassNodeWithoutDescription {
 
 }

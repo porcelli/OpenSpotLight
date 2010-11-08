@@ -30,60 +30,56 @@ import org.openspotlight.security.idm.User;
 
 /**
  * This is the simplest session available of graph. <br>
- * Thru this session you can read any data and write transient data (
- * {@link Node}s and {@link Link}s), this sessions has just a single method that
- * allows update data into graph server: {@link #flushChangedProperties}.
+ * Thru this session you can read any data and write transient data ( {@link Node}s and {@link Link}s), this sessions has just a
+ * single method that allows update data into graph server: {@link #flushChangedProperties}.
  * <p>
- * <b>Important Note</b> its important to execute {@link #shutdown} method at
- * end of its use.
+ * <b>Important Note</b> its important to execute {@link #shutdown} method at end of its use.
  * 
  * @author porcelli
  * @author feuteston
  */
 public interface SimpleGraphSession extends Disposable {
 
-	/**
-	 * Gives access to graph reader operations.
-	 * 
-	 * @param location
-	 *            where the reader should look for data
-	 * @return the graph reader interface
-	 */
-	GraphReader from(GraphLocation location);
+    /**
+     * Gives access to graph reader operations.
+     * 
+     * @param location where the reader should look for data
+     * @return the graph reader interface
+     */
+    GraphReader from(GraphLocation location);
 
-	/**
-	 * Gives access to the interface that enables write transient data.
-	 * 
-	 * @return the transient writter interface
-	 */
-	GraphTransientWriter toTransient();
+    /**
+     * Gives access to the interface that enables write transient data.
+     * 
+     * @return the transient writter interface
+     */
+    GraphTransientWriter toTransient();
 
-	/**
-	 * Flush the changed properties of the given node into graph server.
-	 * 
-	 * @param node
-	 *            the node
-	 */
-	void flushChangedProperties(Node node);
+    /**
+     * Flush the changed properties of the given node into graph server.
+     * 
+     * @param node the node
+     */
+    void flushChangedProperties(Node node);
 
-	/**
-	 * Returns the active user.
-	 * 
-	 * @return the user
-	 */
-	User getUser();
+    /**
+     * Returns the active user.
+     * 
+     * @return the user
+     */
+    User getUser();
 
-	/**
-	 * Returns the policy enforcement.
-	 * 
-	 * @return the policy enforcement
-	 */
-	PolicyEnforcement getPolicyEnforcement();
+    /**
+     * Returns the policy enforcement.
+     * 
+     * @return the policy enforcement
+     */
+    PolicyEnforcement getPolicyEnforcement();
 
-	/**
-	 * Should be executed after session use, this method cleans the cache and
-	 * prevent memory leaks.
-	 */
-	@DisposeMethod(callOnTimeout = true)
-	void closeResources();
+    /**
+     * Should be executed after session use, this method cleans the cache and prevent memory leaks.
+     */
+    @Override
+    @DisposeMethod(callOnTimeout = true)
+    void closeResources();
 }

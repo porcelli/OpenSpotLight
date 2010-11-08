@@ -59,95 +59,86 @@ import org.openspotlight.storage.domain.StorageNode;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
-	private static final long serialVersionUID = -3359480990669655877L;
+    private static final long                          serialVersionUID     = -3359480990669655877L;
 
-	/** The syntax information set. */
-	private final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
-			.create(Set.class, this);
+    /** The syntax information set. */
+    private final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
+                                                                                .create(Set.class, this);
 
-	public ArtifactWithSyntaxInformation() {
-		super();
-	}
+    public ArtifactWithSyntaxInformation() {
+        super();
+    }
 
-	/**
-	 * Adds the syntax information.
-	 * 
-	 * @param lineStart
-	 *            the line start
-	 * @param lineEnd
-	 *            the line end
-	 * @param columnStart
-	 *            the column start
-	 * @param columnEnd
-	 *            the column end
-	 * @param type
-	 *            the type
-	 */
-	public void addSyntaxInformation(
-			final int lineStart,
-			final int lineEnd,
-			final int columnStart,
-			final int columnEnd,
-			final SyntaxInformationType type,
-			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-		final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
-				lineStart, lineEnd, columnStart, columnEnd, type);
-		getUnwrappedSyntaxInformation(simplePersist).add(syntaxInformation);
-	}
+    /**
+     * Adds the syntax information.
+     * 
+     * @param lineStart the line start
+     * @param lineEnd the line end
+     * @param columnStart the column start
+     * @param columnEnd the column end
+     * @param type the type
+     */
+    public void addSyntaxInformation(
+                                     final int lineStart,
+                                     final int lineEnd,
+                                     final int columnStart,
+                                     final int columnEnd,
+                                     final SyntaxInformationType type,
+                                     final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
+                lineStart, lineEnd, columnStart, columnEnd, type);
+        getUnwrappedSyntaxInformation(simplePersist).add(syntaxInformation);
+    }
 
-	public LazyProperty<Set<SyntaxInformation>> getSyntaxInformationSet() {
-		return syntaxInformationSet;
-	}
+    public LazyProperty<Set<SyntaxInformation>> getSyntaxInformationSet() {
+        return syntaxInformationSet;
+    }
 
-	@TransientProperty
-	public Set<SyntaxInformation> getUnwrappedSyntaxInformation(
-			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-		Set<SyntaxInformation> currentSet = syntaxInformationSet
-				.get(simplePersist);
-		if (currentSet == null) {
-			currentSet = new HashSet<SyntaxInformation>();
-			syntaxInformationSet.setTransient(currentSet);
-		}
-		return currentSet;
+    @TransientProperty
+    public Set<SyntaxInformation>
+        getUnwrappedSyntaxInformation(
+                                      final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+        Set<SyntaxInformation> currentSet = syntaxInformationSet
+                .get(simplePersist);
+        if (currentSet == null) {
+            currentSet = new HashSet<SyntaxInformation>();
+            syntaxInformationSet.setTransient(currentSet);
+        }
+        return currentSet;
 
-	}
+    }
 
-	/**
-	 * Removes the syntax information.
-	 * 
-	 * @param lineStart
-	 *            the line start
-	 * @param lineEnd
-	 *            the line end
-	 * @param columnStart
-	 *            the column start
-	 * @param columnEnd
-	 *            the column end
-	 * @param type
-	 *            the type
-	 */
-	public void removeSyntaxInformation(
-			final int lineStart,
-			final int lineEnd,
-			final int columnStart,
-			final int columnEnd,
-			final SyntaxInformationType type,
-			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-		final SyntaxInformation syntaxInformation = new SyntaxInformation();
-		syntaxInformation.setColumnEnd(columnEnd);
-		syntaxInformation.setColumnStart(columnStart);
-		syntaxInformation.setLineEnd(lineEnd);
-		syntaxInformation.setLineStart(lineStart);
-		syntaxInformation.setParent(this);
-		syntaxInformation.setType(type);
-		try {
-			syntaxInformationSet.getMetadata().getLock().lock();
-			getUnwrappedSyntaxInformation(simplePersist).remove(
-					syntaxInformation);
-		} finally {
-			syntaxInformationSet.getMetadata().getLock().unlock();
-		}
+    /**
+     * Removes the syntax information.
+     * 
+     * @param lineStart the line start
+     * @param lineEnd the line end
+     * @param columnStart the column start
+     * @param columnEnd the column end
+     * @param type the type
+     */
+    public void removeSyntaxInformation(
+                                        final int lineStart,
+                                        final int lineEnd,
+                                        final int columnStart,
+                                        final int columnEnd,
+                                        final SyntaxInformationType type,
+                                        final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation();
+        syntaxInformation.setColumnEnd(columnEnd);
+        syntaxInformation.setColumnStart(columnStart);
+        syntaxInformation.setLineEnd(lineEnd);
+        syntaxInformation.setLineStart(lineStart);
+        syntaxInformation.setParent(this);
+        syntaxInformation.setType(type);
+        try {
+            syntaxInformationSet.getMetadata().getLock().lock();
+            getUnwrappedSyntaxInformation(simplePersist).remove(
+                    syntaxInformation);
+        } finally {
+            syntaxInformationSet.getMetadata().getLock().unlock();
+        }
 
-	}
+    }
 
 }

@@ -14,7 +14,6 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.PersistPropertyAsStream;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-
 /**
  * The Class LogEntry is used to represent a new log entry.
  */
@@ -24,27 +23,27 @@ public class LogEntry implements SimpleNodeType, Serializable {
     /**
      *
      */
-    private static final long serialVersionUID = -1429744150741798679L;
+    private static final long             serialVersionUID = -1429744150741798679L;
 
     /**
      * The error code.
      */
-    private DetailedLogger.ErrorCode errorCode;
+    private DetailedLogger.ErrorCode      errorCode;
 
     /**
      * The type.
      */
-    private DetailedLogger.LogEventType type;
+    private DetailedLogger.LogEventType   type;
 
     /**
      * The message.
      */
-    private String message;
+    private String                        message;
 
     /**
      * The detailed message.
      */
-    private String detailedMessage;
+    private String                        detailedMessage;
 
     /**
      * The nodes.
@@ -54,54 +53,49 @@ public class LogEntry implements SimpleNodeType, Serializable {
     /**
      * The date.
      */
-    private Date date;
+    private Date                          date;
 
-    private long timestamp;
+    private long                          timestamp;
 
     /**
      * The hash code.
      */
-    private int hashCode;
+    private int                           hashCode;
 
-    public LogEntry() {
-    }
+    public LogEntry() {}
 
     /**
      * Instantiates a new log entry.
-     *
-     * @param errorCode       the error code
-     * @param type            the type
-     * @param message         the message
+     * 
+     * @param errorCode the error code
+     * @param type the type
+     * @param message the message
      * @param detailedMessage the detailed message
-     * @param nodes           the nodes
+     * @param nodes the nodes
      */
     LogEntry(
-            final DetailedLogger.ErrorCode errorCode, final long timestamp, final DetailedLogger.LogEventType type, final String message,
-            final String detailedMessage, final List<LoggedObjectInformation> nodes) {
+             final DetailedLogger.ErrorCode errorCode, final long timestamp, final DetailedLogger.LogEventType type,
+             final String message,
+             final String detailedMessage, final List<LoggedObjectInformation> nodes) {
         this.errorCode = errorCode;
         this.type = type;
         this.message = message;
         this.detailedMessage = detailedMessage;
         this.nodes = Collections.unmodifiableList(nodes);
         this.timestamp = timestamp;
-        this.date = new Date(timestamp);
-        hashCode = HashCodes.hashOf(this.type, this.message, this.detailedMessage, this.nodes, this.date, this.errorCode);
+        date = new Date(timestamp);
+        hashCode = HashCodes.hashOf(this.type, this.message, this.detailedMessage, this.nodes, date, this.errorCode);
     }
 
     /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#equalsTo(java.lang.Object)
-    */
+     * (non-Javadoc)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
+     */
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
-            return true;
-        }
-        if (!(obj instanceof LogEntry)) {
-            return false;
-        }
+        if (obj == null) { return true; }
+        if (!(obj instanceof LogEntry)) { return false; }
         final LogEntry that = (LogEntry) obj;
         return Equals.eachEquality(Arrays.of(type, message, detailedMessage, nodes, date, errorCode),
                 Arrays.andOf(that.type, that.message, that.detailedMessage, that.nodes, that.date,
@@ -110,7 +104,7 @@ public class LogEntry implements SimpleNodeType, Serializable {
 
     /**
      * Gets the date.
-     *
+     * 
      * @return the date
      */
     public Date getDate() {
@@ -122,13 +116,13 @@ public class LogEntry implements SimpleNodeType, Serializable {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(final long timestamp) {
         this.timestamp = timestamp;
     }
 
     /**
      * Gets the detailed message.
-     *
+     * 
      * @return the detailed message
      */
     public String getDetailedMessage() {
@@ -141,7 +135,7 @@ public class LogEntry implements SimpleNodeType, Serializable {
 
     /**
      * Gets the message.
-     *
+     * 
      * @return the message
      */
     public String getMessage() {
@@ -150,7 +144,7 @@ public class LogEntry implements SimpleNodeType, Serializable {
 
     /**
      * Gets the nodes.
-     *
+     * 
      * @return the nodes
      */
     @PersistPropertyAsStream
@@ -160,7 +154,7 @@ public class LogEntry implements SimpleNodeType, Serializable {
 
     /**
      * Gets the type.
-     *
+     * 
      * @return the type
      */
     @KeyProperty
@@ -169,10 +163,9 @@ public class LogEntry implements SimpleNodeType, Serializable {
     }
 
     /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#hashCode()
-    */
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
 
     @Override
     public int hashCode() {

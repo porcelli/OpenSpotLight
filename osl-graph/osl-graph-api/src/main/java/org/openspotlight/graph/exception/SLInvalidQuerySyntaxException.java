@@ -38,7 +38,7 @@ public abstract class SLInvalidQuerySyntaxException extends SLRuntimeException {
      * @param cause the cause
      */
     public SLInvalidQuerySyntaxException(
-                                    final String message, final Throwable cause) {
+                                         final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -48,7 +48,7 @@ public abstract class SLInvalidQuerySyntaxException extends SLRuntimeException {
      * @param message the message
      */
     public SLInvalidQuerySyntaxException(
-                                    final String message) {
+                                         final String message) {
         super(message);
     }
 
@@ -58,7 +58,7 @@ public abstract class SLInvalidQuerySyntaxException extends SLRuntimeException {
      * @param cause the cause
      */
     public SLInvalidQuerySyntaxException(
-                                    final Throwable cause) {
+                                         final Throwable cause) {
         super(cause);
     }
 }

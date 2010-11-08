@@ -68,333 +68,318 @@ import org.openspotlight.persist.annotation.TransientProperty;
 // TODO: Auto-generated Javadoc
 
 /**
- * This is the {@link Artifact} class 'on steroids'. It has a lot of
- * {@link PathElement path elements} used to locate a new {@link Artifact} based
- * on another one. Please register any non-abstract implementation of Artifact
- * subclass on , so the bundle processor manager should load this classes.
+ * This is the {@link Artifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
+ * {@link Artifact} based on another one. Please register any non-abstract implementation of Artifact subclass on , so the bundle
+ * processor manager should load this classes.
  */
 public abstract class Artifact implements SimpleNodeType, Serializable {
-	@IndexedProperty
-	public synchronized String getMappedFrom() {
-		return mappedFrom;
-	}
+    @IndexedProperty
+    public synchronized String getMappedFrom() {
+        return mappedFrom;
+    }
 
-	public synchronized void setMappedFrom(String mappedFrom) {
-		this.mappedFrom = mappedFrom;
-	}
+    public synchronized void setMappedFrom(final String mappedFrom) {
+        this.mappedFrom = mappedFrom;
+    }
 
-	@IndexedProperty
-	public synchronized String getMappedTo() {
-		return mappedTo;
-	}
+    @IndexedProperty
+    public synchronized String getMappedTo() {
+        return mappedTo;
+    }
 
-	public synchronized void setMappedTo(String mappedTo) {
-		this.mappedTo = mappedTo;
-	}
+    public synchronized void setMappedTo(final String mappedTo) {
+        this.mappedTo = mappedTo;
+    }
 
-	private String mappedFrom;
-	private String mappedTo;
+    private String mappedFrom;
+    private String mappedTo;
 
-	private String originalName;
+    private String originalName;
 
-	public void updateOriginalName(ArtifactSource source, String originalName) {
-		this.originalName = concatPaths(source.getInitialLookup(), originalName);
+    public void updateOriginalName(final ArtifactSource source, final String originalName) {
+        this.originalName = concatPaths(source.getInitialLookup(), originalName);
 
-	}
+    }
 
-	@IndexedProperty
-	public synchronized String getOriginalName() {
-		return originalName;
-	}
+    @IndexedProperty
+    public synchronized String getOriginalName() {
+        return originalName;
+    }
 
-	public synchronized void setOriginalName(String originalName) {
-		this.originalName = originalName;
-	}
+    public synchronized void setOriginalName(final String originalName) {
+        this.originalName = originalName;
+    }
 
-	private long lastChange;
+    private long lastChange;
 
-	public synchronized long getLastChange() {
-		return lastChange;
-	}
+    public synchronized long getLastChange() {
+        return lastChange;
+    }
 
-	public synchronized void setLastChange(long lastChange) {
-		this.lastChange = lastChange;
-	}
+    public synchronized void setLastChange(final long lastChange) {
+        this.lastChange = lastChange;
+    }
 
-	/**
-	 * Creates the new artifact.
-	 * 
-	 * @param artifactCompletePath
-	 *            the artifact complete path
-	 * @param changeType
-	 *            the change type
-	 * @param artifactType
-	 *            the artifact type
-	 * @return the stream artifact
-	 */
-	public static <A extends Artifact> A createArtifact(
-			final Class<A> artifactType, final String artifactCompletePath,
-			final ChangeType changeType) {
+    /**
+     * Creates the new artifact.
+     * 
+     * @param artifactCompletePath the artifact complete path
+     * @param changeType the change type
+     * @param artifactType the artifact type
+     * @return the stream artifact
+     */
+    public static <A extends Artifact> A createArtifact(
+                                                        final Class<A> artifactType, final String artifactCompletePath,
+                                                        final ChangeType changeType) {
 
-		try {
-			final String internalArtifactName = artifactCompletePath
-					.substring(artifactCompletePath.lastIndexOf('/') + 1);
-			final String path = artifactCompletePath.substring(
-					0,
-					artifactCompletePath.length()
-							- internalArtifactName.length());
-			final PathElement pathElement = PathElement
-					.createFromPathString(path);
-			final A artifact = artifactType.newInstance();
+        try {
+            final String internalArtifactName = artifactCompletePath
+                    .substring(artifactCompletePath.lastIndexOf('/') + 1);
+            final String path = artifactCompletePath.substring(
+                    0,
+                    artifactCompletePath.length()
+                            - internalArtifactName.length());
+            final PathElement pathElement = PathElement
+                    .createFromPathString(path);
+            final A artifact = artifactType.newInstance();
 
-			artifact.setArtifactName(internalArtifactName);
-			artifact.setChangeType(changeType);
-			artifact.setParent(pathElement);
-			if (pathElement != null) {
-				artifact.setArtifactCompleteName(Strings.concatPaths(
-						pathElement.getCompletePath(), internalArtifactName));
+            artifact.setArtifactName(internalArtifactName);
+            artifact.setChangeType(changeType);
+            artifact.setParent(pathElement);
+            if (pathElement != null) {
+                artifact.setArtifactCompleteName(Strings.concatPaths(
+                        pathElement.getCompletePath(), internalArtifactName));
 
-			} else {
-				artifact.setArtifactCompleteName(internalArtifactName);
+            } else {
+                artifact.setArtifactCompleteName(internalArtifactName);
 
-			}
+            }
 
-			return artifact;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
+            return artifact;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
-	private String uniqueContextName;
+    private String                                         uniqueContextName;
 
-	/**
-	 * The Constant SEPARATOR.
-	 */
-	final static String SEPARATOR = "/";
+    /**
+     * The Constant SEPARATOR.
+     */
+    final static String                                    SEPARATOR        = "/";
 
-	private transient AddOnlyConcurrentMap<String, Object> transientMap;
+    private transient AddOnlyConcurrentMap<String, Object> transientMap;
 
-	private String repositoryName;
+    private String                                         repositoryName;
 
-	private static final long serialVersionUID = 372692540369995072L;
+    private static final long                              serialVersionUID = 372692540369995072L;
 
-	private Date lastProcessedDate;
+    private Date                                           lastProcessedDate;
 
-	/**
-	 * The artifact name.
-	 */
-	private String artifactName;
+    /**
+     * The artifact name.
+     */
+    private String                                         artifactName;
 
-	/**
-	 * The artifact complete name.
-	 */
-	private String artifactCompleteName;
+    /**
+     * The artifact complete name.
+     */
+    private String                                         artifactCompleteName;
 
-	/**
-	 * The change type.
-	 */
-	private ChangeType changeType = ChangeType.INCLUDED;
+    /**
+     * The change type.
+     */
+    private ChangeType                                     changeType       = ChangeType.INCLUDED;
 
-	/**
-	 * The parent.
-	 */
-	private PathElement parent;
+    /**
+     * The parent.
+     */
+    private PathElement                                    parent;
 
-	/**
-	 * The hashcode.
-	 */
-	private volatile transient int hashcode;
+    /**
+     * The hashcode.
+     */
+    private volatile transient int                         hashcode;
 
-	public Artifact() {
-		transientMap = AddOnlyConcurrentMap.newMap();
-	}
+    public Artifact() {
+        transientMap = AddOnlyConcurrentMap.newMap();
+    }
 
-	/**
-	 * Content equalsTo.
-	 * 
-	 * @param other
-	 *            the other
-	 * @return true, if successful
-	 */
-	public abstract boolean contentEquals(Artifact other);
+    /**
+     * Content equalsTo.
+     * 
+     * @param other the other
+     * @return true, if successful
+     */
+    public abstract boolean contentEquals(Artifact other);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equalsTo(java.lang.Object)
-	 */
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
+     */
 
-	@Override
-	public synchronized boolean equals(final Object o) {
-		if (!(o instanceof Artifact)) {
-			return false;
-		}
-		if (o.getClass() != this.getClass()) {
-			return false;
-		}
+    @Override
+    public synchronized boolean equals(final Object o) {
+        if (!(o instanceof Artifact)) { return false; }
+        if (o.getClass() != this.getClass()) { return false; }
 
-		final Artifact that = (Artifact) o;
-		return Equals.eachEquality(parent, that.parent)
-				&& Equals.eachEquality(artifactName, that.artifactName);
-	}
+        final Artifact that = (Artifact) o;
+        return Equals.eachEquality(parent, that.parent)
+                && Equals.eachEquality(artifactName, that.artifactName);
+    }
 
-	/**
-	 * Gets the artifact complete name.
-	 * 
-	 * @return the artifact complete name
-	 */
-	@KeyProperty
-	public synchronized String getArtifactCompleteName() {
-		return artifactCompleteName;
-	}
+    /**
+     * Gets the artifact complete name.
+     * 
+     * @return the artifact complete name
+     */
+    @KeyProperty
+    public synchronized String getArtifactCompleteName() {
+        return artifactCompleteName;
+    }
 
-	/**
-	 * Gets the artifact name.
-	 * 
-	 * @return the artifact name
-	 */
-	@KeyProperty
-	public synchronized String getArtifactName() {
-		return artifactName;
-	}
+    /**
+     * Gets the artifact name.
+     * 
+     * @return the artifact name
+     */
+    @KeyProperty
+    public synchronized String getArtifactName() {
+        return artifactName;
+    }
 
-	/**
-	 * Gets the change type.
-	 * 
-	 * @return the change type
-	 */
-	public synchronized ChangeType getChangeType() {
-		return changeType;
-	}
+    /**
+     * Gets the change type.
+     * 
+     * @return the change type
+     */
+    public synchronized ChangeType getChangeType() {
+        return changeType;
+    }
 
-	public synchronized Date getLastProcessedDate() {
-		return lastProcessedDate;
-	}
+    public synchronized Date getLastProcessedDate() {
+        return lastProcessedDate;
+    }
 
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 */
-	@PersistPropertyAsStream
-	public synchronized PathElement getParent() {
-		return parent;
-	}
+    /**
+     * Gets the parent.
+     * 
+     * @return the parent
+     */
+    @PersistPropertyAsStream
+    public synchronized PathElement getParent() {
+        return parent;
+    }
 
-	public synchronized String getRepositoryName() {
-		return repositoryName;
-	}
+    public synchronized String getRepositoryName() {
+        return repositoryName;
+    }
 
-	@TransientProperty
-	public synchronized AddOnlyConcurrentMap<String, Object> getTransientMap() {
-		return transientMap;
-	}
+    @TransientProperty
+    public synchronized AddOnlyConcurrentMap<String, Object> getTransientMap() {
+        return transientMap;
+    }
 
-	public synchronized String getUniqueContextName() {
-		return uniqueContextName;
-	}
+    public synchronized String getUniqueContextName() {
+        return uniqueContextName;
+    }
 
-	@TransientProperty
-	public synchronized String getVersion() {
-		return "1";
-	}
+    @TransientProperty
+    public synchronized String getVersion() {
+        return "1";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
 
-	@Override
-	public synchronized int hashCode() {
-		int result = hashcode;
-		if (result == 0) {
-			result = 17;
-			result = 31 * result + this.getClass().hashCode();
-			result = 31 * result + (parent != null ? parent.hashCode() : 0);
-			result = 31 * result
-					+ (artifactName != null ? artifactName.hashCode() : 0);
-			result = 31 * result
-					+ (artifactName != null ? artifactName.hashCode() : 0);
-			result = 31 * result
-					+ (changeType != null ? changeType.hashCode() : 0);
-			hashcode = result;
-		}
-		return result;
-	}
+    @Override
+    public synchronized int hashCode() {
+        int result = hashcode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.getClass().hashCode();
+            result = 31 * result + (parent != null ? parent.hashCode() : 0);
+            result = 31 * result
+                    + (artifactName != null ? artifactName.hashCode() : 0);
+            result = 31 * result
+                    + (artifactName != null ? artifactName.hashCode() : 0);
+            result = 31 * result
+                    + (changeType != null ? changeType.hashCode() : 0);
+            hashcode = result;
+        }
+        return result;
+    }
 
-	public synchronized void setArtifactCompleteName(
-			final String artifactCompleteName) {
-		if (artifactCompleteName == null)
-			throw new NullPointerException();
-		this.artifactCompleteName = artifactCompleteName;
-	}
+    public synchronized void setArtifactCompleteName(
+                                                     final String artifactCompleteName) {
+        if (artifactCompleteName == null) { throw new NullPointerException(); }
+        this.artifactCompleteName = artifactCompleteName;
+    }
 
-	/**
-	 * Sets the artifact name.
-	 * 
-	 * @param artifactName
-	 *            the new artifact name
-	 */
-	public synchronized void setArtifactName(final String artifactName) {
-		this.artifactName = artifactName;
-	}
+    /**
+     * Sets the artifact name.
+     * 
+     * @param artifactName the new artifact name
+     */
+    public synchronized void setArtifactName(final String artifactName) {
+        this.artifactName = artifactName;
+    }
 
-	/**
-	 * Sets the change type.
-	 * 
-	 * @param changeType
-	 *            the new change type
-	 */
-	public synchronized void setChangeType(final ChangeType changeType) {
-		this.changeType = changeType;
+    /**
+     * Sets the change type.
+     * 
+     * @param changeType the new change type
+     */
+    public synchronized void setChangeType(final ChangeType changeType) {
+        this.changeType = changeType;
 
-	}
+    }
 
-	public synchronized void setLastProcessedDate(final Date lastProcessedDate) {
-		this.lastProcessedDate = lastProcessedDate;
-	}
+    public synchronized void setLastProcessedDate(final Date lastProcessedDate) {
+        this.lastProcessedDate = lastProcessedDate;
+    }
 
-	/**
-	 * Sets the parent.
-	 * 
-	 * @param parent
-	 *            the new parent
-	 */
-	public synchronized void setParent(final PathElement parent) {
-		this.parent = parent;
-		if (parent != null) {
-			setArtifactCompleteName(Strings.concatPaths(
-					parent.getCompletePath(), artifactName));
-		} else {
-			setArtifactCompleteName(artifactName);
+    /**
+     * Sets the parent.
+     * 
+     * @param parent the new parent
+     */
+    public synchronized void setParent(final PathElement parent) {
+        this.parent = parent;
+        if (parent != null) {
+            setArtifactCompleteName(Strings.concatPaths(
+                    parent.getCompletePath(), artifactName));
+        } else {
+            setArtifactCompleteName(artifactName);
 
-		}
+        }
 
-	}
+    }
 
-	public synchronized void setRepositoryName(final String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
+    public synchronized void setRepositoryName(final String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
 
-	public synchronized void setTransientMap(
-			final AddOnlyConcurrentMap<String, Object> transientMap) {
-		this.transientMap = transientMap;
-	}
+    public synchronized void setTransientMap(
+                                             final AddOnlyConcurrentMap<String, Object> transientMap) {
+        this.transientMap = transientMap;
+    }
 
-	public synchronized void setUniqueContextName(final String uniqueContextName) {
-		this.uniqueContextName = uniqueContextName;
-	}
+    public synchronized void setUniqueContextName(final String uniqueContextName) {
+        this.uniqueContextName = uniqueContextName;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
 
-	public String toString() {
-		return getClass().getSimpleName() + getArtifactCompleteName() + " "
-				+ getChangeType();
-	}
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + getArtifactCompleteName() + " "
+                + getChangeType();
+    }
 
 }

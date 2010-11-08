@@ -60,7 +60,7 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
     private int              endCharPositionInLine = -1;
     private int              endLine               = -1;
 
-    private Node           node;
+    private Node             node;
 
     private SLArtifactStream artifactCache         = null;
 
@@ -69,21 +69,21 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
     }
 
     public SLCommonTree(
-                         final CommonTree node ) {
+                         final CommonTree node) {
         super(node);
         token = node.token;
         if (node instanceof SLLineInfo) {
-            final SLLineInfo typed = (SLLineInfo)node;
+            final SLLineInfo typed = (SLLineInfo) node;
             setEndCharPositionInLine(typed.getEndCharPositionInLine());
             setEndLine(typed.getEndLine());
         }
     }
 
     public SLCommonTree(
-                         final Token t ) {
+                         final Token t) {
         super(t);
         if (t instanceof SLLineInfo) {
-            final SLLineInfo typed = (SLLineInfo)t;
+            final SLLineInfo typed = (SLLineInfo) t;
             setEndCharPositionInLine(typed.getEndCharPositionInLine());
             setEndLine(typed.getEndLine());
         }
@@ -94,15 +94,16 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
         return new SLCommonTree(this);
     }
 
+    @Override
     public SLArtifactStream getArtifact() {
         if (artifactCache == null) {
             if (token != null) {
-                artifactCache = ((SLCommonToken)token).getArtifact();
+                artifactCache = ((SLCommonToken) token).getArtifact();
             }
             if (artifactCache == null) {
                 if (getChildCount() > 0) {
                     for (int i = 0, size = getChildCount(); i < size; i++) {
-                        final SLArtifactStream result = ((SLCommonTree)getChild(0)).getArtifact();
+                        final SLArtifactStream result = ((SLCommonTree) getChild(0)).getArtifact();
                         if (result != null) {
                             artifactCache = result;
                             break;
@@ -119,21 +120,19 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
         return endCharOffset;
     }
 
+    @Override
     public int getEndCharPositionInLine() {
         if (token == null || token.getCharPositionInLine() == -1) {
-            if (getChildCount() > 0) {
-                return ((SLCommonTree)getChild(getChildCount() - 1)).getEndCharPositionInLine();
-            }
+            if (getChildCount() > 0) { return ((SLCommonTree) getChild(getChildCount() - 1)).getEndCharPositionInLine(); }
             return 0;
         }
         return endCharPositionInLine;
     }
 
+    @Override
     public int getEndLine() {
         if (token == null || token.getCharPositionInLine() == -1) {
-            if (getChildCount() > 0) {
-                return ((SLCommonTree)getChild(getChildCount() - 1)).getEndLine();
-            }
+            if (getChildCount() > 0) { return ((SLCommonTree) getChild(getChildCount() - 1)).getEndLine(); }
             return 0;
         }
         return endLine;
@@ -147,31 +146,33 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
         return startCharOffset;
     }
 
+    @Override
     public int getStartCharPositionInLine() {
         return getCharPositionInLine();
     }
 
+    @Override
     public int getStartLine() {
         return getLine();
     }
 
-    public void setEndCharOffset( final int endCharOffset ) {
+    public void setEndCharOffset(final int endCharOffset) {
         this.endCharOffset = endCharOffset;
     }
 
-    public void setEndCharPositionInLine( final int charPositionInLine ) {
+    public void setEndCharPositionInLine(final int charPositionInLine) {
         endCharPositionInLine = charPositionInLine;
     }
 
-    public void setEndLine( final int endLine ) {
+    public void setEndLine(final int endLine) {
         this.endLine = endLine;
     }
 
-    public void setNode( final Node node ) {
+    public void setNode(final Node node) {
         this.node = node;
     }
 
-    public void setStartCharOffset( final int startCharOffset ) {
+    public void setStartCharOffset(final int startCharOffset) {
         this.startCharOffset = startCharOffset;
     }
 }

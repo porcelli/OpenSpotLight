@@ -66,44 +66,44 @@ import org.openspotlight.graph.annotation.Description;
 
 @Description("Java Class")
 public abstract class JavaClassNodePublic extends Node {
-	/** The Constant MODIFIER_PUBLIC. */
-	public static final Integer MODIFIER_PUBLIC = 1;
+    /** The Constant MODIFIER_PUBLIC. */
+    public static final Integer MODIFIER_PUBLIC    = 1;
 
-	/** The Constant MODIFIER_PRIVATE. */
-	public static final Integer MODIFIER_PRIVATE = 2;
+    /** The Constant MODIFIER_PRIVATE. */
+    public static final Integer MODIFIER_PRIVATE   = 2;
 
-	/** The Constant MODIFIER_PROTECTED. */
-	public static final Integer MODIFIER_PROTECTED = 3;
+    /** The Constant MODIFIER_PROTECTED. */
+    public static final Integer MODIFIER_PROTECTED = 3;
 
-	/** The Constant MODIFIER_DEFAULT. */
-	public static final Integer MODIFIER_DEFAULT = 4;
+    /** The Constant MODIFIER_DEFAULT. */
+    public static final Integer MODIFIER_DEFAULT   = 4;
 
-	private String className;
-	private Integer modifier;
-	private Date creationTime;
+    private String              className;
+    private Integer             modifier;
+    private Date                creationTime;
 
-	public String getClassName() {
-		return className;
-	}
+    public String getClassName() {
+        return className;
+    }
 
-	public void setClassName(String className) {
-		this.className = className;
-	}
+    public void setClassName(final String className) {
+        this.className = className;
+    }
 
-	public Integer getModifier() {
-		return modifier;
-	}
+    public Integer getModifier() {
+        return modifier;
+    }
 
-	public void setModifier(Integer modifier) {
-		this.modifier = modifier;
-	}
+    public void setModifier(final Integer modifier) {
+        this.modifier = modifier;
+    }
 
-	public Date getCreationTime() {
-		return creationTime;
-	}
+    public Date getCreationTime() {
+        return creationTime;
+    }
 
-	public void setCreationTime(Date creationTime) {
-		this.creationTime = creationTime;
-	}
+    public void setCreationTime(final Date creationTime) {
+        this.creationTime = creationTime;
+    }
 
 }

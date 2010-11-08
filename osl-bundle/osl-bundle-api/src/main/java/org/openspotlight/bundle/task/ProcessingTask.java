@@ -63,7 +63,7 @@ public abstract class ProcessingTask extends BaseTask implements
     private final ImmutableMap<String, String> properties;
     private ExecutionContext                   context;
 
-    protected ProcessingTask(ExecutionContextProvider provider, Map<String, String> properties) {
+    protected ProcessingTask(final ExecutionContextProvider provider, final Map<String, String> properties) {
         this.provider = provider;
         this.properties = ImmutableMap.copyOf(properties);
     }
@@ -93,7 +93,7 @@ public abstract class ProcessingTask extends BaseTask implements
         return properties.keySet();
     }
 
-    public String getPropertyValue(String name) {
+    public String getPropertyValue(final String name) {
         return properties.get(name);
     }
 

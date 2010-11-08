@@ -59,32 +59,30 @@ import org.openspotlight.graph.query.console.command.DynamicCommand;
 
 public class ShowNodeTypesCommand implements DynamicCommand {
 
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("show node types")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("show node types")) { return true; }
         return false;
     }
 
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         out.println("node types:");
         if (state.getSession() == null) {
             out.println("\t(none)");
         } else {
-            Iterable<MetaNodeType> nodeTypes = state.getSession().getMetadata().getMetaNodesTypes();
+            final Iterable<MetaNodeType> nodeTypes = state.getSession().getMetadata().getMetaNodesTypes();
             if (!nodeTypes.iterator().hasNext()) {
                 out.println("\t(none)");
             } else {
-                for (MetaNodeType nodeType : nodeTypes) {
+                for (final MetaNodeType nodeType: nodeTypes) {
                     out.print("\t- ");
                     out.println(nodeType.getTypeName());
                 }
@@ -95,26 +93,32 @@ public class ShowNodeTypesCommand implements DynamicCommand {
         state.clearBuffer();
     }
 
+    @Override
     public String getAutoCompleteCommand() {
         return "show node types";
     }
 
+    @Override
     public String getCommand() {
         return "show node types";
     }
 
+    @Override
     public String getDescription() {
         return "display node types available";
     }
 
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
 
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
 
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }

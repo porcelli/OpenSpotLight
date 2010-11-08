@@ -58,7 +58,7 @@ import org.openspotlight.domain.DbArtifactSource;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements RunWhenDatabaseVendorTestsIsActive {
 
     /**
@@ -67,24 +67,26 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements R
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createSqlServerDbConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource) repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     @Override
-    protected void fillDatabase( final Connection conn ) throws Exception {
+    protected void fillDatabase(final Connection conn)
+        throws Exception {
         conn.prepareStatement("CREATE TABLE example_table ( id INT,  data VARCHAR(100) ) ").execute();
         conn.prepareStatement(
                               " newPair trigger example_trigger ON example_table " + " FOR INSERT, UPDATE "
-                              + " AS RAISERROR (50009, 16, 10)").execute();
+                                  + " AS RAISERROR (50009, 16, 10)").execute();
         conn.prepareStatement("newPair view example_view as select * from example_table").execute();
         conn.prepareStatement("ALTER TABLE example_table " + " ADD CONSTRAINT example_constraint CHECK (id >= 1 )").execute();
         conn.prepareStatement(
                               " CREATE FUNCTION example_function() " + " RETURNS int " + " AS " + " BEGIN " + "  RETURN(1); "
-                              + " END ").execute();
+                                  + " END ").execute();
     }
 
     @Override
-    protected void resetDatabase( final Connection conn ) throws Exception {
+    protected void resetDatabase(final Connection conn)
+        throws Exception {
         conn.prepareStatement("drop TRIGGER example_trigger ").execute();
         conn.prepareStatement("drop view example_view ").execute();
         conn.prepareStatement("drop TABLE example_table ").execute();

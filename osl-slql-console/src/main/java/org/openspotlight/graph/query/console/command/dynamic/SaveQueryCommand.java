@@ -68,26 +68,25 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
-        String fileName = state.getInput().substring(4).trim();
-        File outputFile = new File(fileName);
+        if (!accept(state)) { return; }
+        final String fileName = state.getInput().substring(4).trim();
+        final File outputFile = new File(fileName);
         if (!outputFile.isDirectory()) {
             try {
                 outputFile.createNewFile();
-                PrintWriter fileOut = new PrintWriter(outputFile);
+                final PrintWriter fileOut = new PrintWriter(outputFile);
                 fileOut.append(state.getLastQuery());
                 fileOut.flush();
                 fileOut.close();
                 out.println("query saved.");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 out.print("ERROR: ");
                 out.println(e.getMessage());
             }
@@ -103,6 +102,7 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "save";
     }
@@ -110,6 +110,7 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return "save";
     }
@@ -117,6 +118,7 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "saves last slql query from file";
     }
@@ -124,6 +126,7 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return "save";
     }
@@ -131,6 +134,7 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return FileCompletionMode.STARTS_WITH;
     }
@@ -138,6 +142,7 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return true;
     }
@@ -145,11 +150,10 @@ public class SaveQueryCommand implements DynamicCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("save ")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("save ")) { return true; }
         return false;
     }
 }

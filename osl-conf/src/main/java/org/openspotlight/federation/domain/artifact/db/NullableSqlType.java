@@ -58,7 +58,7 @@ import java.util.Map;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "boxing" )
+@SuppressWarnings("boxing")
 public enum NullableSqlType {
 
     /**
@@ -79,7 +79,7 @@ public enum NullableSqlType {
      */
     private static final Map<Integer, NullableSqlType> nullableCache = new HashMap<Integer, NullableSqlType>();
     static {
-        for (final NullableSqlType n : values()) {
+        for (final NullableSqlType n: values()) {
             nullableCache.put(n.getSqlTypeValue(), n);
         }
     }
@@ -90,14 +90,14 @@ public enum NullableSqlType {
      * @param sqlType
      * @return the correct column type by sql int constant
      */
-    public static NullableSqlType getNullableByInt( final int sqlType ) {
+    public static NullableSqlType getNullableByInt(final int sqlType) {
         return nullableCache.get(sqlType);
     }
 
     private final int sqlTypeValue;
 
     private NullableSqlType(
-                             final int sqlTypeValue ) {
+                             final int sqlTypeValue) {
         this.sqlTypeValue = sqlTypeValue;
     }
 
@@ -105,7 +105,7 @@ public enum NullableSqlType {
      * @return the int value equivalent to {@link Types} constants
      */
     public int getSqlTypeValue() {
-        return this.sqlTypeValue;
+        return sqlTypeValue;
     }
 
 }

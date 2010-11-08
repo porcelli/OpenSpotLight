@@ -72,16 +72,16 @@ import org.openspotlight.graph.query.info.WhereStatementInfo;
 public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, SelectStatementInfoGetter {
 
     /** The select info. */
-    private SelectStatementInfo selectInfo;
+    private final SelectStatementInfo selectInfo;
 
     /** The types. */
-    private List<Type>            types;
+    private final List<Type>          types;
 
     /** The by links. */
-    private List<ByLink>          byLinks;
+    private final List<ByLink>        byLinks;
 
     /** The select end. */
-    private End                   selectEnd;
+    private final End                 selectEnd;
 
     /**
      * Instantiates a new sL select statement impl.
@@ -89,27 +89,29 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
      * @param selectFacade the select facade
      */
     public SelectStatementImpl(
-                                  SelectFacade selectFacade ) {
-        this.selectInfo = new SelectStatementInfo();
-        this.types = new ArrayList<Type>();
-        this.byLinks = new ArrayList<ByLink>();
-        this.selectEnd = new EndImpl(selectFacade, selectInfo);
+                                  final SelectFacade selectFacade) {
+        selectInfo = new SelectStatementInfo();
+        types = new ArrayList<Type>();
+        byLinks = new ArrayList<ByLink>();
+        selectEnd = new EndImpl(selectFacade, selectInfo);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public AllTypes allTypes() {
-        AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
+        final AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
         return new AllTypesImpl(this, allTypesInfo, byLinks);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        SelectTypeInfo typeInfo = selectInfo.addType(typeName);
-        Type type = new TypeImpl(this, typeInfo, byLinks);
+    @Override
+    public Type type(final String typeName) {
+        final SelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        final Type type = new TypeImpl(this, typeInfo, byLinks);
         types.add(type);
         return type;
     }
@@ -117,9 +119,10 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     /**
      * {@inheritDoc}
      */
-    public ByLink byLink( String typeName ) {
-        SelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
-        ByLink byLink = new ByLinkImpl(this, byLinkInfo);
+    @Override
+    public ByLink byLink(final String typeName) {
+        final SelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
+        final ByLink byLink = new ByLinkImpl(this, byLinkInfo);
         byLinks.add(byLink);
         return byLink;
     }
@@ -127,6 +130,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     /**
      * {@inheritDoc}
      */
+    @Override
     public End end() {
         verifyIfLastItemTerminatedWithComma();
         return selectEnd;
@@ -135,6 +139,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     /**
      * {@inheritDoc}
      */
+    @Override
     public SelectInfo getSelectInfo() {
         return selectInfo;
     }
@@ -142,6 +147,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     /**
      * {@inheritDoc}
      */
+    @Override
     public SelectStatementInfo getSelectStatementInfo() {
         return selectInfo;
     }
@@ -156,7 +162,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
      */
     private void verifyIfLastItemTerminatedWithComma() {
         int commaCount = 0;
-        for (SelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
+        for (final SelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
             commaCount += typeInfo.isComma() ? 1 : 0;
         }
     }
@@ -169,13 +175,13 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     public static class AllTypesImpl implements AllTypes {
 
         /** The select statement. */
-        private SelectStatement selectStatement;
+        private final SelectStatement selectStatement;
 
         /** The all types info. */
-        private AllTypesInfo    allTypesInfo;
+        private final AllTypesInfo    allTypesInfo;
 
         /** The by links. */
-        private List<ByLink>      byLinks;
+        private final List<ByLink>    byLinks;
 
         /**
          * Instantiates a new all types impl.
@@ -185,7 +191,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
          * @param byLinks the by links
          */
         public AllTypesImpl(
-                             SelectStatement selectStatement, AllTypesInfo allTypesInfo, List<ByLink> byLinks ) {
+                             final SelectStatement selectStatement, final AllTypesInfo allTypesInfo, final List<ByLink> byLinks) {
             this.selectStatement = selectStatement;
             this.allTypesInfo = allTypesInfo;
             this.byLinks = byLinks;
@@ -194,6 +200,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public AllTypes onWhere() {
             allTypesInfo.setOnWhere(true);
             return this;
@@ -202,9 +209,10 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
-        public ByLink byLink( String typeName ) {
-            SelectByLinkInfo byLinkInfo = allTypesInfo.getSelectStatementInfo().addByLink(typeName);
-            ByLink byLink = new ByLinkImpl(selectStatement, byLinkInfo);
+        @Override
+        public ByLink byLink(final String typeName) {
+            final SelectByLinkInfo byLinkInfo = allTypesInfo.getSelectStatementInfo().addByLink(typeName);
+            final ByLink byLink = new ByLinkImpl(selectStatement, byLinkInfo);
             byLinks.add(byLink);
             return byLink;
         }
@@ -212,6 +220,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return selectStatement.end();
         }
@@ -225,13 +234,13 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     public static class TypeImpl implements Type {
 
         /** The select statement. */
-        private SelectStatement selectStatement;
+        private final SelectStatement selectStatement;
 
         /** The type info. */
-        private SelectTypeInfo  typeInfo;
+        private final SelectTypeInfo  typeInfo;
 
         /** The by links. */
-        private List<ByLink>      byLinks;
+        private final List<ByLink>    byLinks;
 
         /**
          * Instantiates a new type impl.
@@ -240,7 +249,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
          * @param typeInfo the type info
          */
         TypeImpl(
-                  SelectStatement selectStatement, SelectTypeInfo typeInfo, List<ByLink> byLinks ) {
+                  final SelectStatement selectStatement, final SelectTypeInfo typeInfo, final List<ByLink> byLinks) {
             this.selectStatement = selectStatement;
             this.typeInfo = typeInfo;
             this.byLinks = byLinks;
@@ -249,6 +258,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement comma() {
             typeInfo.setComma(true);
             return selectStatement;
@@ -257,6 +267,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return selectStatement.end();
         }
@@ -264,6 +275,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public Type subTypes() {
             typeInfo.setSubTypes(true);
             return this;
@@ -272,9 +284,10 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
-        public ByLink byLink( String typeName ) {
-            SelectByLinkInfo byLinkInfo = typeInfo.getSelectStatementInfo().addByLink(typeName);
-            ByLink byLink = new ByLinkImpl(selectStatement, byLinkInfo);
+        @Override
+        public ByLink byLink(final String typeName) {
+            final SelectByLinkInfo byLinkInfo = typeInfo.getSelectStatementInfo().addByLink(typeName);
+            final ByLink byLink = new ByLinkImpl(selectStatement, byLinkInfo);
             byLinks.add(byLink);
             return byLink;
         }
@@ -288,16 +301,16 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     public static class EndImpl implements End {
 
         /** The select facade. */
-        private SelectFacade        selectFacade;
+        private final SelectFacade        selectFacade;
 
         /** The select info. */
-        private SelectStatementInfo selectInfo;
+        private final SelectStatementInfo selectInfo;
 
         /** The where. */
-        private WhereStatement      where;
+        private WhereStatement            where;
 
         /** The order by. */
-        private OrderByStatement    orderBy;
+        private OrderByStatement          orderBy;
 
         /**
          * Instantiates a new end impl.
@@ -306,7 +319,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
          * @param selectInfo the select info
          */
         EndImpl(
-                 SelectFacade selectFacade, SelectStatementInfo selectInfo ) {
+                 final SelectFacade selectFacade, final SelectStatementInfo selectInfo) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
 
@@ -316,11 +329,12 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public WhereStatement where() {
-            if (this.where == null) {
-                WhereStatementInfo whereStatementInfo = new WhereStatementInfo(selectInfo);
+            if (where == null) {
+                final WhereStatementInfo whereStatementInfo = new WhereStatementInfo(selectInfo);
                 selectInfo.setWhereStatementInfo(whereStatementInfo);
-                this.where = new WhereStatementImpl(selectFacade, orderBy, whereStatementInfo);
+                where = new WhereStatementImpl(selectFacade, orderBy, whereStatementInfo);
             }
             return where;
         }
@@ -328,11 +342,12 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public OrderByStatement orderBy() {
-            if (this.orderBy == null) {
-                OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
+            if (orderBy == null) {
+                final OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
                 selectInfo.setOrderByStatementInfo(orderByStatementInfo);
-                this.orderBy = new OrderByStatementImpl(selectFacade, orderByStatementInfo);
+                orderBy = new OrderByStatementImpl(selectFacade, orderByStatementInfo);
             }
             return orderBy;
         }
@@ -340,6 +355,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             selectInfo.setKeepResult(true);
             return this;
@@ -348,7 +364,8 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             selectInfo.setLimit(limit);
             return this;
         }
@@ -356,8 +373,9 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             selectInfo.setLimit(limit);
             selectInfo.setOffset(offset);
             return this;
@@ -366,6 +384,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public End executeXTimes() {
             selectInfo.setXTimes(0);
             return this;
@@ -374,7 +393,8 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
-        public End executeXTimes( Integer x ) {
+        @Override
+        public End executeXTimes(final Integer x) {
             selectInfo.setXTimes(x);
             return this;
         }
@@ -382,6 +402,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -389,6 +410,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
@@ -396,6 +418,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -403,6 +426,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }
@@ -416,10 +440,10 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
     public static class ByLinkImpl implements ByLink {
 
         /** The select. */
-        private SelectStatement  select;
+        private final SelectStatement  select;
 
         /** The by link info. */
-        private SelectByLinkInfo byLinkInfo;
+        private final SelectByLinkInfo byLinkInfo;
 
         /**
          * Instantiates a new by link impl.
@@ -428,7 +452,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
          * @param byLinkInfo the by link info
          */
         public ByLinkImpl(
-                           SelectStatement select, SelectByLinkInfo byLinkInfo ) {
+                           final SelectStatement select, final SelectByLinkInfo byLinkInfo) {
             this.select = select;
             this.byLinkInfo = byLinkInfo;
         }
@@ -436,6 +460,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public ByLink a() {
             byLinkInfo.setSide(A_SIDE);
             return this;
@@ -444,6 +469,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public ByLink b() {
             byLinkInfo.setSide(B_SIDE);
             return this;
@@ -452,6 +478,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public ByLink any() {
             byLinkInfo.setSide(ANY_SIDE);
             return this;
@@ -470,6 +497,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement comma() {
             byLinkInfo.setComma(true);
             return select;
@@ -478,6 +506,7 @@ public class SelectStatementImpl implements SelectStatement, SelectInfoGetter, S
         /**
          * {@inheritDoc}
          */
+        @Override
         public End selectEnd() {
             return select.end();
         }

@@ -59,25 +59,25 @@ import java.util.List;
 public class SelectStatementInfo extends SelectInfo {
 
     /** The Constant serialVersionUID. */
-    private static final long        serialVersionUID = 1L;
+    private static final long            serialVersionUID = 1L;
 
     /** The type info list. */
-    private List<SelectTypeInfo>   typeInfoList;
+    private final List<SelectTypeInfo>   typeInfoList;
 
     /** The by link info list. */
-    private List<SelectByLinkInfo> byLinkInfoList;
+    private final List<SelectByLinkInfo> byLinkInfoList;
 
     /** The where statement info. */
-    private WhereStatementInfo     whereStatementInfo;
+    private WhereStatementInfo           whereStatementInfo;
 
     /** The order by statement info. */
-    private OrderByStatementInfo   orderByStatementInfo;
+    private OrderByStatementInfo         orderByStatementInfo;
 
     /** The all types info. */
-    private AllTypesInfo           allTypesInfo;
+    private AllTypesInfo                 allTypesInfo;
 
     /** The collator strength. */
-    private Integer                  collatorStrength;
+    private Integer                      collatorStrength;
 
     /**
      * Instantiates a new sL select statement info.
@@ -114,8 +114,8 @@ public class SelectStatementInfo extends SelectInfo {
      * @param name the name
      * @return the sL select type info
      */
-    public SelectTypeInfo addType( String name ) {
-        SelectTypeInfo typeInfo = new SelectTypeInfo(this, name);
+    public SelectTypeInfo addType(final String name) {
+        final SelectTypeInfo typeInfo = new SelectTypeInfo(this, name);
         typeInfoList.add(typeInfo);
         return typeInfo;
     }
@@ -126,8 +126,8 @@ public class SelectStatementInfo extends SelectInfo {
      * @param name the name
      * @return the sL select by link info
      */
-    public SelectByLinkInfo addByLink( String name ) {
-        SelectByLinkInfo byLinkInfo = new SelectByLinkInfo(name);
+    public SelectByLinkInfo addByLink(final String name) {
+        final SelectByLinkInfo byLinkInfo = new SelectByLinkInfo(name);
         byLinkInfoList.add(byLinkInfo);
         return byLinkInfo;
     }
@@ -164,7 +164,7 @@ public class SelectStatementInfo extends SelectInfo {
      * 
      * @param whereStatementInfo the new where statement info
      */
-    public void setWhereStatementInfo( WhereStatementInfo whereStatementInfo ) {
+    public void setWhereStatementInfo(final WhereStatementInfo whereStatementInfo) {
         this.whereStatementInfo = whereStatementInfo;
     }
 
@@ -182,18 +182,17 @@ public class SelectStatementInfo extends SelectInfo {
      * 
      * @param collatorStrength the new collator strength
      */
-    public void setCollatorStrength( Integer collatorStrength ) {
+    public void setCollatorStrength(final Integer collatorStrength) {
         this.collatorStrength = collatorStrength;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
 
         if (allTypesInfo == null) {
             buffer.append("\nSELECT\n");
@@ -207,18 +206,26 @@ public class SelectStatementInfo extends SelectInfo {
 
         // types ...
         for (int i = 0; i < typeInfoList.size(); i++) {
-            SelectTypeInfo typeInfo = typeInfoList.get(i);
-            if (i > 0) buffer.append(",\n");
+            final SelectTypeInfo typeInfo = typeInfoList.get(i);
+            if (i > 0) {
+                buffer.append(",\n");
+            }
             buffer.append('\t').append('"').append(typeInfo.getName());
-            if (typeInfo.isSubTypes()) buffer.append(".*");
+            if (typeInfo.isSubTypes()) {
+                buffer.append(".*");
+            }
             buffer.append('"');
         }
 
         // bylink ...
         for (int i = 0; i < byLinkInfoList.size(); i++) {
-            if (i == 0) buffer.append("BY LINK \n");
-            if (i > 0) buffer.append(",\n");
-            SelectByLinkInfo byLinkTypeInfo = byLinkInfoList.get(i);
+            if (i == 0) {
+                buffer.append("BY LINK \n");
+            }
+            if (i > 0) {
+                buffer.append(",\n");
+            }
+            final SelectByLinkInfo byLinkTypeInfo = byLinkInfoList.get(i);
             buffer.append('\t').append(byLinkTypeInfo.toString());
         }
 
@@ -245,7 +252,7 @@ public class SelectStatementInfo extends SelectInfo {
         return orderByStatementInfo;
     }
 
-    public void setOrderByStatementInfo( OrderByStatementInfo orderByStatementInfo ) {
+    public void setOrderByStatementInfo(final OrderByStatementInfo orderByStatementInfo) {
         this.orderByStatementInfo = orderByStatementInfo;
     }
 }

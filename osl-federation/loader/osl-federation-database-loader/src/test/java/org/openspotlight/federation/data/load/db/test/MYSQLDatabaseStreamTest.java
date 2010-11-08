@@ -58,7 +58,7 @@ import org.openspotlight.domain.DbArtifactSource;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements RunWhenDatabaseVendorTestsIsActive {
 
     /**
@@ -67,11 +67,12 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements RunWh
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createMySqlDbConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource) repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     @Override
-    protected void fillDatabase( final Connection conn ) throws Exception {
+    protected void fillDatabase(final Connection conn)
+        throws Exception {
         // conn.prepareStatement(
         // "CREATE TABLE example_table ( id INT,  data VARCHAR(100) ) ")
         // .execute();
@@ -92,7 +93,8 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements RunWh
     }
 
     @Override
-    protected void resetDatabase( final Connection conn ) throws Exception {
+    protected void resetDatabase(final Connection conn)
+        throws Exception {
         // conn.prepareStatement("drop TRIGGER example_trigger ").execute();
         // conn.prepareStatement("drop TABLE example_table ").execute();
         // conn.prepareStatement("drop PROCEDURE example_proc ").execute();

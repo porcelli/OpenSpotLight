@@ -58,10 +58,9 @@ import org.openspotlight.federation.finder.db.ScriptType;
  * The Class SqlServerProcedureFilterNameHandler is used to filter procedure names.
  */
 public class SqlServerProcedureFilterNameHandler implements DatabaseArtifactNameHandler {
-    public String fixName( final String oldName ) {
-        if (oldName.indexOf(';') == -1) {
-            return oldName;
-        }
+    @Override
+    public String fixName(final String oldName) {
+        if (oldName.indexOf(';') == -1) { return oldName; }
         return oldName.substring(0, oldName.indexOf(';'));
 
     }
@@ -69,13 +68,13 @@ public class SqlServerProcedureFilterNameHandler implements DatabaseArtifactName
     /**
      * {@inheritDoc}
      */
-    public boolean shouldIncludeName( final String artifactName,
+    @Override
+    public boolean shouldIncludeName(final String artifactName,
                                       final ScriptType type,
-                                      final ResultSet resultSet ) throws Exception {
+                                      final ResultSet resultSet)
+        throws Exception {
         final boolean isFunction = resultSet.getString("PROCEDURE_NAME").endsWith(";0");
-        if (!isFunction) {
-            return true;
-        }
+        if (!isFunction) { return true; }
         return false;
     }
 

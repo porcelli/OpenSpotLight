@@ -59,65 +59,69 @@ import org.openspotlight.graph.query.console.command.DynamicCommand;
 
 public class ShowLinkTypesCommand implements DynamicCommand {
 
-	public boolean accept(ConsoleState state) {
-		Assertions.checkNotNull("state", state);
-		if (state.getActiveCommand() == null
-				&& state.getInput().trim().equals("show link types")) {
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null
+                && state.getInput().trim().equals("show link types")) { return true; }
+        return false;
+    }
 
-	public void execute(ConsoleReader reader, PrintWriter out,
-			ConsoleState state) {
-		Assertions.checkNotNull("reader", reader);
-		Assertions.checkNotNull("out", out);
-		Assertions.checkNotNull("state", state);
-		if (!accept(state)) {
-			return;
-		}
-		out.println("link types:");
-		if (state.getSession() == null) {
-			out.println("\t(none)");
-		} else {
-			Iterable<MetaLinkType> nodeTypes = state.getSession().getMetadata()
-					.getMetaLinkTypes();
-			if (!nodeTypes.iterator().hasNext()) {
-				out.println("\t(none)");
-			} else {
-				for (MetaLinkType linkType : nodeTypes) {
-					out.print("\t- ");
-					out.println(linkType.getTypeName());
-				}
-			}
-		}
-		out.flush();
-		state.setInput(null);
-		state.clearBuffer();
-	}
+    @Override
+    public void execute(final ConsoleReader reader, final PrintWriter out,
+                        final ConsoleState state) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
+        if (!accept(state)) { return; }
+        out.println("link types:");
+        if (state.getSession() == null) {
+            out.println("\t(none)");
+        } else {
+            final Iterable<MetaLinkType> nodeTypes = state.getSession().getMetadata()
+                    .getMetaLinkTypes();
+            if (!nodeTypes.iterator().hasNext()) {
+                out.println("\t(none)");
+            } else {
+                for (final MetaLinkType linkType: nodeTypes) {
+                    out.print("\t- ");
+                    out.println(linkType.getTypeName());
+                }
+            }
+        }
+        out.flush();
+        state.setInput(null);
+        state.clearBuffer();
+    }
 
-	public String getAutoCompleteCommand() {
-		return "show link types";
-	}
+    @Override
+    public String getAutoCompleteCommand() {
+        return "show link types";
+    }
 
-	public String getCommand() {
-		return "show link types";
-	}
+    @Override
+    public String getCommand() {
+        return "show link types";
+    }
 
-	public String getDescription() {
-		return "display link types available";
-	}
+    @Override
+    public String getDescription() {
+        return "display link types available";
+    }
 
-	public String getFileCompletionCommand() {
-		return null;
-	}
+    @Override
+    public String getFileCompletionCommand() {
+        return null;
+    }
 
-	public FileCompletionMode getFileCompletionMode() {
-		return null;
-	}
+    @Override
+    public FileCompletionMode getFileCompletionMode() {
+        return null;
+    }
 
-	public boolean hasFileCompletion() {
-		return false;
-	}
+    @Override
+    public boolean hasFileCompletion() {
+        return false;
+    }
 
 }

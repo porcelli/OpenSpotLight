@@ -72,19 +72,19 @@ public class OrderByTypeInfo implements Serializable {
     }
 
     /** The Constant serialVersionUID. */
-    private static final long      serialVersionUID = 1L;
+    private static final long    serialVersionUID = 1L;
 
     /** The type name. */
-    private String                 typeName;
+    private String               typeName;
 
     /** The sub types. */
-    private boolean                subTypes;
+    private boolean              subTypes;
 
     /** The property name. */
-    private String                 propertyName;
+    private String               propertyName;
 
     /** The order type. */
-    private OrderType              orderType        = OrderType.ASCENDING;
+    private OrderType            orderType        = OrderType.ASCENDING;
 
     /** The order by statement info. */
     private OrderByStatementInfo orderByStatementInfo;
@@ -103,7 +103,7 @@ public class OrderByTypeInfo implements Serializable {
      * 
      * @param typeName the new type name
      */
-    public void setTypeName( String typeName ) {
+    public void setTypeName(final String typeName) {
         this.typeName = typeName;
     }
 
@@ -121,7 +121,7 @@ public class OrderByTypeInfo implements Serializable {
      * 
      * @param subTypes the new sub types
      */
-    public void setSubTypes( boolean subTypes ) {
+    public void setSubTypes(final boolean subTypes) {
         this.subTypes = subTypes;
     }
 
@@ -139,7 +139,7 @@ public class OrderByTypeInfo implements Serializable {
      * 
      * @param propertyName the new property name
      */
-    public void setPropertyName( String propertyName ) {
+    public void setPropertyName(final String propertyName) {
         this.propertyName = propertyName;
     }
 
@@ -157,7 +157,7 @@ public class OrderByTypeInfo implements Serializable {
      * 
      * @param orderType the new order type
      */
-    public void setOrderType( OrderType orderType ) {
+    public void setOrderType(final OrderType orderType) {
         this.orderType = orderType;
     }
 
@@ -175,17 +175,20 @@ public class OrderByTypeInfo implements Serializable {
      * 
      * @param orderByStatementInfo the new order by statement info
      */
-    public void setOrderByStatementInfo( OrderByStatementInfo orderByStatementInfo ) {
+    public void setOrderByStatementInfo(final OrderByStatementInfo orderByStatementInfo) {
         this.orderByStatementInfo = orderByStatementInfo;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("\t").append('"').append(typeName);
-        if (subTypes) buffer.append(".*");
+        if (subTypes) {
+            buffer.append(".*");
+        }
         buffer.append("\" property \"").append(propertyName).append("\" ").append(orderType).append('\n');
 
         return buffer.toString();

@@ -63,16 +63,16 @@ import org.openspotlight.graph.query.SideType;
 public class SelectByLinkTypeInfo extends SelectInfo {
 
     /** The Constant serialVersionUID. */
-    private static final long        serialVersionUID = 1L;
+    private static final long              serialVersionUID = 1L;
 
     /** The type info list. */
-    private List<SLSelectTypeInfo>   typeInfoList;
+    private final List<SLSelectTypeInfo>   typeInfoList;
 
     /** The by link info list. */
-    private List<SLSelectByLinkInfo> byLinkInfoList;
+    private final List<SLSelectByLinkInfo> byLinkInfoList;
 
     /** The where by link type info. */
-    private WhereByLinkTypeInfo    whereByLinkTypeInfo;
+    private WhereByLinkTypeInfo            whereByLinkTypeInfo;
 
     /**
      * Instantiates a new sL select by link type info.
@@ -88,8 +88,8 @@ public class SelectByLinkTypeInfo extends SelectInfo {
      * @param name the name
      * @return the sL select type info
      */
-    public SLSelectTypeInfo addType( String name ) {
-        SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
+    public SLSelectTypeInfo addType(final String name) {
+        final SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
         typeInfoList.add(typeInfo);
         return typeInfo;
     }
@@ -100,8 +100,8 @@ public class SelectByLinkTypeInfo extends SelectInfo {
      * @param name the name
      * @return the sL select by link info
      */
-    public SLSelectByLinkInfo addByLink( String name ) {
-        SLSelectByLinkInfo byLinkInfo = new SLSelectByLinkInfo(name);
+    public SLSelectByLinkInfo addByLink(final String name) {
+        final SLSelectByLinkInfo byLinkInfo = new SLSelectByLinkInfo(name);
         byLinkInfoList.add(byLinkInfo);
         return byLinkInfo;
     }
@@ -138,44 +138,49 @@ public class SelectByLinkTypeInfo extends SelectInfo {
      * 
      * @param whereStatementInfo the new where by link type info
      */
-    public void setWhereByLinkTypeInfo( WhereByLinkTypeInfo whereStatementInfo ) {
-        this.whereByLinkTypeInfo = whereStatementInfo;
+    public void setWhereByLinkTypeInfo(final WhereByLinkTypeInfo whereStatementInfo) {
+        whereByLinkTypeInfo = whereStatementInfo;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
      */
     @Override
     public String toString() {
 
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
 
         // SELECT clause ...
         buffer.append("\nSELECT\n");
 
         // types ...
         for (int i = 0; i < typeInfoList.size(); i++) {
-            SLSelectTypeInfo typeInfo = typeInfoList.get(i);
-            if (i > 0) buffer.append(",\n");
+            final SLSelectTypeInfo typeInfo = typeInfoList.get(i);
+            if (i > 0) {
+                buffer.append(",\n");
+            }
             buffer.append('\t').append('"').append(typeInfo.getName());
-            if (typeInfo.isSubTypes()) buffer.append(".*");
+            if (typeInfo.isSubTypes()) {
+                buffer.append(".*");
+            }
             buffer.append('"');
         }
 
         // by links ...
-        int byLinkSize = byLinkInfoList.size();
+        final int byLinkSize = byLinkInfoList.size();
         if (byLinkSize > 0) {
             buffer.append("\n\tby link\n");
             for (int i = 0; i < byLinkInfoList.size(); i++) {
-                SLSelectByLinkInfo byLinkInfo = byLinkInfoList.get(i);
-                if (i > 0) buffer.append(",\n");
+                final SLSelectByLinkInfo byLinkInfo = byLinkInfoList.get(i);
+                if (i > 0) {
+                    buffer.append(",\n");
+                }
                 buffer.append("\t\t").append(byLinkInfo.getName());
 
                 // sides ...
                 buffer.append(" (");
-                SideType side = byLinkInfo.getSide();
+                final SideType side = byLinkInfo.getSide();
                 buffer.append(side.symbol());
                 buffer.append(')');
             }
@@ -213,7 +218,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * @param name the name
          */
         public SLSelectTypeInfo(
-                                 String name ) {
+                                 final String name) {
             setName(name);
         }
 
@@ -231,7 +236,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param name the new name
          */
-        public void setName( String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -249,7 +254,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param subTypes the new sub types
          */
-        public void setSubTypes( boolean subTypes ) {
+        public void setSubTypes(final boolean subTypes) {
             this.subTypes = subTypes;
         }
 
@@ -267,17 +272,16 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param comma the new comma
          */
-        public void setComma( boolean comma ) {
+        public void setComma(final boolean comma) {
             this.comma = comma;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see java.lang.Object#equalsTo(java.lang.Object)
          */
         @Override
-        public boolean equals( Object obj ) {
+        public boolean equals(final Object obj) {
             return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
         }
     }
@@ -296,7 +300,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
         private String            name;
 
         /** The side. */
-        private SideType        side;
+        private SideType          side;
 
         /** The comma. */
         private boolean           comma;
@@ -307,7 +311,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * @param name the name
          */
         SLSelectByLinkInfo(
-                            String name ) {
+                            final String name) {
             setName(name);
         }
 
@@ -325,7 +329,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param name the new name
          */
-        public void setName( String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -343,7 +347,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param comma the new comma
          */
-        public void setComma( boolean comma ) {
+        public void setComma(final boolean comma) {
             this.comma = comma;
         }
 
@@ -361,7 +365,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param side the new side
          */
-        public void setSide( SideType side ) {
+        public void setSide(final SideType side) {
             this.side = side;
         }
     }

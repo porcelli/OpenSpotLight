@@ -87,13 +87,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class DefaultSchedulerTest {
-    private GlobalSettings settings;
+    private GlobalSettings        settings;
     private ArrayList<Repository> repositories;
-    private Scheduler scheduler;
+    private Scheduler             scheduler;
 
     public static class SampleGroupSchedulableCommand implements SchedulableTaskFactory<Group> {
         public static AtomicBoolean wasExecuted = new AtomicBoolean(false);
-        public static AtomicInteger counter = new AtomicInteger(0);
+        public static AtomicInteger counter     = new AtomicInteger(0);
 
         @Override
         public SchedulerTask[] createTasks(final Group schedulable, final ExecutionContextFactory factory) {
@@ -105,7 +105,8 @@ public class DefaultSchedulerTest {
                 }
 
                 @Override
-                public Void call() throws Exception {
+                public Void call()
+                    throws Exception {
                     wasExecuted.set(true);
                     counter.incrementAndGet();
                     return null;
@@ -114,19 +115,17 @@ public class DefaultSchedulerTest {
         }
     }
 
-
     private boolean runned = false;
-
 
     @Before
     public void setupScheduler() {
 
         if (!runned) {
-            Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
+            final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
             schedulableMap.put(Group.class, SampleGroupSchedulableCommand.class);
-            List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
+            final List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
             loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-            Injector injector = Guice.createInjector(
+            final Injector injector = Guice.createInjector(
                     new SchedulerModule(schedulableMap), new ExecutionContextModule(loaderRegistry),
                     new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                             ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
@@ -165,7 +164,6 @@ public class DefaultSchedulerTest {
         resetStatus();
 
     }
-    
 
     public void resetStatus() {
         SampleGroupSchedulableCommand.wasExecuted.set(false);
@@ -176,7 +174,8 @@ public class DefaultSchedulerTest {
     }
 
     @Test
-    public void shouldStartCronJobs() throws Exception {
+    public void shouldStartCronJobs()
+        throws Exception {
         final Group group = repositories.iterator().next().getGroups().iterator().next();
         try {
             group.getCronInformation().add("0/1 * * * * ?");
@@ -191,18 +190,16 @@ public class DefaultSchedulerTest {
     }
 
     @Test
-    public void shouldStartImediateJob() throws Exception {
+    public void shouldStartImediateJob()
+        throws Exception {
         System.err.println("method");
 
         scheduler.fireSchedulable("username", "password", repositories.iterator().next().getGroups().iterator().next());
         for (int i = 0; i < 20; i++) {
-            if (SampleGroupSchedulableCommand.wasExecuted.get()) {
-                return;
-            }
+            if (SampleGroupSchedulableCommand.wasExecuted.get()) { return; }
             Thread.sleep(100);
         }
         Assert.fail("Didn't execute in 20 seconds!");
     }
-
 
 }

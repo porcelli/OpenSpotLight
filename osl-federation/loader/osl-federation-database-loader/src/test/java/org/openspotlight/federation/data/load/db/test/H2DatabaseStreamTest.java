@@ -60,11 +60,12 @@ import org.openspotlight.domain.DbArtifactSource;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class H2DatabaseStreamTest extends DatabaseStreamTest {
 
     @Before
-    public void cleanDatabaseFiles() throws Exception {
+    public void cleanDatabaseFiles()
+        throws Exception {
         delete("./target/test-data/H2DatabaseStreamTest"); //$NON-NLS-1$
     }
 
@@ -74,14 +75,15 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource) repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void fillDatabase( final Connection conn ) throws Exception {
+    protected void fillDatabase(final Connection conn)
+        throws Exception {
         H2Support.fillDatabaseArtifacts(conn);
     }
 

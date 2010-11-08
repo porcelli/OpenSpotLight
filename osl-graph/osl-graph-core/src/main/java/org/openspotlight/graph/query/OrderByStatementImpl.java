@@ -61,10 +61,10 @@ import org.openspotlight.graph.query.info.SelectStatementInfo;
 public class OrderByStatementImpl implements OrderByStatement {
 
     /** The select facade. */
-    private SelectFacade         selectFacade;
+    private final SelectFacade         selectFacade;
 
     /** The order by statement info. */
-    private OrderByStatementInfo orderByStatementInfo;
+    private final OrderByStatementInfo orderByStatementInfo;
 
     /**
      * Instantiates a new sL order by statement impl.
@@ -73,7 +73,7 @@ public class OrderByStatementImpl implements OrderByStatement {
      * @param orderByStatementInfo the order by statement info
      */
     public OrderByStatementImpl(
-                                   SelectFacade selectFacade, OrderByStatementInfo orderByStatementInfo ) {
+                                   final SelectFacade selectFacade, final OrderByStatementInfo orderByStatementInfo) {
         this.selectFacade = selectFacade;
         this.orderByStatementInfo = orderByStatementInfo;
     }
@@ -81,8 +81,9 @@ public class OrderByStatementImpl implements OrderByStatement {
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        OrderByTypeInfo typeInfo = new OrderByTypeInfo();
+    @Override
+    public Type type(final String typeName) {
+        final OrderByTypeInfo typeInfo = new OrderByTypeInfo();
         typeInfo.setOrderByStatementInfo(orderByStatementInfo);
         typeInfo.setTypeName(typeName);
         orderByStatementInfo.getOrderByTypeInfoList().add(typeInfo);
@@ -92,6 +93,7 @@ public class OrderByStatementImpl implements OrderByStatement {
     /**
      * {@inheritDoc}
      */
+    @Override
     public End orderByEnd() {
         return new EndImpl(selectFacade, orderByStatementInfo.getSelectStatementInfo());
     }
@@ -104,13 +106,13 @@ public class OrderByStatementImpl implements OrderByStatement {
     public static class TypeImpl implements Type {
 
         /** The order by statement. */
-        private OrderByStatement orderByStatement;
+        private final OrderByStatement orderByStatement;
 
         /** The select facade. */
-        private SelectFacade     selectFacade;
+        private final SelectFacade     selectFacade;
 
         /** The type info. */
-        private OrderByTypeInfo  typeInfo;
+        private final OrderByTypeInfo  typeInfo;
 
         /**
          * Instantiates a new type impl.
@@ -120,7 +122,7 @@ public class OrderByStatementImpl implements OrderByStatement {
          * @param typeInfo the type info
          */
         public TypeImpl(
-                         OrderByStatement orderByStatement, SelectFacade selectFacade, OrderByTypeInfo typeInfo ) {
+                         final OrderByStatement orderByStatement, final SelectFacade selectFacade, final OrderByTypeInfo typeInfo) {
             this.orderByStatement = orderByStatement;
             this.selectFacade = selectFacade;
             this.typeInfo = typeInfo;
@@ -129,6 +131,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Type subTypes() {
             typeInfo.setSubTypes(true);
             return this;
@@ -137,7 +140,8 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
-        public Property property( String name ) {
+        @Override
+        public Property property(final String name) {
             typeInfo.setPropertyName(name);
             return new PropertyImpl(orderByStatement, selectFacade, typeInfo);
         }
@@ -150,13 +154,13 @@ public class OrderByStatementImpl implements OrderByStatement {
         public static class PropertyImpl implements Property {
 
             /** The order by statement. */
-            OrderByStatement        orderByStatement;
+            OrderByStatement              orderByStatement;
 
             /** The select facade. */
-            private SelectFacade    selectFacade;
+            private final SelectFacade    selectFacade;
 
             /** The type info. */
-            private OrderByTypeInfo typeInfo;
+            private final OrderByTypeInfo typeInfo;
 
             /**
              * Instantiates a new property impl.
@@ -166,7 +170,8 @@ public class OrderByStatementImpl implements OrderByStatement {
              * @param typeInfo the type info
              */
             public PropertyImpl(
-                                 OrderByStatement orderByStatement, SelectFacade selectFacade, OrderByTypeInfo typeInfo ) {
+                                 final OrderByStatement orderByStatement, final SelectFacade selectFacade,
+                                final OrderByTypeInfo typeInfo) {
                 this.selectFacade = selectFacade;
                 this.typeInfo = typeInfo;
                 this.orderByStatement = orderByStatement;
@@ -175,6 +180,7 @@ public class OrderByStatementImpl implements OrderByStatement {
             /**
              * {@inheritDoc}
              */
+            @Override
             public OrderByStatement ascending() {
                 typeInfo.setOrderType(OrderType.ASCENDING);
                 return orderByStatement;
@@ -183,6 +189,7 @@ public class OrderByStatementImpl implements OrderByStatement {
             /**
              * {@inheritDoc}
              */
+            @Override
             public OrderByStatement descending() {
                 typeInfo.setOrderType(OrderType.DESCENDING);
                 return orderByStatement;
@@ -191,6 +198,7 @@ public class OrderByStatementImpl implements OrderByStatement {
             /**
              * {@inheritDoc}
              */
+            @Override
             public End orderByEnd() {
                 return new EndImpl(selectFacade, typeInfo.getOrderByStatementInfo().getSelectStatementInfo());
             }
@@ -205,10 +213,10 @@ public class OrderByStatementImpl implements OrderByStatement {
     public static class EndImpl implements End {
 
         /** The select facade. */
-        private SelectFacade        selectFacade;
+        private final SelectFacade        selectFacade;
 
         /** The select statement info. */
-        private SelectStatementInfo selectStatementInfo;
+        private final SelectStatementInfo selectStatementInfo;
 
         /**
          * Instantiates a new end impl.
@@ -217,7 +225,7 @@ public class OrderByStatementImpl implements OrderByStatement {
          * @param selectStatementInfo the select statement info
          */
         public EndImpl(
-                        SelectFacade selectFacade, SelectStatementInfo selectStatementInfo ) {
+                        final SelectFacade selectFacade, final SelectStatementInfo selectStatementInfo) {
             this.selectFacade = selectFacade;
             this.selectStatementInfo = selectStatementInfo;
         }
@@ -225,7 +233,8 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
-        public End collator( int strength ) {
+        @Override
+        public End collator(final int strength) {
             selectStatementInfo.setCollatorStrength(strength);
             return this;
         }
@@ -233,6 +242,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public End executeXTimes() {
             selectStatementInfo.setXTimes(0);
             return this;
@@ -241,7 +251,8 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
-        public End executeXTimes( int x ) {
+        @Override
+        public End executeXTimes(final int x) {
             selectStatementInfo.setXTimes(x);
             return null;
         }
@@ -249,6 +260,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             selectStatementInfo.setKeepResult(true);
             return this;
@@ -257,7 +269,8 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             selectStatementInfo.setLimit(limit);
             return this;
         }
@@ -265,8 +278,9 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             selectStatementInfo.setLimit(limit);
             selectStatementInfo.setOffset(offset);
             return this;
@@ -275,6 +289,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }
@@ -282,6 +297,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -289,6 +305,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -296,6 +313,7 @@ public class OrderByStatementImpl implements OrderByStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }

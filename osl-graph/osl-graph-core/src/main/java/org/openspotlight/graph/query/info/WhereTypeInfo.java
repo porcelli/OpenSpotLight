@@ -86,7 +86,7 @@ public class WhereTypeInfo implements Serializable {
      * @param name the name
      */
     public WhereTypeInfo(
-                            String name ) {
+                            final String name) {
         this.name = name;
     }
 
@@ -104,7 +104,7 @@ public class WhereTypeInfo implements Serializable {
      * 
      * @param name the new name
      */
-    public void setName( String name ) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -122,7 +122,7 @@ public class WhereTypeInfo implements Serializable {
      * 
      * @param subTypes the new sub types
      */
-    public void setSubTypes( boolean subTypes ) {
+    public void setSubTypes(final boolean subTypes) {
         this.subTypes = subTypes;
     }
 
@@ -140,13 +140,12 @@ public class WhereTypeInfo implements Serializable {
      * 
      * @param whereStatementInfo the new type statement info
      */
-    public void setTypeStatementInfo( SLTypeStatementInfo whereStatementInfo ) {
-        this.typeStatementInfo = whereStatementInfo;
+    public void setTypeStatementInfo(final SLTypeStatementInfo whereStatementInfo) {
+        typeStatementInfo = whereStatementInfo;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -165,7 +164,7 @@ public class WhereTypeInfo implements Serializable {
         private static final long         serialVersionUID = 1L;
 
         /** The type info. */
-        private WhereTypeInfo           typeInfo;
+        private WhereTypeInfo             typeInfo;
 
         /** The condition info list. */
         private List<SLTypeConditionInfo> conditionInfoList;
@@ -188,7 +187,7 @@ public class WhereTypeInfo implements Serializable {
          * @param typeInfo the type info
          */
         public SLTypeStatementInfo(
-                                    WhereTypeInfo typeInfo, SLTypeStatementInfo outerStatementInfo ) {
+                                    final WhereTypeInfo typeInfo, final SLTypeStatementInfo outerStatementInfo) {
             setOpened(true);
             conditionInfoList = new ArrayList<SLTypeConditionInfo>();
             this.typeInfo = typeInfo;
@@ -225,7 +224,7 @@ public class WhereTypeInfo implements Serializable {
          * 
          * @param typeInfo the new type info
          */
-        public void setTypeInfo( WhereTypeInfo typeInfo ) {
+        public void setTypeInfo(final WhereTypeInfo typeInfo) {
             this.typeInfo = typeInfo;
         }
 
@@ -235,7 +234,7 @@ public class WhereTypeInfo implements Serializable {
          * @return the sL type condition info
          */
         public SLTypeConditionInfo addCondition() {
-            SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo);
+            final SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo);
             conditionInfoList.add(conditionInfo);
             conditionInfo.setOuterStatementInfo(this);
             return conditionInfo;
@@ -247,8 +246,8 @@ public class WhereTypeInfo implements Serializable {
          * @param operator the operator
          * @return the sL type condition info
          */
-        public SLTypeConditionInfo addCondition( ConditionalOperatorType operator ) {
-            SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo, operator);
+        public SLTypeConditionInfo addCondition(final ConditionalOperatorType operator) {
+            final SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo, operator);
             conditionInfoList.add(conditionInfo);
             conditionInfo.setOuterStatementInfo(this);
             return conditionInfo;
@@ -268,8 +267,8 @@ public class WhereTypeInfo implements Serializable {
          * 
          * @param conditionalInfoList the new condition info list
          */
-        public void setConditionInfoList( List<SLTypeConditionInfo> conditionalInfoList ) {
-            this.conditionInfoList = conditionalInfoList;
+        public void setConditionInfoList(final List<SLTypeConditionInfo> conditionalInfoList) {
+            conditionInfoList = conditionalInfoList;
         }
 
         /**
@@ -286,7 +285,7 @@ public class WhereTypeInfo implements Serializable {
          * 
          * @param closed the new closed
          */
-        public void setClosed( boolean closed ) {
+        public void setClosed(final boolean closed) {
             this.closed = closed;
         }
 
@@ -304,18 +303,17 @@ public class WhereTypeInfo implements Serializable {
          * 
          * @param opened the new opened
          */
-        public void setOpened( boolean opened ) {
+        public void setOpened(final boolean opened) {
             this.opened = opened;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see java.lang.Object#toString()
          */
         @Override
         public String toString() {
-            StringBuilder buffer = new StringBuilder();
+            final StringBuilder buffer = new StringBuilder();
             printWhereStatement(buffer, this, 1);
             return buffer.toString();
         }
@@ -327,12 +325,12 @@ public class WhereTypeInfo implements Serializable {
          * @param statementInfo the statement info
          * @param tabLevel the tab level
          */
-        private void printWhereStatement( StringBuilder buffer,
-                                          SLTypeStatementInfo statementInfo,
-                                          int tabLevel ) {
+        private void printWhereStatement(final StringBuilder buffer,
+                                          final SLTypeStatementInfo statementInfo,
+                                          final int tabLevel) {
             for (int i = 0; i < statementInfo.conditionInfoList.size(); i++) {
-                SLTypeConditionInfo conditionInfo = statementInfo.conditionInfoList.get(i);
-                String tabs = StringUtils.repeat("\t", tabLevel);
+                final SLTypeConditionInfo conditionInfo = statementInfo.conditionInfoList.get(i);
+                final String tabs = StringUtils.repeat("\t", tabLevel);
                 append(buffer, tabs, conditionInfo);
                 if (conditionInfo.getInnerStatementInfo() != null) {
                     append(buffer, '(', '\n');
@@ -352,7 +350,7 @@ public class WhereTypeInfo implements Serializable {
         public static class SLTypeConditionInfo implements Serializable {
 
             /** The Constant serialVersionUID. */
-            private static final long         serialVersionUID = 1L;
+            private static final long       serialVersionUID = 1L;
 
             /** The type info. */
             private WhereTypeInfo           typeInfo;
@@ -364,31 +362,31 @@ public class WhereTypeInfo implements Serializable {
             private ConditionalOperatorType conditionalOperator;
 
             /** The inner statement info. */
-            private SLTypeStatementInfo       innerStatementInfo;
+            private SLTypeStatementInfo     innerStatementInfo;
 
             /** The outer statement info. */
-            private SLTypeStatementInfo       outerStatementInfo;
+            private SLTypeStatementInfo     outerStatementInfo;
 
             /** The side. */
             private SideType                side;
 
             /** The property name. */
-            private String                    propertyName;
+            private String                  propertyName;
 
             /** The link type name. */
-            private String                    linkTypeName;
+            private String                  linkTypeName;
 
             /** The value. */
-            private Object                    value;
+            private Object                  value;
 
             /** The closed. */
-            private boolean                   closed;
+            private boolean                 closed;
 
             /** The relational not operator. */
-            private boolean                   relationalNotOperator;
+            private boolean                 relationalNotOperator;
 
             /** The conditional not operator. */
-            private boolean                   conditionalNotOperator;
+            private boolean                 conditionalNotOperator;
 
             /**
              * Instantiates a new sL type condition info.
@@ -396,7 +394,7 @@ public class WhereTypeInfo implements Serializable {
              * @param typeInfo the type info
              */
             public SLTypeConditionInfo(
-                                        WhereTypeInfo typeInfo ) {
+                                        final WhereTypeInfo typeInfo) {
                 this(typeInfo, null);
             }
 
@@ -407,7 +405,7 @@ public class WhereTypeInfo implements Serializable {
              * @param conditionalOperator the conditional operator
              */
             public SLTypeConditionInfo(
-                                        WhereTypeInfo typeInfo, ConditionalOperatorType conditionalOperator ) {
+                                        final WhereTypeInfo typeInfo, final ConditionalOperatorType conditionalOperator) {
                 this.typeInfo = typeInfo;
                 this.conditionalOperator = conditionalOperator;
             }
@@ -426,7 +424,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param propertyName the new property name
              */
-            public void setPropertyName( String propertyName ) {
+            public void setPropertyName(final String propertyName) {
                 this.propertyName = propertyName;
             }
 
@@ -444,7 +442,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param value the new value
              */
-            public void setValue( Object value ) {
+            public void setValue(final Object value) {
                 this.value = value;
                 setClosed(true);
             }
@@ -463,7 +461,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param side the new side
              */
-            public void setSide( SideType side ) {
+            public void setSide(final SideType side) {
                 this.side = side;
             }
 
@@ -481,7 +479,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param linkTypeName the new link type name
              */
-            public void setLinkTypeName( String linkTypeName ) {
+            public void setLinkTypeName(final String linkTypeName) {
                 this.linkTypeName = linkTypeName;
             }
 
@@ -499,8 +497,8 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param statementInfo the new inner statement info
              */
-            public void setInnerStatementInfo( SLTypeStatementInfo statementInfo ) {
-                this.innerStatementInfo = statementInfo;
+            public void setInnerStatementInfo(final SLTypeStatementInfo statementInfo) {
+                innerStatementInfo = statementInfo;
             }
 
             /**
@@ -517,7 +515,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param closed the new closed
              */
-            public void setClosed( boolean closed ) {
+            public void setClosed(final boolean closed) {
                 this.closed = closed;
             }
 
@@ -535,7 +533,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param relationalOperator the new relational operator
              */
-            public void setRelationalOperator( RelationalOperatorType relationalOperator ) {
+            public void setRelationalOperator(final RelationalOperatorType relationalOperator) {
                 this.relationalOperator = relationalOperator;
             }
 
@@ -553,7 +551,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param conditionalOperator the new conditional operator
              */
-            public void setConditionalOperator( ConditionalOperatorType conditionalOperator ) {
+            public void setConditionalOperator(final ConditionalOperatorType conditionalOperator) {
                 this.conditionalOperator = conditionalOperator;
             }
 
@@ -571,7 +569,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param outerStatementInfo the new outer statement info
              */
-            public void setOuterStatementInfo( SLTypeStatementInfo outerStatementInfo ) {
+            public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
                 this.outerStatementInfo = outerStatementInfo;
             }
 
@@ -589,22 +587,21 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param typeInfo the new type info
              */
-            public void setTypeInfo( WhereTypeInfo typeInfo ) {
+            public void setTypeInfo(final WhereTypeInfo typeInfo) {
                 this.typeInfo = typeInfo;
             }
 
             /*
              * (non-Javadoc)
-             * 
              * @see java.lang.Object#toString()
              */
             @Override
             public String toString() {
 
-                String typeName = typeInfo.getName();
-                boolean subTypes = typeInfo.isSubTypes();
+                final String typeName = typeInfo.getName();
+                final boolean subTypes = typeInfo.isSubTypes();
 
-                StringBuilder buffer = new StringBuilder();
+                final StringBuilder buffer = new StringBuilder();
                 appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
                 appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
                 appendIfNotNull(buffer, propertyName, "property \"", propertyName, "\" ");
@@ -636,7 +633,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param relationalNotOperator the new relational not operator
              */
-            public void setRelationalNotOperator( boolean relationalNotOperator ) {
+            public void setRelationalNotOperator(final boolean relationalNotOperator) {
                 this.relationalNotOperator = relationalNotOperator;
             }
 
@@ -654,7 +651,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param conditionalNotOperator the new conditional not operator
              */
-            public void setConditionalNotOperator( boolean conditionalNotOperator ) {
+            public void setConditionalNotOperator(final boolean conditionalNotOperator) {
                 this.conditionalNotOperator = conditionalNotOperator;
             }
         }
@@ -663,7 +660,7 @@ public class WhereTypeInfo implements Serializable {
             return outerStatementInfo;
         }
 
-        public void setOuterStatementInfo( SLTypeStatementInfo outerStatementInfo ) {
+        public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
             this.outerStatementInfo = outerStatementInfo;
         }
     }

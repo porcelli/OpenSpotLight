@@ -43,7 +43,6 @@ public interface Element extends BaseIdentifer {
      */
     public abstract String getContextId();
 
-    
     /**
      * Returns the type name, that is a simple shortcut for getClass().getName();
      * 
@@ -68,5 +67,4 @@ public interface Element extends BaseIdentifer {
                               String statement,
                               String artifactId);
 
-    
 }

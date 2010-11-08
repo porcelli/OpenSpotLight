@@ -49,9 +49,10 @@
 package org.openspotlight.graph.query.console.test.domain;
 
 import org.openspotlight.graph.Node;
+
 /**
  * The Interface JavaPackage.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class JavaPackage extends Node{}
+public abstract class JavaPackage extends Node {}

@@ -57,7 +57,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "database" )
+@Name("database")
 public class RoutineArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
     private static final long     serialVersionUID = 3060861243165317562L;
 
@@ -69,11 +69,9 @@ public class RoutineArtifact extends DatabaseCustomArtifact implements SimpleNod
     private Set<RoutineParameter> parameters       = new HashSet<RoutineParameter>();
 
     @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!(other instanceof RoutineArtifact)) {
-            return false;
-        }
-        final RoutineArtifact that = (RoutineArtifact)other;
+    public boolean contentEquals(final Artifact other) {
+        if (!(other instanceof RoutineArtifact)) { return false; }
+        final RoutineArtifact that = (RoutineArtifact) other;
         return Equals.eachEquality(getParameters(), that.getParameters());
     }
 
@@ -97,23 +95,23 @@ public class RoutineArtifact extends DatabaseCustomArtifact implements SimpleNod
         return type;
     }
 
-    public void setCatalogName( final String catalogName ) {
+    public void setCatalogName(final String catalogName) {
         this.catalogName = catalogName;
     }
 
-    public void setParameters( final Set<RoutineParameter> parameters ) {
+    public void setParameters(final Set<RoutineParameter> parameters) {
         this.parameters = parameters;
     }
 
-    public void setSchemaName( final String schemaName ) {
+    public void setSchemaName(final String schemaName) {
         this.schemaName = schemaName;
     }
 
-    public void setTableName( final String tableName ) {
+    public void setTableName(final String tableName) {
         this.tableName = tableName;
     }
 
-    public void setType( final RoutineType type ) {
+    public void setType(final RoutineType type) {
         this.type = type;
     }
 

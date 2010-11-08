@@ -95,6 +95,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * (non-Javadoc)
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof ArtifactSourceMapping)) { return false; }
         final ArtifactSourceMapping that = (ArtifactSourceMapping) o;
@@ -153,6 +154,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public synchronized int hashCode() {
         int result = hashCode;
         if (result == 0) {
@@ -211,7 +213,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
         return tasks;
     }
 
-    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
         this.tasks = tasks;
     }
 

@@ -56,34 +56,34 @@ import org.openspotlight.graph.Node;
  * @author Vitor Hugo Chagas
  */
 public abstract class JavaType extends Node {
-	
-	private Float decValue;
-	
-	public Float getDecValue() {
-		return decValue;
-	}
 
-	public void setDecValue(Float decValue) {
-		this.decValue = decValue;
-	}
+    private Float decValue;
 
-	public Boolean getBoolValue() {
-		return boolValue;
-	}
+    public Float getDecValue() {
+        return decValue;
+    }
 
-	public void setBoolValue(Boolean boolValue) {
-		this.boolValue = boolValue;
-	}
+    public void setDecValue(final Float decValue) {
+        this.decValue = decValue;
+    }
 
-	public Integer getIntValue() {
-		return intValue;
-	}
+    public Boolean getBoolValue() {
+        return boolValue;
+    }
 
-	public void setIntValue(Integer intValue) {
-		this.intValue = intValue;
-	}
+    public void setBoolValue(final Boolean boolValue) {
+        this.boolValue = boolValue;
+    }
 
-	private Boolean boolValue;
-	
-	private Integer intValue;
+    public Integer getIntValue() {
+        return intValue;
+    }
+
+    public void setIntValue(final Integer intValue) {
+        this.intValue = intValue;
+    }
+
+    private Boolean boolValue;
+
+    private Integer intValue;
 }

@@ -109,7 +109,7 @@ public class QueryTextInternalInfo {
      * @return the bool variables
      */
     public Set<String> getBoolVariables() {
-        return this.boolVariables;
+        return boolVariables;
     }
 
     /**
@@ -118,7 +118,7 @@ public class QueryTextInternalInfo {
      * @return the content
      */
     public String getContent() {
-        return this.content;
+        return content;
     }
 
     /**
@@ -127,7 +127,7 @@ public class QueryTextInternalInfo {
      * @return the dec variables
      */
     public Set<String> getDecVariables() {
-        return this.decVariables;
+        return decVariables;
     }
 
     /**
@@ -136,7 +136,7 @@ public class QueryTextInternalInfo {
      * @return the define target content
      */
     public String getDefineTargetContent() {
-        return this.defineTargetContent;
+        return defineTargetContent;
     }
 
     /**
@@ -145,7 +145,7 @@ public class QueryTextInternalInfo {
      * @return the domain variables
      */
     public Map<String, Set<Serializable>> getDomainVariables() {
-        return this.domainVariables;
+        return domainVariables;
     }
 
     /**
@@ -154,7 +154,7 @@ public class QueryTextInternalInfo {
      * @return the unique query id
      */
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -163,7 +163,7 @@ public class QueryTextInternalInfo {
      * @return the int variables
      */
     public Set<String> getIntVariables() {
-        return this.intVariables;
+        return intVariables;
     }
 
     /**
@@ -172,7 +172,7 @@ public class QueryTextInternalInfo {
      * @return the message variables
      */
     public Map<String, String> getMessageVariables() {
-        return this.messageVariables;
+        return messageVariables;
     }
 
     /**
@@ -181,7 +181,7 @@ public class QueryTextInternalInfo {
      * @return the output model name
      */
     public String getOutputModelName() {
-        return this.outputModelName;
+        return outputModelName;
     }
 
     /**
@@ -190,7 +190,7 @@ public class QueryTextInternalInfo {
      * @return the string variables
      */
     public Set<String> getStringVariables() {
-        return this.stringVariables;
+        return stringVariables;
     }
 
     /**
@@ -199,7 +199,7 @@ public class QueryTextInternalInfo {
      * @return the target unique id
      */
     public String getTargetUniqueId() {
-        return this.targetUniqueId;
+        return targetUniqueId;
     }
 
     /**
@@ -208,9 +208,7 @@ public class QueryTextInternalInfo {
      * @return true, if has output model
      */
     public boolean hasOutputModel() {
-        if (this.outputModelName == null) {
-            return false;
-        }
+        if (outputModelName == null) { return false; }
         return true;
     }
 
@@ -220,7 +218,7 @@ public class QueryTextInternalInfo {
      * @return true, if has target
      */
     public boolean hasTarget() {
-        return this.hasTarget;
+        return hasTarget;
     }
 
     /**
@@ -229,10 +227,8 @@ public class QueryTextInternalInfo {
      * @return true, if has variables
      */
     public boolean hasVariables() {
-        if (this.intVariables.size() == 0 && this.decVariables.size() == 0 && this.boolVariables.size() == 0
-            && this.stringVariables.size() == 0) {
-            return false;
-        }
+        if (intVariables.size() == 0 && decVariables.size() == 0 && boolVariables.size() == 0
+            && stringVariables.size() == 0) { return false; }
         return true;
     }
 
@@ -242,7 +238,7 @@ public class QueryTextInternalInfo {
      * @return true, if is checks for target
      */
     public boolean isHasTarget() {
-        return this.hasTarget;
+        return hasTarget;
     }
 
     /**
@@ -251,7 +247,7 @@ public class QueryTextInternalInfo {
      * @return true, if is target keeps result
      */
     public boolean isTargetKeepsResult() {
-        return this.targetKeepsResult;
+        return targetKeepsResult;
     }
 
     /**
@@ -259,7 +255,7 @@ public class QueryTextInternalInfo {
      * 
      * @param boolVariables the new bool variables
      */
-    public void setBoolVariables( final Set<String> boolVariables ) {
+    public void setBoolVariables(final Set<String> boolVariables) {
         this.boolVariables = boolVariables;
     }
 
@@ -268,7 +264,7 @@ public class QueryTextInternalInfo {
      * 
      * @param content the new content
      */
-    public void setContent( final String content ) {
+    public void setContent(final String content) {
         this.content = content;
     }
 
@@ -277,7 +273,7 @@ public class QueryTextInternalInfo {
      * 
      * @param decVariables the new dec variables
      */
-    public void setDecVariables( final Set<String> decVariables ) {
+    public void setDecVariables(final Set<String> decVariables) {
         this.decVariables = decVariables;
     }
 
@@ -286,7 +282,7 @@ public class QueryTextInternalInfo {
      * 
      * @param defineTargetContent the new define target content
      */
-    public void setDefineTargetContent( final String defineTargetContent ) {
+    public void setDefineTargetContent(final String defineTargetContent) {
         this.defineTargetContent = defineTargetContent;
     }
 
@@ -295,7 +291,7 @@ public class QueryTextInternalInfo {
      * 
      * @param domainVariables the domain variables
      */
-    public void setDomainVariables( final Map<String, Set<Serializable>> domainVariables ) {
+    public void setDomainVariables(final Map<String, Set<Serializable>> domainVariables) {
         this.domainVariables = domainVariables;
     }
 
@@ -304,7 +300,7 @@ public class QueryTextInternalInfo {
      * 
      * @param hasTarget the new checks for target
      */
-    public void setHasTarget( final boolean hasTarget ) {
+    public void setHasTarget(final boolean hasTarget) {
         this.hasTarget = hasTarget;
     }
 
@@ -313,7 +309,7 @@ public class QueryTextInternalInfo {
      * 
      * @param id the new id
      */
-    public void setId( final String id ) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -322,7 +318,7 @@ public class QueryTextInternalInfo {
      * 
      * @param intVariables the new int variables
      */
-    public void setIntVariables( final Set<String> intVariables ) {
+    public void setIntVariables(final Set<String> intVariables) {
         this.intVariables = intVariables;
     }
 
@@ -331,7 +327,7 @@ public class QueryTextInternalInfo {
      * 
      * @param messageVariables the message variables
      */
-    public void setMessageVariables( final Map<String, String> messageVariables ) {
+    public void setMessageVariables(final Map<String, String> messageVariables) {
         this.messageVariables = messageVariables;
     }
 
@@ -340,7 +336,7 @@ public class QueryTextInternalInfo {
      * 
      * @param outputModelName the new output model name
      */
-    public void setOutputModelName( final String outputModelName ) {
+    public void setOutputModelName(final String outputModelName) {
         this.outputModelName = outputModelName;
     }
 
@@ -349,7 +345,7 @@ public class QueryTextInternalInfo {
      * 
      * @param stringVariables the new string variables
      */
-    public void setStringVariables( final Set<String> stringVariables ) {
+    public void setStringVariables(final Set<String> stringVariables) {
         this.stringVariables = stringVariables;
     }
 
@@ -358,7 +354,7 @@ public class QueryTextInternalInfo {
      * 
      * @param targetKeepsResult the new target keeps result
      */
-    public void setTargetKeepsResult( final boolean targetKeepsResult ) {
+    public void setTargetKeepsResult(final boolean targetKeepsResult) {
         this.targetKeepsResult = targetKeepsResult;
     }
 
@@ -367,7 +363,7 @@ public class QueryTextInternalInfo {
      * 
      * @param targetUniqueId the new target unique id
      */
-    public void setTargetUniqueId( final String targetUniqueId ) {
+    public void setTargetUniqueId(final String targetUniqueId) {
         this.targetUniqueId = targetUniqueId;
     }
 
@@ -385,7 +381,7 @@ public class QueryTextInternalInfo {
      * 
      * @param stringsConstant the strings constant
      */
-    public void setStringsConstant( Map<Integer, String> stringsConstant ) {
+    public void setStringsConstant(final Map<Integer, String> stringsConstant) {
         this.stringsConstant = stringsConstant;
     }
 }

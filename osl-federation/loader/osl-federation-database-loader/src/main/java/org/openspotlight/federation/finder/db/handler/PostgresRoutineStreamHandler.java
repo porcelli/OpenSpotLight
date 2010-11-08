@@ -65,24 +65,27 @@ public class PostgresRoutineStreamHandler implements DatabaseStreamHandler {
     /**
      * {@inheritDoc}
      */
-    public byte[] afterStreamProcessing( final String schema,
+    @Override
+    public byte[] afterStreamProcessing(final String schema,
                                          final ScriptType type,
                                          final String catalog,
                                          final String name,
                                          final byte[] loadedData,
-                                         final Connection connection ) {
+                                         final Connection connection) {
         return loadedData;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void beforeFillTemplate( final String schema,
+    @Override
+    public void beforeFillTemplate(final String schema,
                                     final ScriptType type,
                                     final String catalog,
                                     final String name,
                                     final StringTemplate template,
-                                    final Connection connection ) throws Exception {
+                                    final Connection connection)
+        throws Exception {
 
         final ResultSet parameterResultSet = connection.getMetaData().getProcedureColumns(catalog, schema, name, "*");
         try {
@@ -119,7 +122,5 @@ public class PostgresRoutineStreamHandler implements DatabaseStreamHandler {
             }
         }
     }
-
-
 
 }

@@ -362,8 +362,7 @@ public class NodeAndLinkSupport {
         StorageLink linkEntry = null;
         Node origin, target;
 
-        if (rawOrigin.compareTo(rawTarget) == 0)
-            throw new IllegalStateException();
+        if (rawOrigin.compareTo(rawTarget) == 0) { throw new IllegalStateException(); }
 
         if (LinkDirection.BIDIRECTIONAL.equals(direction)
                 && rawOrigin.compareTo(rawTarget) < 0) {
@@ -379,15 +378,14 @@ public class NodeAndLinkSupport {
                     .findNodeByStringKey(origin.getId());
             final StorageNode targetAsSTNode = session
                     .findNodeByStringKey(target.getId());
-            if (originAsSTNode == null && createIfDontExists)
-                throw new IllegalStateException();
+            if (originAsSTNode == null && createIfDontExists) { throw new IllegalStateException(); }
             if (originAsSTNode != null) {
                 if (clazz.isAnnotationPresent(LinkAutoBidirectional.class)
                         && LinkDirection.UNIDIRECTIONAL.equals(direction)) {
 
-                    StorageLink possibleLink = session.getLink(targetAsSTNode,
+                    final StorageLink possibleLink = session.getLink(targetAsSTNode,
                             originAsSTNode, clazz.getName());
-                    StorageLink anotherPossibleLink = session.getLink(
+                    final StorageLink anotherPossibleLink = session.getLink(
                             originAsSTNode, targetAsSTNode, clazz.getName());
                     if (possibleLink != null && anotherPossibleLink != null) { throw new IllegalStateException(); }
                     if (possibleLink != null
@@ -424,12 +422,13 @@ public class NodeAndLinkSupport {
                 linkEntry = session.getLink(originAsSTNode, targetAsSTNode,
                         clazz.getName());
                 if (linkEntry == null) {
-                    if (createIfDontExists)
+                    if (createIfDontExists) {
                         linkEntry = session.addLink(originAsSTNode,
                                 targetAsSTNode, clazz.getName());
+                    }
                     if (linkEntry != null) {
                         if (LinkDirection.BIDIRECTIONAL.equals(direction)) {
-                            InputStream objectAsStream = targetAsSTNode
+                            final InputStream objectAsStream = targetAsSTNode
                                     .getPropertyValueAsStream(session,
                                             BIDIRECTIONAL_LINK_IDS);
                             List<String> linkIds;
@@ -495,32 +494,38 @@ public class NodeAndLinkSupport {
             PropertyContainerMetadata<StorageLink>,
             PropertyContainerLineReferenceData {
 
+        @Override
         public String getContextId() {
             return propertyContainerImpl.getContextId();
         }
 
+        @Override
         public Iterable<ArtifactLineReference> getCachedLineReference(
-                                                                      String artifactId) {
+                                                                      final String artifactId) {
             return propertyContainerImpl.getCachedLineReference(artifactId);
         }
 
-        public void setCachedLineReference(String artifactId,
-                                           Iterable<ArtifactLineReference> newLineReference) {
+        @Override
+        public void setCachedLineReference(final String artifactId,
+                                           final Iterable<ArtifactLineReference> newLineReference) {
             propertyContainerImpl.setCachedLineReference(artifactId,
                     newLineReference);
         }
 
+        @Override
         public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
             return propertyContainerImpl.getNewLineReferenceData();
         }
 
+        @Override
         public String toString() {
-            return "<" + this.linkDirection.name().substring(0, 3) + "> Link["
+            return "<" + linkDirection.name().substring(0, 3) + "> Link["
                     + getId() + "]";
         }
 
         private LinkDirection linkDirection = LinkDirection.UNIDIRECTIONAL;
 
+        @Override
         public LinkDirection getLinkDirection() {
             return linkDirection;
         }
@@ -559,7 +564,7 @@ public class NodeAndLinkSupport {
         @Override
         public boolean equals(final Object obj) {
             if (!(obj instanceof Link)) { return false; }
-            Link that = (Link) obj;
+            final Link that = (Link) obj;
             return getId().equals(that.getId());
         }
 
@@ -678,7 +683,7 @@ public class NodeAndLinkSupport {
 
         @Override
         public boolean isBidirectional() {
-            return this.linkDirection.equals(LinkDirection.BIDIRECTIONAL);
+            return linkDirection.equals(LinkDirection.BIDIRECTIONAL);
         }
 
         @Override
@@ -700,11 +705,11 @@ public class NodeAndLinkSupport {
 
         @Override
         public StorageLink getCached() {
-            return this.cachedEntry != null ? cachedEntry.get() : null;
+            return cachedEntry != null ? cachedEntry.get() : null;
         }
 
         @Override
-        public void setCached(StorageLink entry) {
+        public void setCached(final StorageLink entry) {
             cachedEntry = new WeakReference<StorageLink>(
                     entry);
 
@@ -712,7 +717,7 @@ public class NodeAndLinkSupport {
 
         @Override
         public PropertyContainerImpl getPropertyContainerImpl() {
-            return this.propertyContainerImpl;
+            return propertyContainerImpl;
         }
 
     }
@@ -758,7 +763,7 @@ public class NodeAndLinkSupport {
                                      final Map<String, Class<? extends Serializable>> propertyTypes,
                                      final Map<String, Serializable> propertyValues,
                                      final int initialWeigthValue, final int weightValue,
-                                     String contextId) {
+                                     final String contextId) {
             dirty = new AtomicBoolean();
             this.typeName = typeName;
             initialWeightValue = initialWeigthValue;
@@ -902,31 +907,29 @@ public class NodeAndLinkSupport {
 
         @Override
         public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
-            return this.lineReferenceNewData;
+            return lineReferenceNewData;
         }
 
         @Override
         public Iterable<ArtifactLineReference> getCachedLineReference(
-                                                                      String artifactId) {
-            Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
+                                                                      final String artifactId) {
+            final Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
                     : treeLineReference.get();
-            if (cache == null)
-                return null;
-            if (artifactId != null)
-                return cache.get(artifactId);
-            if (cache.isEmpty())
-                return null;
-            Builder<ArtifactLineReference> builder = ImmutableSet.builder();
-            for (Iterable<ArtifactLineReference> val: cache.values()) {
-                for (ArtifactLineReference r: val)
+            if (cache == null) { return null; }
+            if (artifactId != null) { return cache.get(artifactId); }
+            if (cache.isEmpty()) { return null; }
+            final Builder<ArtifactLineReference> builder = ImmutableSet.builder();
+            for (final Iterable<ArtifactLineReference> val: cache.values()) {
+                for (final ArtifactLineReference r: val) {
                     builder.add(r);
+                }
             }
             return builder.build();
         }
 
         @Override
-        public void setCachedLineReference(String artifactId,
-                                           Iterable<ArtifactLineReference> newLineReference) {
+        public void setCachedLineReference(final String artifactId,
+                                           final Iterable<ArtifactLineReference> newLineReference) {
             Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
                     : treeLineReference.get();
             if (cache == null) {
@@ -949,19 +952,22 @@ public class NodeAndLinkSupport {
             PropertyContainerMetadata<StorageNode>,
             PropertyContainerLineReferenceData {
 
+        @Override
         public Iterable<ArtifactLineReference> getCachedLineReference(
-                                                                      String artifactId) {
+                                                                      final String artifactId) {
             return propertyContainerImpl.getCachedLineReference(artifactId);
         }
 
-        public void setCachedLineReference(String artifactId,
-                                           Iterable<ArtifactLineReference> newLineReference) {
+        @Override
+        public void setCachedLineReference(final String artifactId,
+                                           final Iterable<ArtifactLineReference> newLineReference) {
             propertyContainerImpl.setCachedLineReference(artifactId,
                     newLineReference);
         }
 
         private final PropertyContainerImpl propertyContainerImpl;
 
+        @Override
         public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
             return propertyContainerImpl.getNewLineReferenceData();
         }
@@ -1155,7 +1161,7 @@ public class NodeAndLinkSupport {
 
         @Override
         public PropertyContainerImpl getPropertyContainerImpl() {
-            return this.propertyContainerImpl;
+            return propertyContainerImpl;
         }
 
     }
@@ -1244,15 +1250,15 @@ public class NodeAndLinkSupport {
 
     private static final String LINEREF_SUFIX = "_lineRef";
 
-    public static void writeTreeLineReference(StorageSession session,
-                                              PartitionFactory factory, Element e) {
-        TreeLineReference treeLineReferences = getTreeLineReferences(session,
+    public static void writeTreeLineReference(final StorageSession session,
+                                              final PartitionFactory factory, final Element e) {
+        final TreeLineReference treeLineReferences = getTreeLineReferences(session,
                 factory, e, null);
-        Partition lineRefPartition = factory.getPartitionByName(e
+        final Partition lineRefPartition = factory.getPartitionByName(e
                 .getContextId() + LINEREF_SUFIX);
-        StorageNode lineRefNode = session.withPartition(lineRefPartition)
+        final StorageNode lineRefNode = session.withPartition(lineRefPartition)
                 .createNewSimpleNode(e.getId());
-        for (ArtifactLineReference artifactLineReference: treeLineReferences
+        for (final ArtifactLineReference artifactLineReference: treeLineReferences
                 .getArtifacts()) {
             lineRefNode.setSimpleProperty(session,
                     artifactLineReference.getArtifactId(),
@@ -1261,28 +1267,30 @@ public class NodeAndLinkSupport {
     }
 
     public static TreeLineReference getTreeLineReferences(
-                                                          StorageSession session, PartitionFactory factory, Element e,
-                                                          String artifactId) {
-        PropertyContainerImpl asPropertyContainer = ((PropertyContainerMetadata<?>) e)
+                                                          final StorageSession session, final PartitionFactory factory,
+                                                          final Element e,
+                                                          final String artifactId) {
+        final PropertyContainerImpl asPropertyContainer = ((PropertyContainerMetadata<?>) e)
                 .getPropertyContainerImpl();
         Iterable<ArtifactLineReference> cached = asPropertyContainer
                 .getCachedLineReference(artifactId);
         if (cached == null) {
-            Partition lineRefPartition = factory.getPartitionByName(e
+            final Partition lineRefPartition = factory.getPartitionByName(e
                     .getContextId() + LINEREF_SUFIX);
-            StorageNode lineRefNode = session.withPartition(lineRefPartition)
+            final StorageNode lineRefNode = session.withPartition(lineRefPartition)
                     .createNewSimpleNode(e.getId());
-            Set<String> artifactIds = artifactId != null ? ImmutableSet
+            final Set<String> artifactIds = artifactId != null ? ImmutableSet
                     .of(artifactId) : lineRefNode.getPropertyNames(session);
 
-            Map<String, Iterable<ArtifactLineReference>> newCacheData = new HashMap<String, Iterable<ArtifactLineReference>>();
-            for (String currentArtifactId: artifactIds) {
-                InputStream stream = lineRefNode.getPropertyValueAsStream(session,
+            final Map<String, Iterable<ArtifactLineReference>> newCacheData =
+                new HashMap<String, Iterable<ArtifactLineReference>>();
+            for (final String currentArtifactId: artifactIds) {
+                final InputStream stream = lineRefNode.getPropertyValueAsStream(session,
                         currentArtifactId);
                 if (stream != null) {
-                    ArtifactLineReference artifactLineReference = SerializationUtil
+                    final ArtifactLineReference artifactLineReference = SerializationUtil
                             .deserialize(stream);
-                    ImmutableSet<ArtifactLineReference> set = ImmutableSet
+                    final ImmutableSet<ArtifactLineReference> set = ImmutableSet
                             .of(artifactLineReference);
                     newCacheData.put(currentArtifactId, set);
                     asPropertyContainer.setCachedLineReference(

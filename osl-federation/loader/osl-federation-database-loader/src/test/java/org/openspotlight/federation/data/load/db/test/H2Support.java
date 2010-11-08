@@ -50,25 +50,26 @@ package org.openspotlight.federation.data.load.db.test;
 
 import java.sql.Connection;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class H2Support {
-    public static void fillDatabaseArtifacts( final Connection conn ) throws Exception {
+    public static void fillDatabaseArtifacts(final Connection conn)
+        throws Exception {
         conn.prepareStatement(
                               "newPair alias exampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\"") //$NON-NLS-1$
-        .execute();
+            .execute();
         conn.prepareStatement(
                               "newPair alias exampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\" ") //$NON-NLS-1$
-        .execute();
+            .execute();
         conn.prepareStatement(
                               "newPair table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
-        .execute();
+            .execute();
         conn.prepareStatement("newPair index exampleIndex on exampleTable(i)") //$NON-NLS-1$
-        .execute();
+            .execute();
         conn.prepareStatement(
                               "newPair trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"") //$NON-NLS-1$
-        .execute();
+            .execute();
         conn.prepareStatement(
                               "newPair view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable") //$NON-NLS-1$
-        .execute();
+            .execute();
     }
 }

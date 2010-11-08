@@ -61,24 +61,25 @@ import org.slf4j.Logger;
  */
 public abstract class SLLexer extends Lexer {
 
-    public SLLexer() {
-    }
+    public SLLexer() {}
 
     public SLLexer(
-                    CharStream input ) {
+                    final CharStream input) {
         super(input);
     }
 
     public SLLexer(
-                    CharStream input, RecognizerSharedState state ) {
+                    final CharStream input, final RecognizerSharedState state) {
         super(input, state);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Token emit() {
-        SLCommonToken t = new SLCommonToken(input, state.type, state.channel, state.tokenStartCharIndex, getCharIndex() - 1);
+        final SLCommonToken t =
+            new SLCommonToken(input, state.type, state.channel, state.tokenStartCharIndex, getCharIndex() - 1);
         t.setLine(state.tokenStartLine);
         t.setCharPositionInLine(state.tokenStartCharPositionInLine);
         t.setEndCharPositionInLine(input.getCharPositionInLine());
@@ -91,7 +92,8 @@ public abstract class SLLexer extends Lexer {
     /**
      * {@inheritDoc}
      */
-    public void emitErrorMessage( String msg ) {
+    @Override
+    public void emitErrorMessage(final String msg) {
         getLogger().warn(msg);
     }
 

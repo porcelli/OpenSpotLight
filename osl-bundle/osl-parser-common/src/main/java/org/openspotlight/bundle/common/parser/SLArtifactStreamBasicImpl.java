@@ -59,25 +59,27 @@ public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements SLAr
     private final String version;
 
     public SLArtifactStreamBasicImpl(
-                                      final String fedaratedArtifactPath, final List<String> artifactContent, final String version )
+                                      final String fedaratedArtifactPath, final List<String> artifactContent, final String version)
         throws IOException {
-        this.name = fedaratedArtifactPath;
-        StringBuilder builder = new StringBuilder();
-        for(String s: artifactContent){
+        name = fedaratedArtifactPath;
+        final StringBuilder builder = new StringBuilder();
+        for (final String s: artifactContent) {
             builder.append(s);
             builder.append('\n');
         }
 
-        this.data = builder.toString().toCharArray();
+        data = builder.toString().toCharArray();
         this.version = version;
         n = artifactContent.size();
-        this.lineCount = artifactContent.size();
+        lineCount = artifactContent.size();
     }
 
+    @Override
     public int getPhysicalLineCount() {
         return lineCount;
     }
 
+    @Override
     public String getVersion() {
         return version;
     }

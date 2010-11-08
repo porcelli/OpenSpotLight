@@ -60,7 +60,7 @@ import org.openspotlight.common.util.Conversion;
 
 /**
  * Test class for {@link Conversion}.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings("all")

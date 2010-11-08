@@ -14,7 +14,8 @@ import com.google.inject.Module;
 public class JRedisFileSystemLoadingStressTest extends AbstractFileSystemLoadingStressTest {
 
     @Override
-    protected void clearData() throws Exception{
+    protected void clearData()
+        throws Exception {
         injector.getInstance(JRedisFactory.class).getFrom(RegularPartitions.FEDERATION).flushall();
 
     }

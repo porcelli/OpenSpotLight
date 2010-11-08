@@ -66,10 +66,10 @@ import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo.SLTy
 public class WhereStatementImpl implements WhereStatement {
 
     /** The end. */
-    private End                  end;
+    private final End                end;
 
     /** The where statement info. */
-    private WhereStatementInfo whereStatementInfo;
+    private final WhereStatementInfo whereStatementInfo;
 
     /**
      * Instantiates a new sL where statement impl.
@@ -79,7 +79,8 @@ public class WhereStatementImpl implements WhereStatement {
      * @param whereStatementInfo the where statement info
      */
     public WhereStatementImpl(
-                                 SelectFacade selectFacade, OrderByStatement orderBy, WhereStatementInfo whereStatementInfo ) {
+                                 final SelectFacade selectFacade, final OrderByStatement orderBy,
+                              final WhereStatementInfo whereStatementInfo) {
         this(new EndImpl(selectFacade, whereStatementInfo, orderBy), whereStatementInfo);
     }
 
@@ -90,7 +91,7 @@ public class WhereStatementImpl implements WhereStatement {
      * @param whereStatementInfo the where statement info
      */
     public WhereStatementImpl(
-                                 End end, WhereStatementInfo whereStatementInfo ) {
+                                 final End end, final WhereStatementInfo whereStatementInfo) {
         this.end = end;
         this.whereStatementInfo = whereStatementInfo;
     }
@@ -107,8 +108,9 @@ public class WhereStatementImpl implements WhereStatement {
     /**
      * {@inheritDoc}
      */
-    public Type type( String typeName ) {
-        WhereTypeInfo typeInfo = new WhereTypeInfo(typeName);
+    @Override
+    public Type type(final String typeName) {
+        final WhereTypeInfo typeInfo = new WhereTypeInfo(typeName);
         whereStatementInfo.getWhereTypeInfoList().add(typeInfo);
         return new TypeImpl(this, typeInfo);
     }
@@ -116,8 +118,9 @@ public class WhereStatementImpl implements WhereStatement {
     /**
      * {@inheritDoc}
      */
-    public LinkType linkType( String typeName ) {
-        WhereLinkTypeInfo linkTypeInfo = new WhereLinkTypeInfo(typeName);
+    @Override
+    public LinkType linkType(final String typeName) {
+        final WhereLinkTypeInfo linkTypeInfo = new WhereLinkTypeInfo(typeName);
         whereStatementInfo.getWhereLinkTypeInfoList().add(linkTypeInfo);
         return new LinkTypeImpl(this, linkTypeInfo);
     }
@@ -125,6 +128,7 @@ public class WhereStatementImpl implements WhereStatement {
     /**
      * {@inheritDoc}
      */
+    @Override
     public End whereEnd() {
         return end;
     }
@@ -138,13 +142,13 @@ public class WhereStatementImpl implements WhereStatement {
     public static class EndImpl implements End {
 
         /** The where statement info. */
-        private WhereStatementInfo whereStatementInfo;
+        private final WhereStatementInfo whereStatementInfo;
 
         /** The order by statement. */
-        private OrderByStatement   orderByStatement;
+        private OrderByStatement         orderByStatement;
 
         /** The select facade. */
-        private SelectFacade       selectFacade;
+        private final SelectFacade       selectFacade;
 
         /**
          * Instantiates a new end impl.
@@ -154,7 +158,8 @@ public class WhereStatementImpl implements WhereStatement {
          * @param orderByStatement the order by statement
          */
         public EndImpl(
-                        SelectFacade selectFacade, WhereStatementInfo whereStatementInfo, OrderByStatement orderByStatement ) {
+                        final SelectFacade selectFacade, final WhereStatementInfo whereStatementInfo,
+                       final OrderByStatement orderByStatement) {
             this.selectFacade = selectFacade;
             this.whereStatementInfo = whereStatementInfo;
             this.orderByStatement = orderByStatement;
@@ -163,10 +168,11 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public OrderByStatement orderBy() {
             if (orderByStatement == null) {
-                SelectStatementInfo selectInfo = whereStatementInfo.getSelectStatementInfo();
-                OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
+                final SelectStatementInfo selectInfo = whereStatementInfo.getSelectStatementInfo();
+                final OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
                 selectInfo.setOrderByStatementInfo(orderByStatementInfo);
                 orderByStatement = new OrderByStatementImpl(selectFacade, orderByStatementInfo);
             }
@@ -176,6 +182,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public End keepResult() {
             whereStatementInfo.getSelectStatementInfo().setKeepResult(true);
             return this;
@@ -184,7 +191,8 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             whereStatementInfo.getSelectStatementInfo().setLimit(limit);
             return this;
         }
@@ -192,8 +200,9 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             whereStatementInfo.getSelectStatementInfo().setLimit(limit);
             whereStatementInfo.getSelectStatementInfo().setOffset(offset);
             return this;
@@ -202,6 +211,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public End executeXTimes() {
             whereStatementInfo.getSelectStatementInfo().setXTimes(0);
             return this;
@@ -210,7 +220,8 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
-        public End executeXTimes( int x ) {
+        @Override
+        public End executeXTimes(final int x) {
             whereStatementInfo.getSelectStatementInfo().setXTimes(x);
             return this;
         }
@@ -218,7 +229,8 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
-        public End collator( int strength ) {
+        @Override
+        public End collator(final int strength) {
             whereStatementInfo.getSelectStatementInfo().setCollatorStrength(strength);
             return this;
         }
@@ -226,6 +238,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
@@ -233,6 +246,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
@@ -240,6 +254,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
@@ -247,6 +262,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SelectStatement select() {
             return selectFacade.select();
         }
@@ -260,10 +276,10 @@ public class WhereStatementImpl implements WhereStatement {
     public static class TypeImpl implements Type {
 
         /** The where statement. */
-        private WhereStatement whereStatement;
+        private final WhereStatement whereStatement;
 
         /** The type info. */
-        private WhereTypeInfo  typeInfo;
+        private final WhereTypeInfo  typeInfo;
 
         /**
          * Instantiates a new type impl.
@@ -272,7 +288,7 @@ public class WhereStatementImpl implements WhereStatement {
          * @param typeInfo the type info
          */
         public TypeImpl(
-                         WhereStatement whereStatement, WhereTypeInfo typeInfo ) {
+                         final WhereStatement whereStatement, final WhereTypeInfo typeInfo) {
             this.whereStatement = whereStatement;
             this.typeInfo = typeInfo;
         }
@@ -280,6 +296,7 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public SubTypes subTypes() {
             typeInfo.setSubTypes(true);
             return new SubTypesImpl(whereStatement, typeInfo);
@@ -288,10 +305,11 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Each each() {
-            SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
+            final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
             typeInfo.setTypeStatementInfo(whereStatementInfo);
-            SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
+            final SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
             return new EachImpl(whereStatement, conditionInfo);
         }
 
@@ -303,10 +321,10 @@ public class WhereStatementImpl implements WhereStatement {
         public static class SubTypesImpl implements SubTypes {
 
             /** The where statement. */
-            private WhereStatement whereStatement;
+            private final WhereStatement whereStatement;
 
             /** The type info. */
-            private WhereTypeInfo  typeInfo;
+            private final WhereTypeInfo  typeInfo;
 
             /**
              * Instantiates a new sub types impl.
@@ -315,7 +333,7 @@ public class WhereStatementImpl implements WhereStatement {
              * @param typeInfo the type info
              */
             public SubTypesImpl(
-                                 WhereStatement whereStatement, WhereTypeInfo typeInfo ) {
+                                 final WhereStatement whereStatement, final WhereTypeInfo typeInfo) {
                 this.whereStatement = whereStatement;
                 this.typeInfo = typeInfo;
             }
@@ -323,10 +341,11 @@ public class WhereStatementImpl implements WhereStatement {
             /**
              * {@inheritDoc}
              */
+            @Override
             public Each each() {
-                SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
+                final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
                 typeInfo.setTypeStatementInfo(whereStatementInfo);
-                SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
+                final SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
                 return new EachImpl(whereStatement, conditionInfo);
             }
         }
@@ -339,13 +358,13 @@ public class WhereStatementImpl implements WhereStatement {
         public static class EachImpl implements Each, OuterEachGetter<Each> {
 
             /** The where statement. */
-            private WhereStatement    whereStatement;
+            private final WhereStatement      whereStatement;
 
             /** The condition info. */
-            private SLTypeConditionInfo conditionInfo;
+            private final SLTypeConditionInfo conditionInfo;
 
             /** The outer each. */
-            private Each                outerEach;
+            private final Each                outerEach;
 
             /**
              * Instantiates a new each impl.
@@ -354,7 +373,7 @@ public class WhereStatementImpl implements WhereStatement {
              * @param conditionInfo the condition info
              */
             public EachImpl(
-                             WhereStatement whereStatement, SLTypeConditionInfo conditionInfo ) {
+                             final WhereStatement whereStatement, final SLTypeConditionInfo conditionInfo) {
                 this(whereStatement, conditionInfo, null);
             }
 
@@ -366,7 +385,7 @@ public class WhereStatementImpl implements WhereStatement {
              * @param outerEach the outer each
              */
             public EachImpl(
-                             WhereStatement whereStatement, SLTypeConditionInfo conditionInfo, Each outerEach ) {
+                             final WhereStatement whereStatement, final SLTypeConditionInfo conditionInfo, final Each outerEach) {
                 this.whereStatement = whereStatement;
                 this.conditionInfo = conditionInfo;
                 this.outerEach = outerEach;
@@ -375,6 +394,7 @@ public class WhereStatementImpl implements WhereStatement {
             /**
              * {@inheritDoc}
              */
+            @Override
             public Each getOuterEach() {
                 return outerEach;
             }
@@ -382,7 +402,8 @@ public class WhereStatementImpl implements WhereStatement {
             /**
              * {@inheritDoc}
              */
-            public Property property( String name ) {
+            @Override
+            public Property property(final String name) {
                 conditionInfo.setPropertyName(name);
                 return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
             }
@@ -390,7 +411,8 @@ public class WhereStatementImpl implements WhereStatement {
             /**
              * {@inheritDoc}
              */
-            public Link link( String name ) {
+            @Override
+            public Link link(final String name) {
                 conditionInfo.setLinkTypeName(name);
                 return new LinkImpl(whereStatement, this, outerEach, conditionInfo);
             }
@@ -403,16 +425,16 @@ public class WhereStatementImpl implements WhereStatement {
             public static class LinkImpl implements Link {
 
                 /** The where statement. */
-                private WhereStatement    whereStatement;
+                private final WhereStatement      whereStatement;
 
                 /** The each. */
-                private Each                each;
+                private final Each                each;
 
                 /** The outer each. */
-                private Each                outerEach;
+                private final Each                outerEach;
 
                 /** The condition info. */
-                private SLTypeConditionInfo conditionInfo;
+                private final SLTypeConditionInfo conditionInfo;
 
                 /**
                  * Instantiates a new link impl.
@@ -423,7 +445,8 @@ public class WhereStatementImpl implements WhereStatement {
                  * @param conditionInfo the condition info
                  */
                 public LinkImpl(
-                                 WhereStatement whereStatement, Each each, Each outerEach, SLTypeConditionInfo conditionInfo ) {
+                                 final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                final SLTypeConditionInfo conditionInfo) {
                     this.whereStatement = whereStatement;
                     this.each = each;
                     this.outerEach = outerEach;
@@ -433,6 +456,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Side a() {
                     conditionInfo.setSide(SideType.A_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
@@ -441,6 +465,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Side b() {
                     conditionInfo.setSide(SideType.B_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
@@ -454,16 +479,16 @@ public class WhereStatementImpl implements WhereStatement {
                 public static class SideImpl implements Side {
 
                     /** The where statement. */
-                    private WhereStatement    whereStatement;
+                    private final WhereStatement      whereStatement;
 
                     /** The each. */
-                    private Each                each;
+                    private final Each                each;
 
                     /** The outer each. */
-                    private Each                outerEach;
+                    private final Each                outerEach;
 
                     /** The condition info. */
-                    private SLTypeConditionInfo conditionInfo;
+                    private final SLTypeConditionInfo conditionInfo;
 
                     /**
                      * Instantiates a new side impl.
@@ -474,7 +499,8 @@ public class WhereStatementImpl implements WhereStatement {
                      * @param conditionInfo the condition info
                      */
                     public SideImpl(
-                                     WhereStatement whereStatement, Each each, Each outerEach, SLTypeConditionInfo conditionInfo ) {
+                                     final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                    final SLTypeConditionInfo conditionInfo) {
                         this.whereStatement = whereStatement;
                         this.each = each;
                         this.outerEach = outerEach;
@@ -484,6 +510,7 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
+                    @Override
                     public Count count() {
                         return new CountImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -496,16 +523,16 @@ public class WhereStatementImpl implements WhereStatement {
                     public static class CountImpl implements Count {
 
                         /** The each. */
-                        private Each                each;
+                        private final Each                each;
 
                         /** The outer each. */
-                        private Each                outerEach;
+                        private final Each                outerEach;
 
                         /** The where statement. */
-                        private WhereStatement    whereStatement;
+                        private final WhereStatement      whereStatement;
 
                         /** The condition info. */
-                        private SLTypeConditionInfo conditionInfo;
+                        private final SLTypeConditionInfo conditionInfo;
 
                         /**
                          * Instantiates a new count impl.
@@ -516,8 +543,8 @@ public class WhereStatementImpl implements WhereStatement {
                          * @param conditionInfo the condition info
                          */
                         public CountImpl(
-                                          WhereStatement whereStatement, Each each, Each outerEach,
-                                          SLTypeConditionInfo conditionInfo ) {
+                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                          final SLTypeConditionInfo conditionInfo) {
                             this.each = each;
                             this.whereStatement = whereStatement;
                             this.conditionInfo = conditionInfo;
@@ -527,6 +554,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Count not() {
                             conditionInfo.setRelationalNotOperator(true);
                             return this;
@@ -535,6 +563,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator lesserThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -543,6 +572,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator greaterThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -551,6 +581,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator equalsTo() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -559,6 +590,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator lesserOrEqualThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -567,6 +599,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public Operator greaterOrEqualThan() {
                             conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -574,10 +607,7 @@ public class WhereStatementImpl implements WhereStatement {
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereStatement.Type
-                         * .Each.Property#contains()
+                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#contains()
                          */
                         /**
                          * Contains.
@@ -591,10 +621,7 @@ public class WhereStatementImpl implements WhereStatement {
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereStatement.Type
-                         * .Each.Property#startsWith()
+                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#startsWith()
                          */
                         /**
                          * Starts with.
@@ -608,10 +635,7 @@ public class WhereStatementImpl implements WhereStatement {
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereStatement.Type
-                         * .Each.Property#endsWith()
+                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#endsWith()
                          */
                         /**
                          * Ends with.
@@ -631,16 +655,16 @@ public class WhereStatementImpl implements WhereStatement {
                         public static class OperatorImpl implements Operator {
 
                             /** The each. */
-                            private Each                each;
+                            private final Each                each;
 
                             /** The outer each. */
-                            private Each                outerEach;
+                            private final Each                outerEach;
 
                             /** The where statement. */
-                            private WhereStatement    whereStatement;
+                            private final WhereStatement      whereStatement;
 
                             /** The condition info. */
-                            private SLTypeConditionInfo conditionInfo;
+                            private final SLTypeConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new operator impl.
@@ -651,8 +675,8 @@ public class WhereStatementImpl implements WhereStatement {
                              * @param conditionInfo the condition info
                              */
                             public OperatorImpl(
-                                                 WhereStatement whereStatement, Each each, Each outerEach,
-                                                 SLTypeConditionInfo conditionInfo ) {
+                                                 final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                                 final SLTypeConditionInfo conditionInfo) {
                                 this.each = each;
                                 this.outerEach = outerEach;
                                 this.whereStatement = whereStatement;
@@ -662,7 +686,8 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
-                            public Value value( Integer value ) {
+                            @Override
+                            public Value value(final Integer value) {
                                 conditionInfo.setValue(value);
                                 return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                             }
@@ -675,16 +700,16 @@ public class WhereStatementImpl implements WhereStatement {
                             public static class ValueImpl implements Value {
 
                                 /** The each. */
-                                private Each                each;
+                                private final Each                each;
 
                                 /** The outer each. */
-                                private Each                outerEach;
+                                private final Each                outerEach;
 
                                 /** The where statement. */
-                                private WhereStatement    whereStatement;
+                                private final WhereStatement      whereStatement;
 
                                 /** The condition info. */
-                                private SLTypeConditionInfo conditionInfo;
+                                private final SLTypeConditionInfo conditionInfo;
 
                                 /**
                                  * Instantiates a new value impl.
@@ -695,8 +720,8 @@ public class WhereStatementImpl implements WhereStatement {
                                  * @param conditionInfo the condition info
                                  */
                                 public ValueImpl(
-                                                  WhereStatement whereStatement, Each each, Each outerEach,
-                                                  SLTypeConditionInfo conditionInfo ) {
+                                                  final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                                  final SLTypeConditionInfo conditionInfo) {
                                     this.each = each;
                                     this.outerEach = outerEach;
                                     this.whereStatement = whereStatement;
@@ -706,6 +731,7 @@ public class WhereStatementImpl implements WhereStatement {
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public WhereStatement typeEnd() {
                                     conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
                                     return whereStatement;
@@ -714,28 +740,33 @@ public class WhereStatementImpl implements WhereStatement {
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public RelationalOperator or() {
-                                    SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                    SLTypeConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                    Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLTypeConditionInfo newConditionInfo =
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                                     return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                                 }
 
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public RelationalOperator and() {
-                                    SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                    SLTypeConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                    Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLTypeConditionInfo newConditionInfo =
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                                     return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                                 }
 
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public CloseBracket closeBracket() {
-                                    SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
                                     statementInfo.setClosed(true);
                                     return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
                                 }
@@ -748,13 +779,13 @@ public class WhereStatementImpl implements WhereStatement {
                                 public static class RelationalOperatorImpl implements RelationalOperator {
 
                                     /** The each. */
-                                    private Each                each;
+                                    private final Each                each;
 
                                     /** The where statement. */
-                                    private WhereStatement    whereStatement;
+                                    private final WhereStatement      whereStatement;
 
                                     /** The condition info. */
-                                    private SLTypeConditionInfo conditionInfo;
+                                    private final SLTypeConditionInfo conditionInfo;
 
                                     /**
                                      * Instantiates a new relational operator impl.
@@ -764,8 +795,8 @@ public class WhereStatementImpl implements WhereStatement {
                                      * @param conditionInfo the condition info
                                      */
                                     public RelationalOperatorImpl(
-                                                                   WhereStatement whereStatement, Each each,
-                                                                   SLTypeConditionInfo conditionInfo ) {
+                                                                   final WhereStatement whereStatement, final Each each,
+                                                                   final SLTypeConditionInfo conditionInfo) {
                                         this.each = each;
                                         this.whereStatement = whereStatement;
                                         this.conditionInfo = conditionInfo;
@@ -774,6 +805,7 @@ public class WhereStatementImpl implements WhereStatement {
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public RelationalOperator not() {
                                         conditionInfo.setConditionalNotOperator(true);
                                         return this;
@@ -782,27 +814,33 @@ public class WhereStatementImpl implements WhereStatement {
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public WhereStatement comma() {
-                                        return this.whereStatement;
+                                        return whereStatement;
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public Each each() {
-                                        return this.each;
+                                        return each;
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public OpenBracket openBracket() {
-                                        SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(
-                                                                                                       conditionInfo.getTypeInfo(),
-                                                                                                       conditionInfo.getOuterStatementInfo());
+                                        final SLTypeStatementInfo newStatementInfo =
+                                            new SLTypeStatementInfo(
+                                                                                                       conditionInfo
+                                                                                                           .getTypeInfo(),
+                                                                                                       conditionInfo
+                                                                                                           .getOuterStatementInfo());
                                         conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                        SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                        Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                        final SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                        final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
                                         return new OpenBracketImpl(each);
                                     }
 
@@ -814,7 +852,7 @@ public class WhereStatementImpl implements WhereStatement {
                                     public static class OpenBracketImpl implements OpenBracket {
 
                                         /** The each. */
-                                        private Each each;
+                                        private final Each each;
 
                                         /**
                                          * Instantiates a new open bracket impl.
@@ -822,13 +860,14 @@ public class WhereStatementImpl implements WhereStatement {
                                          * @param each the each
                                          */
                                         public OpenBracketImpl(
-                                                                Each each ) {
+                                                                final Each each) {
                                             this.each = each;
                                         }
 
                                         /**
                                          * {@inheritDoc}
                                          */
+                                        @Override
                                         public Each each() {
                                             return each;
                                         }
@@ -843,13 +882,13 @@ public class WhereStatementImpl implements WhereStatement {
                                 public static class CloseBracketImpl implements CloseBracket {
 
                                     /** The where statement. */
-                                    private WhereStatement    whereStatement;
+                                    private final WhereStatement      whereStatement;
 
                                     /** The outer each. */
-                                    private Each                outerEach;
+                                    private final Each                outerEach;
 
                                     /** The condition info. */
-                                    private SLTypeConditionInfo conditionInfo;
+                                    private final SLTypeConditionInfo conditionInfo;
 
                                     /**
                                      * Instantiates a new close bracket impl.
@@ -859,8 +898,8 @@ public class WhereStatementImpl implements WhereStatement {
                                      * @param conditionInfo the condition info
                                      */
                                     public CloseBracketImpl(
-                                                             WhereStatement whereStatement, Each outerEach,
-                                                             SLTypeConditionInfo conditionInfo ) {
+                                                             final WhereStatement whereStatement, final Each outerEach,
+                                                             final SLTypeConditionInfo conditionInfo) {
                                         this.whereStatement = whereStatement;
                                         this.outerEach = outerEach;
                                         this.conditionInfo = conditionInfo;
@@ -869,40 +908,49 @@ public class WhereStatementImpl implements WhereStatement {
                                     /**
                                      * {@inheritDoc}
                                      */
-                                    @SuppressWarnings( "unchecked" )
+                                    @Override
+                                    @SuppressWarnings("unchecked")
                                     public CloseBracket closeBracket() {
-                                        int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
-                                        SLTypeConditionInfo outerConditionInfo = conditionInfo.getOuterStatementInfo().getConditionInfoList().get(
+                                        final int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
+                                        final SLTypeConditionInfo outerConditionInfo =
+                                            conditionInfo
+                                                .getOuterStatementInfo()
+                                                .getConditionInfoList()
+                                                .get(
                                                                                                                                                   size - 1);
-                                        SLTypeStatementInfo outerStatementInfo = outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
+                                        final SLTypeStatementInfo outerStatementInfo =
+                                            outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
                                         outerStatementInfo.setClosed(true);
-                                        OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
+                                        final OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
                                         return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public RelationalOperator or() {
-                                        SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                         outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                        Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                         return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public RelationalOperator and() {
-                                        SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                         outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                        Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                         return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                                     }
 
                                     /**
                                      * {@inheritDoc}
                                      */
+                                    @Override
                                     public WhereStatement typeEnd() {
                                         conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
                                         return whereStatement;
@@ -922,16 +970,16 @@ public class WhereStatementImpl implements WhereStatement {
             public static class PropertyImpl implements Property {
 
                 /** The each. */
-                private Each                each;
+                private final Each                each;
 
                 /** The outer each. */
-                private Each                outerEach;
+                private final Each                outerEach;
 
                 /** The where statement. */
-                private WhereStatement    whereStatement;
+                private final WhereStatement      whereStatement;
 
                 /** The condition info. */
-                private SLTypeConditionInfo conditionInfo;
+                private final SLTypeConditionInfo conditionInfo;
 
                 /**
                  * Instantiates a new property impl.
@@ -942,7 +990,8 @@ public class WhereStatementImpl implements WhereStatement {
                  * @param conditionInfo the condition info
                  */
                 public PropertyImpl(
-                                     WhereStatement whereStatement, Each each, Each outerEach, SLTypeConditionInfo conditionInfo ) {
+                                     final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                    final SLTypeConditionInfo conditionInfo) {
                     this.each = each;
                     this.whereStatement = whereStatement;
                     this.conditionInfo = conditionInfo;
@@ -952,6 +1001,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Property not() {
                     conditionInfo.setRelationalNotOperator(true);
                     return this;
@@ -960,6 +1010,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator lesserThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -968,6 +1019,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator greaterThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -976,6 +1028,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator equalsTo() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -984,6 +1037,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator lesserOrEqualThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -992,6 +1046,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator greaterOrEqualThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1000,6 +1055,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator contains() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1008,6 +1064,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator startsWith() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1016,6 +1073,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator endsWith() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1029,16 +1087,16 @@ public class WhereStatementImpl implements WhereStatement {
                 public static class OperatorImpl implements Operator {
 
                     /** The each. */
-                    private Each                each;
+                    private final Each                each;
 
                     /** The outer each. */
-                    private Each                outerEach;
+                    private final Each                outerEach;
 
                     /** The where statement. */
-                    private WhereStatement    whereStatement;
+                    private final WhereStatement      whereStatement;
 
                     /** The condition info. */
-                    private SLTypeConditionInfo conditionInfo;
+                    private final SLTypeConditionInfo conditionInfo;
 
                     /**
                      * Instantiates a new operator impl.
@@ -1049,8 +1107,8 @@ public class WhereStatementImpl implements WhereStatement {
                      * @param conditionInfo the condition info
                      */
                     public OperatorImpl(
-                                         WhereStatement whereStatement, Each each, Each outerEach,
-                                         SLTypeConditionInfo conditionInfo ) {
+                                         final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                         final SLTypeConditionInfo conditionInfo) {
                         this.each = each;
                         this.outerEach = outerEach;
                         this.whereStatement = whereStatement;
@@ -1060,7 +1118,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( String value ) {
+                    @Override
+                    public Value value(final String value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1068,7 +1127,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Integer value ) {
+                    @Override
+                    public Value value(final Integer value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1076,7 +1136,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Long value ) {
+                    @Override
+                    public Value value(final Long value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1084,7 +1145,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Float value ) {
+                    @Override
+                    public Value value(final Float value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1092,7 +1154,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Double value ) {
+                    @Override
+                    public Value value(final Double value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1100,7 +1163,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Boolean value ) {
+                    @Override
+                    public Value value(final Boolean value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1113,16 +1177,16 @@ public class WhereStatementImpl implements WhereStatement {
                     public static class ValueImpl implements Value {
 
                         /** The each. */
-                        private Each                each;
+                        private final Each                each;
 
                         /** The outer each. */
-                        private Each                outerEach;
+                        private final Each                outerEach;
 
                         /** The where statement. */
-                        private WhereStatement    whereStatement;
+                        private final WhereStatement      whereStatement;
 
                         /** The condition info. */
-                        private SLTypeConditionInfo conditionInfo;
+                        private final SLTypeConditionInfo conditionInfo;
 
                         /**
                          * Instantiates a new value impl.
@@ -1133,8 +1197,8 @@ public class WhereStatementImpl implements WhereStatement {
                          * @param conditionInfo the condition info
                          */
                         public ValueImpl(
-                                          WhereStatement whereStatement, Each each, Each outerEach,
-                                          SLTypeConditionInfo conditionInfo ) {
+                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                          final SLTypeConditionInfo conditionInfo) {
                             this.each = each;
                             this.outerEach = outerEach;
                             this.whereStatement = whereStatement;
@@ -1144,6 +1208,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public WhereStatement typeEnd() {
                             conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
                             return whereStatement;
@@ -1152,28 +1217,33 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public RelationalOperator or() {
-                            SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            SLTypeConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                            Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                            final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public RelationalOperator and() {
-                            SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            SLTypeConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                            Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                            final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public CloseBracket closeBracket() {
-                            SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
                             statementInfo.setClosed(true);
                             return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
                         }
@@ -1186,13 +1256,13 @@ public class WhereStatementImpl implements WhereStatement {
                         public static class RelationalOperatorImpl implements RelationalOperator {
 
                             /** The each. */
-                            private Each                each;
+                            private final Each                each;
 
                             /** The where statement. */
-                            private WhereStatement    whereStatement;
+                            private final WhereStatement      whereStatement;
 
                             /** The condition info. */
-                            private SLTypeConditionInfo conditionInfo;
+                            private final SLTypeConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new relational operator impl.
@@ -1202,8 +1272,8 @@ public class WhereStatementImpl implements WhereStatement {
                              * @param conditionInfo the condition info
                              */
                             public RelationalOperatorImpl(
-                                                           WhereStatement whereStatement, Each each,
-                                                           SLTypeConditionInfo conditionInfo ) {
+                                                           final WhereStatement whereStatement, final Each each,
+                                                           final SLTypeConditionInfo conditionInfo) {
                                 this.each = each;
                                 this.whereStatement = whereStatement;
                                 this.conditionInfo = conditionInfo;
@@ -1212,6 +1282,7 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public RelationalOperator not() {
                                 conditionInfo.setConditionalNotOperator(true);
                                 return this;
@@ -1220,27 +1291,32 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public WhereStatement comma() {
-                                return this.whereStatement;
+                                return whereStatement;
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public Each each() {
-                                return this.each;
+                                return each;
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public OpenBracket openBracket() {
-                                SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(
+                                final SLTypeStatementInfo newStatementInfo =
+                                    new SLTypeStatementInfo(
                                                                                                conditionInfo.getTypeInfo(),
-                                                                                               conditionInfo.getOuterStatementInfo());
+                                                                                               conditionInfo
+                                                                                                   .getOuterStatementInfo());
                                 conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                final SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
                                 return new OpenBracketImpl(each);
                             }
 
@@ -1252,7 +1328,7 @@ public class WhereStatementImpl implements WhereStatement {
                             public static class OpenBracketImpl implements OpenBracket {
 
                                 /** The each. */
-                                private Each each;
+                                private final Each each;
 
                                 /**
                                  * Instantiates a new open bracket impl.
@@ -1260,13 +1336,14 @@ public class WhereStatementImpl implements WhereStatement {
                                  * @param each the each
                                  */
                                 public OpenBracketImpl(
-                                                        Each each ) {
+                                                        final Each each) {
                                     this.each = each;
                                 }
 
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public Each each() {
                                     return each;
                                 }
@@ -1281,13 +1358,13 @@ public class WhereStatementImpl implements WhereStatement {
                         public static class CloseBracketImpl implements CloseBracket {
 
                             /** The where statement. */
-                            private WhereStatement    whereStatement;
+                            private final WhereStatement      whereStatement;
 
                             /** The outer each. */
-                            private Each                outerEach;
+                            private final Each                outerEach;
 
                             /** The condition info. */
-                            private SLTypeConditionInfo conditionInfo;
+                            private final SLTypeConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new close bracket impl.
@@ -1297,8 +1374,8 @@ public class WhereStatementImpl implements WhereStatement {
                              * @param conditionInfo the condition info
                              */
                             public CloseBracketImpl(
-                                                     WhereStatement whereStatement, Each outerEach,
-                                                     SLTypeConditionInfo conditionInfo ) {
+                                                     final WhereStatement whereStatement, final Each outerEach,
+                                                     final SLTypeConditionInfo conditionInfo) {
                                 this.whereStatement = whereStatement;
                                 this.outerEach = outerEach;
                                 this.conditionInfo = conditionInfo;
@@ -1307,40 +1384,49 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
-                            @SuppressWarnings( "unchecked" )
+                            @Override
+                            @SuppressWarnings("unchecked")
                             public CloseBracket closeBracket() {
-                                int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
-                                SLTypeConditionInfo outerConditionInfo = conditionInfo.getOuterStatementInfo().getConditionInfoList().get(
+                                final int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
+                                final SLTypeConditionInfo outerConditionInfo =
+                                    conditionInfo
+                                        .getOuterStatementInfo()
+                                        .getConditionInfoList()
+                                        .get(
                                                                                                                                           size - 1);
-                                SLTypeStatementInfo outerStatementInfo = outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
+                                final SLTypeStatementInfo outerStatementInfo =
+                                    outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
                                 outerStatementInfo.setClosed(true);
-                                OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
+                                final OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
                                 return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public RelationalOperator or() {
-                                SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public RelationalOperator and() {
-                                SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public WhereStatement typeEnd() {
                                 conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
                                 return whereStatement;
@@ -1360,10 +1446,10 @@ public class WhereStatementImpl implements WhereStatement {
     public static class LinkTypeImpl implements LinkType {
 
         /** The where statement. */
-        private WhereStatement    whereStatement;
+        private final WhereStatement    whereStatement;
 
         /** The type info. */
-        private WhereLinkTypeInfo typeInfo;
+        private final WhereLinkTypeInfo typeInfo;
 
         /**
          * Instantiates a new link type impl.
@@ -1372,7 +1458,7 @@ public class WhereStatementImpl implements WhereStatement {
          * @param typeInfo the type info
          */
         public LinkTypeImpl(
-                             WhereStatement whereStatement, WhereLinkTypeInfo typeInfo ) {
+                             final WhereStatement whereStatement, final WhereLinkTypeInfo typeInfo) {
             this.whereStatement = whereStatement;
             this.typeInfo = typeInfo;
         }
@@ -1380,10 +1466,11 @@ public class WhereStatementImpl implements WhereStatement {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Each each() {
-            SLLinkTypeStatementInfo whereStatementInfo = new SLLinkTypeStatementInfo(typeInfo);
+            final SLLinkTypeStatementInfo whereStatementInfo = new SLLinkTypeStatementInfo(typeInfo);
             typeInfo.setLinkTypeStatementInfo(whereStatementInfo);
-            SLLinkTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
+            final SLLinkTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
             return new EachImpl(whereStatement, conditionInfo);
         }
 
@@ -1395,13 +1482,13 @@ public class WhereStatementImpl implements WhereStatement {
         public static class EachImpl implements Each {
 
             /** The where statement. */
-            private WhereStatement        whereStatement;
+            private final WhereStatement          whereStatement;
 
             /** The condition info. */
-            private SLLinkTypeConditionInfo conditionInfo;
+            private final SLLinkTypeConditionInfo conditionInfo;
 
             /** The outer each. */
-            private Each                    outerEach;
+            private final Each                    outerEach;
 
             /**
              * Instantiates a new each impl.
@@ -1410,7 +1497,7 @@ public class WhereStatementImpl implements WhereStatement {
              * @param conditionInfo the condition info
              */
             public EachImpl(
-                             WhereStatement whereStatement, SLLinkTypeConditionInfo conditionInfo ) {
+                             final WhereStatement whereStatement, final SLLinkTypeConditionInfo conditionInfo) {
                 this(whereStatement, conditionInfo, null);
             }
 
@@ -1422,9 +1509,9 @@ public class WhereStatementImpl implements WhereStatement {
              * @param outerEach the outer each
              */
             public EachImpl(
-                             WhereStatement whereStatement,
-                             org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo,
-                             Each outerEach ) {
+                             final WhereStatement whereStatement,
+                             final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo,
+                             final Each outerEach) {
                 this.whereStatement = whereStatement;
                 this.conditionInfo = conditionInfo;
                 this.outerEach = outerEach;
@@ -1433,7 +1520,8 @@ public class WhereStatementImpl implements WhereStatement {
             /**
              * {@inheritDoc}
              */
-            public Property property( String name ) {
+            @Override
+            public Property property(final String name) {
                 conditionInfo.setPropertyName(name);
                 return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
             }
@@ -1446,16 +1534,16 @@ public class WhereStatementImpl implements WhereStatement {
             public static class PropertyImpl implements Property {
 
                 /** The each. */
-                private Each                                                                                                   each;
+                private final Each                                                                                                 each;
 
                 /** The outer each. */
-                private Each                                                                                                   outerEach;
+                private final Each                                                                                                 outerEach;
 
                 /** The where statement. */
-                private WhereStatement                                                                                       whereStatement;
+                private final WhereStatement                                                                                       whereStatement;
 
                 /** The condition info. */
-                private org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
+                private final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
 
                 /**
                  * Instantiates a new property impl.
@@ -1466,10 +1554,10 @@ public class WhereStatementImpl implements WhereStatement {
                  * @param conditionInfo the condition info
                  */
                 public PropertyImpl(
-                                     WhereStatement whereStatement,
-                                     Each each,
-                                     Each outerEach,
-                                     org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo ) {
+                                     final WhereStatement whereStatement,
+                                     final Each each,
+                                     final Each outerEach,
+                                     final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo) {
                     this.each = each;
                     this.whereStatement = whereStatement;
                     this.conditionInfo = conditionInfo;
@@ -1479,6 +1567,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Property not() {
                     conditionInfo.setRelationalNotOperator(true);
                     return this;
@@ -1487,6 +1576,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator lesserThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1495,6 +1585,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator greaterThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1503,6 +1594,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator equalsTo() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1511,6 +1603,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator lesserOrEqualThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1519,6 +1612,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator greaterOrEqualThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1527,6 +1621,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator contains() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1535,6 +1630,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator startsWith() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1543,6 +1639,7 @@ public class WhereStatementImpl implements WhereStatement {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Operator endsWith() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -1556,16 +1653,16 @@ public class WhereStatementImpl implements WhereStatement {
                 public static class OperatorImpl implements Operator {
 
                     /** The each. */
-                    private Each                                                                                                   each;
+                    private final Each                                                                                                 each;
 
                     /** The outer each. */
-                    private Each                                                                                                   outerEach;
+                    private final Each                                                                                                 outerEach;
 
                     /** The where statement. */
-                    private WhereStatement                                                                                       whereStatement;
+                    private final WhereStatement                                                                                       whereStatement;
 
                     /** The condition info. */
-                    private org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
+                    private final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
 
                     /**
                      * Instantiates a new operator impl.
@@ -1576,10 +1673,10 @@ public class WhereStatementImpl implements WhereStatement {
                      * @param conditionInfo the condition info
                      */
                     public OperatorImpl(
-                                         WhereStatement whereStatement,
-                                         Each each,
-                                         Each outerEach,
-                                         org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo ) {
+                                         final WhereStatement whereStatement,
+                                         final Each each,
+                                         final Each outerEach,
+                                         final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo) {
                         this.each = each;
                         this.outerEach = outerEach;
                         this.whereStatement = whereStatement;
@@ -1589,7 +1686,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( String value ) {
+                    @Override
+                    public Value value(final String value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1597,7 +1695,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Integer value ) {
+                    @Override
+                    public Value value(final Integer value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1605,7 +1704,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Long value ) {
+                    @Override
+                    public Value value(final Long value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1613,7 +1713,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Float value ) {
+                    @Override
+                    public Value value(final Float value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1621,7 +1722,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Double value ) {
+                    @Override
+                    public Value value(final Double value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1629,7 +1731,8 @@ public class WhereStatementImpl implements WhereStatement {
                     /**
                      * {@inheritDoc}
                      */
-                    public Value value( Boolean value ) {
+                    @Override
+                    public Value value(final Boolean value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -1642,16 +1745,16 @@ public class WhereStatementImpl implements WhereStatement {
                     public static class ValueImpl implements Value {
 
                         /** The each. */
-                        private Each                    each;
+                        private final Each                    each;
 
                         /** The outer each. */
-                        private Each                    outerEach;
+                        private final Each                    outerEach;
 
                         /** The where statement. */
-                        private WhereStatement        whereStatement;
+                        private final WhereStatement          whereStatement;
 
                         /** The condition info. */
-                        private SLLinkTypeConditionInfo conditionInfo;
+                        private final SLLinkTypeConditionInfo conditionInfo;
 
                         /**
                          * Instantiates a new value impl.
@@ -1662,8 +1765,8 @@ public class WhereStatementImpl implements WhereStatement {
                          * @param conditionInfo the condition info
                          */
                         public ValueImpl(
-                                          WhereStatement whereStatement, Each each, Each outerEach,
-                                          SLLinkTypeConditionInfo conditionInfo ) {
+                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                          final SLLinkTypeConditionInfo conditionInfo) {
                             this.each = each;
                             this.outerEach = outerEach;
                             this.whereStatement = whereStatement;
@@ -1673,6 +1776,7 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public WhereStatement linkTypeEnd() {
                             conditionInfo.getLinkTypeInfo().getLinkTypeStatementInfo().setClosed(true);
                             return whereStatement;
@@ -1681,26 +1785,31 @@ public class WhereStatementImpl implements WhereStatement {
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public RelationalOperator or() {
-                            SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            SLLinkTypeConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                            Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLLinkTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public RelationalOperator and() {
-                            SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            SLLinkTypeConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                            Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLLinkTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
                         /**
                          * {@inheritDoc}
                          */
+                        @Override
                         public CloseBracket closeBracket() {
                             conditionInfo.getOuterStatementInfo().setClosed(true);
                             return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
@@ -1714,13 +1823,13 @@ public class WhereStatementImpl implements WhereStatement {
                         public static class RelationalOperatorImpl implements RelationalOperator {
 
                             /** The each. */
-                            private Each                    each;
+                            private final Each                    each;
 
                             /** The where statement. */
-                            private WhereStatement        whereStatement;
+                            private final WhereStatement          whereStatement;
 
                             /** The condition info. */
-                            private SLLinkTypeConditionInfo conditionInfo;
+                            private final SLLinkTypeConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new relational operator impl.
@@ -1730,8 +1839,8 @@ public class WhereStatementImpl implements WhereStatement {
                              * @param conditionInfo the condition info
                              */
                             public RelationalOperatorImpl(
-                                                           WhereStatement whereStatement, Each each,
-                                                           SLLinkTypeConditionInfo conditionInfo ) {
+                                                           final WhereStatement whereStatement, final Each each,
+                                                           final SLLinkTypeConditionInfo conditionInfo) {
                                 this.each = each;
                                 this.whereStatement = whereStatement;
                                 this.conditionInfo = conditionInfo;
@@ -1740,26 +1849,31 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public WhereStatement comma() {
-                                return this.whereStatement;
+                                return whereStatement;
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public Each each() {
-                                return this.each;
+                                return each;
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public OpenBracket openBracket() {
-                                SLLinkTypeStatementInfo newStatementInfo = new SLLinkTypeStatementInfo(
-                                                                                                       conditionInfo.getLinkTypeInfo());
+                                final SLLinkTypeStatementInfo newStatementInfo =
+                                    new SLLinkTypeStatementInfo(
+                                                                                                       conditionInfo
+                                                                                                           .getLinkTypeInfo());
                                 conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                SLLinkTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                final SLLinkTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
                                 return new OpenBracketImpl(each);
                             }
 
@@ -1771,7 +1885,7 @@ public class WhereStatementImpl implements WhereStatement {
                             public static class OpenBracketImpl implements OpenBracket {
 
                                 /** The each. */
-                                private Each each;
+                                private final Each each;
 
                                 /**
                                  * Instantiates a new open bracket impl.
@@ -1779,13 +1893,14 @@ public class WhereStatementImpl implements WhereStatement {
                                  * @param each the each
                                  */
                                 public OpenBracketImpl(
-                                                        Each each ) {
+                                                        final Each each) {
                                     this.each = each;
                                 }
 
                                 /**
                                  * {@inheritDoc}
                                  */
+                                @Override
                                 public Each each() {
                                     return each;
                                 }
@@ -1800,13 +1915,13 @@ public class WhereStatementImpl implements WhereStatement {
                         public static class CloseBracketImpl implements CloseBracket {
 
                             /** The where statement. */
-                            private WhereStatement        whereStatement;
+                            private final WhereStatement          whereStatement;
 
                             /** The outer each. */
-                            private Each                    outerEach;
+                            private final Each                    outerEach;
 
                             /** The condition info. */
-                            private SLLinkTypeConditionInfo conditionInfo;
+                            private final SLLinkTypeConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new close bracket impl.
@@ -1816,8 +1931,8 @@ public class WhereStatementImpl implements WhereStatement {
                              * @param conditionInfo the condition info
                              */
                             public CloseBracketImpl(
-                                                     WhereStatement whereStatement, Each outerEach,
-                                                     SLLinkTypeConditionInfo conditionInfo ) {
+                                                     final WhereStatement whereStatement, final Each outerEach,
+                                                     final SLLinkTypeConditionInfo conditionInfo) {
                                 this.whereStatement = whereStatement;
                                 this.outerEach = outerEach;
                                 this.conditionInfo = conditionInfo;
@@ -1826,6 +1941,7 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public CloseBracket closeBracket() {
                                 conditionInfo.getOuterStatementInfo().setClosed(true);
                                 return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
@@ -1834,26 +1950,29 @@ public class WhereStatementImpl implements WhereStatement {
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public RelationalOperator or() {
-                                SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public RelationalOperator and() {
-                                SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
                             /**
                              * {@inheritDoc}
                              */
+                            @Override
                             public WhereStatement linkTypeEnd() {
                                 conditionInfo.getLinkTypeInfo().getLinkTypeStatementInfo().setClosed(true);
                                 return whereStatement;

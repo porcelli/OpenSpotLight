@@ -62,19 +62,19 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
         command = new ResetPropertiesCommand();
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testAcceptNull() {
         assertThat(command.accept(null), is(false));
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testExecuteNull() {
         command.execute(null, null, null);
     }
 
     @Test
     public void testAcceptNullInout() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput(null);
 
         assertThat(command.accept(state), is(false));
@@ -82,7 +82,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("reset properties");
 
         assertThat(command.accept(state), is(true));
@@ -90,7 +90,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("reset properties  ");
 
         assertThat(command.accept(state), is(true));
@@ -98,7 +98,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("xxreset properties");
 
         assertThat(command.accept(state), is(false));
@@ -106,7 +106,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("add property");
 
         assertThat(command.accept(state), is(false));
@@ -114,7 +114,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter3() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("reset property");
 
         assertThat(command.accept(state), is(false));
@@ -122,7 +122,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter4() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("reset properties ?");
 
         assertThat(command.accept(state), is(false));
@@ -130,7 +130,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("reset properties");
         state.appendBuffer("something");
 
@@ -142,7 +142,7 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.addAdditionalProperty("property1");
         state.addAdditionalProperty("property2");
         state.setInput("reset properties");

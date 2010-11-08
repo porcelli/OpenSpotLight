@@ -55,6 +55,6 @@ import org.openspotlight.graph.Link;
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class  JavaInterfaceHierarchy extends Link {
+public abstract class JavaInterfaceHierarchy extends Link {
 
 }

@@ -78,91 +78,91 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 /**
- * During a column changing, its table needs to be marked as changed also. This
- * test is to assert this behavior.
+ * During a column changing, its table needs to be marked as changed also. This test is to assert this behavior.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings("all")
 public class ColumnChangingFiresTableChangeTest {
 
-	@Before
-	public void cleanDatabaseFiles() throws Exception {
-		delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-	}
+    @Before
+    public void cleanDatabaseFiles()
+        throws Exception {
+        delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+    }
 
-	@Test
-	public void columnChangeShouldFireTableChange() throws Exception {
+    @Test
+    public void columnChangeShouldFireTableChange()
+        throws Exception {
 
-		final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+        final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
 
-		Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
-		injector.getInstance(JRedisFactory.class)
-				.getFrom(RegularPartitions.FEDERATION).flushall();
-		final DbArtifactSource dbBundle = (DbArtifactSource) repository.getGroups().iterator().next()
-				.getArtifactSources().iterator().next(); //$NON-NLS-1$
-		Connection conn = DatabaseSupport.createConnection(dbBundle);
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
+        injector.getInstance(JRedisFactory.class)
+                .getFrom(RegularPartitions.FEDERATION).flushall();
+        final DbArtifactSource dbBundle = (DbArtifactSource) repository.getGroups().iterator().next()
+                .getArtifactSources().iterator().next(); //$NON-NLS-1$
+        Connection conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn.prepareStatement(
-				"newPair table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
-				.execute();
-		conn.close();
-		final GlobalSettings configuration = new GlobalSettings();
-		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		GlobalSettings globalSettings = new GlobalSettings();
+        conn.prepareStatement(
+                "newPair table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+            .execute();
+        conn.close();
+        final GlobalSettings configuration = new GlobalSettings();
+        configuration.setDefaultSleepingIntervalInMilliseconds(500);
+        final GlobalSettings globalSettings = new GlobalSettings();
 
-		PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
-				injector.getInstance(SimplePersistFactory.class),
-				dbBundle.getRepository());
+        final PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+                injector.getInstance(SimplePersistFactory.class),
+                dbBundle.getRepository());
 
-		refreshResources(globalSettings, dbBundle, provider);
+        refreshResources(globalSettings, dbBundle, provider);
 
-		Iterable<DatabaseCustomArtifact> firstLoadedItems = provider.get()
-				.listByInitialPath(DatabaseCustomArtifact.class, null);
-		conn = DatabaseSupport.createConnection(dbBundle);
+        final Iterable<DatabaseCustomArtifact> firstLoadedItems = provider.get()
+                .listByInitialPath(DatabaseCustomArtifact.class, null);
+        conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
-				.execute();
+        conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
+            .execute();
 
-		conn.prepareStatement(
-				"newPair table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
-				.execute();
-		conn.close();
-		refreshResources(globalSettings, dbBundle, provider);
+        conn.prepareStatement("newPair table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
+            .execute();
+        conn.close();
+        refreshResources(globalSettings, dbBundle, provider);
 
-		Iterable<DatabaseCustomArtifact> lastLoadedItems = provider.get()
-				.listByInitialPath(DatabaseCustomArtifact.class, null);
-		conn = DatabaseSupport.createConnection(dbBundle);
+        final Iterable<DatabaseCustomArtifact> lastLoadedItems = provider.get()
+                .listByInitialPath(DatabaseCustomArtifact.class, null);
+        conn = DatabaseSupport.createConnection(dbBundle);
 
-		boolean found = false;
-		all: for (final Artifact first : firstLoadedItems) {
-			if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-				assertThat(first.equals(first), is(true));
-				assertThat(first.contentEquals(first), is(true));
-				for (final Artifact last : lastLoadedItems) {
-					if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-						System.out.println("first:" + first.toString());
-						System.out.println("last:" + last.toString());
-						assertThat(last.equals(first), is(true));
-						assertThat(last.contentEquals(first), is(false));
-						found = true;
-						break all;
-					}
-				}
-			}
-		}
-		assertThat(found, is(true));
-	}
+        boolean found = false;
+        all: for (final Artifact first: firstLoadedItems) {
+            if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
+                assertThat(first.equals(first), is(true));
+                assertThat(first.contentEquals(first), is(true));
+                for (final Artifact last: lastLoadedItems) {
+                    if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
+                        System.out.println("first:" + first.toString());
+                        System.out.println("last:" + last.toString());
+                        assertThat(last.equals(first), is(true));
+                        assertThat(last.contentEquals(first), is(false));
+                        found = true;
+                        break all;
+                    }
+                }
+            }
+        }
+        assertThat(found, is(true));
+    }
 
-	private void refreshResources(GlobalSettings globalSettings,
-			DbArtifactSource dbBundle,
-			PersistentArtifactManagerProvider provider) {
-		// globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
-		throw new UnsupportedOperationException();
+    private void refreshResources(final GlobalSettings globalSettings,
+                                  final DbArtifactSource dbBundle,
+                                  final PersistentArtifactManagerProvider provider) {
+        // globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
+        throw new UnsupportedOperationException();
 
-	}
+    }
 
 }

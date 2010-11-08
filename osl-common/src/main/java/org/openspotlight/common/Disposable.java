@@ -50,17 +50,15 @@
 package org.openspotlight.common;
 
 /**
- * This interface should be used for anything with needs to close resources
- * before shutting down or simply befor stoping to use.
+ * This interface should be used for anything with needs to close resources before shutting down or simply befor stoping to use.
  */
 public interface Disposable {
 
-	/**
-	 * Close resources. This method should not transform this instance in a
-	 * garbage, but just returns it to an initial state. If the client want to
-	 * use this instance again, it should open necessary resources again, making
-	 * it available to close the resources later.
-	 */
-	public void closeResources();
+    /**
+     * Close resources. This method should not transform this instance in a garbage, but just returns it to an initial state. If
+     * the client want to use this instance again, it should open necessary resources again, making it available to close the
+     * resources later.
+     */
+    public void closeResources();
 
 }

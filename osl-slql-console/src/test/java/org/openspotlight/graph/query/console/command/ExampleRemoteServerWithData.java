@@ -159,7 +159,7 @@ public class ExampleRemoteServerWithData {
                         superJavaClass);
                 session.addLink(JavaClassHierarchy.class, javaClass,
                         superJavaClass);
-                this.addJavaClassHirarchyLinks(session, root, superClass,
+                addJavaClassHirarchyLinks(session, root, superClass,
                         superJavaClass);
             }
         }
@@ -208,7 +208,7 @@ public class ExampleRemoteServerWithData {
                 superJavaInterface.setCaption(superIFace.getName());
                 session.addLink(JavaInterfaceHierarchy.class, javaInterface,
                         superJavaInterface);
-                this.addJavaInterfaceHirarchyLinks(session, root, superIFace,
+                addJavaInterfaceHirarchyLinks(session, root, superIFace,
                         superJavaInterface);
             }
         }
@@ -250,7 +250,7 @@ public class ExampleRemoteServerWithData {
         public Pair<GraphSessionFactory, Provider<StorageSession>> populateGraph()
                 throws Exception {
 
-            Injector injector = Guice.createInjector(
+            final Injector injector = Guice.createInjector(
                     new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                             ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
@@ -259,13 +259,11 @@ public class ExampleRemoteServerWithData {
                     .getInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
 
-            final Collection<Class<?>> iFaces = this
-                    .loadClasses("java-util-interfaces.txt");
-            final Collection<Class<?>> classes = this
-                    .loadClasses("java-util-classes.txt");
-            GraphWriter writer = injector.getInstance(GraphWriter.class);
-            GraphReader reader = injector.getInstance(GraphReader.class);
-            Context root = reader.getContext("queryTest");
+            final Collection<Class<?>> iFaces = loadClasses("java-util-interfaces.txt");
+            final Collection<Class<?>> classes = loadClasses("java-util-classes.txt");
+            final GraphWriter writer = injector.getInstance(GraphWriter.class);
+            final GraphReader reader = injector.getInstance(GraphReader.class);
+            final Context root = reader.getContext("queryTest");
 
             final Package pack = java.util.Date.class.getPackage();
             final JavaPackage utilJavaPackage = writer.addNode(root,
@@ -283,9 +281,9 @@ public class ExampleRemoteServerWithData {
                 javaInterface.setIntValue(count);
                 javaInterface.setDecValue(new Float(count + floatValue));
                 javaInterface.setBoolValue(new Boolean(true));
-                this.addJavaInterfaceHirarchyLinks(writer, root, iFace,
+                addJavaInterfaceHirarchyLinks(writer, root, iFace,
                         javaInterface);
-                this.addJavaInterfaceContainsJavaMethod(writer, iFace,
+                addJavaInterfaceContainsJavaMethod(writer, iFace,
                         javaInterface);
                 count++;
             }
@@ -301,10 +299,10 @@ public class ExampleRemoteServerWithData {
                 javaClass.setIntValue(count);
                 javaClass.setDecValue(new Float(count + floatValue));
                 javaClass.setBoolValue(new Boolean(false));
-                this.addJavaClassHirarchyLinks(writer, root, clazz, javaClass);
-                this.addClassImplementsInterfaceLinks(writer, root, clazz,
+                addJavaClassHirarchyLinks(writer, root, clazz, javaClass);
+                addClassImplementsInterfaceLinks(writer, root, clazz,
                         javaClass);
-                this.addJavaClassContainsJavaClassMethod(writer, clazz,
+                addJavaClassContainsJavaClassMethod(writer, clazz,
                         javaClass);
                 count++;
             }
@@ -336,16 +334,18 @@ public class ExampleRemoteServerWithData {
 
     public static RemoteGraphSessionServer populateSomeDataAndStartTheServer()
             throws Exception {
-        Pair<GraphSessionFactory, Provider<StorageSession>> pair = new ExampleDataSupport()
+        final Pair<GraphSessionFactory, Provider<StorageSession>> pair = new ExampleDataSupport()
                 .populateGraph();
 
         return new RemoteGraphSessionServer(new UserAuthenticator() {
 
+            @Override
             public boolean canConnect(final String userName,
                                       final String password, final String clientHost) {
                 return true;
             }
 
+            @Override
             public boolean equals(final Object o) {
                 return this.getClass().equals(o.getClass());
             }

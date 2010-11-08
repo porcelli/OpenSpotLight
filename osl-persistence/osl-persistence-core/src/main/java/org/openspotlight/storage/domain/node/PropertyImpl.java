@@ -122,7 +122,7 @@ public class PropertyImpl implements Property {
     private final boolean key;
 
     private void verifyBeforeSet(final String propertyName) {
-        if (key) throw new IllegalStateException();
+        if (key) { throw new IllegalStateException(); }
     }
 
     @Override

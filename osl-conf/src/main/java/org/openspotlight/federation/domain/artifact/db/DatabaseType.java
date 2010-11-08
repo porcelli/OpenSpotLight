@@ -88,11 +88,11 @@ public enum DatabaseType {
     private final DatabaseType parent;
 
     private DatabaseType() {
-        this.parent = null;
+        parent = null;
     }
 
     private DatabaseType(
-                          DatabaseType parent ) {
+                          final DatabaseType parent) {
         this.parent = parent;
     }
 
@@ -100,7 +100,7 @@ public enum DatabaseType {
      * @return the parent type
      */
     public DatabaseType getParent() {
-        return this.parent;
+        return parent;
     }
 
 }

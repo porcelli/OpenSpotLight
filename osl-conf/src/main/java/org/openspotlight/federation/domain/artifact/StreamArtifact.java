@@ -54,16 +54,18 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.internal.LazyProperty;
 
-@Name( "stream_artifact" )
+@Name("stream_artifact")
 public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
     private long lastChange;
 
+    @Override
     public long getLastChange() {
         return lastChange;
     }
 
-    public void setLastChange( long lastChange ) {
+    @Override
+    public void setLastChange(final long lastChange) {
         this.lastChange = lastChange;
     }
 
@@ -72,9 +74,9 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
     private LazyProperty<InputStream> content          = LazyProperty.Factory.create(InputStream.class, this);
 
     @Override
-    public boolean contentEquals( final Artifact other ) {
+    public boolean contentEquals(final Artifact other) {
         if (other instanceof StreamArtifact) {
-            final StreamArtifact that = (StreamArtifact)other;
+            final StreamArtifact that = (StreamArtifact) other;
             return Equals.eachEquality(content == null ? null : content.getMetadata().getSha1(),
                                        that.content == null ? null : that.content.getMetadata().getSha1());
         }
@@ -85,7 +87,7 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
         return content;
     }
 
-    public void setContent( final LazyProperty<InputStream> content ) {
+    public void setContent(final LazyProperty<InputStream> content) {
         this.content = content;
     }
 

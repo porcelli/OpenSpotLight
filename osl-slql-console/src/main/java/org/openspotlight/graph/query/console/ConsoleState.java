@@ -56,218 +56,205 @@ import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.console.command.Command;
 
 /**
- * The Class ConsoleState. This is a simple data class that holds console
- * application state.
+ * The Class ConsoleState. This is a simple data class that holds console application state.
  * 
  * @author porcelli
  */
 public class ConsoleState {
 
-	/** The session. */
-	private GraphReader graphReader = null;
+    /** The session. */
+    private GraphReader   graphReader          = null;
 
-	/** The StringBuilder that holds the buffer. */
-	private StringBuilder sb = new StringBuilder();
+    /** The StringBuilder that holds the buffer. */
+    private StringBuilder sb                   = new StringBuilder();
 
-	/**
-	 * The additional properties that should be displayed during query output
-	 * result.
-	 */
-	private Set<String> additionalProperties = new HashSet<String>();
+    /**
+     * The additional properties that should be displayed during query output result.
+     */
+    private Set<String>   additionalProperties = new HashSet<String>();
 
-	/** The active command. */
-	private Command activeCommand = null;
+    /** The active command. */
+    private Command       activeCommand        = null;
 
-	/** The quit application. */
-	private boolean quitApplication = false;
+    /** The quit application. */
+    private boolean       quitApplication      = false;
 
-	/** The input. */
-	private String input = "";
+    /** The input. */
+    private String        input                = "";
 
-	/** The last query. */
-	private String lastQuery = "";
+    /** The last query. */
+    private String        lastQuery            = "";
 
-	/**
-	 * Instantiates a new console state.
-	 * 
-	 * @param session
-	 *            the session
-	 */
-	public ConsoleState(GraphReader graphReader) {
-		this.graphReader = graphReader;
-	}
+    /**
+     * Instantiates a new console state.
+     * 
+     * @param session the session
+     */
+    public ConsoleState(final GraphReader graphReader) {
+        this.graphReader = graphReader;
+    }
 
-	/**
-	 * Gets the buffer.
-	 * 
-	 * @return the buffer
-	 */
-	public String getBuffer() {
-		return sb.toString();
-	}
+    /**
+     * Gets the buffer.
+     * 
+     * @return the buffer
+     */
+    public String getBuffer() {
+        return sb.toString();
+    }
 
-	/**
-	 * Append buffer.
-	 * 
-	 * @param buffer
-	 *            the buffer
-	 */
-	public void appendBuffer(String buffer) {
-		this.sb.append(buffer);
-	}
+    /**
+     * Append buffer.
+     * 
+     * @param buffer the buffer
+     */
+    public void appendBuffer(final String buffer) {
+        sb.append(buffer);
+    }
 
-	/**
-	 * Append line buffer.
-	 * 
-	 * @param buffer
-	 *            the buffer
-	 */
-	public void appendLineBuffer(String buffer) {
-		appendBuffer(buffer);
-		appendBuffer("\n");
-	}
+    /**
+     * Append line buffer.
+     * 
+     * @param buffer the buffer
+     */
+    public void appendLineBuffer(final String buffer) {
+        appendBuffer(buffer);
+        appendBuffer("\n");
+    }
 
-	/**
-	 * Clear buffer.
-	 */
-	public void clearBuffer() {
-		sb = new StringBuilder();
-	}
+    /**
+     * Clear buffer.
+     */
+    public void clearBuffer() {
+        sb = new StringBuilder();
+    }
 
-	/**
-	 * Gets the active command.
-	 * 
-	 * @return the active command
-	 */
-	public Command getActiveCommand() {
-		return activeCommand;
-	}
+    /**
+     * Gets the active command.
+     * 
+     * @return the active command
+     */
+    public Command getActiveCommand() {
+        return activeCommand;
+    }
 
-	/**
-	 * Sets the active command.
-	 * 
-	 * @param activeCommand
-	 *            the new active command
-	 */
-	public void setActiveCommand(Command activeCommand) {
-		this.activeCommand = activeCommand;
-	}
+    /**
+     * Sets the active command.
+     * 
+     * @param activeCommand the new active command
+     */
+    public void setActiveCommand(final Command activeCommand) {
+        this.activeCommand = activeCommand;
+    }
 
-	/**
-	 * Gets the last query.
-	 * 
-	 * @return the last query
-	 */
-	public String getLastQuery() {
-		return lastQuery;
-	}
+    /**
+     * Gets the last query.
+     * 
+     * @return the last query
+     */
+    public String getLastQuery() {
+        return lastQuery;
+    }
 
-	/**
-	 * Sets the last query.
-	 * 
-	 * @param lastQuery
-	 *            the new last query
-	 */
-	public void setLastQuery(String lastQuery) {
-		if (lastQuery == null) {
-			this.lastQuery = "";
-		} else {
-			this.lastQuery = lastQuery;
-		}
-	}
+    /**
+     * Sets the last query.
+     * 
+     * @param lastQuery the new last query
+     */
+    public void setLastQuery(final String lastQuery) {
+        if (lastQuery == null) {
+            this.lastQuery = "";
+        } else {
+            this.lastQuery = lastQuery;
+        }
+    }
 
-	/**
-	 * Gets the input.
-	 * 
-	 * @return the input
-	 */
-	public String getInput() {
-		return input;
-	}
+    /**
+     * Gets the input.
+     * 
+     * @return the input
+     */
+    public String getInput() {
+        return input;
+    }
 
-	/**
-	 * Sets the input.
-	 * 
-	 * @param input
-	 *            the new input
-	 */
-	public void setInput(String input) {
-		if (input == null) {
-			this.input = "";
-		} else {
-			this.input = input;
-		}
-	}
+    /**
+     * Sets the input.
+     * 
+     * @param input the new input
+     */
+    public void setInput(final String input) {
+        if (input == null) {
+            this.input = "";
+        } else {
+            this.input = input;
+        }
+    }
 
-	/**
-	 * Quit application.
-	 * 
-	 * @return true, if application should quit
-	 */
-	public boolean quitApplication() {
-		return quitApplication;
-	}
+    /**
+     * Quit application.
+     * 
+     * @return true, if application should quit
+     */
+    public boolean quitApplication() {
+        return quitApplication;
+    }
 
-	/**
-	 * Sets the quit application.
-	 * 
-	 * @param quitApplication
-	 *            the new quit application
-	 */
-	public void setQuitApplication(boolean quitApplication) {
-		this.quitApplication = quitApplication;
-	}
+    /**
+     * Sets the quit application.
+     * 
+     * @param quitApplication the new quit application
+     */
+    public void setQuitApplication(final boolean quitApplication) {
+        this.quitApplication = quitApplication;
+    }
 
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public GraphReader getSession() {
-		return this.graphReader;
-	}
+    /**
+     * Gets the session.
+     * 
+     * @return the session
+     */
+    public GraphReader getSession() {
+        return graphReader;
+    }
 
-	/**
-	 * Gets the additional properties that should be displayed during query
-	 * output result.
-	 * 
-	 * @return the additional properties
-	 */
-	public Collection<String> getAdditionalProperties() {
-		return additionalProperties;
-	}
+    /**
+     * Gets the additional properties that should be displayed during query output result.
+     * 
+     * @return the additional properties
+     */
+    public Collection<String> getAdditionalProperties() {
+        return additionalProperties;
+    }
 
-	/**
-	 * Adds the additional property that should be displayed during query output
-	 * result.
-	 * 
-	 * @param additionalProperty
-	 *            the additional property
-	 */
-	public void addAdditionalProperty(String additionalProperty) {
-		if (additionalProperty.trim().length() > 0) {
-			this.additionalProperties.add(additionalProperty);
-		}
-	}
+    /**
+     * Adds the additional property that should be displayed during query output result.
+     * 
+     * @param additionalProperty the additional property
+     */
+    public void addAdditionalProperty(final String additionalProperty) {
+        if (additionalProperty.trim().length() > 0) {
+            additionalProperties.add(additionalProperty);
+        }
+    }
 
-	/**
-	 * Removes additional property from query output result.
-	 * 
-	 * @param additionalProperty
-	 *            the additional property
-	 */
-	public void removesAdditionalProperty(String additionalProperty) {
-		if (additionalProperty.trim().length() > 0
-				&& this.additionalProperties.contains(additionalProperty)) {
-			this.additionalProperties.remove(additionalProperty);
-		}
-	}
+    /**
+     * Removes additional property from query output result.
+     * 
+     * @param additionalProperty the additional property
+     */
+    public void removesAdditionalProperty(final String additionalProperty) {
+        if (additionalProperty.trim().length() > 0
+                && additionalProperties.contains(additionalProperty)) {
+            additionalProperties.remove(additionalProperty);
+        }
+    }
 
-	/**
-	 * Reset additional properties.
-	 */
-	public void resetAdditionalProperties() {
-		additionalProperties = new HashSet<String>();
-	}
+    /**
+     * Reset additional properties.
+     */
+    public void resetAdditionalProperties() {
+        additionalProperties = new HashSet<String>();
+    }
 
 }

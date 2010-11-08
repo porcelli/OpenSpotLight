@@ -56,23 +56,23 @@ import org.openspotlight.domain.Repository;
 
 public class XmlConfiguration {
 
-    private GlobalSettings settings;
+    private GlobalSettings  settings;
 
     private Set<Repository> repositories = new HashSet<Repository>();
 
     public Set<Repository> getRepositories() {
-        return this.repositories;
+        return repositories;
     }
 
     public GlobalSettings getSettings() {
-        return this.settings;
+        return settings;
     }
 
-    public void setRepositories( final Set<Repository> repositories ) {
+    public void setRepositories(final Set<Repository> repositories) {
         this.repositories = repositories;
     }
 
-    public void setSettings( final GlobalSettings settings ) {
+    public void setSettings(final GlobalSettings settings) {
         this.settings = settings;
     }
 

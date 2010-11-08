@@ -20,12 +20,12 @@ import com.google.inject.Provider;
 public class DefaultExecutionContextFactory extends ThreadLocalProvider<ExecutionContext> implements ExecutionContextFactory {
     @Inject
     public DefaultExecutionContextFactory(
-                                          Provider<StorageSession> sessionProvider,
-                                          GraphSessionFactory graphSessionFactory,
-                                          SimplePersistFactory simplePersistFactory,
-                                          PersistentArtifactManagerProvider persistentArtifactManagerProvider,
-                                          MutableConfigurationManager configurationManager,
-                                          @ArtifactLoaderRegistry Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
+                                          final Provider<StorageSession> sessionProvider,
+                                          final GraphSessionFactory graphSessionFactory,
+                                          final SimplePersistFactory simplePersistFactory,
+                                          final PersistentArtifactManagerProvider persistentArtifactManagerProvider,
+                                          final MutableConfigurationManager configurationManager,
+                                          @ArtifactLoaderRegistry final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
         this.sessionProvider = sessionProvider;
         this.graphSessionFactory = graphSessionFactory;
         this.simplePersistFactory = simplePersistFactory;
@@ -46,7 +46,7 @@ public class DefaultExecutionContextFactory extends ThreadLocalProvider<Executio
 
     private final MutableConfigurationManager                     configurationManager;
 
-    public static void closeResourcesIfNeeded(Object o) {
+    public static void closeResourcesIfNeeded(final Object o) {
         if (o instanceof Disposable) {
             ((Disposable) o).closeResources();
         }

@@ -67,19 +67,19 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
         command = new HelpSystemCommand(null);
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testAcceptNull() {
         assertThat(command.accept(null), is(false));
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testExecuteNull() {
         command.execute(null, null, null);
     }
 
     @Test
     public void testAcceptNullInout() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput(null);
 
         assertThat(command.accept(state), is(false));
@@ -87,7 +87,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("help");
 
         assertThat(command.accept(state), is(true));
@@ -95,7 +95,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("help  ");
 
         assertThat(command.accept(state), is(true));
@@ -103,7 +103,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("xxhelp ");
 
         assertThat(command.accept(state), is(false));
@@ -111,7 +111,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("add help");
 
         assertThat(command.accept(state), is(false));
@@ -119,7 +119,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter3() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("help something");
 
         assertThat(command.accept(state), is(false));
@@ -127,7 +127,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("help");
         state.appendBuffer("something");
 
@@ -139,13 +139,13 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter2() {
-        List<Command> commands = new LinkedList<Command>();
+        final List<Command> commands = new LinkedList<Command>();
         commands.add(new ExitSystemCommand());
         commands.add(null);
         commands.add(new SaveQueryCommand());
         command = new HelpSystemCommand(commands);
 
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("help");
         state.appendBuffer("something");
 

@@ -59,7 +59,7 @@ import org.openspotlight.storage.Partition;
  * Created by IntelliJ IDEA. User: feuteston Date: 30/03/2010 Time: 17:43:16 To change this template use File | Settings | File
  * Templates.
  */
-public interface JRedisFactory extends Disposable{
+public interface JRedisFactory extends Disposable {
 
     JRedis getFrom(Partition partition);
 

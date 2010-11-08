@@ -325,7 +325,7 @@ public abstract class AbstractGraphTest {
 
         final Iterable<JavaTypeClass> rootNodes2 = simpleFromLocation
             .findNodesByName(JavaTypeClass.class, "rootClass2", true,
-            context1);
+                context1);
 
         final Iterator<JavaTypeClass> rootNodes2It = rootNodes2.iterator();
 
@@ -957,44 +957,58 @@ public abstract class AbstractGraphTest {
             rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(oneLink.size(), is(1));
         assertThat(oneLink.contains(link1), is(true));
-        Element link = oneLink.iterator().next();
+        final Element link = oneLink.iterator().next();
         testLineRefs(simpleFromLocation, link);
 
     }
 
     private void testLineRefs(
-                              GraphReader reader,
-                              Element link) {
-        TreeLineReference lineRefs = reader.getTreeLineReferences(link);
-        boolean hasArtifact1 = false, hasArtifact2 = false, hasLineRef1 = false, hasLineRef2 = false, hasLineRef3 = false, hasLineRef4 =
+                              final GraphReader reader,
+                              final Element link) {
+        final TreeLineReference lineRefs = reader.getTreeLineReferences(link);
+        boolean hasArtifact1 = false, hasArtifact2 = false, hasLineRef1 = false, hasLineRef2 = false;
+        final boolean hasLineRef3 = false;
+        boolean hasLineRef4 =
             false;
 
-        for (ArtifactLineReference ref: lineRefs.getArtifacts()) {
+        for (final ArtifactLineReference ref: lineRefs.getArtifacts()) {
             if (sampleArtifact1.equals(ref.getArtifactId())) {
-                if (hasArtifact1) fail();
+                if (hasArtifact1) {
+                    fail();
+                }
                 hasArtifact1 = true;
-                if (ref.getStatements().iterator().hasNext() == false) fail();
-                for (StatementLineReference stm: ref.getStatements()) {
+                if (ref.getStatements().iterator().hasNext() == false) {
+                    fail();
+                }
+                for (final StatementLineReference stm: ref.getStatements()) {
                     if (sampleLineRef1.equals(stm.getStatement())) {
-                        if (stm.getLineReferences().iterator().hasNext() == false) fail();
-                        for (SimpleLineReference lineRef: stm.getLineReferences()) {
+                        if (stm.getLineReferences().iterator().hasNext() == false) {
+                            fail();
+                        }
+                        for (final SimpleLineReference lineRef: stm.getLineReferences()) {
                             if (lineRef.getBeginLine() == sampleRef11beginLine
                                 && lineRef.getEndLine() == sampleRef11endLine
                                 && lineRef.getBeginColumn() == sampleRef11beginColumn
                                 && lineRef.getEndColumn() == sampleRef11endColumn) {
-                                if (hasLineRef1) fail();
+                                if (hasLineRef1) {
+                                    fail();
+                                }
                                 hasLineRef1 = true;
                             } else if (lineRef.getBeginLine() == sampleRef12beginLine
                                 && lineRef.getEndLine() == sampleRef12endLine
                                 && lineRef.getBeginColumn() == sampleRef12beginColumn
                                 && lineRef.getEndColumn() == sampleRef12endColumn) {
-                                if (hasLineRef2) fail();
+                                if (hasLineRef2) {
+                                    fail();
+                                }
                                 hasLineRef2 = true;
                             } else if (lineRef.getBeginLine() == sampleRef13beginLine
                                 && lineRef.getEndLine() == sampleRef13endLine
                                 && lineRef.getBeginColumn() == sampleRef13beginColumn
                                 && lineRef.getEndColumn() == sampleRef13endColumn) {
-                                if (hasLineRef2) fail();
+                                if (hasLineRef2) {
+                                    fail();
+                                }
                                 hasLineRef2 = true;
                             } else {
                                 fail();
@@ -1003,18 +1017,26 @@ public abstract class AbstractGraphTest {
                     }
                 }
             } else if (sampleArtifact2.equals(ref.getArtifactId())) {
-                if (hasArtifact2) fail();
+                if (hasArtifact2) {
+                    fail();
+                }
                 hasArtifact2 = true;
-                if (ref.getStatements().iterator().hasNext() == false) fail();
-                for (StatementLineReference stm: ref.getStatements()) {
+                if (ref.getStatements().iterator().hasNext() == false) {
+                    fail();
+                }
+                for (final StatementLineReference stm: ref.getStatements()) {
                     if (sampleLineRef2.equals(stm.getStatement())) {
-                        if (stm.getLineReferences().iterator().hasNext() == false) fail();
-                        for (SimpleLineReference lineRef: stm.getLineReferences()) {
+                        if (stm.getLineReferences().iterator().hasNext() == false) {
+                            fail();
+                        }
+                        for (final SimpleLineReference lineRef: stm.getLineReferences()) {
                             if (lineRef.getBeginLine() == sampleRef21beginLine
                                 && lineRef.getEndLine() == sampleRef21endLine
                                 && lineRef.getBeginColumn() == sampleRef21beginColumn
                                 && lineRef.getEndColumn() == sampleRef21endColumn) {
-                                if (hasLineRef4) fail();
+                                if (hasLineRef4) {
+                                    fail();
+                                }
                                 hasLineRef4 = true;
                             } else {
                                 fail();
@@ -1056,10 +1078,10 @@ public abstract class AbstractGraphTest {
 
         final List<JavaType> oneLink =
             SLCollections.iterableToList(simpleFromLocation.findNodesByName(
-            JavaType.class, rootClass1, true, context1));
+                JavaType.class, rootClass1, true, context1));
         assertThat(oneLink.size(), is(1));
         assertThat(oneLink.contains(rootClass1Node), is(true));
-        Element link = oneLink.iterator().next();
+        final Element link = oneLink.iterator().next();
         testLineRefs(simpleFromLocation, link);
     }
 
@@ -1078,9 +1100,9 @@ public abstract class AbstractGraphTest {
 
         assertThat(rootClass1Node, is(not(rootClass2Node)));
 
-        List<JavaType> foundNodes =
+        final List<JavaType> foundNodes =
             SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaType.class, rootClass1, true, context1));
-        List<JavaMember> foundNodes2 =
+        final List<JavaMember> foundNodes2 =
             SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaMember.class, rootClass1, true, context1));
         assertThat(foundNodes.size(), is(1));
         assertThat(foundNodes2.size(), is(1));

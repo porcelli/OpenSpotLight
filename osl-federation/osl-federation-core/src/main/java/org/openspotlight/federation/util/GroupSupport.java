@@ -65,70 +65,69 @@ import org.openspotlight.storage.domain.StorageNode;
 
 public class GroupSupport {
 
-    private static StorageNode getRootNode( final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-        return simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
+    private static StorageNode getRootNode(final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+        return simplePersist
+            .getCurrentSession()
+            .withPartition(simplePersist.getCurrentPartition())
+            .createNewSimpleNode(
                                                                                                                         "group-differences");
     }
 
-    private static void createDifferences( final GroupDifferences differences,
+    private static void createDifferences(final GroupDifferences differences,
                                            final Repository newOne,
                                            final Set<Group> newGroups,
-                                           final Set<Group> oldGroups ) {
+                                           final Set<Group> oldGroups) {
         findChangesOnNewGroups(differences, oldGroups, newGroups);
     }
 
-    public static Set<Group> findAllGroups( final Repository repository ) {
-        if (repository == null) {
-            return Collections.<Group>emptySet();
-        }
+    public static Set<Group> findAllGroups(final Repository repository) {
+        if (repository == null) { return Collections.<Group>emptySet(); }
         final Set<Group> groups = new HashSet<Group>();
         final AggregateVisitor<Group> visitor = new AggregateVisitor<Group>(groups);
         SimpleNodeTypeVisitorSupport.<Group>acceptVisitorOn(Group.class, repository, visitor);
         return groups;
     }
 
-    private static void findChangesOnNewGroups( final GroupDifferences differences,
+    private static void findChangesOnNewGroups(final GroupDifferences differences,
                                                 final Set<Group> oldGroups,
-                                                final Set<Group> newOnes ) {
+                                                final Set<Group> newOnes) {
 
-        for (final Group newOne : newOnes) {
+        for (final Group newOne: newOnes) {
             if (!oldGroups.contains(newOne)) {
                 differences.getAddedGroups().add(newOne.getUniqueName());
             }
         }
-        for (final Group oldOne : oldGroups) {
+        for (final Group oldOne: oldGroups) {
             if (!newOnes.contains(oldOne)) {
                 differences.getRemovedGroups().add(oldOne.getUniqueName());
             }
         }
     }
 
-    public static void findDifferencesOnAllRepositories( final GroupDifferences differences,
+    public static void findDifferencesOnAllRepositories(final GroupDifferences differences,
                                                          final Repository oldOne,
-                                                         final Repository newOne ) {
+                                                         final Repository newOne) {
         final Set<Group> newGroups = findAllGroups(newOne);
         final Set<Group> oldGroups = findAllGroups(oldOne);
         createDifferences(differences, newOne, newGroups, oldGroups);
         removeDupplicates(differences);
     }
 
-    public static GroupDifferences getDifferences( final  SimplePersistCapable<StorageNode, StorageSession> simplePersist,
-                                                   String repositoryName ) {
+    public static GroupDifferences getDifferences(final SimplePersistCapable<StorageNode, StorageSession> simplePersist,
+                                                   final String repositoryName) {
         final Iterable<GroupDifferences> result = simplePersist.findByProperties(getRootNode(simplePersist),
                                                                                  GroupDifferences.class,
                                                                                  new String[] {"repositoryName"},
                                                                                  new Object[] {repositoryName});
-        Iterator<GroupDifferences> it = result.iterator();
-        if (it.hasNext()) {
-            return it.next();
-        }
+        final Iterator<GroupDifferences> it = result.iterator();
+        if (it.hasNext()) { return it.next(); }
         return null;
 
     }
 
-    private static void removeDupplicates( final GroupDifferences differences ) {
+    private static void removeDupplicates(final GroupDifferences differences) {
         final Set<String> dupplicate = new HashSet<String>();
-        for (final String s : differences.getAddedGroups()) {
+        for (final String s: differences.getAddedGroups()) {
             if (differences.getRemovedGroups().contains(s)) {
                 dupplicate.add(s);
             }
@@ -137,8 +136,8 @@ public class GroupSupport {
         differences.getRemovedGroups().removeAll(dupplicate);
     }
 
-    public static void saveDifferences( final  SimplePersistCapable<StorageNode, StorageSession> simplePersist,
-                                        final GroupDifferences differences ) {
+    public static void saveDifferences(final SimplePersistCapable<StorageNode, StorageSession> simplePersist,
+                                        final GroupDifferences differences) {
         try {
             Assertions.checkNotNull("differences", differences);
             Assertions.checkNotNull("differences.repositoryName", differences.getRepositoryName());
@@ -150,7 +149,6 @@ public class GroupSupport {
         }
     }
 
-    private GroupSupport() {
-    }
+    private GroupSupport() {}
 
 }

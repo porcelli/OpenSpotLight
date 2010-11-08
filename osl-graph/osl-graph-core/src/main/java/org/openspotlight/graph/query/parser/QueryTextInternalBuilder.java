@@ -122,7 +122,8 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    public QueryTextInternal build( final String slqlText ) throws SLInvalidQuerySyntaxException {
+    public QueryTextInternal build(final String slqlText)
+        throws SLInvalidQuerySyntaxException {
         final QueryTextInternalInfo queryInfo = buildQueryInfo(slqlText);
 
         QueryTextInternal target = null;
@@ -149,12 +150,13 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private QueryTextInternal buildQuery( final String id,
+    private QueryTextInternal buildQuery(final String id,
                                             final Set<SLQLVariable> variables,
                                             final String outputModelName,
                                             final Map<Integer, String> stringConstants,
                                             final QueryTextInternal target,
-                                            final String executeContent ) throws SLInvalidQuerySyntaxException {
+                                            final String executeContent)
+        throws SLInvalidQuerySyntaxException {
         try {
             final String className = getClassName(id);
 
@@ -162,8 +164,9 @@ public class QueryTextInternalBuilder {
                 createNewQueryClass(className, executeContent);
             }
 
-            @SuppressWarnings( "unchecked" )
-            final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
+            @SuppressWarnings("unchecked")
+            final Class<AbstractSLQueryTextInternal> queryResult =
+                (Class<AbstractSLQueryTextInternal>) ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
             constr = queryResult.getConstructor(String.class, Set.class, String.class, QueryTextInternal.class, Map.class);
@@ -176,18 +179,16 @@ public class QueryTextInternalBuilder {
 
     private class CaseInsensitiveStringStream extends ANTLRStringStream {
         public CaseInsensitiveStringStream(
-                                            String input ) {
+                                            final String input) {
             super(input);
         }
 
-        public int LA( int i ) {
-            int result = super.LA(i);
-            if (result == 0) {
-                return 0; // undefined
+        @Override
+        public int LA(final int i) {
+            final int result = super.LA(i);
+            if (result == 0) { return 0; // undefined
             }
-            if (result == CharStream.EOF) {
-                return CharStream.EOF;
-            }
+            if (result == CharStream.EOF) { return CharStream.EOF; }
             return Character.toLowerCase(result);
         }
 
@@ -200,7 +201,8 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal info
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private QueryTextInternalInfo buildQueryInfo( final String slqlText ) throws SLInvalidQuerySyntaxException {
+    private QueryTextInternalInfo buildQueryInfo(final String slqlText)
+        throws SLInvalidQuerySyntaxException {
         try {
             final InputStream stream = ClassPathResource.getResourceFromClassPath(this.getClass(), "SLQLTemplate.stg");
             final Reader reader = new InputStreamReader(stream);
@@ -212,10 +214,8 @@ public class QueryTextInternalBuilder {
 
             final SLQLParser parser = new SLQLParser(tokens);
             parser.setIsTesting(false);
-            if (parser.hasErrors()) {
-                throw parser.getErrors().get(0);
-            }
-            final CommonTree result = (CommonTree)parser.compilationUnit().tree;
+            if (parser.hasErrors()) { throw parser.getErrors().get(0); }
+            final CommonTree result = (CommonTree) parser.compilationUnit().tree;
 
             final String uniqueId = Sha1.getSha1SignatureEncodedAsHexa(result.toStringTree().toLowerCase());
 
@@ -248,9 +248,9 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private QueryTextInternal buildTargetQuery( final String targetUniqueId,
+    private QueryTextInternal buildTargetQuery(final String targetUniqueId,
                                                   final String defineTargetContent,
-                                                  final Map<Integer, String> stringConstants )
+                                                  final Map<Integer, String> stringConstants)
         throws SLInvalidQuerySyntaxException {
         try {
             final String className = getClassName(targetUniqueId);
@@ -259,8 +259,9 @@ public class QueryTextInternalBuilder {
                 createNewQueryClass(className, defineTargetContent);
             }
 
-            @SuppressWarnings( "unchecked" )
-            final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
+            @SuppressWarnings("unchecked")
+            final Class<AbstractSLQueryTextInternal> queryResult =
+                (Class<AbstractSLQueryTextInternal>) ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
             constr = queryResult.getConstructor(String.class, Set.class, String.class, QueryTextInternal.class, Map.class);
@@ -277,7 +278,7 @@ public class QueryTextInternalBuilder {
      * @param queryInfo the query info
      * @return the set< slql variable>
      */
-    private Set<SLQLVariable> buildVariableCollection( final QueryTextInternalInfo queryInfo ) {
+    private Set<SLQLVariable> buildVariableCollection(final QueryTextInternalInfo queryInfo) {
         final Set<SLQLVariable> result = new HashSet<SLQLVariable>();
 
         final Collection<SLQLVariable> tempBoolVars = getVariablesByDataType(SLQLVariableDataType.BOOLEAN,
@@ -312,8 +313,9 @@ public class QueryTextInternalBuilder {
      * @param executeContent the execute content
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private void createNewQueryClass( final String className,
-                                      final String executeContent ) throws SLInvalidQuerySyntaxException {
+    private void createNewQueryClass(final String className,
+                                      final String executeContent)
+        throws SLInvalidQuerySyntaxException {
         try {
 
             final ClassPool pool = ClassPool.getDefault();
@@ -322,7 +324,7 @@ public class QueryTextInternalBuilder {
             final CtClass clas = pool.makeClass(className, superClass);
 
             if (CONSTRUCTOR_ARGS == null) {
-                for (final Constructor<?> constructor : AbstractSLQueryTextInternal.class.getConstructors()) {
+                for (final Constructor<?> constructor: AbstractSLQueryTextInternal.class.getConstructors()) {
                     if (constructor.getParameterTypes().length > 0) {
                         CONSTRUCTOR_ARGS = new CtClass[constructor.getParameterTypes().length];
                         CONSTRUCTOR_THROWS = new CtClass[constructor.getExceptionTypes().length];
@@ -336,7 +338,7 @@ public class QueryTextInternalBuilder {
                     }
                 }
 
-                for (final Method method : AbstractSLQueryTextInternal.class.getMethods()) {
+                for (final Method method: AbstractSLQueryTextInternal.class.getMethods()) {
                     if (method.getName().equals("execute")) {
                         EXECUTE_ARGS = new CtClass[method.getParameterTypes().length];
                         EXECUTE_THROWS = new CtClass[method.getExceptionTypes().length];
@@ -372,7 +374,7 @@ public class QueryTextInternalBuilder {
      * @param id the id
      * @return the class name
      */
-    private String getClassName( final String id ) {
+    private String getClassName(final String id) {
         return "org.openspotlight.graph.query.SLQLQuery$A" + id;
     }
 
@@ -385,12 +387,12 @@ public class QueryTextInternalBuilder {
      * @param domainVariables the domain variables
      * @return the variables by data type
      */
-    private Collection<SLQLVariable> getVariablesByDataType( final SLQLVariableDataType dataType,
+    private Collection<SLQLVariable> getVariablesByDataType(final SLQLVariableDataType dataType,
                                                              final Collection<String> variables,
                                                              final Map<String, String> messageVariables,
-                                                             final Map<String, Set<Serializable>> domainVariables ) {
+                                                             final Map<String, Set<Serializable>> domainVariables) {
         final Set<SLQLVariable> result = new HashSet<SLQLVariable>(variables.size());
-        for (final String activeVariableName : variables) {
+        for (final String activeVariableName: variables) {
             SLQLVariable variable = null;
             switch (dataType) {
                 case INTEGER:

@@ -66,7 +66,7 @@ public class Messages {
      * @param key
      * @return the string for this key
      */
-    public static String getString( final String key ) {
+    public static String getString(final String key) {
         try {
             return Resource_BUNDLE.getString(key);
         } catch (final MissingResourceException e) {

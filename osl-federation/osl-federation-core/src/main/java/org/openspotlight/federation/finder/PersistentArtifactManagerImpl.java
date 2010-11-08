@@ -62,150 +62,158 @@ import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.StorageNode;
 
 public class PersistentArtifactManagerImpl extends
-		AbstractPersistentArtifactManager {
+        AbstractPersistentArtifactManager {
 
-	private final String repositoryName;
+    private final String                                                                             repositoryName;
 
-	private SimplePersistCapable<org.openspotlight.storage.domain.StorageNode, StorageSession> simplePersist;
+    private final SimplePersistCapable<org.openspotlight.storage.domain.StorageNode, StorageSession> simplePersist;
 
-	public PersistentArtifactManagerImpl(Repository repository,
-			SimplePersistFactory factory) {
-		this.simplePersist = factory
-				.createSimplePersist(RegularPartitions.FEDERATION);
-		this.repositoryName = repository.getName();
-	}
+    public PersistentArtifactManagerImpl(final Repository repository,
+                                         final SimplePersistFactory factory) {
+        simplePersist = factory
+                .createSimplePersist(RegularPartitions.FEDERATION);
+        repositoryName = repository.getName();
+    }
 
-	@Override
-	protected <A extends Artifact> void internalAddTransient(A artifact)
-			throws Exception {
-		artifact.setRepositoryName(repositoryName);
-		simplePersist.convertBeanToNode(artifact);
-	}
+    @Override
+    protected <A extends Artifact> void internalAddTransient(final A artifact)
+            throws Exception {
+        artifact.setRepositoryName(repositoryName);
+        simplePersist.convertBeanToNode(artifact);
+    }
 
-	@Override
-	protected void internalCloseResources() throws Exception {
+    @Override
+    protected void internalCloseResources()
+        throws Exception {
 
-	}
+    }
 
-	@Override
-	protected <A extends Artifact> A internalFindByOriginalName(
-			ArtifactSource source, Class<A> type, String originName)
-			throws Exception {
-		return internalFind(type, createOriginName(source, originName),
-				PROPERTY_NAME_OLD_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
-	}
+    @Override
+    protected <A extends Artifact> A internalFindByOriginalName(
+                                                                final ArtifactSource source, final Class<A> type,
+                                                                final String originName)
+            throws Exception {
+        return internalFind(type, createOriginName(source, originName),
+                PROPERTY_NAME_OLD_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
+    }
 
-	private String createOriginName(ArtifactSource source, String originName) {
-		return concatPaths(source.getInitialLookup(), originName);
-	}
+    private String createOriginName(final ArtifactSource source, final String originName) {
+        return concatPaths(source.getInitialLookup(), originName);
+    }
 
-	@Override
-	protected <A extends Artifact> A internalFindByPath(Class<A> type,
-			String path) throws Exception {
-		return internalFind(type, path,
-				PROPERTY_NAME_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
-	}
+    @Override
+    protected <A extends Artifact> A internalFindByPath(final Class<A> type,
+                                                        final String path)
+        throws Exception {
+        return internalFind(type, path,
+                PROPERTY_NAME_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
+    }
 
-	private <A> A internalFind(Class<A> type, String path, String propertyName)
-			throws Exception {
-		return simplePersist.findUniqueByProperties(type,
-				new String[] { propertyName }, new Object[] { path });
+    private <A> A internalFind(final Class<A> type, final String path, final String propertyName)
+            throws Exception {
+        return simplePersist.findUniqueByProperties(type,
+                new String[] {propertyName}, new Object[] {path});
 
-	}
+    }
 
-	@Override
-	protected <A extends Artifact> boolean internalIsTypeSupported(Class<A> type)
-			throws Exception {
-		return true;
-	}
+    @Override
+    protected <A extends Artifact> boolean internalIsTypeSupported(final Class<A> type)
+            throws Exception {
+        return true;
+    }
 
-	@Override
-	protected <A extends Artifact> void internalMarkAsRemoved(A artifact)
-			throws Exception {
-		final StorageNode node = simplePersist.convertBeanToNode(artifact);
-		simplePersist.getCurrentSession().removeNode(node);
-	}
+    @Override
+    protected <A extends Artifact> void internalMarkAsRemoved(final A artifact)
+            throws Exception {
+        final StorageNode node = simplePersist.convertBeanToNode(artifact);
+        simplePersist.getCurrentSession().removeNode(node);
+    }
 
-	@Override
-	protected <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(
-			ArtifactSource source, Class<A> type, String initialPath)
-			throws Exception {
-		Iterable<String> result = privateRetrieveNames(type, initialPath,
-				PROPERTY_NAME_OLD_ARTIFACT_PATH);
-		return result;
+    @Override
+    protected <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(
+                                                                                  final ArtifactSource source,
+                                                                                  final Class<A> type,
+                                                                                  final String initialPath)
+            throws Exception {
+        final Iterable<String> result = privateRetrieveNames(type, initialPath,
+                PROPERTY_NAME_OLD_ARTIFACT_PATH);
+        return result;
 
-	}
+    }
 
-	@Override
-	protected void internalSaveTransientData() throws Exception {
-		simplePersist.getCurrentSession().flushTransient();
-	}
+    @Override
+    protected void internalSaveTransientData()
+        throws Exception {
+        simplePersist.getCurrentSession().flushTransient();
+    }
 
-	@Override
-	protected <A extends Artifact> Iterable<String> internalRetrieveNames(
-			Class<A> type, String initialPath) throws Exception {
-		return privateRetrieveNames(type, initialPath,
-				PROPERTY_NAME_ARTIFACT_PATH);
+    @Override
+    protected <A extends Artifact> Iterable<String> internalRetrieveNames(
+                                                                          final Class<A> type, final String initialPath)
+        throws Exception {
+        return privateRetrieveNames(type, initialPath,
+                PROPERTY_NAME_ARTIFACT_PATH);
 
-	}
+    }
 
-	private static final String[] PROPERTY_NAME_ARTIFACT_PATH = {
-			"artifactCompleteName", "mappedTo" };
+    private static final String[] PROPERTY_NAME_ARTIFACT_PATH     = {
+                                                                  "artifactCompleteName", "mappedTo"};
 
-	private static final String[] PROPERTY_NAME_OLD_ARTIFACT_PATH = {
-			"originalName", "mappedFrom" };
+    private static final String[] PROPERTY_NAME_OLD_ARTIFACT_PATH = {
+                                                                  "originalName", "mappedFrom"};
 
-	private static final int IDX_ARTIFACT_NAME = 0, IDX_MAPPED = 1;
+    private static final int      IDX_ARTIFACT_NAME               = 0, IDX_MAPPED = 1;
 
-	private <A> Iterable<String> privateRetrieveNames(final Class<A> type,
-			final String initialPath, final String[] propertyNameAndPath)
-			throws Exception {
-		Iterable<StorageNode> foundNodes;
-		String nodeName = simplePersist.getInternalMethods().getNodeName(type);
-		if (initialPath != null) {
-			foundNodes = simplePersist.getPartitionMethods().createCriteria()
-					.withNodeEntry(nodeName)
-					.withProperty(propertyNameAndPath[IDX_MAPPED])
-					.equalsTo(initialPath).buildCriteria()
-					.andFind(simplePersist.getCurrentSession());
-		} else {
-			foundNodes = simplePersist.getPartitionMethods().findByType(
-					nodeName);
+    private <A> Iterable<String> privateRetrieveNames(final Class<A> type,
+                                                      final String initialPath, final String[] propertyNameAndPath)
+            throws Exception {
+        Iterable<StorageNode> foundNodes;
+        final String nodeName = simplePersist.getInternalMethods().getNodeName(type);
+        if (initialPath != null) {
+            foundNodes = simplePersist.getPartitionMethods().createCriteria()
+                    .withNodeEntry(nodeName)
+                    .withProperty(propertyNameAndPath[IDX_MAPPED])
+                    .equalsTo(initialPath).buildCriteria()
+                    .andFind(simplePersist.getCurrentSession());
+        } else {
+            foundNodes = simplePersist.getPartitionMethods().findByType(
+                    nodeName);
 
-		}
+        }
 
-		IteratorBuilder.SimpleIteratorBuilder<String, StorageNode> b = createIteratorBuilder();
-		b.withConverter(new IteratorBuilder.Converter<String, StorageNode>() {
-			@Override
-			public String convert(StorageNode nodeEntry) throws Exception {
-				String name = nodeEntry.getPropertyValueAsString(
-						simplePersist.getCurrentSession(),
-						propertyNameAndPath[IDX_ARTIFACT_NAME]);
-				if (name == null) {
-					throw new IllegalStateException("Mandatory property "
-							+ propertyNameAndPath[IDX_ARTIFACT_NAME]
-							+ " from node " + nodeEntry + " with null value");
-				}
-				return name;
-			}
-		});
-		Iterable<String> result = b.withItems(foundNodes).andBuild();
-		return result;
-	}
+        final IteratorBuilder.SimpleIteratorBuilder<String, StorageNode> b = createIteratorBuilder();
+        b.withConverter(new IteratorBuilder.Converter<String, StorageNode>() {
+            @Override
+            public String convert(final StorageNode nodeEntry)
+                throws Exception {
+                final String name = nodeEntry.getPropertyValueAsString(
+                        simplePersist.getCurrentSession(),
+                        propertyNameAndPath[IDX_ARTIFACT_NAME]);
+                if (name == null) {
+                    throw new IllegalStateException("Mandatory property "
+                            + propertyNameAndPath[IDX_ARTIFACT_NAME]
+                            + " from node " + nodeEntry + " with null value");
+                }
+                return name;
+            }
+        });
+        final Iterable<String> result = b.withItems(foundNodes).andBuild();
+        return result;
+    }
 
-	@Override
-	protected boolean isMultithreaded() {
-		return true;
-	}
+    @Override
+    protected boolean isMultithreaded() {
+        return true;
+    }
 
-	@Override
-	public StorageSession getStorageSession() {
-		return this.simplePersist.getCurrentSession();
-	}
+    @Override
+    public StorageSession getStorageSession() {
+        return simplePersist.getCurrentSession();
+    }
 
-	@Override
-	public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
-		return simplePersist;
-	}
+    @Override
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
+        return simplePersist;
+    }
 
 }

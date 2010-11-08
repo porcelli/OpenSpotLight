@@ -65,18 +65,17 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         String outputFileName = null;
         if (state.getInput().contains(" > ")) {
-            int index = state.getInput().lastIndexOf(" > ");
+            final int index = state.getInput().lastIndexOf(" > ");
             outputFileName = state.getInput().substring(index + 3);
         }
         if (state.getLastQuery() != null || state.getLastQuery().trim().length() > 0) {
@@ -92,6 +91,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "/";
     }
@@ -99,6 +99,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "executes the last slql query.";
     }
@@ -106,6 +107,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return "/ >";
     }
@@ -113,6 +115,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return FileCompletionMode.CONTAINS;
     }
@@ -120,6 +123,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return true;
     }
@@ -127,12 +131,11 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() == null && state.getInput().trim().equals("/") || state.getActiveCommand() == null
-            && state.getInput().trim().startsWith("/ > ")) {
-            return true;
-        }
+            && state.getInput().trim().startsWith("/ > ")) { return true; }
         return false;
     }
 }

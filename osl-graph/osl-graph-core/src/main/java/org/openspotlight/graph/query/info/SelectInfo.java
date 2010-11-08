@@ -86,7 +86,7 @@ public abstract class SelectInfo {
      * 
      * @param keepResult the new keep result
      */
-    public void setKeepResult( boolean keepResult ) {
+    public void setKeepResult(final boolean keepResult) {
         this.keepResult = keepResult;
     }
 
@@ -104,7 +104,7 @@ public abstract class SelectInfo {
      * 
      * @param times the new x times
      */
-    public void setXTimes( Integer times ) {
+    public void setXTimes(final Integer times) {
         xTimes = times;
     }
 
@@ -122,7 +122,7 @@ public abstract class SelectInfo {
      * 
      * @param limit the new limit
      */
-    public void setLimit( Integer limit ) {
+    public void setLimit(final Integer limit) {
         this.limit = limit;
     }
 
@@ -140,7 +140,7 @@ public abstract class SelectInfo {
      * 
      * @param offset the new offset
      */
-    public void setOffset( Integer offset ) {
+    public void setOffset(final Integer offset) {
         this.offset = offset;
     }
 
@@ -149,19 +149,19 @@ public abstract class SelectInfo {
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         if (isKeepResult()) {
             StringBuilderUtil.append(buffer, "\nKEEP RESULT");
         }
-        Integer xTimes = getXTimes();
+        final Integer xTimes = getXTimes();
         if (xTimes != null) {
             StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDEFINITE ? "INDEFINITE" : "" + xTimes), " TIMES");
         }
 
-        Integer limit = getLimit();
+        final Integer limit = getLimit();
         if (limit != null) {
             StringBuilderUtil.append(buffer, "\nLIMIT ", limit);
-            Integer offset = getOffset();
+            final Integer offset = getOffset();
             if (offset != null) {
                 StringBuilderUtil.append(buffer, " OFFSET ", offset);
             }

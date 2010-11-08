@@ -55,7 +55,7 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "routine_parameter" )
+@Name("routine_parameter")
 public class RoutineParameter implements SimpleNodeType, Serializable {
     private static final long         serialVersionUID = -4738878595542581888L;
 
@@ -97,31 +97,31 @@ public class RoutineParameter implements SimpleNodeType, Serializable {
         return type;
     }
 
-    public void setColumnSize( final int columnSize ) {
+    public void setColumnSize(final int columnSize) {
         this.columnSize = columnSize;
     }
 
-    public void setDecimalSize( final int decimalSize ) {
+    public void setDecimalSize(final int decimalSize) {
         this.decimalSize = decimalSize;
     }
 
-    public void setName( final String name ) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setNullable( final NullableSqlType nullable ) {
+    public void setNullable(final NullableSqlType nullable) {
         this.nullable = nullable;
     }
 
-    public void setParameterType( final RoutineParameterType parameterType ) {
+    public void setParameterType(final RoutineParameterType parameterType) {
         this.parameterType = parameterType;
     }
 
-    public void setRoutine( final RoutineArtifact routine ) {
+    public void setRoutine(final RoutineArtifact routine) {
         this.routine = routine;
     }
 
-    public void setType( final ColumnType type ) {
+    public void setType(final ColumnType type) {
         this.type = type;
     }
 }

@@ -62,20 +62,22 @@ public class TestSLQueryTextInternalBuilder {
     private final QueryTextInternalBuilder queryBuilder = new QueryTextInternalBuilder();
 
     @Test
-    public void testCheckQueryExists() throws SLInvalidQuerySyntaxException {
+    public void testCheckQueryExists()
+        throws SLInvalidQuerySyntaxException {
         final String select = "select *;";
-        final QueryTextInternal result = this.queryBuilder.build(select);
+        final QueryTextInternal result = queryBuilder.build(select);
 
         final String select2 = "     select *      ;   ";
-        final QueryTextInternal result2 = this.queryBuilder.build(select2);
+        final QueryTextInternal result2 = queryBuilder.build(select2);
 
         assertThat(result.getClass().getName(), is(result2.getClass().getName()));
     }
 
     @Test
-    public void testSelectStar() throws SLInvalidQuerySyntaxException {
+    public void testSelectStar()
+        throws SLInvalidQuerySyntaxException {
         final String select = "select *;";
-        final QueryTextInternal result = this.queryBuilder.build(select);
+        final QueryTextInternal result = queryBuilder.build(select);
 
         assertThat(result, notNullValue());
         Assert.assertNotNull(result);

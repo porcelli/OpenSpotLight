@@ -17,10 +17,10 @@ public class MongoFileSystemLoadingStressTest extends AbstractFileSystemLoadingS
     @Override
     protected void clearData()
         throws Exception {
-        BasicDBObject dbObject = new BasicDBObject();
-        for (String dbName: mongo.getDatabaseNames()) {
-            DB db = mongo.getDB(dbName);
-            for (String colName: db.getCollectionNames()) {
+        final BasicDBObject dbObject = new BasicDBObject();
+        for (final String dbName: mongo.getDatabaseNames()) {
+            final DB db = mongo.getDB(dbName);
+            for (final String colName: db.getCollectionNames()) {
                 db.getCollection(colName).remove(dbObject);
             }
         }

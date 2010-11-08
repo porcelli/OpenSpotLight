@@ -110,17 +110,17 @@ public enum ScriptType {
     VIEW(StringArtifact.class, ViewArtifact.class);
 
     private ScriptType(
-                        Class<? extends Artifact>... classes ) {
+                        final Class<? extends Artifact>... classes) {
         types = Arrays.asList(classes);
     }
 
     private List<Class<? extends Artifact>> types;
 
-    public boolean acceptType( Class<? extends Artifact> type ) {
+    public boolean acceptType(final Class<? extends Artifact> type) {
         return types.contains(type);
     }
 
-    public boolean acceptName( String name ) {
-        return name != null && name.toLowerCase().contains(this.name().toLowerCase());
+    public boolean acceptName(final String name) {
+        return name != null && name.toLowerCase().contains(name().toLowerCase());
     }
 }

@@ -52,16 +52,16 @@ import org.openspotlight.graph.test.BaseGraphTest;
 
 /**
  * The Class SLGraphTest.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 
 public class SLRemoteGraphTest extends BaseGraphTest {
 
-	@Override
-	public void addAddMultipleLinkEmptyCase() {
-		// TODO Auto-generated method stub
-		
-	}
-    
+    @Override
+    public void addAddMultipleLinkEmptyCase() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

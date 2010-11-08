@@ -49,11 +49,12 @@
 package org.openspotlight.graph.test.domain.node;
 
 import org.openspotlight.graph.Node;
+
 /**
  * The Interface JavaTypeMethod.
  * 
  * @author Vitor Hugo Chagas
  */
 public abstract class JavaTypeMethod extends Node {
-	
+
 }

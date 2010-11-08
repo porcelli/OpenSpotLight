@@ -68,19 +68,17 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         try {
             reader.clearScreen();
-        } catch (IOException e) {
-        }
+        } catch (final IOException e) {}
         state.setInput(null);
         state.clearBuffer();
     }
@@ -88,6 +86,7 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "clear";
     }
@@ -95,6 +94,7 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return getCommand();
     }
@@ -102,6 +102,7 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "clear the terminal screen";
     }
@@ -109,6 +110,7 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
@@ -116,6 +118,7 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
@@ -123,6 +126,7 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }
@@ -130,11 +134,10 @@ public class ClearSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("clear")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("clear")) { return true; }
         return false;
     }
 

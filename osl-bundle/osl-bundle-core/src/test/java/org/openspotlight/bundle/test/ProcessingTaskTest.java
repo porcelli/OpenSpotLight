@@ -13,24 +13,28 @@ import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
- * Created by IntelliJ IDEA.
- * User: feu
- * Date: Oct 4, 2010
- * Time: 3:08:11 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: feu Date: Oct 4, 2010 Time: 3:08:11 PM To change this template use File | Settings | File
+ * Templates.
  */
 public class ProcessingTaskTest extends AbstractBundleTest {
 
     @Test
-    public void shouldProcessFederatedSources() throws Exception {
+    public void shouldProcessFederatedSources()
+        throws Exception {
         getScheduler().fireSchedulable(null, null, getArtifactSource());
-        Iterator<Triple<Class<? extends Callable>, Artifact, String>> it = getData().iterator();
-        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(ExampleProcessingTask.class,null,"bundle task 1")));
-        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(AnotherExampleProcessingTask.class,null,"bundle task 2")));
-        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(AnotherExampleProcessingTask.class,null,"bundle task 3")));
-        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(AnotherExampleProcessingTask.class,null,"bundle task 4")));
-        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(AnotherExampleProcessingTask.class,null,"bundle task 5")));
-        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(AnotherOneExampleProcessingTask.class,null,"bundle task 6")));
+        final Iterator<Triple<Class<? extends Callable>, Artifact, String>> it = getData().iterator();
+        assertThat(it.next(),
+            is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(ExampleProcessingTask.class, null, "bundle task 1")));
+        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(
+            AnotherExampleProcessingTask.class, null, "bundle task 2")));
+        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(
+            AnotherExampleProcessingTask.class, null, "bundle task 3")));
+        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(
+            AnotherExampleProcessingTask.class, null, "bundle task 4")));
+        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(
+            AnotherExampleProcessingTask.class, null, "bundle task 5")));
+        assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(
+            AnotherOneExampleProcessingTask.class, null, "bundle task 6")));
     }
 
     @Override

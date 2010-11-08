@@ -72,22 +72,21 @@ public enum ConditionalOperatorType implements OperatorType {
      * @param symbol the symbol
      */
     ConditionalOperatorType(
-                               String symbol ) {
+                               final String symbol) {
         this.symbol = symbol;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.openspotlight.graph.query.SLOperatorType#symbol()
      */
+    @Override
     public String symbol() {
         return symbol;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Enum#toString()
      */
     @Override
@@ -102,9 +101,9 @@ public enum ConditionalOperatorType implements OperatorType {
      * @param rightOperand the right operand
      * @return the string
      */
-    public String xPathExpression( Object leftOperand,
-                                   Object rightOperand ) {
-        StringBuilder buffer = new StringBuilder();
+    public String xPathExpression(final Object leftOperand,
+                                   final Object rightOperand) {
+        final StringBuilder buffer = new StringBuilder();
         StringBuilderUtil.append(buffer, leftOperand, ' ', symbol.toLowerCase(), ' ', rightOperand);
         return buffer.toString();
     }

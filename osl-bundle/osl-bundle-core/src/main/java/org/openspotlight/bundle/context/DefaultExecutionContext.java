@@ -77,12 +77,12 @@ public class DefaultExecutionContext implements ExecutionContext {
     private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
 
     @Inject
-    public DefaultExecutionContext(Provider<StorageSession> sessionProvider,
-                                   GraphSessionFactory graphSessionFactory,
-                                   SimplePersistFactory simplePersistFactory,
-                                   PersistentArtifactManagerProvider persistentArtifactManagerProvider,
-                                   MutableConfigurationManager configurationManager,
-                                   @ArtifactLoaderRegistry Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
+    public DefaultExecutionContext(final Provider<StorageSession> sessionProvider,
+                                   final GraphSessionFactory graphSessionFactory,
+                                   final SimplePersistFactory simplePersistFactory,
+                                   final PersistentArtifactManagerProvider persistentArtifactManagerProvider,
+                                   final MutableConfigurationManager configurationManager,
+                                   @ArtifactLoaderRegistry final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
         this.sessionProvider = sessionProvider;
         this.graphSessionFactory = graphSessionFactory;
         this.simplePersistFactory = simplePersistFactory;
@@ -92,6 +92,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     }
 
+    @Override
     public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
         return loaderRegistry;
     }
@@ -110,7 +111,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     private final MutableConfigurationManager       configurationManager;
 
-    public static void closeResourcesIfNeeded(Object o) {
+    public static void closeResourcesIfNeeded(final Object o) {
         if (o instanceof Disposable) {
             ((Disposable) o).closeResources();
         }
@@ -130,20 +131,22 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     @Override
     public SimpleGraphSession openSimple() {
-        if (openedSimpleGraphSession == null)
+        if (openedSimpleGraphSession == null) {
             openedSimpleGraphSession = graphSessionFactory.openSimple();
+        }
         return openedSimpleGraphSession;
     }
 
     @Override
     public FullGraphSession openFull() {
-        if (openedFullGraphSession == null)
+        if (openedFullGraphSession == null) {
             openedFullGraphSession = graphSessionFactory.openFull();
+        }
         return openedFullGraphSession;
     }
 
     @Override
-    public FullGraphSession openFull(String artifactId)
+    public FullGraphSession openFull(final String artifactId)
             throws IllegalArgumentException {
         return graphSessionFactory.openFull(artifactId);
     }
@@ -175,7 +178,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     @Override
     public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
-                                                                              Partition partition) {
+                                                                              final Partition partition) {
         return simplePersistFactory.createSimplePersist(partition);
     }
 

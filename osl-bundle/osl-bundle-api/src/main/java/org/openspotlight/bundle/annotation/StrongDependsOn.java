@@ -56,5 +56,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface StrongDependsOn {
-	Dependency[] value();
+    Dependency[] value();
 }

@@ -63,7 +63,7 @@ import com.mongodb.Mongo;
  */
 public class MongoStorageSessionTest extends AbstractStorageSessionTest {
 
-    private final Mongo          mongo;
+    private final Mongo mongo;
 
     public MongoStorageSessionTest() {
         try {

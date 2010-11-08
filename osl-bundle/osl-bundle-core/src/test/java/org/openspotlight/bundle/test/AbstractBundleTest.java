@@ -28,21 +28,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 /**
- * Created by IntelliJ IDEA.
- * User: feu
- * Date: Oct 5, 2010
- * Time: 2:55:10 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: feu Date: Oct 5, 2010 Time: 2:55:10 PM To change this template use File | Settings | File
+ * Templates.
  */
 public abstract class AbstractBundleTest {
 
     public abstract Repository createRepository();
 
-    private Repository repository;
+    private Repository     repository;
 
-    private Scheduler scheduler;
+    private Scheduler      scheduler;
 
-    private Group group;
+    private Group          group;
 
     private ArtifactSource artifactSource;
 
@@ -63,10 +60,10 @@ public abstract class AbstractBundleTest {
     }
 
     @Before
-    public void setup() throws Exception {
+    public void setup()
+        throws Exception {
 
-
-        Injector injector = createInjector();
+        final Injector injector = createInjector();
 
         repository = createRepository();
         group = repository.getGroups().iterator().next();
@@ -77,13 +74,12 @@ public abstract class AbstractBundleTest {
 
     }
 
-
     protected Injector createInjector() {
-        Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
-//                    schedulableMap.put(Group.class, SampleGroupSchedulableCommand.class);
-                    List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
-                    loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-                    Injector injector = Guice.createInjector(
+        final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
+        //                    schedulableMap.put(Group.class, SampleGroupSchedulableCommand.class);
+        final List<Class<? extends OriginArtifactLoader>> loaderRegistry = newArrayList();
+        loaderRegistry.add(FileSystemOriginArtifactLoader.class);
+        final Injector injector = Guice.createInjector(
                             new SchedulerModule(schedulableMap), new ExecutionContextModule(loaderRegistry),
                             new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
@@ -93,6 +89,5 @@ public abstract class AbstractBundleTest {
 
         return injector;
     }
-
 
 }

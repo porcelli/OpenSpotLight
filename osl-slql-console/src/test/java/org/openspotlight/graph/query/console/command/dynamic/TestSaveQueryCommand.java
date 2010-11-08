@@ -64,7 +64,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Override
     protected void setupCommand() {
-        this.command = new SaveQueryCommand();
+        command = new SaveQueryCommand();
     }
 
     @After
@@ -72,19 +72,19 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
         new File("out.slql").delete();
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testAcceptNull() {
         assertThat(command.accept(null), is(false));
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testExecuteNull() {
         command.execute(null, null, null);
     }
 
     @Test
     public void testAcceptNullInout() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput(null);
 
         assertThat(command.accept(state), is(false));
@@ -92,7 +92,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("save filename.slql");
 
         assertThat(command.accept(state), is(true));
@@ -100,7 +100,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("save something");
 
         assertThat(command.accept(state), is(true));
@@ -108,7 +108,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("save ");
 
         assertThat(command.accept(state), is(false));
@@ -116,7 +116,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("savex property");
 
         assertThat(command.accept(state), is(false));
@@ -124,7 +124,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter3() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("add save");
 
         assertThat(command.accept(state), is(false));
@@ -132,7 +132,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testAcceptInValidParameter4() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("savex property ");
 
         assertThat(command.accept(state), is(false));
@@ -140,7 +140,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
     @Test
     public void testValidParameter() {
-        ConsoleState state = new ConsoleState(null);
+        final ConsoleState state = new ConsoleState(null);
         state.setInput("save out.slql");
         state.setLastQuery("select *;");
         state.appendBuffer("something");
@@ -149,7 +149,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
         assertThat(state.getBuffer().length(), is(0));
 
-        File generatedFile = new File("out.slql");
+        final File generatedFile = new File("out.slql");
 
         assertThat(generatedFile.isFile(), is(true));
         assertThat(getFileContent(generatedFile), is("select *;\n"));
@@ -157,8 +157,8 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
         assertThat(state.getInput(), is(""));
     }
 
-    private String getFileContent( File in ) {
-        StringBuilder sb = new StringBuilder();
+    private String getFileContent(final File in) {
+        final StringBuilder sb = new StringBuilder();
         LineNumberReader fileReader;
         try {
             fileReader = new LineNumberReader(new FileReader(in));
@@ -167,7 +167,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
                 sb.append("\n");
             }
             return sb.toString();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return "";
         }
     }

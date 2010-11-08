@@ -83,7 +83,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         return encodingForFileContent;
     }
 
-    public void setEncodingForFileContent(String encodingForFileContent) {
+    public void setEncodingForFileContent(final String encodingForFileContent) {
         this.encodingForFileContent = encodingForFileContent;
     }
 
@@ -106,6 +106,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
 
     private volatile transient int                hashCode;
 
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof ArtifactSource)) { return false; }
         final ArtifactSource that = (ArtifactSource) o;
@@ -115,6 +116,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         return result;
     }
 
+    @Override
     public List<String> getCronInformation() {
         return cronInformation;
     }
@@ -157,6 +159,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         return repository;
     }
 
+    @Override
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
@@ -194,7 +197,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         return rootFolder;
     }
 
-    public void setRootFolder(String rootFolder) {
+    public void setRootFolder(final String rootFolder) {
         this.rootFolder = rootFolder;
     }
 
@@ -242,11 +245,13 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         this.repository = repository;
     }
 
+    @Override
     public String toUniqueJobString() {
         return getRepository().getName() + ":" + getName() + ":"
                 + getInitialLookup();
     }
 
+    @Override
     @TransientProperty
     public Repository getRepositoryForSchedulable() {
         return getRepository();
@@ -256,9 +261,8 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         return tasks;
     }
 
-    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
         this.tasks = tasks;
     }
 
-    
 }

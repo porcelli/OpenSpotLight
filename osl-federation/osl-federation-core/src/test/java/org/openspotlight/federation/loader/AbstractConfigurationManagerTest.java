@@ -68,11 +68,12 @@ public abstract class AbstractConfigurationManagerTest {
 
     /**
      * Should save and load the configuration.
-     *
+     * 
      * @throws Exception the exception
      */
     @Test
-    public void shouldSaveAndLoadTheConfiguration() throws Exception {
+    public void shouldSaveAndLoadTheConfiguration()
+        throws Exception {
         // FIXME Create a detailed and real configuration to be used as an
         // example
         final GlobalSettings setting = new GlobalSettings();
@@ -126,6 +127,6 @@ public abstract class AbstractConfigurationManagerTest {
                 .getRepositoryByName("repository name");
         assertThat(sessing1, is(notNullValue()));
         assertThat(repo1, is(repository));
-	}
+    }
 
 }

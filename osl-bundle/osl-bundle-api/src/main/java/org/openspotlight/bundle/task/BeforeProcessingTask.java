@@ -54,7 +54,7 @@ import org.openspotlight.bundle.context.ExecutionContextProvider;
 
 public abstract class BeforeProcessingTask extends ProcessingTask {
 
-    protected BeforeProcessingTask(ExecutionContextProvider provider, Map<String, String> properties) {
+    protected BeforeProcessingTask(final ExecutionContextProvider provider, final Map<String, String> properties) {
         super(provider, properties);
     }
 

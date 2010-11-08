@@ -59,13 +59,12 @@ public class AllTypesInfo {
     private SelectStatementInfo selectInfo;
 
     /** The on where. */
-    private boolean               onWhere;
+    private boolean             onWhere;
 
     /**
      * Instantiates a new sL all types info.
      */
-    public AllTypesInfo() {
-    }
+    public AllTypesInfo() {}
 
     /**
      * Instantiates a new sL all types info.
@@ -73,7 +72,7 @@ public class AllTypesInfo {
      * @param selectInfo the select info
      */
     public AllTypesInfo(
-                           SelectStatementInfo selectInfo ) {
+                           final SelectStatementInfo selectInfo) {
         this.selectInfo = selectInfo;
     }
 
@@ -100,7 +99,7 @@ public class AllTypesInfo {
      * 
      * @param onWhere the new on where
      */
-    public void setOnWhere( boolean onWhere ) {
+    public void setOnWhere(final boolean onWhere) {
         this.onWhere = onWhere;
     }
 }

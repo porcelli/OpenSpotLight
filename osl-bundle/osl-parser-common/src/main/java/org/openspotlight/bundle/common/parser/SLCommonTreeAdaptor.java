@@ -58,12 +58,12 @@ import org.antlr.runtime.tree.Tree;
 public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
 
     @Override
-    public void addChild( final Object t,
-                          final Object child ) {
+    public void addChild(final Object t,
+                          final Object child) {
         if (t != null && child != null) {
             if (t instanceof SLCommonTree && child instanceof SLCommonTree) {
-                final SLCommonTree tParent = (SLCommonTree)t;
-                final SLCommonTree tChild = (SLCommonTree)child;
+                final SLCommonTree tParent = (SLCommonTree) t;
+                final SLCommonTree tChild = (SLCommonTree) child;
 
                 if (0 >= tParent.getStartCharOffset()) {
                     tParent.setStartCharOffset(tChild.getStartCharOffset());
@@ -73,28 +73,28 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
                     tParent.setEndCharOffset(tChild.getEndCharOffset());
                 }
             }
-            final Tree typedT = (Tree)t;
-            final Tree typedChild = (Tree)child;
+            final Tree typedT = (Tree) t;
+            final Tree typedChild = (Tree) child;
             typedT.addChild(typedChild);
         }
     }
 
     @Override
-    public Object create( final int tokenType,
+    public Object create(final int tokenType,
                           final Token fromToken,
-                          final String text ) {
+                          final String text) {
         if (fromToken instanceof SLCommonToken) {
-            final SLCommonTree result = (SLCommonTree)super.create(tokenType, fromToken, text);
+            final SLCommonTree result = (SLCommonTree) super.create(tokenType, fromToken, text);
             return result;
         }
         return super.create(tokenType, fromToken, text);
     }
 
     @Override
-    public Object create( final Token payload ) {
+    public Object create(final Token payload) {
         final SLCommonTree tree = new SLCommonTree(payload);
         if (payload instanceof SLCommonToken) {
-            final CommonToken typed = (CommonToken)payload;
+            final CommonToken typed = (CommonToken) payload;
             tree.setStartCharOffset(typed.getStartIndex());
             tree.setEndCharOffset(typed.getStopIndex());
         }
@@ -102,21 +102,21 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
     }
 
     @Override
-    public Token createToken( final int tokenType,
-                              final String text ) {
+    public Token createToken(final int tokenType,
+                              final String text) {
         return new SLCommonToken(tokenType, text);
     }
 
     @Override
-    public Token createToken( final Token fromToken ) {
+    public Token createToken(final Token fromToken) {
         return new SLCommonToken(fromToken);
     }
 
     @Override
-    public Object errorNode( final TokenStream input,
+    public Object errorNode(final TokenStream input,
                              final Token start,
                              final Token stop,
-                             final RecognitionException e ) {
+                             final RecognitionException e) {
         final SLCommonTree t = new SLCommonTree();
         return t;
     }

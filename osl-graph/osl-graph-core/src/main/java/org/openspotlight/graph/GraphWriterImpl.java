@@ -79,7 +79,6 @@ public class GraphWriterImpl implements GraphWriter {
         this.graphReader = graphReader;
     }
 
-
     @Override
     public void removeContext(
                               final Context context) {
@@ -128,9 +127,9 @@ public class GraphWriterImpl implements GraphWriter {
                                                    final Class<L> linkClass,
                                                    final Node source, final Node target)
         throws IllegalArgumentException {
-        L newLink =
+        final L newLink =
             NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkDirection.BIDIRECTIONAL,
-            false);
+                false);
         dirtyLinks.add(newLink);
         return newLink;
     }
@@ -143,16 +142,16 @@ public class GraphWriterImpl implements GraphWriter {
         return addChildNode(parent, clazz, name, null, null);
     }
 
-        @Override
+    @Override
     public <L extends Link> L addLink(
                                       final Class<L> linkClass, final Node source,
                                       final Node target)
         throws IllegalArgumentException {
 
-        L newLink =
+        final L newLink =
             NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target,
-            LinkDirection.UNIDIRECTIONAL,
-            false);
+                LinkDirection.UNIDIRECTIONAL,
+                false);
         dirtyLinks.add(newLink);
         return newLink;
 
@@ -169,13 +168,13 @@ public class GraphWriterImpl implements GraphWriter {
         }
         session.flushTransient();
         for (final Link l: dirtyLinks) {
-            Link retrievedLink =
+            final Link retrievedLink =
                 NodeAndLinkSupport.createLink(factory, sessionProvider.get(), l.getLinkType(), l.getSource(), l.getTarget(),
-                l.getLinkDirection(),
-                true);
-            PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> md =
+                    l.getLinkDirection(),
+                    true);
+            final PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> md =
                 (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink>) retrievedLink;
-            org.openspotlight.storage.domain.StorageLink cached = md.getCached();
+            final org.openspotlight.storage.domain.StorageLink cached = md.getCached();
             cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, retrievedLink.getLinkDirection().name());
             NodeAndLinkSupport.writeTreeLineReference(session, factory, l);
             session.flushTransient();
@@ -191,36 +190,32 @@ public class GraphWriterImpl implements GraphWriter {
         return addNode(context, clazz, name, null, null);
     }
 
-
-	@Override
-	public <T extends Node> T addNode(Context context, Class<T> clazz,
-			String name,
-			Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
-			Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
-			throws IllegalArgumentException {
+    @Override
+    public <T extends Node> T addNode(final Context context, final Class<T> clazz,
+                                      final String name,
+                                      final Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                      final Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+            throws IllegalArgumentException {
         final StorageSession session = sessionProvider.get();
         final T newNode = NodeAndLinkSupport.createNode(factory, session, context.getId(),
             null, clazz, name, true, linkTypesForLinkDeletion,
             linkTypesForLinkedNodeDeletion);
         dirtyNodes.add(newNode);
         return newNode;
-	}
+    }
 
-
-	@Override
-	public <T extends Node> T addChildNode(Node parent, Class<T> clazz,
-			String name,
-			Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
-			Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
-			throws IllegalArgumentException {
+    @Override
+    public <T extends Node> T addChildNode(final Node parent, final Class<T> clazz,
+                                           final String name,
+                                           final Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                           final Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+            throws IllegalArgumentException {
         final StorageSession session = sessionProvider.get();
         final T newNode = NodeAndLinkSupport.createNode(factory, session, parent
             .getContextId(), parent.getId(), clazz, name, true,
             linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
         dirtyNodes.add(newNode);
         return newNode;
-	}
+    }
 
-
-	
 }

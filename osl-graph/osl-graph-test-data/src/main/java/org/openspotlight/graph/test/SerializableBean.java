@@ -60,14 +60,11 @@ public class SerializableBean implements Serializable {
 
     public byte[]             testBuffer;
 
-    public boolean equals( final Object o ) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof SerializableBean)) {
-            return false;
-        }
-        final SerializableBean that = (SerializableBean)o;
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) { return true; }
+        if (!(o instanceof SerializableBean)) { return false; }
+        final SerializableBean that = (SerializableBean) o;
         return Equals.eachEquality(testString, that.testString) && Equals.eachEquality(testBuffer, that.testBuffer);
     }
 

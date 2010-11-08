@@ -75,8 +75,10 @@ public class ImediateBundleProcessingWebCommand implements WebCommand {
     /**
      * {@inheritDoc}
      */
-    public String execute( final ExecutionContext context,
-                           final Map<String, String> parameters ) throws WebException {
+    @Override
+    public String execute(final ExecutionContext context,
+                           final Map<String, String> parameters)
+        throws WebException {
         try {
             final Iterable<Repository> allRepositories = context.getDefaultConfigurationManager().getAllRepositories();
             final RepositorySet repositorySet = new RepositorySet();

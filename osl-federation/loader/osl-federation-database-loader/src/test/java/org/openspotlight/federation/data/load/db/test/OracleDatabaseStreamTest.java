@@ -57,7 +57,7 @@ import org.openspotlight.domain.DbArtifactSource;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class OracleDatabaseStreamTest extends DatabaseStreamTest implements RunWhenDatabaseVendorTestsIsActive {
 
     /**
@@ -66,7 +66,7 @@ public class OracleDatabaseStreamTest extends DatabaseStreamTest implements RunW
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createOracleOciDbConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource) repository.getGroups().iterator().next().getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**

@@ -57,6 +57,6 @@ import org.openspotlight.storage.domain.StorageNode;
 /**
  * Created by User: feu - Date: Apr 20, 2010 - Time: 9:56:03 AM
  */
-public interface SimplePersistFactory extends Disposable{
+public interface SimplePersistFactory extends Disposable {
     SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(Partition partition);
 }

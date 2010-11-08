@@ -74,18 +74,19 @@ public class SLQLVariableInteger extends SLQLVariable {
      * @param name the name
      */
     public SLQLVariableInteger(
-                                final String name ) {
+                                final String name) {
         super(name);
-        this.domainValue = new HashSet<Serializable>();
+        domainValue = new HashSet<Serializable>();
     }
 
     /**
      * {@inheritDoc}
      */
 
-    public void addDomainValue( final Serializable value ) {
-        if (this.isValidValue(value)) {
-            this.domainValue.add((Integer)value);
+    @Override
+    public void addDomainValue(final Serializable value) {
+        if (isValidValue(value)) {
+            domainValue.add(value);
         }
     }
 
@@ -94,7 +95,7 @@ public class SLQLVariableInteger extends SLQLVariable {
      */
     @Override
     public Collection<Serializable> getDomainValues() {
-        return this.domainValue;
+        return domainValue;
     }
 
     /**
@@ -102,7 +103,7 @@ public class SLQLVariableInteger extends SLQLVariable {
      */
     @Override
     public Integer getValue() {
-        return (Integer)this.value;
+        return (Integer) value;
     }
 
     /**
@@ -110,9 +111,7 @@ public class SLQLVariableInteger extends SLQLVariable {
      */
     @Override
     public boolean hasDomainValues() {
-        if (this.domainValue.size() == 0) {
-            return false;
-        }
+        if (domainValue.size() == 0) { return false; }
         return true;
     }
 
@@ -120,11 +119,10 @@ public class SLQLVariableInteger extends SLQLVariable {
      * {@inheritDoc}
      */
 
-    public boolean isValidDomainValue( final Serializable value ) {
-        for (final Serializable activeValue : this.domainValue) {
-            if (activeValue.equals(value)) {
-                return true;
-            }
+    @Override
+    public boolean isValidDomainValue(final Serializable value) {
+        for (final Serializable activeValue: domainValue) {
+            if (activeValue.equals(value)) { return true; }
         }
         return false;
     }
@@ -133,22 +131,18 @@ public class SLQLVariableInteger extends SLQLVariable {
      * {@inheritDoc}
      */
 
-    public boolean isValidValue( final Serializable value ) {
-        if (value == null) {
-            return false;
-        }
-        if (value.getClass().getName().equals(int.class.getName())) {
-            return true;
-        }
-        if (value instanceof Integer) {
-            return true;
-        }
+    @Override
+    public boolean isValidValue(final Serializable value) {
+        if (value == null) { return false; }
+        if (value.getClass().getName().equals(int.class.getName())) { return true; }
+        if (value instanceof Integer) { return true; }
         return false;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public SLQLVariableType getType() {
         return SLQLVariableType.INTEGER;
     }

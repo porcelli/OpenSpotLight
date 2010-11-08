@@ -51,8 +51,7 @@ package org.openspotlight.bundle.common.metamodel.link;
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.annotation.Description;
 
-
-@Description( "Group Contains" )
+@Description("Group Contains")
 public abstract class GroupContains extends Link {
 
 }

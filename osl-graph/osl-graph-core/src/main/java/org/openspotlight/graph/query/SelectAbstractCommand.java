@@ -74,21 +74,21 @@ public abstract class SelectAbstractCommand {
      * @param commandDO the command do
      * @return the execute command
      */
-    public static SelectAbstractCommand getCommand( Select select,
-                                                      SelectInfo selectInfo,
-                                                      SelectCommandDO commandDO ) {
+    public static SelectAbstractCommand getCommand(final Select select,
+                                                      final SelectInfo selectInfo,
+                                                      final SelectCommandDO commandDO) {
         SelectAbstractCommand command = null;
         if (select instanceof SelectByNodeType) {
-            SelectByNodeTypeInfo selectByNodeTypeInfo = SelectByNodeTypeInfo.class.cast(selectInfo);
+            final SelectByNodeTypeInfo selectByNodeTypeInfo = SelectByNodeTypeInfo.class.cast(selectInfo);
             command = new SelectByNodeTypeExecuteCommand(selectByNodeTypeInfo, commandDO);
         } else if (select instanceof SelectByLinkType) {
-            SelectByLinkTypeInfo selectByLinkTypeInfo = SelectByLinkTypeInfo.class.cast(selectInfo);
+            final SelectByLinkTypeInfo selectByLinkTypeInfo = SelectByLinkTypeInfo.class.cast(selectInfo);
             command = new SelectByLinkTypeExecuteCommand(selectByLinkTypeInfo, commandDO);
         } else if (select instanceof SelectByLinkCount) {
-            SelectByLinkCountInfo selectByLinkCountInfo = SelectByLinkCountInfo.class.cast(selectInfo);
+            final SelectByLinkCountInfo selectByLinkCountInfo = SelectByLinkCountInfo.class.cast(selectInfo);
             command = new SelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
         } else if (select instanceof SelectStatement) {
-            SelectStatementInfo selectStatementInfo = SelectStatementInfo.class.cast(selectInfo);
+            final SelectStatementInfo selectStatementInfo = SelectStatementInfo.class.cast(selectInfo);
             if (selectStatementInfo.getByLinkInfoList().isEmpty()) {
                 command = new SelectByNodeTypeCommand(selectStatementInfo, commandDO);
             } else {

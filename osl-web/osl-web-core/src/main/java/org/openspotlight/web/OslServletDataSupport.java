@@ -48,7 +48,6 @@
  */
 package org.openspotlight.web;
 
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,7 +60,6 @@ public class OslServletDataSupport implements OslDataConstants {
                                               final HttpServletRequest request) {
         return (String) request.getSession().getAttribute(OslDataConstants.SESSION__REPOSITORY);
     }
-
 
     public static String getPassword(final ServletContext ctx,
                                      final HttpServletRequest request) {

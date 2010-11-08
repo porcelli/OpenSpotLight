@@ -67,15 +67,14 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
-    public void execute( ConsoleReader reader,
-                         PrintWriter out,
-                         ConsoleState state ) {
+    @Override
+    public void execute(final ConsoleReader reader,
+                         final PrintWriter out,
+                         final ConsoleState state) {
         Assertions.checkNotNull("reader", reader);
         Assertions.checkNotNull("out", out);
         Assertions.checkNotNull("state", state);
-        if (!accept(state)) {
-            return;
-        }
+        if (!accept(state)) { return; }
         out.println("slqlplus version \"" + SLQLPlus.VERSION + "\"");
         out.flush();
         state.setInput(null);
@@ -85,6 +84,7 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getCommand() {
         return "version";
     }
@@ -92,6 +92,7 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getAutoCompleteCommand() {
         return getCommand();
     }
@@ -99,6 +100,7 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription() {
         return "print product version";
     }
@@ -106,6 +108,7 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileCompletionCommand() {
         return null;
     }
@@ -113,6 +116,7 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileCompletionMode getFileCompletionMode() {
         return null;
     }
@@ -120,6 +124,7 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasFileCompletion() {
         return false;
     }
@@ -127,11 +132,10 @@ public class VersionSystemCommand implements SystemCommand {
     /**
      * {@inheritDoc}
      */
-    public boolean accept( ConsoleState state ) {
+    @Override
+    public boolean accept(final ConsoleState state) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("version")) {
-            return true;
-        }
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("version")) { return true; }
         return false;
     }
 }

@@ -57,9 +57,10 @@ import org.openspotlight.web.WebException;
 public class HelloWebTest {
 
     @Test
-    public void testHelloWorld() throws WebException {
-        HelloWebCommand command = new HelloWebCommand();
-        String result = command.execute(null, null);
+    public void testHelloWorld()
+        throws WebException {
+        final HelloWebCommand command = new HelloWebCommand();
+        final String result = command.execute(null, null);
 
         assertThat(result, is("{\"message\":\"hello world!\"}"));
     }

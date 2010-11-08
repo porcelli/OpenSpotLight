@@ -56,13 +56,13 @@ import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * The Class SLSelectCommandDO.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class SelectCommandDO {
 
     /** The metadata. */
-    private Metadata               metadata;
+    private Metadata                metadata;
 
     /** The node wrappers. */
     private Collection<StorageNode> nodeWrappers;
@@ -71,14 +71,14 @@ public class SelectCommandDO {
     private Collection<StorageNode> previousNodeWrappers;
 
     /** The tree session. */
-    private StorageSession  treeSession;
+    private StorageSession          treeSession;
 
     /** The collator strength. */
-    private int                      collatorStrength;
+    private int                     collatorStrength;
 
     /**
      * Gets the metadata.
-     *
+     * 
      * @return the metadata
      */
     public Metadata getMetadata() {
@@ -87,16 +87,16 @@ public class SelectCommandDO {
 
     /**
      * Sets the metadata.
-     *
+     * 
      * @param metadata the new metadata
      */
-    public void setMetadata( Metadata metadata ) {
+    public void setMetadata(final Metadata metadata) {
         this.metadata = metadata;
     }
 
     /**
      * Gets the node wrappers.
-     *
+     * 
      * @return the node wrappers
      */
     public Collection<StorageNode> getNodeWrappers() {
@@ -105,16 +105,16 @@ public class SelectCommandDO {
 
     /**
      * Sets the node wrappers.
-     *
+     * 
      * @param nodeWrappers the new node wrappers
      */
-    public void setNodeWrappers( Collection<StorageNode> nodeWrappers ) {
+    public void setNodeWrappers(final Collection<StorageNode> nodeWrappers) {
         this.nodeWrappers = nodeWrappers;
     }
 
     /**
      * Gets the tree session.
-     *
+     * 
      * @return the tree session
      */
     public StorageSession getTreeSession() {
@@ -123,16 +123,16 @@ public class SelectCommandDO {
 
     /**
      * Sets the tree session.
-     *
+     * 
      * @param treeSession the new tree session
      */
-    public void setTreeSession( StorageSession treeSession ) {
+    public void setTreeSession(final StorageSession treeSession) {
         this.treeSession = treeSession;
     }
 
     /**
      * Gets the previous node wrappers.
-     *
+     * 
      * @return the previous node wrappers
      */
     public Collection<StorageNode> getPreviousNodeWrappers() {
@@ -141,16 +141,16 @@ public class SelectCommandDO {
 
     /**
      * Sets the previous node wrappers.
-     *
+     * 
      * @param previousNodeWrappers the new previous node wrappers
      */
-    public void setPreviousNodeWrappers( Collection<StorageNode> previousNodeWrappers ) {
+    public void setPreviousNodeWrappers(final Collection<StorageNode> previousNodeWrappers) {
         this.previousNodeWrappers = previousNodeWrappers;
     }
 
     /**
      * Gets the collator strength.
-     *
+     * 
      * @return the collator strength
      */
     public int getCollatorStrength() {
@@ -159,10 +159,10 @@ public class SelectCommandDO {
 
     /**
      * Sets the collator strength.
-     *
+     * 
      * @param collatorStrength the new collator strength
      */
-    public void setCollatorStrength( int collatorStrength ) {
+    public void setCollatorStrength(final int collatorStrength) {
         this.collatorStrength = collatorStrength;
     }
 }

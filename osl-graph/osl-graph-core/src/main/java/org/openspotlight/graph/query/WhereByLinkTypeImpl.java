@@ -61,10 +61,10 @@ import org.openspotlight.graph.query.info.WhereByLinkTypeInfo.SLWhereLinkTypeInf
 public class WhereByLinkTypeImpl implements WhereByLinkType {
 
     /** The end. */
-    private End                   end;
+    private final End                 end;
 
     /** The where statement info. */
-    private WhereByLinkTypeInfo whereStatementInfo;
+    private final WhereByLinkTypeInfo whereStatementInfo;
 
     /**
      * Instantiates a new sL where by link type impl.
@@ -73,7 +73,7 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
      * @param whereStatementInfo the where statement info
      */
     public WhereByLinkTypeImpl(
-                                  OrderByStatement orderBy, WhereByLinkTypeInfo whereStatementInfo ) {
+                                  final OrderByStatement orderBy, final WhereByLinkTypeInfo whereStatementInfo) {
         this(new EndImpl(whereStatementInfo, orderBy), whereStatementInfo);
     }
 
@@ -84,7 +84,7 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
      * @param whereStatementInfo the where statement info
      */
     public WhereByLinkTypeImpl(
-                                  End end, WhereByLinkTypeInfo whereStatementInfo ) {
+                                  final End end, final WhereByLinkTypeInfo whereStatementInfo) {
         this.end = end;
         this.whereStatementInfo = whereStatementInfo;
     }
@@ -100,22 +100,20 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.query.SLWhereByLinkType#linkType(java.lang.String
-     * )
+     * @see org.openspotlight.graph.query.SLWhereByLinkType#linkType(java.lang.String )
      */
-    public LinkType linkType( String typeName ) {
-        SLWhereLinkTypeInfo typeInfo = new SLWhereLinkTypeInfo(typeName);
+    @Override
+    public LinkType linkType(final String typeName) {
+        final SLWhereLinkTypeInfo typeInfo = new SLWhereLinkTypeInfo(typeName);
         whereStatementInfo.getWhereLinkTypeInfoList().add(typeInfo);
         return new LinkTypeImpl(this, typeInfo);
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.openspotlight.graph.query.SLWhereByLinkType#whereEnd()
      */
+    @Override
     public End whereEnd() {
         return end;
     }
@@ -128,10 +126,10 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
     public static class EndImpl implements End {
 
         /** The where by link type info. */
-        private WhereByLinkTypeInfo whereByLinkTypeInfo;
+        private final WhereByLinkTypeInfo whereByLinkTypeInfo;
 
         /** The order by statement. */
-        private OrderByStatement    orderByStatement;
+        private final OrderByStatement    orderByStatement;
 
         /**
          * Instantiates a new end impl.
@@ -140,25 +138,25 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
          * @param orderByStatement the order by statement
          */
         public EndImpl(
-                        WhereByLinkTypeInfo whereByLinkTypeInfo, OrderByStatement orderByStatement ) {
+                        final WhereByLinkTypeInfo whereByLinkTypeInfo, final OrderByStatement orderByStatement) {
             this.whereByLinkTypeInfo = whereByLinkTypeInfo;
             this.orderByStatement = orderByStatement;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see org.openspotlight.graph.query.SLWhereByLinkType.End#orderBy()
          */
+        @Override
         public OrderByStatement orderBy() {
             return orderByStatement;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see org.openspotlight.graph.query.SLWhereByLinkType.End#keepResult()
          */
+        @Override
         public End keepResult() {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setKeepResult(true);
             return this;
@@ -167,7 +165,8 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit ) {
+        @Override
+        public End limit(final Integer limit) {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setLimit(limit);
             return this;
         }
@@ -175,8 +174,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
         /**
          * {@inheritDoc}
          */
-        public End limit( Integer limit,
-                          Integer offset ) {
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setLimit(limit);
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setOffset(offset);
             return this;
@@ -184,10 +184,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
         /*
          * (non-Javadoc)
-         * 
-         * @see
-         * org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes()
+         * @see org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes()
          */
+        @Override
         public End executeXTimes() {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setXTimes(0);
             return this;
@@ -195,12 +194,10 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
         /*
          * (non-Javadoc)
-         * 
-         * @see
-         * org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes
-         * (int)
+         * @see org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes (int)
          */
-        public End executeXTimes( int x ) {
+        @Override
+        public End executeXTimes(final int x) {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setXTimes(x);
             return this;
         }
@@ -214,10 +211,10 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
     public static class LinkTypeImpl implements LinkType {
 
         /** The where statement. */
-        private WhereByLinkType   whereStatement;
+        private final WhereByLinkType     whereStatement;
 
         /** The type info. */
-        private SLWhereLinkTypeInfo typeInfo;
+        private final SLWhereLinkTypeInfo typeInfo;
 
         /**
          * Instantiates a new link type impl.
@@ -226,20 +223,20 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
          * @param typeInfo the type info
          */
         public LinkTypeImpl(
-                             WhereByLinkType whereStatement, SLWhereLinkTypeInfo typeInfo ) {
+                             final WhereByLinkType whereStatement, final SLWhereLinkTypeInfo typeInfo) {
             this.whereStatement = whereStatement;
             this.typeInfo = typeInfo;
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType#each()
          */
+        @Override
         public Each each() {
-            SLLinkTypeStatementInfo whereStatementInfo = new SLLinkTypeStatementInfo(typeInfo);
+            final SLLinkTypeStatementInfo whereStatementInfo = new SLLinkTypeStatementInfo(typeInfo);
             typeInfo.setLinkTypeStatementInfo(whereStatementInfo);
-            SLConditionInfo conditionInfo = whereStatementInfo.addCondition();
+            final SLConditionInfo conditionInfo = whereStatementInfo.addCondition();
             return new EachImpl(whereStatement, conditionInfo);
         }
 
@@ -251,13 +248,13 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
         public static class EachImpl implements Each {
 
             /** The where statement. */
-            private WhereByLinkType whereStatement;
+            private final WhereByLinkType whereStatement;
 
             /** The condition info. */
-            private SLConditionInfo   conditionInfo;
+            private final SLConditionInfo conditionInfo;
 
             /** The outer each. */
-            private Each              outerEach;
+            private final Each            outerEach;
 
             /**
              * Instantiates a new each impl.
@@ -266,7 +263,7 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
              * @param conditionInfo the condition info
              */
             public EachImpl(
-                             WhereByLinkType whereStatement, SLConditionInfo conditionInfo ) {
+                             final WhereByLinkType whereStatement, final SLConditionInfo conditionInfo) {
                 this(whereStatement, conditionInfo, null);
             }
 
@@ -278,7 +275,7 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
              * @param outerEach the outer each
              */
             public EachImpl(
-                             WhereByLinkType whereStatement, SLConditionInfo conditionInfo, Each outerEach ) {
+                             final WhereByLinkType whereStatement, final SLConditionInfo conditionInfo, final Each outerEach) {
                 this.whereStatement = whereStatement;
                 this.conditionInfo = conditionInfo;
                 this.outerEach = outerEach;
@@ -286,12 +283,10 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
             /*
              * (non-Javadoc)
-             * 
-             * @see
-             * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each
-             * #property(java.lang.String)
+             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each #property(java.lang.String)
              */
-            public Property property( String name ) {
+            @Override
+            public Property property(final String name) {
                 conditionInfo.setPropertyName(name);
                 return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
             }
@@ -304,16 +299,16 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
             public static class PropertyImpl implements Property {
 
                 /** The each. */
-                private Each              each;
+                private final Each            each;
 
                 /** The outer each. */
-                private Each              outerEach;
+                private final Each            outerEach;
 
                 /** The where statement. */
-                private WhereByLinkType whereStatement;
+                private final WhereByLinkType whereStatement;
 
                 /** The condition info. */
-                private SLConditionInfo   conditionInfo;
+                private final SLConditionInfo conditionInfo;
 
                 /**
                  * Instantiates a new property impl.
@@ -324,7 +319,8 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                  * @param conditionInfo the condition info
                  */
                 public PropertyImpl(
-                                     WhereByLinkType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                     final WhereByLinkType whereStatement, final Each each, final Each outerEach,
+                                    final SLConditionInfo conditionInfo) {
                     this.each = each;
                     this.whereStatement = whereStatement;
                     this.conditionInfo = conditionInfo;
@@ -333,11 +329,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#not()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#not()
                  */
+                @Override
                 public Property not() {
                     conditionInfo.setRelationalNotOperator(true);
                     return this;
@@ -345,11 +339,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#lesserThan()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#lesserThan()
                  */
+                @Override
                 public Operator lesserThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -357,11 +349,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#greaterThan()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#greaterThan()
                  */
+                @Override
                 public Operator greaterThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -369,11 +359,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#equalsTo()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#equalsTo()
                  */
+                @Override
                 public Operator equalsTo() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -381,11 +369,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#lesserOrEqualThan()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#lesserOrEqualThan()
                  */
+                @Override
                 public Operator lesserOrEqualThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -393,11 +379,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#greaterOrEqualThan()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#greaterOrEqualThan()
                  */
+                @Override
                 public Operator greaterOrEqualThan() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -405,11 +389,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#contains()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#contains()
                  */
+                @Override
                 public Operator contains() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -417,11 +399,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#startsWith()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#startsWith()
                  */
+                @Override
                 public Operator startsWith() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -429,11 +409,9 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                 /*
                  * (non-Javadoc)
-                 * 
-                 * @see
-                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
-                 * Each.Property#endsWith()
+                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType. Each.Property#endsWith()
                  */
+                @Override
                 public Operator endsWith() {
                     conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
@@ -447,16 +425,16 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                 public static class OperatorImpl implements Operator {
 
                     /** The each. */
-                    private Each              each;
+                    private final Each            each;
 
                     /** The outer each. */
-                    private Each              outerEach;
+                    private final Each            outerEach;
 
                     /** The where statement. */
-                    private WhereByLinkType whereStatement;
+                    private final WhereByLinkType whereStatement;
 
                     /** The condition info. */
-                    private SLConditionInfo   conditionInfo;
+                    private final SLConditionInfo conditionInfo;
 
                     /**
                      * Instantiates a new operator impl.
@@ -467,8 +445,8 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                      * @param conditionInfo the condition info
                      */
                     public OperatorImpl(
-                                         WhereByLinkType whereStatement, Each each, Each outerEach,
-                                         SLConditionInfo conditionInfo ) {
+                                         final WhereByLinkType whereStatement, final Each each, final Each outerEach,
+                                         final SLConditionInfo conditionInfo) {
                         this.each = each;
                         this.outerEach = outerEach;
                         this.whereStatement = whereStatement;
@@ -477,72 +455,65 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                     /*
                      * (non-Javadoc)
-                     * 
-                     * @see
-                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                      * .Each.Property.Operator#value(java.lang.String)
                      */
-                    public Value value( String value ) {
+                    @Override
+                    public Value value(final String value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
                     /*
                      * (non-Javadoc)
-                     * 
-                     * @see
-                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                      * .Each.Property.Operator#value(java.lang.Integer)
                      */
-                    public Value value( Integer value ) {
+                    @Override
+                    public Value value(final Integer value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
                     /*
                      * (non-Javadoc)
-                     * 
-                     * @see
-                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
-                     * .Each.Property.Operator#value(java.lang.Long)
+                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType .Each.Property.Operator#value(java.lang.Long)
                      */
-                    public Value value( Long value ) {
+                    @Override
+                    public Value value(final Long value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
                     /*
                      * (non-Javadoc)
-                     * 
-                     * @see
-                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                      * .Each.Property.Operator#value(java.lang.Float)
                      */
-                    public Value value( Float value ) {
+                    @Override
+                    public Value value(final Float value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
                     /*
                      * (non-Javadoc)
-                     * 
-                     * @see
-                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                      * .Each.Property.Operator#value(java.lang.Double)
                      */
-                    public Value value( Double value ) {
+                    @Override
+                    public Value value(final Double value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
                     /*
                      * (non-Javadoc)
-                     * 
-                     * @see
-                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                      * .Each.Property.Operator#value(java.lang.Boolean)
                      */
-                    public Value value( Boolean value ) {
+                    @Override
+                    public Value value(final Boolean value) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
@@ -555,16 +526,16 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                     public static class ValueImpl implements Value {
 
                         /** The each. */
-                        private Each              each;
+                        private final Each            each;
 
                         /** The outer each. */
-                        private Each              outerEach;
+                        private final Each            outerEach;
 
                         /** The where statement. */
-                        private WhereByLinkType whereStatement;
+                        private final WhereByLinkType whereStatement;
 
                         /** The condition info. */
-                        private SLConditionInfo   conditionInfo;
+                        private final SLConditionInfo conditionInfo;
 
                         /**
                          * Instantiates a new value impl.
@@ -575,8 +546,8 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                          * @param conditionInfo the condition info
                          */
                         public ValueImpl(
-                                          WhereByLinkType whereStatement, Each each, Each outerEach,
-                                          SLConditionInfo conditionInfo ) {
+                                          final WhereByLinkType whereStatement, final Each each, final Each outerEach,
+                                          final SLConditionInfo conditionInfo) {
                             this.each = each;
                             this.outerEach = outerEach;
                             this.whereStatement = whereStatement;
@@ -585,50 +556,44 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                          * .Each.Property.Operator.Value#linkTypeEnd()
                          */
+                        @Override
                         public WhereByLinkType linkTypeEnd() {
                             return whereStatement;
                         }
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
-                         * .Each.Property.Operator.Value#or()
+                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType .Each.Property.Operator.Value#or()
                          */
+                        @Override
                         public RelationalOperator or() {
-                            SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            SLConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                            Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
-                         * .Each.Property.Operator.Value#and()
+                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType .Each.Property.Operator.Value#and()
                          */
+                        @Override
                         public RelationalOperator and() {
-                            SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            SLConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                            Each newEach = new EachImpl(whereStatement, newConditionInfo, this.each);
+                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLConditionInfo newConditionInfo = outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
                         /*
                          * (non-Javadoc)
-                         * 
-                         * @see
-                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType
                          * .Each.Property.Operator.Value#closeBracket()
                          */
+                        @Override
                         public CloseBracket closeBracket() {
                             return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
                         }
@@ -641,13 +606,13 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                         public static class RelationalOperatorImpl implements RelationalOperator {
 
                             /** The each. */
-                            private Each              each;
+                            private final Each            each;
 
                             /** The where statement. */
-                            private WhereByLinkType whereStatement;
+                            private final WhereByLinkType whereStatement;
 
                             /** The condition info. */
-                            private SLConditionInfo   conditionInfo;
+                            private final SLConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new relational operator impl.
@@ -657,8 +622,8 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                              * @param conditionInfo the condition info
                              */
                             public RelationalOperatorImpl(
-                                                           WhereByLinkType whereStatement, Each each,
-                                                           SLConditionInfo conditionInfo ) {
+                                                           final WhereByLinkType whereStatement, final Each each,
+                                                           final SLConditionInfo conditionInfo) {
                                 this.each = each;
                                 this.whereStatement = whereStatement;
                                 this.conditionInfo = conditionInfo;
@@ -666,45 +631,38 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                             /*
                              * (non-Javadoc)
-                             * 
-                             * @see
-                             * org.openspotlight.graph.query.SLWhereByLinkType
-                             * .LinkType
-                             * .Each.Property.Operator.Value.RelationalOperator
-                             * #comma()
+                             * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType
+                             * .Each.Property.Operator.Value.RelationalOperator #comma()
                              */
+                            @Override
                             public WhereByLinkType comma() {
-                                return this.whereStatement;
+                                return whereStatement;
                             }
 
                             /*
                              * (non-Javadoc)
-                             * 
-                             * @see
-                             * org.openspotlight.graph.query.SLWhereByLinkType
-                             * .LinkType
-                             * .Each.Property.Operator.Value.RelationalOperator
-                             * #each()
+                             * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType
+                             * .Each.Property.Operator.Value.RelationalOperator #each()
                              */
+                            @Override
                             public Each each() {
-                                return this.each;
+                                return each;
                             }
 
                             /*
                              * (non-Javadoc)
-                             * 
-                             * @see
-                             * org.openspotlight.graph.query.SLWhereByLinkType
-                             * .LinkType
-                             * .Each.Property.Operator.Value.RelationalOperator
-                             * #openBracket()
+                             * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType
+                             * .Each.Property.Operator.Value.RelationalOperator #openBracket()
                              */
+                            @Override
                             public OpenBracket openBracket() {
-                                SLLinkTypeStatementInfo newStatementInfo = new SLLinkTypeStatementInfo(
-                                                                                                       conditionInfo.getTypeInfo());
+                                final SLLinkTypeStatementInfo newStatementInfo =
+                                    new SLLinkTypeStatementInfo(
+                                                                                                       conditionInfo
+                                                                                                           .getTypeInfo());
                                 conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                final SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
                                 return new OpenBracketImpl(each);
                             }
 
@@ -716,7 +674,7 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                             public static class OpenBracketImpl implements OpenBracket {
 
                                 /** The each. */
-                                private Each each;
+                                private final Each each;
 
                                 /**
                                  * Instantiates a new open bracket impl.
@@ -724,18 +682,16 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                                  * @param each the each
                                  */
                                 public OpenBracketImpl(
-                                                        Each each ) {
+                                                        final Each each) {
                                     this.each = each;
                                 }
 
                                 /*
                                  * (non-Javadoc)
-                                 * 
-                                 * @see
-                                 * org.openspotlight.graph.query.SLWhereByLinkType
-                                 * .LinkType.Each.Property.Operator.Value.
+                                 * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType.Each.Property.Operator.Value.
                                  * RelationalOperator.OpenBracket#each()
                                  */
+                                @Override
                                 public Each each() {
                                     return each;
                                 }
@@ -750,13 +706,13 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                         public static class CloseBracketImpl implements CloseBracket {
 
                             /** The where statement. */
-                            private WhereByLinkType whereStatement;
+                            private final WhereByLinkType whereStatement;
 
                             /** The outer each. */
-                            private Each              outerEach;
+                            private final Each            outerEach;
 
                             /** The condition info. */
-                            private SLConditionInfo   conditionInfo;
+                            private final SLConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new close bracket impl.
@@ -766,8 +722,8 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
                              * @param conditionInfo the condition info
                              */
                             public CloseBracketImpl(
-                                                     WhereByLinkType whereStatement, Each outerEach,
-                                                     SLConditionInfo conditionInfo ) {
+                                                     final WhereByLinkType whereStatement, final Each outerEach,
+                                                     final SLConditionInfo conditionInfo) {
                                 this.whereStatement = whereStatement;
                                 this.outerEach = outerEach;
                                 this.conditionInfo = conditionInfo;
@@ -775,43 +731,36 @@ public class WhereByLinkTypeImpl implements WhereByLinkType {
 
                             /*
                              * (non-Javadoc)
-                             * 
-                             * @see
-                             * org.openspotlight.graph.query.SLWhereByLinkType
-                             * .LinkType
+                             * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType
                              * .Each.Property.Operator.Value.CloseBracket#or()
                              */
+                            @Override
                             public RelationalOperator or() {
-                                SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
                             /*
                              * (non-Javadoc)
-                             * 
-                             * @see
-                             * org.openspotlight.graph.query.SLWhereByLinkType
-                             * .LinkType
+                             * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType
                              * .Each.Property.Operator.Value.CloseBracket#and()
                              */
+                            @Override
                             public RelationalOperator and() {
-                                SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
                             /*
                              * (non-Javadoc)
-                             * 
-                             * @see
-                             * org.openspotlight.graph.query.SLWhereByLinkType
-                             * .LinkType
-                             * .Each.Property.Operator.Value.CloseBracket
-                             * #typeEnd()
+                             * @see org.openspotlight.graph.query.SLWhereByLinkType .LinkType
+                             * .Each.Property.Operator.Value.CloseBracket #typeEnd()
                              */
+                            @Override
                             public WhereByLinkType typeEnd() {
                                 return whereStatement;
                             }

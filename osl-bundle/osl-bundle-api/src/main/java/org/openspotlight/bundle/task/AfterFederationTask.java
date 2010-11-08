@@ -55,7 +55,8 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 
 public abstract class AfterFederationTask extends ArtifactTask {
 
-    protected AfterFederationTask(ExecutionContextProvider provider, Artifact artifact, Map<String, String> properties) {
+    protected AfterFederationTask(final ExecutionContextProvider provider, final Artifact artifact,
+                                  final Map<String, String> properties) {
         super(provider, artifact, properties);
     }
 

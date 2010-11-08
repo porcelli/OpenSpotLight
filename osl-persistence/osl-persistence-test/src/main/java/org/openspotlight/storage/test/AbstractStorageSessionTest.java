@@ -937,7 +937,7 @@ public abstract class AbstractStorageSessionTest {
     @Test
     public void shouldCheckPartitionsFactoryBehavior() {
         final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
-        
+
     }
 
     @Test
@@ -1460,7 +1460,7 @@ public abstract class AbstractStorageSessionTest {
                                       .withSimpleKey("name", "name").andCreate();
 
         assertThat(newNode1.getProperties(session).size(), is(2));
-        for (Property activeProperty: newNode1.getProperties(session)) {
+        for (final Property activeProperty: newNode1.getProperties(session)) {
             assertThat(activeProperty.isKey(), is(true));
             assertThat(activeProperty.getPropertyName().equals("sequence") ||
                        activeProperty.getPropertyName().equals("name"), is(true));

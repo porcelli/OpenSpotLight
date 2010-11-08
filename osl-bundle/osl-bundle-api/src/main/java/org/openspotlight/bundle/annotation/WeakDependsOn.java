@@ -55,6 +55,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface  WeakDependsOn {
-	Dependency[] value();
+public @interface WeakDependsOn {
+    Dependency[] value();
 }

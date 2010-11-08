@@ -64,7 +64,7 @@ public abstract class ArtifactTask extends BaseTask implements ConfigurableTask 
     private ExecutionContext                   context;
     private final Artifact                     artifact;
 
-    protected ArtifactTask(ExecutionContextProvider provider, Artifact artifact, Map<String, String> properties) {
+    protected ArtifactTask(final ExecutionContextProvider provider, final Artifact artifact, final Map<String, String> properties) {
         this.provider = provider;
         this.artifact = artifact;
         this.properties = ImmutableMap.copyOf(properties);
@@ -96,7 +96,7 @@ public abstract class ArtifactTask extends BaseTask implements ConfigurableTask 
         return properties.keySet();
     }
 
-    public String getPropertyValue(String name) {
+    public String getPropertyValue(final String name) {
         return properties.get(name);
     }
 

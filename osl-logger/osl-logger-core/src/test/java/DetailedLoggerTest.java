@@ -87,111 +87,119 @@ import com.google.inject.Injector;
 
 public class DetailedLoggerTest {
 
-	public static class CustomErrorCode implements ErrorCode {
+    public static class CustomErrorCode implements ErrorCode {
 
-		/**
+        /**
          *
          */
-		private static final long serialVersionUID = -3703345396653682388L;
+        private static final long serialVersionUID = -3703345396653682388L;
 
-		public String getDescription() {
-			return "CustomErrorCode:description";
-		}
+        @Override
+        public String getDescription() {
+            return "CustomErrorCode:description";
+        }
 
-		public String getErrorCode() {
-			return "CustomErrorCode:errorCode";
-		}
+        @Override
+        public String getErrorCode() {
+            return "CustomErrorCode:errorCode";
+        }
 
-		public void setDescription(final String s) {
+        @Override
+        public void setDescription(final String s) {
 
-		}
+        }
 
-		public void setErrorCode(final String s) {
+        @Override
+        public void setErrorCode(final String s) {
 
-		}
+        }
 
-	}
+    }
 
-	private static DetailedLoggerProvider loggerProvider;
+    private static DetailedLoggerProvider                            loggerProvider;
 
-	private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+    private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-	private static FullGraphSession graphSession;
+    private static FullGraphSession                                  graphSession;
 
-	@BeforeClass
-	public static void setupJcr() throws Exception {
+    @BeforeClass
+    public static void setupJcr()
+        throws Exception {
 
-		Injector autoFlushInjector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new GraphModule());
+        final Injector autoFlushInjector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new GraphModule());
 
-		graphSession = autoFlushInjector.getInstance(FullGraphSession.class);
+        graphSession = autoFlushInjector.getInstance(FullGraphSession.class);
 
-		SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl(
-				autoFlushInjector.getProvider(StorageSession.class));
+        final SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl(
+                autoFlushInjector.getProvider(StorageSession.class));
 
-		simplePersist = simplePersistFactory
-				.createSimplePersist(RegularPartitions.LOG);
-		loggerProvider = new DetailedLoggerProvider(simplePersistFactory,
-				autoFlushInjector
-						.getInstance(JRedisStorageSessionProvider.class));
+        simplePersist = simplePersistFactory
+                .createSimplePersist(RegularPartitions.LOG);
+        loggerProvider = new DetailedLoggerProvider(simplePersistFactory,
+                autoFlushInjector
+                        .getInstance(JRedisStorageSessionProvider.class));
 
-	}
+    }
 
-	private DetailedLogger logger;
+    private DetailedLogger logger;
 
-	@After
-	public void releaseAttributes() throws Exception {
-		loggerProvider.closeResources();
-		graphSession.closeResources();
-		logger = null;
-	}
+    @After
+    public void releaseAttributes()
+        throws Exception {
+        loggerProvider.closeResources();
+        graphSession.closeResources();
+        logger = null;
+    }
 
-	@Before
-	public void setupAttributes() throws Exception {
+    @Before
+    public void setupAttributes()
+        throws Exception {
 
-	}
+    }
 
-	@Test
-	public void shouldLogSomeStuff() throws Exception {
+    @Test
+    public void shouldLogSomeStuff()
+        throws Exception {
 
-		logger = loggerProvider.get();
-		final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
-				StringArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
-		Context root = graphSession.from(GraphLocation.SERVER)
-				.getContext("ctx");
-		GraphWriter writer = graphSession.toServer();
-		final Node node = writer.addNode(root, JavaType.class, "node1");
-		final Node node2 = writer.addChildNode(node, JavaType.class, "node2");
-		final Node node3 = writer.addChildNode(node2, JavaType.class, "node3");
-		logger.log(null, "tempRepo", DetailedLogger.LogEventType.DEBUG,
-				new CustomErrorCode(), "firstEntry", node3, artifact);
+        logger = loggerProvider.get();
+        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
+                StringArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
+        final Context root = graphSession.from(GraphLocation.SERVER)
+                .getContext("ctx");
+        final GraphWriter writer = graphSession.toServer();
+        final Node node = writer.addNode(root, JavaType.class, "node1");
+        final Node node2 = writer.addChildNode(node, JavaType.class, "node2");
+        final Node node3 = writer.addChildNode(node2, JavaType.class, "node3");
+        logger.log(null, "tempRepo", DetailedLogger.LogEventType.DEBUG,
+                new CustomErrorCode(), "firstEntry", node3, artifact);
 
-		logger.log(null, "tempRepo", DetailedLogger.LogEventType.DEBUG,
-				new CustomErrorCode(), "secondEntry", artifact);
-		logger.log(null, "tempRepo", DetailedLogger.LogEventType.DEBUG,
-				new CustomErrorCode(), "thirdEntry", node3);
+        logger.log(null, "tempRepo", DetailedLogger.LogEventType.DEBUG,
+                new CustomErrorCode(), "secondEntry", artifact);
+        logger.log(null, "tempRepo", DetailedLogger.LogEventType.DEBUG,
+                new CustomErrorCode(), "thirdEntry", node3);
 
-		final Iterable<LogEntry> foundEntries = simplePersist
-				.findAll(LogEntry.class);
+        final Iterable<LogEntry> foundEntries = simplePersist
+                .findAll(LogEntry.class);
 
-		boolean hasAnyEntry = false;
-		boolean hasAnyObject = false;
-		for (final LogEntry entry : foundEntries) {
-			hasAnyEntry = true;
-			for (final LoggedObjectInformation info : entry.getNodes()) {
-				hasAnyObject = true;
-				assertThat(info.getClassName(), is(notNullValue()));
-				assertThat(info.getFriendlyDescription(), is(notNullValue()));
-			}
-			assertThat(entry.getType(), is(notNullValue()));
-			assertThat(entry.getDate(), is(notNullValue()));
-			assertThat(entry.getDetailedMessage(), is(notNullValue()));
-		}
-		assertThat(hasAnyEntry, is(true));
-		assertThat(hasAnyObject, is(true));
+        boolean hasAnyEntry = false;
+        boolean hasAnyObject = false;
+        for (final LogEntry entry: foundEntries) {
+            hasAnyEntry = true;
+            for (final LoggedObjectInformation info: entry.getNodes()) {
+                hasAnyObject = true;
+                assertThat(info.getClassName(), is(notNullValue()));
+                assertThat(info.getFriendlyDescription(), is(notNullValue()));
+            }
+            assertThat(entry.getType(), is(notNullValue()));
+            assertThat(entry.getDate(), is(notNullValue()));
+            assertThat(entry.getDetailedMessage(), is(notNullValue()));
+        }
+        assertThat(hasAnyEntry, is(true));
+        assertThat(hasAnyObject, is(true));
 
-	}
+    }
 
 }

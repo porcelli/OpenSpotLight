@@ -69,99 +69,97 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
- * Created by IntelliJ IDEA. User: feuteston Date: 30/03/2010 Time: 17:45:29 To
- * change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: feuteston Date: 30/03/2010 Time: 17:45:29 To change this template use File | Settings | File
+ * Templates.
  */
 @Singleton
 public class JRedisFacoryImpl implements JRedisFactory {
 
-	private final Map<Partition, JRedisServerDetail> mappedServerConfig;
+    private final Map<Partition, JRedisServerDetail>  mappedServerConfig;
 
-	private JRedisServerDetail defaultImpl = null;
+    private JRedisServerDetail                        defaultImpl      = null;
 
-	private List<JRedis> allInstances = new ArrayList<JRedis>();
+    private final List<JRedis>                        allInstances     = new ArrayList<JRedis>();
 
-	private final ThreadLocal<Map<Partition, JRedis>> threadLocalCache = new ThreadLocal<Map<Partition, JRedis>>();
+    private final ThreadLocal<Map<Partition, JRedis>> threadLocalCache = new ThreadLocal<Map<Partition, JRedis>>();
 
-	@Inject
-	JRedisFacoryImpl(
-			final Map<Partition, JRedisServerDetail> mappedServerConfig,
-			@StartRedisLocally final boolean needsToStart) {
-		this.mappedServerConfig = mappedServerConfig;
-		for (final JRedisServerDetail d : this.mappedServerConfig.values()) {
-			if (d.isDefaultConfig()) {
-				defaultImpl = d;
-				break;
-			}
-		}
-		if (needsToStart) {
-			final Partition samplePartition = mappedServerConfig.keySet()
-					.iterator().next();
-			RedisServerExecutor.INSTANCE.startServerIfNecessary(
-					samplePartition, this);
-		}
-	}
+    @Inject
+    JRedisFacoryImpl(
+                     final Map<Partition, JRedisServerDetail> mappedServerConfig,
+                     @StartRedisLocally final boolean needsToStart) {
+        this.mappedServerConfig = mappedServerConfig;
+        for (final JRedisServerDetail d: this.mappedServerConfig.values()) {
+            if (d.isDefaultConfig()) {
+                defaultImpl = d;
+                break;
+            }
+        }
+        if (needsToStart) {
+            final Partition samplePartition = mappedServerConfig.keySet()
+                    .iterator().next();
+            RedisServerExecutor.INSTANCE.startServerIfNecessary(
+                    samplePartition, this);
+        }
+    }
 
-	@Override
-	public JRedis getFrom(final Partition partition) {
-		JRedisServerDetail tmpServerDetail = mappedServerConfig.get(partition);
-		if (tmpServerDetail == null) {
-			tmpServerDetail = defaultImpl;
-		}
-		if (tmpServerDetail == null) {
-			throw new IllegalArgumentException(
-					"there's no server configured for partition "
-							+ partition.getPartitionName()
-							+ " and no defaultServer created also");
-		}
-		final JRedisServerDetail serverDetail = tmpServerDetail;
-		Map<Partition, JRedis> cache = threadLocalCache.get();
-		if (cache == null) {
-			cache = new HashMap<Partition, JRedis>();
-			threadLocalCache.set(cache);
-		}
-		JRedis jRedis = cache.get(partition);
-		try {
-			if (jRedis == null) {
+    @Override
+    public JRedis getFrom(final Partition partition) {
+        JRedisServerDetail tmpServerDetail = mappedServerConfig.get(partition);
+        if (tmpServerDetail == null) {
+            tmpServerDetail = defaultImpl;
+        }
+        if (tmpServerDetail == null) { throw new IllegalArgumentException(
+                    "there's no server configured for partition "
+                            + partition.getPartitionName()
+                            + " and no defaultServer created also"); }
+        final JRedisServerDetail serverDetail = tmpServerDetail;
+        Map<Partition, JRedis> cache = threadLocalCache.get();
+        if (cache == null) {
+            cache = new HashMap<Partition, JRedis>();
+            threadLocalCache.set(cache);
+        }
+        JRedis jRedis = cache.get(partition);
+        try {
+            if (jRedis == null) {
 
-				jRedis = new JRedisClient(
-									serverDetail.getServerName(), serverDetail
-											.getServerPort(), serverDetail
-											.getPassword(), serverDetail
-											.getDb());
+                jRedis = new JRedisClient(
+                                    serverDetail.getServerName(), serverDetail
+                                            .getServerPort(), serverDetail
+                                            .getPassword(), serverDetail
+                                            .getDb());
                 cache.put(partition, jRedis);
-				synchronized (allInstances) {
-					allInstances.add(jRedis);
-				}
-			}
-		} catch (final Exception e) {
-			throw logAndReturnNew(e, SLRuntimeException.class);
-		}
-		return jRedis;
-	}
+                synchronized (allInstances) {
+                    allInstances.add(jRedis);
+                }
+            }
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+        }
+        return jRedis;
+    }
 
-	@Override
-	public Set<JRedis> getAllActive() {
-		Set<JRedis> result;
-		final Map<Partition, JRedis> cache = threadLocalCache.get();
-		if (cache != null) {
-			result = ImmutableSet.copyOf(cache.values());
-		} else {
-			result = emptySet();
-		}
-		return result;
-	}
+    @Override
+    public Set<JRedis> getAllActive() {
+        Set<JRedis> result;
+        final Map<Partition, JRedis> cache = threadLocalCache.get();
+        if (cache != null) {
+            result = ImmutableSet.copyOf(cache.values());
+        } else {
+            result = emptySet();
+        }
+        return result;
+    }
 
-	@Override
-	public void closeResources() {
-		List<JRedis> copy;
-		synchronized (allInstances) {
-			copy = new ArrayList<JRedis>(allInstances);
-			allInstances.clear();
-		}
-		for (JRedis j : copy) {
-			j.quit();
-		}
-	}
+    @Override
+    public void closeResources() {
+        List<JRedis> copy;
+        synchronized (allInstances) {
+            copy = new ArrayList<JRedis>(allInstances);
+            allInstances.clear();
+        }
+        for (final JRedis j: copy) {
+            j.quit();
+        }
+    }
 
 }

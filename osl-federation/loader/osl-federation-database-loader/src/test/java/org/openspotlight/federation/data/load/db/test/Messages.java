@@ -52,13 +52,13 @@ package org.openspotlight.federation.data.load.db.test;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class Messages {
     private static final String         BUNDLE_NAME     = "org.openspotlight.federation.data.load.db.test.messages"; //$NON-NLS-1$
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
-    public static String getString( final String key ) {
+    public static String getString(final String key) {
         try {
             return RESOURCE_BUNDLE.getString(key);
         } catch (final MissingResourceException e) {
@@ -66,6 +66,5 @@ public class Messages {
         }
     }
 
-    private Messages() {
-    }
+    private Messages() {}
 }

@@ -75,16 +75,18 @@ import org.openspotlight.federation.finder.db.ScriptType;
 public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder {
 
     @Override
-    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
-                                                           Class<A> type ) throws Exception {
+    protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
+                                                           final Class<A> type)
+        throws Exception {
         return source instanceof DbArtifactSource && availableTypes.contains(type);
     }
 
     @Override
-    protected <A extends Artifact> A internalFindByPath( Class<A> type,
-                                                         ArtifactSource source,
-                                                         String path, String encoding ) throws Exception {
-        DbArtifactSource artifactSource = (DbArtifactSource)source;
+    protected <A extends Artifact> A internalFindByPath(final Class<A> type,
+                                                         final ArtifactSource source,
+                                                         final String path, final String encoding)
+        throws Exception {
+        final DbArtifactSource artifactSource = (DbArtifactSource) source;
 
         final Connection conn = getConnectionFromSource(artifactSource);
         synchronized (conn) {
@@ -103,9 +105,7 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
             final DatabaseType databaseType = artifactSource.getType();
             final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE.getScript(databaseType,
                                                                                                               scriptType);
-            if (scriptDescription == null) {
-                return null;
-            }
+            if (scriptDescription == null) { return null; }
 
             final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription.getStreamHandlerClass();
             final DatabaseStreamHandler streamHandler;
@@ -140,43 +140,46 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
                     }
                 }
             }
-            if (content == null) {
-                return null;
-            }
+            if (content == null) { return null; }
 
             if (streamHandler != null) {
                 content = streamHandler.afterStreamProcessing(schema, scriptType, catalog, name, content, conn);
             }
-            final List<String> contentAsStringList = asStringList(content,encoding);
+            final List<String> contentAsStringList = asStringList(content, encoding);
             final StringArtifact sa = Artifact.createArtifact(StringArtifact.class, path, ChangeType.INCLUDED);
             sa.getContent().setTransient(contentAsStringList);
-            @SuppressWarnings( "unchecked" )
-            A a = (A)sa;
+            @SuppressWarnings("unchecked")
+            final A a = (A) sa;
             return a;
         }
     }
 
-    private List<String> asStringList(byte[] content, String encoding) throws IOException{
-        List<String> lines = newLinkedList();
-        BufferedReader reader = new BufferedReader(new StringReader(encoding!=null?new String(content,encoding):new String(content)));
+    private List<String> asStringList(final byte[] content, final String encoding)
+        throws IOException {
+        final List<String> lines = newLinkedList();
+        final BufferedReader reader =
+            new BufferedReader(new StringReader(encoding != null ? new String(content, encoding) : new String(content)));
         String line;
-        while((line = reader.readLine())!=null){
+        while ((line = reader.readLine()) != null) {
             lines.add(line);
         }
 
         return lines;
     }
 
-    @SuppressWarnings( "unchecked" )
-    private final Set<Class<? extends Artifact>> availableTypes = SLCollections.<Class<? extends Artifact>>setOf(StringArtifact.class);
+    @SuppressWarnings("unchecked")
+    private final Set<Class<? extends Artifact>> availableTypes = SLCollections
+                                                                    .<Class<? extends Artifact>>setOf(StringArtifact.class);
 
     @Override
-    protected Set<Class<? extends Artifact>> internalGetAvailableTypes() throws Exception {
+    protected Set<Class<? extends Artifact>> internalGetAvailableTypes()
+        throws Exception {
         return availableTypes;
     }
 
     @Override
-    protected boolean internalIsTypeSupported( Class<? extends Artifact> type ) throws Exception {
+    protected boolean internalIsTypeSupported(final Class<? extends Artifact> type)
+        throws Exception {
         return StringArtifact.class.equals(type);
     }
 

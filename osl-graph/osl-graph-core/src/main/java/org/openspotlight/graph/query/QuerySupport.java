@@ -69,7 +69,6 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public class QuerySupport {
 
-   
     /**
      * Gets the hierarchy type names.
      * 
@@ -78,18 +77,19 @@ public class QuerySupport {
      * @param subTypes the sub types
      * @return the hierarchy type names
      */
-    static List<String> getHierarchyTypeNames( final Metadata metadata,
+    static List<String> getHierarchyTypeNames(final Metadata metadata,
                                                final String typeName,
-                                               final boolean subTypes ) throws MetaNodeTypeNotFoundException {
+                                               final boolean subTypes)
+        throws MetaNodeTypeNotFoundException {
         final List<String> types = new ArrayList<String>();
         types.add(typeName);
         if (subTypes) {
             final MetaNodeType type = metadata.getMetaNodeType(typeName);
             throw new UnsupportedOperationException();
             //FIXME
-//            for (final MetaNodeType currentType : type.getSubMetaNodeTypes()) {
-//                types.add(currentType.getTypeName());
-//            }
+            //            for (final MetaNodeType currentType : type.getSubMetaNodeTypes()) {
+            //                types.add(currentType.getTypeName());
+            //            }
         }
         return types;
     }
@@ -100,27 +100,24 @@ public class QuerySupport {
      * @param nodes the nodes
      * @return the node i ds
      */
-    static String[] getNodeIDs( final Collection<Node> nodes ) {
-        if (nodes == null) {
-            return null;
-        }
+    static String[] getNodeIDs(final Collection<Node> nodes) {
+        if (nodes == null) { return null; }
         int count = 0;
         final String[] ids = new String[nodes.size()];
-        for (final Node node : nodes) {
+        for (final Node node: nodes) {
             ids[count++] = node.getId();
         }
         return ids;
     }
 
-    
     /**
      * Gets the select info.
      * 
      * @param select the select
      * @return the select info
      */
-    static SelectInfo getSelectInfo( final Select select ) {
-        final SelectInfoGetter getter = (SelectInfoGetter)select;
+    static SelectInfo getSelectInfo(final Select select) {
+        final SelectInfoGetter getter = (SelectInfoGetter) select;
         return getter.getSelectInfo();
     }
 
@@ -130,8 +127,8 @@ public class QuerySupport {
      * @param select the select
      * @return the select statement info
      */
-    static SelectStatementInfo getSelectStatementInfo( final Select select ) {
-        final SelectStatementInfoGetter getter = (SelectStatementInfoGetter)select;
+    static SelectStatementInfo getSelectStatementInfo(final Select select) {
+        final SelectStatementInfoGetter getter = (SelectStatementInfoGetter) select;
         return getter.getSelectStatementInfo();
     }
 
@@ -144,10 +141,9 @@ public class QuerySupport {
      *         >
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    static Map<String, List<StorageNode>> mapNodesByType( final Collection<StorageNode> selectNodeWrappers )
-         {
+    static Map<String, List<StorageNode>> mapNodesByType(final Collection<StorageNode> selectNodeWrappers) {
         final Map<String, List<StorageNode>> nodeWrapperListMap = new HashMap<String, List<StorageNode>>();
-        for (final StorageNode pNodeWrapper : selectNodeWrappers) {
+        for (final StorageNode pNodeWrapper: selectNodeWrappers) {
             final String typeName = pNodeWrapper.getType();
             List<StorageNode> typeNodes = nodeWrapperListMap.get(typeName);
             if (typeNodes == null) {
@@ -158,7 +154,5 @@ public class QuerySupport {
         }
         return nodeWrapperListMap;
     }
-
-
 
 }

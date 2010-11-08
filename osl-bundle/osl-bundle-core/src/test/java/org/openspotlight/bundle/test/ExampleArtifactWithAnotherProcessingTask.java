@@ -16,8 +16,8 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 @StrongDependsOn(@Dependency(ExampleProcessingTask.class))
 public class ExampleArtifactWithAnotherProcessingTask extends ArtifactTask {
 
-    protected ExampleArtifactWithAnotherProcessingTask(ExecutionContextProvider provider, Artifact artifact,
-                                                       Map<String, String> properties) {
+    protected ExampleArtifactWithAnotherProcessingTask(final ExecutionContextProvider provider, final Artifact artifact,
+                                                       final Map<String, String> properties) {
         super(provider, artifact, properties);
     }
 
@@ -28,7 +28,7 @@ public class ExampleArtifactWithAnotherProcessingTask extends ArtifactTask {
     }
 
     @Override
-    public boolean isValid(ExecutionContext context, Map<String, String> properties) {
+    public boolean isValid(final ExecutionContext context, final Map<String, String> properties) {
         return true;
     }
 

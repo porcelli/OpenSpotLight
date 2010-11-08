@@ -86,134 +86,137 @@ import com.google.inject.internal.ImmutableList;
 
 public class FileSystemLoadingStressTest {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FileSystemLoadingStressTest.class);
-	private static ArtifactSource artifactSource;
+    private static final Logger   logger = LoggerFactory
+                                             .getLogger(FileSystemLoadingStressTest.class);
+    private static ArtifactSource artifactSource;
 
-	private static class RepositoryData {
-		public final GlobalSettings settings;
-		public final Repository repository;
-		public final Group group;
-		public final ArtifactSource artifactSource;
+    private static class RepositoryData {
+        public final GlobalSettings settings;
+        public final Repository     repository;
+        public final Group          group;
+        public final ArtifactSource artifactSource;
 
-		public RepositoryData(final GlobalSettings settings,
-				final Repository repository, final Group group,
-				final ArtifactSource artifactSource) {
-			this.settings = settings;
-			this.repository = repository;
-			this.group = group;
-			this.artifactSource = artifactSource;
-		}
-	}
+        public RepositoryData(final GlobalSettings settings,
+                              final Repository repository, final Group group,
+                              final ArtifactSource artifactSource) {
+            this.settings = settings;
+            this.repository = repository;
+            this.group = group;
+            this.artifactSource = artifactSource;
+        }
+    }
 
-	private static RepositoryData data;
-	private static PersistentArtifactManager persistentManager;
+    private static RepositoryData            data;
+    private static PersistentArtifactManager persistentManager;
 
-	@AfterClass
-	public static void closeResources() throws Exception {
-		// contextFactory.closeResources();
-	}
+    @AfterClass
+    public static void closeResources()
+        throws Exception {
+        // contextFactory.closeResources();
+    }
 
-	private static RepositoryData createRepositoryData() {
-		final GlobalSettings settings = new GlobalSettings();
-		settings.setDefaultSleepingIntervalInMilliseconds(300);
+    private static RepositoryData createRepositoryData() {
+        final GlobalSettings settings = new GlobalSettings();
+        settings.setDefaultSleepingIntervalInMilliseconds(300);
 
-		final Repository repository = new Repository();
-		repository.setName("sampleRepository");
-		repository.setActive(true);
-		final Group group = new Group();
-		group.setName("sampleGroup");
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		group.setActive(true);
-		artifactSource = new ArtifactSource();
-		group.getArtifactSources().add(artifactSource);
-		artifactSource.setRepository(repository);
-		artifactSource.setName("lots of files");
-		artifactSource.setActive(true);
-		artifactSource.setBinary(false);
-		// artifactSource.setInitialLookup("/Users/feu/much-data");
-		artifactSource.setInitialLookup("./");
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setSource(artifactSource);
-		artifactSource.getMappings().add(mapping);
-		// mapping.setFrom("files");
-		mapping.setFrom("src");
-		mapping.setTo("OSL");
-		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("**/*");
+        final Repository repository = new Repository();
+        repository.setName("sampleRepository");
+        repository.setActive(true);
+        final Group group = new Group();
+        group.setName("sampleGroup");
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        group.setActive(true);
+        artifactSource = new ArtifactSource();
+        group.getArtifactSources().add(artifactSource);
+        artifactSource.setRepository(repository);
+        artifactSource.setName("lots of files");
+        artifactSource.setActive(true);
+        artifactSource.setBinary(false);
+        // artifactSource.setInitialLookup("/Users/feu/much-data");
+        artifactSource.setInitialLookup("./");
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setSource(artifactSource);
+        artifactSource.getMappings().add(mapping);
+        // mapping.setFrom("files");
+        mapping.setFrom("src");
+        mapping.setTo("OSL");
+        artifactSource.getMappings().add(mapping);
+        mapping.getIncludeds().add("**/*");
 
-		return new RepositoryData(settings, repository, group, artifactSource);
-	}
+        return new RepositoryData(settings, repository, group, artifactSource);
+    }
 
-	@BeforeClass
-	public static void setupResources() throws Exception {
+    @BeforeClass
+    public static void setupResources()
+        throws Exception {
 
-		Injector injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
+        final Injector injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
 
-		injector.getInstance(JRedisFactory.class)
-				.getFrom(RegularPartitions.FEDERATION).flushall();
-		data = createRepositoryData();
-		persistentManager = injector
-				.getInstance(PersistentArtifactManager.class);
-	}
+        injector.getInstance(JRedisFactory.class)
+                .getFrom(RegularPartitions.FEDERATION).flushall();
+        data = createRepositoryData();
+        persistentManager = injector
+                .getInstance(PersistentArtifactManager.class);
+    }
 
-	@After
-	public void closeTestResources() {
+    @After
+    public void closeTestResources() {
 
-	}
+    }
 
-	private void reloadArtifacts() {
-		throw new UnsupportedOperationException();
-	}
+    private void reloadArtifacts() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Test
-	public void shouldProcessJarFile() throws Exception {
-		logger.debug("about to load all items from its origin");
-		reloadArtifacts();
-		logger.debug("finished to load all items from its origin");
-		logger.debug("about to load item names from persistent storage");
-		Iterable<String> list = persistentManager.getInternalMethods()
-				.retrieveNames(StringArtifact.class, null);
-		logger.debug("finished to load item names from persistent storage");
+    @Test
+    public void shouldProcessJarFile()
+        throws Exception {
+        logger.debug("about to load all items from its origin");
+        reloadArtifacts();
+        logger.debug("finished to load all items from its origin");
+        logger.debug("about to load item names from persistent storage");
+        final Iterable<String> list = persistentManager.getInternalMethods()
+                .retrieveNames(StringArtifact.class, null);
+        logger.debug("finished to load item names from persistent storage");
 
-		assertThat(SLCollections.iterableToList(list).size() > 50, is(true));
-		int loadedSize = 0;
-		logger.debug("about to load item contents from persistent storage");
-		for (String s : list) {
-			StringArtifact file = persistentManager.findByPath(
-					StringArtifact.class, s);
-			assertThat(file, is(notNullValue()));
-			List<String> lazyLoadedContent = file.getContent().get(
-					persistentManager.getSimplePersist());
-			assertThat(lazyLoadedContent, is(notNullValue()));
-			assertThat(lazyLoadedContent.equals(getFileContentAsStringList(
-					artifactSource, file.getOriginalName())), is(true));
+        assertThat(SLCollections.iterableToList(list).size() > 50, is(true));
+        int loadedSize = 0;
+        logger.debug("about to load item contents from persistent storage");
+        for (final String s: list) {
+            final StringArtifact file = persistentManager.findByPath(
+                    StringArtifact.class, s);
+            assertThat(file, is(notNullValue()));
+            final List<String> lazyLoadedContent = file.getContent().get(
+                    persistentManager.getSimplePersist());
+            assertThat(lazyLoadedContent, is(notNullValue()));
+            assertThat(lazyLoadedContent.equals(getFileContentAsStringList(
+                    artifactSource, file.getOriginalName())), is(true));
 
-			if (lazyLoadedContent.size() != 0) {
-				loadedSize++;
-			}
-		}
-		logger.debug("finished to load item contents from persistent storage");
-		assertThat(loadedSize > 50, is(true));
+            if (lazyLoadedContent.size() != 0) {
+                loadedSize++;
+            }
+        }
+        logger.debug("finished to load item contents from persistent storage");
+        assertThat(loadedSize > 50, is(true));
 
-	}
+    }
 
-	private List<String> getFileContentAsStringList(
-			ArtifactSource artifactSource, String originalName)
-			throws Exception {
-		BufferedReader reader = new BufferedReader(new FileReader(concatPaths(
-				artifactSource.getInitialLookup(), originalName)));
-		ImmutableList.Builder<String> builder = ImmutableList.builder();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			builder.add(line);
-		}
-		reader.close();
-		return builder.build();
-	}
+    private List<String> getFileContentAsStringList(
+                                                    final ArtifactSource artifactSource, final String originalName)
+            throws Exception {
+        final BufferedReader reader = new BufferedReader(new FileReader(concatPaths(
+                artifactSource.getInitialLookup(), originalName)));
+        final ImmutableList.Builder<String> builder = ImmutableList.builder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            builder.add(line);
+        }
+        reader.close();
+        return builder.build();
+    }
 
 }

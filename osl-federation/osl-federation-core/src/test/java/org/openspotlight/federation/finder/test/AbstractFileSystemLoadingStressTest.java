@@ -83,172 +83,178 @@ import com.google.inject.internal.ImmutableList;
 
 public abstract class AbstractFileSystemLoadingStressTest {
 
-	private static ArtifactSource artifactSource;
-	protected Injector injector;
+    private static ArtifactSource artifactSource;
+    protected Injector            injector;
 
-	private static class RepositoryData {
-		public final GlobalSettings settings;
-		public final Repository repository;
-		public final Group group;
-		public final ArtifactSource artifactSource;
+    private static class RepositoryData {
+        public final GlobalSettings settings;
+        public final Repository     repository;
+        public final Group          group;
+        public final ArtifactSource artifactSource;
 
-		public RepositoryData(final GlobalSettings settings,
-				final Repository repository, final Group group,
-				final ArtifactSource artifactSource) {
-			this.settings = settings;
-			this.repository = repository;
-			this.group = group;
-			this.artifactSource = artifactSource;
-		}
-	}
+        public RepositoryData(final GlobalSettings settings,
+                              final Repository repository, final Group group,
+                              final ArtifactSource artifactSource) {
+            this.settings = settings;
+            this.repository = repository;
+            this.group = group;
+            this.artifactSource = artifactSource;
+        }
+    }
 
-	private static RepositoryData data;
+    private static RepositoryData data;
 
-	@AfterClass
-	public static void closeResources() throws Exception {
-		// TODO
-	}
+    @AfterClass
+    public static void closeResources()
+        throws Exception {
+        // TODO
+    }
 
-	private static RepositoryData createRepositoryData() {
-		final GlobalSettings settings = new GlobalSettings();
-		settings.setDefaultSleepingIntervalInMilliseconds(300);
+    private static RepositoryData createRepositoryData() {
+        final GlobalSettings settings = new GlobalSettings();
+        settings.setDefaultSleepingIntervalInMilliseconds(300);
 
-		final Repository repository = new Repository();
-		repository.setName("sampleRepository");
-		repository.setActive(true);
-		final Group group = new Group();
-		group.setName("sampleGroup");
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		group.setActive(true);
-		artifactSource = new ArtifactSource();
-		group.getArtifactSources().add(artifactSource);
-		artifactSource.setRepository(repository);
-		artifactSource.setName("lots of files");
-		artifactSource.setActive(true);
-		artifactSource.setBinary(false);
-		artifactSource.setInitialLookup("/Users/feu/much-data");
-		artifactSource.setInitialLookup("./");
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setSource(artifactSource);
-		artifactSource.getMappings().add(mapping);
-		mapping.setFrom("files");
-		mapping.setFrom("src");
-		mapping.setTo("OSL");
-		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("**/*");
-		// mapping.getIncludeds().add("**/XmlConfigurationManagerFactory.java");
-		// //TODO remove this
+        final Repository repository = new Repository();
+        repository.setName("sampleRepository");
+        repository.setActive(true);
+        final Group group = new Group();
+        group.setName("sampleGroup");
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        group.setActive(true);
+        artifactSource = new ArtifactSource();
+        group.getArtifactSources().add(artifactSource);
+        artifactSource.setRepository(repository);
+        artifactSource.setName("lots of files");
+        artifactSource.setActive(true);
+        artifactSource.setBinary(false);
+        artifactSource.setInitialLookup("/Users/feu/much-data");
+        artifactSource.setInitialLookup("./");
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setSource(artifactSource);
+        artifactSource.getMappings().add(mapping);
+        mapping.setFrom("files");
+        mapping.setFrom("src");
+        mapping.setTo("OSL");
+        artifactSource.getMappings().add(mapping);
+        mapping.getIncludeds().add("**/*");
+        // mapping.getIncludeds().add("**/XmlConfigurationManagerFactory.java");
+        // //TODO remove this
 
-		return new RepositoryData(settings, repository, group, artifactSource);
-	}
+        return new RepositoryData(settings, repository, group, artifactSource);
+    }
 
-	private boolean runned = false;
-	private MutableConfigurationManager configurationManager;
-	private PersistentArtifactManager persistentArtifactManager;
+    private boolean                     runned = false;
+    private MutableConfigurationManager configurationManager;
+    private PersistentArtifactManager   persistentArtifactManager;
 
-	@Before
-	public void setupResources() throws Exception {
-		if (!runned) {
-			injector = Guice.createInjector(createStorageModule(), new SimplePersistModule(),
-					new DetailedLoggerModule());
-			clearData();
-			data = createRepositoryData();
-			configurationManager = injector
-					.getInstance(MutableConfigurationManager.class);
+    @Before
+    public void setupResources()
+        throws Exception {
+        if (!runned) {
+            injector = Guice.createInjector(createStorageModule(), new SimplePersistModule(),
+                    new DetailedLoggerModule());
+            clearData();
+            data = createRepositoryData();
+            configurationManager = injector
+                    .getInstance(MutableConfigurationManager.class);
 
-			configurationManager.saveGlobalSettings(data.settings);
-			configurationManager.saveRepository(data.repository);
-			configurationManager.closeResources();
-			persistentArtifactManager = injector.getInstance(PersistentArtifactManager.class);
-			runned = true;
-		}
+            configurationManager.saveGlobalSettings(data.settings);
+            configurationManager.saveRepository(data.repository);
+            configurationManager.closeResources();
+            persistentArtifactManager = injector.getInstance(PersistentArtifactManager.class);
+            runned = true;
+        }
 
-	}
+    }
 
-	protected abstract void clearData() throws Exception;
+    protected abstract void clearData()
+        throws Exception;
 
-	protected abstract Module createStorageModule()
-			throws Exception;
+    protected abstract Module createStorageModule()
+            throws Exception;
 
-	@After
-	public void closeTestResources() {
-		// TODO
-	}
+    @After
+    public void closeTestResources() {
+        // TODO
+    }
 
-	private void reloadArtifacts() {
-		throw new UnsupportedOperationException();
-	}
+    private void reloadArtifacts() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Test
-	public void shouldProcessJarFile() throws Exception {
-		System.out.println("about to load all items from its origin");
-		reloadArtifacts();
-		System.out.println("finished to load all items from its origin");
+    @Test
+    public void shouldProcessJarFile()
+        throws Exception {
+        System.out.println("about to load all items from its origin");
+        reloadArtifacts();
+        System.out.println("finished to load all items from its origin");
 
-		System.out.println("about to load item names from persistent storage");
-		Iterable<String> list = persistentArtifactManager
-				.getInternalMethods().retrieveNames(StringArtifact.class, null);
-		System.out
-				.println("finished to load item names from persistent storage");
+        System.out.println("about to load item names from persistent storage");
+        final Iterable<String> list = persistentArtifactManager
+                .getInternalMethods().retrieveNames(StringArtifact.class, null);
+        System.out
+                .println("finished to load item names from persistent storage");
 
-		int size = 50;
-		// size = 1 ;//TODO remove this
-		final AtomicInteger loadedSize = new AtomicInteger(0);
-		final AtomicInteger nullSize = new AtomicInteger(0);
-		final AtomicInteger fileContentNotEqualsSize = new AtomicInteger(0);
-		System.out
-				.println("about to load item contents from persistent storage");
-		List<Callable<Void>> callables = newArrayList();
-		for (final String s : list) {
-			callables.add(new Callable<Void>() {
-				public Void call() throws Exception {
-					StringArtifact file = persistentArtifactManager.findByPath(
-									StringArtifact.class, s);
-					assertThat(file, is(notNullValue()));
-					List<String> lazyLoadedContent = file.getContent().get(
-							persistentArtifactManager
-									.getSimplePersist());
-					if (lazyLoadedContent == null) {
-						nullSize.incrementAndGet();
-						System.out.println(s + " got null content");
-					}
+        final int size = 50;
+        // size = 1 ;//TODO remove this
+        final AtomicInteger loadedSize = new AtomicInteger(0);
+        final AtomicInteger nullSize = new AtomicInteger(0);
+        final AtomicInteger fileContentNotEqualsSize = new AtomicInteger(0);
+        System.out
+                .println("about to load item contents from persistent storage");
+        final List<Callable<Void>> callables = newArrayList();
+        for (final String s: list) {
+            callables.add(new Callable<Void>() {
+                @Override
+                public Void call()
+                    throws Exception {
+                    final StringArtifact file = persistentArtifactManager.findByPath(
+                                    StringArtifact.class, s);
+                    assertThat(file, is(notNullValue()));
+                    final List<String> lazyLoadedContent = file.getContent().get(
+                            persistentArtifactManager
+                                    .getSimplePersist());
+                    if (lazyLoadedContent == null) {
+                        nullSize.incrementAndGet();
+                        System.out.println(s + " got null content");
+                    }
 
-					if (lazyLoadedContent == null
-							|| !lazyLoadedContent
-									.equals(getFileContentAsStringList(file
-											.getOriginalName()))) {
-						fileContentNotEqualsSize.incrementAndGet();
-					}
-					if (lazyLoadedContent != null
-							&& lazyLoadedContent.size() != 0) {
-						loadedSize.incrementAndGet();
-					}
-					return null;
-				}
+                    if (lazyLoadedContent == null
+                            || !lazyLoadedContent
+                                    .equals(getFileContentAsStringList(file
+                                            .getOriginalName()))) {
+                        fileContentNotEqualsSize.incrementAndGet();
+                    }
+                    if (lazyLoadedContent != null
+                            && lazyLoadedContent.size() != 0) {
+                        loadedSize.incrementAndGet();
+                    }
+                    return null;
+                }
 
-			});
+            });
 
-		}
-		ExecutorInstance.INSTANCE.invokeAll(callables);
-		System.out
-				.println("finished to load item contents from persistent storage");
-		assertThat(loadedSize.get() >= size, is(true));
-		assertThat(nullSize.get(), is(0));
-		assertThat(fileContentNotEqualsSize.get(), is(0));
+        }
+        ExecutorInstance.INSTANCE.invokeAll(callables);
+        System.out
+                .println("finished to load item contents from persistent storage");
+        assertThat(loadedSize.get() >= size, is(true));
+        assertThat(nullSize.get(), is(0));
+        assertThat(fileContentNotEqualsSize.get(), is(0));
 
-	}
+    }
 
-	private List<String> getFileContentAsStringList(String originalName)
-			throws Exception {
-		BufferedReader reader = new BufferedReader(new FileReader(originalName));
-		ImmutableList.Builder<String> builder = ImmutableList.builder();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			builder.add(line);
-		}
-		reader.close();
-		return builder.build();
-	}
+    private List<String> getFileContentAsStringList(final String originalName)
+            throws Exception {
+        final BufferedReader reader = new BufferedReader(new FileReader(originalName));
+        final ImmutableList.Builder<String> builder = ImmutableList.builder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            builder.add(line);
+        }
+        reader.close();
+        return builder.build();
+    }
 
 }

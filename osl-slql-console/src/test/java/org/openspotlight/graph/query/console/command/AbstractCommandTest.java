@@ -62,7 +62,8 @@ public abstract class AbstractCommandTest {
     protected PrintWriter   out     = null;
 
     @Before
-    public void setup() throws IOException {
+    public void setup()
+        throws IOException {
         if (reader == null) {
             reader = new ConsoleReader();
             reader.setBellEnabled(false);

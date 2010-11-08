@@ -98,15 +98,15 @@ import com.google.inject.Injector;
 
 public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
-    private static final long                          serialVersionUID = -1340118659974257278L;
+    private static final long                                 serialVersionUID = -1340118659974257278L;
 
-    private IdentityStoreConfigurationMetaData         configurationMetaData;
+    private IdentityStoreConfigurationMetaData                configurationMetaData;
 
-    private String                                     id;
+    private String                                            id;
 
     private StorageNode                                       rootNode;
 
-    private FeaturesMetaData                           supportedFeatures;
+    private FeaturesMetaData                                  supportedFeatures;
     private SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     public SLIdentityStoreImpl() {}

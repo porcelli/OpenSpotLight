@@ -56,7 +56,7 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 
-@Name( "database" )
+@Name("database")
 public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 
     /**
@@ -71,20 +71,17 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
     private String            columnName;
 
     @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!equals(other)) {
-            return false;
-        }
-        final PrimaryKeyConstraintArtifact that = (PrimaryKeyConstraintArtifact)other;
+    public boolean contentEquals(final Artifact other) {
+        if (!equals(other)) { return false; }
+        final PrimaryKeyConstraintArtifact that = (PrimaryKeyConstraintArtifact) other;
         return eachEquality(of(tableName, columnName), andOf(that.tableName, that.columnName));
     }
 
-    @SuppressWarnings( "unchecked" )
-    public boolean equals( final Object o ) {
-        if (!(o instanceof PrimaryKeyConstraintArtifact)) {
-            return false;
-        }
-        final PrimaryKeyConstraintArtifact that = (PrimaryKeyConstraintArtifact)o;
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(final Object o) {
+        if (!(o instanceof PrimaryKeyConstraintArtifact)) { return false; }
+        final PrimaryKeyConstraintArtifact that = (PrimaryKeyConstraintArtifact) o;
 
         return eachEquality(of(constraintName, catalogName, schemaName, getDatabaseName(), getDatabaseType(), getServerName(),
                                getUrl()), andOf(of(that.constraintName, that.catalogName, that.schemaName,
@@ -112,28 +109,29 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
         return tableName;
     }
 
+    @Override
     public int hashCode() {
         return HashCodes.hashOf(constraintName, catalogName, schemaName, getDatabaseName(), getDatabaseType(), getServerName(),
                                 getUrl());
     }
 
-    public void setCatalogName( final String catalogName ) {
+    public void setCatalogName(final String catalogName) {
         this.catalogName = catalogName;
     }
 
-    public void setColumnName( final String columnName ) {
+    public void setColumnName(final String columnName) {
         this.columnName = columnName;
     }
 
-    public void setConstraintName( final String constraintName ) {
+    public void setConstraintName(final String constraintName) {
         this.constraintName = constraintName;
     }
 
-    public void setSchemaName( final String schemaName ) {
+    public void setSchemaName(final String schemaName) {
         this.schemaName = schemaName;
     }
 
-    public void setTableName( final String tableName ) {
+    public void setTableName(final String tableName) {
         this.tableName = tableName;
     }
 

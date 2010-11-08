@@ -61,19 +61,20 @@ import org.slf4j.Logger;
 public abstract class SLTreeParser extends TreeParser {
 
     public SLTreeParser(
-                         TreeNodeStream input ) {
+                         final TreeNodeStream input) {
         super(input);
     }
 
     public SLTreeParser(
-                         TreeNodeStream input, RecognizerSharedState state ) {
+                         final TreeNodeStream input, final RecognizerSharedState state) {
         super(input, state);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void emitErrorMessage( String msg ) {
+    @Override
+    public void emitErrorMessage(final String msg) {
         getLogger().warn(msg);
     }
 

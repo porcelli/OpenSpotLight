@@ -43,158 +43,170 @@ import com.google.inject.Injector;
  */
 @Ignore
 public class FilesStressTest {
-	private final Injector injector;
+    private final Injector injector;
 
-	public FilesStressTest() {
-		injector = Guice.createInjector(
-				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-						ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
-				new SimplePersistModule(), new DetailedLoggerModule());
+    public FilesStressTest() {
+        injector = Guice.createInjector(
+                new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
+                new SimplePersistModule(), new DetailedLoggerModule());
 
-	}
+    }
 
-	private static final String FROM = "../../", TO = "/tmp";
+    private static final String FROM = "../../", TO = "/tmp";
 
-	@Test
-	// 61s copying directories
-	public void shouldLoadFileNamesFaster() throws Exception {
+    @Test
+    // 61s copying directories
+        public
+        void shouldLoadFileNamesFaster()
+            throws Exception {
 
-		Set<String> names = Files.listFileNamesFrom(FROM, false);
-		List<Callable<Void>> callables = newLinkedList();
-		for (final String fileName : names) {
-			callables.add(new Callable<Void>() {
-				@Override
-				public Void call() throws Exception {
-					File file = new File(fileName);
-					if (file.isDirectory())
-						return null;
-					FileInputStream fis = new FileInputStream(file);
-					String newDirName = concatPaths(TO,
-							fileName.substring(0, fileName.lastIndexOf("/")));
-					new File(newDirName).mkdirs();
-					FileOutputStream fos = new FileOutputStream(concatPaths(TO,
-							fileName));
-					IOUtils.copy(fis, fos);
-					return null;
-				}
-			});
-		}
-		List<Future<Void>> futures = ExecutorInstance.INSTANCE
-				.invokeAll(callables);
-		for (Future<Void> f : futures) {
-			f.get();
-		}
+        final Set<String> names = Files.listFileNamesFrom(FROM, false);
+        final List<Callable<Void>> callables = newLinkedList();
+        for (final String fileName: names) {
+            callables.add(new Callable<Void>() {
+                @Override
+                public Void call()
+                    throws Exception {
+                    final File file = new File(fileName);
+                    if (file.isDirectory()) {
+                        return null;
+                    }
+                    final FileInputStream fis = new FileInputStream(file);
+                    final String newDirName = concatPaths(TO,
+                            fileName.substring(0, fileName.lastIndexOf("/")));
+                    new File(newDirName).mkdirs();
+                    final FileOutputStream fos = new FileOutputStream(concatPaths(TO,
+                            fileName));
+                    IOUtils.copy(fis, fos);
+                    return null;
+                }
+            });
+        }
+        final List<Future<Void>> futures = ExecutorInstance.INSTANCE
+                .invokeAll(callables);
+        for (final Future<Void> f: futures) {
+            f.get();
+        }
 
-	}
+    }
 
-	@Test
-	// 16s reading directories and pasting on redis
-	public void shouldLoadFileNamesUnderRedis() throws Exception {
-		Set<String> names = Files.listFileNamesFrom(FROM, false);
-		List<Callable<Void>> callables = newLinkedList();
-		for (final String fileName : names) {
-			callables.add(new Callable<Void>() {
-				@Override
-				public Void call() throws Exception {
-					File file = new File(fileName);
-					if (file.isDirectory())
-						return null;
-					FileInputStream fis = new FileInputStream(file);
-					JRedisFactory factory = injector
-							.getInstance(JRedisFactory.class);
-					ByteArrayOutputStream fos = new ByteArrayOutputStream();
-					IOUtils.copy(fis, fos);
-					factory.getFrom(RegularPartitions.FEDERATION).set(
-							fileName.replaceAll("[ ]", ""), fos.toByteArray());
-					return null;
-				}
-			});
-		}
-		List<Future<Void>> futures = ExecutorInstance.INSTANCE
-				.invokeAll(callables);
-		for (Future<Void> f : futures) {
-			f.get();
-		}
-	}
+    @Test
+    // 16s reading directories and pasting on redis
+        public
+        void shouldLoadFileNamesUnderRedis()
+            throws Exception {
+        final Set<String> names = Files.listFileNamesFrom(FROM, false);
+        final List<Callable<Void>> callables = newLinkedList();
+        for (final String fileName: names) {
+            callables.add(new Callable<Void>() {
+                @Override
+                public Void call()
+                    throws Exception {
+                    final File file = new File(fileName);
+                    if (file.isDirectory()) {
+                        return null;
+                    }
+                    final FileInputStream fis = new FileInputStream(file);
+                    final JRedisFactory factory = injector
+                            .getInstance(JRedisFactory.class);
+                    final ByteArrayOutputStream fos = new ByteArrayOutputStream();
+                    IOUtils.copy(fis, fos);
+                    factory.getFrom(RegularPartitions.FEDERATION).set(
+                            fileName.replaceAll("[ ]", ""), fos.toByteArray());
+                    return null;
+                }
+            });
+        }
+        final List<Future<Void>> futures = ExecutorInstance.INSTANCE
+                .invokeAll(callables);
+        for (final Future<Void> f: futures) {
+            f.get();
+        }
+    }
 
-	@Test
-	// 30s (51s) (87s) to load 1/6 of the data
-	// 190s for all data
-	public void shouldLoadFileNamesUnderRedisUsingSimplePersist()
-			throws Exception {
-		Set<String> names = Files.listFileNamesFrom(FROM, false);
-		List<Callable<Void>> callables = newLinkedList();
-		int sizeByThree = names.size() / 6;
-		int i = 0;
-		for (final String fileName : names) {
-			if (i++ >= sizeByThree)
-				break;
-			callables.add(new Callable<Void>() {
-				@Override
-				public Void call() throws Exception {
-					File file = new File(fileName);
-					if (file.isDirectory())
-						return null;
-					FileInputStream fis = new FileInputStream(file);
-					StringArtifact artifact = Artifact
-							.createArtifact(StringArtifact.class, fileName,
-									ChangeType.INCLUDED);
-					artifact.setMappedTo(fileName);
-					artifact.setMappedFrom(fileName);
-					artifact.setLastChange(System.currentTimeMillis());
-					artifact.setOriginalName(fileName);
-					SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
-							.getInstance(SimplePersistFactory.class)
-							.createSimplePersist(RegularPartitions.FEDERATION);
+    @Test
+    // 30s (51s) (87s) to load 1/6 of the data
+    // 190s for all data
+        public
+        void shouldLoadFileNamesUnderRedisUsingSimplePersist()
+            throws Exception {
+        final Set<String> names = Files.listFileNamesFrom(FROM, false);
+        final List<Callable<Void>> callables = newLinkedList();
+        final int sizeByThree = names.size() / 6;
+        int i = 0;
+        for (final String fileName: names) {
+            if (i++ >= sizeByThree) {
+                break;
+            }
+            callables.add(new Callable<Void>() {
+                @Override
+                public Void call()
+                    throws Exception {
+                    final File file = new File(fileName);
+                    if (file.isDirectory()) {
+                        return null;
+                    }
+                    final FileInputStream fis = new FileInputStream(file);
+                    final StringArtifact artifact = Artifact
+                            .createArtifact(StringArtifact.class, fileName,
+                                    ChangeType.INCLUDED);
+                    artifact.setMappedTo(fileName);
+                    artifact.setMappedFrom(fileName);
+                    artifact.setLastChange(System.currentTimeMillis());
+                    artifact.setOriginalName(fileName);
+                    final SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
+                            .getInstance(SimplePersistFactory.class)
+                            .createSimplePersist(RegularPartitions.FEDERATION);
 
-					JRedisFactory factory = injector
-							.getInstance(JRedisFactory.class);
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(fis));
-					String line;
-					List<String> content = newLinkedList();
-					while ((line = reader.readLine()) != null) {
-						content.add(line);
-					}
-					artifact.getContent().setTransient(content);
-					simplePersist.convertBeanToNode(artifact);
-					return null;
-				}
-			});
-		}
-		List<Future<Void>> futures = ExecutorInstance.INSTANCE
-				.invokeAll(callables);
-		for (Future<Void> f : futures) {
-			f.get();
-		}
-	}
+                    final JRedisFactory factory = injector
+                            .getInstance(JRedisFactory.class);
+                    final BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(fis));
+                    String line;
+                    final List<String> content = newLinkedList();
+                    while ((line = reader.readLine()) != null) {
+                        content.add(line);
+                    }
+                    artifact.getContent().setTransient(content);
+                    simplePersist.convertBeanToNode(artifact);
+                    return null;
+                }
+            });
+        }
+        final List<Future<Void>> futures = ExecutorInstance.INSTANCE
+                .invokeAll(callables);
+        for (final Future<Void> f: futures) {
+            f.get();
+        }
+    }
 
-	@Test
-	public void shouldLoadOneFileNamesUnderRedisUsingSimplePersist()
-			throws Exception {
-		Set<String> names = Files.listFileNamesFrom(FROM, false);
-		final String fileName = names.iterator().next();
+    @Test
+    public void shouldLoadOneFileNamesUnderRedisUsingSimplePersist()
+            throws Exception {
+        final Set<String> names = Files.listFileNamesFrom(FROM, false);
+        final String fileName = names.iterator().next();
 
-		File file = new File(fileName);
-		FileInputStream fis = new FileInputStream(file);
-		StringArtifact artifact = Artifact.createArtifact(StringArtifact.class,
-				fileName, ChangeType.INCLUDED);
-		artifact.setMappedTo(fileName);
-		artifact.setMappedFrom(fileName);
-		artifact.setLastChange(System.currentTimeMillis());
-		artifact.setOriginalName(fileName);
-		SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
-		.getInstance(SimplePersistFactory.class).createSimplePersist(
-						RegularPartitions.FEDERATION);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-		String line;
-		List<String> content = newLinkedList();
-		while ((line = reader.readLine()) != null) {
-			content.add(line);
-		}
-		artifact.getContent().setTransient(content);
-		simplePersist.convertBeanToNode(artifact);
+        final File file = new File(fileName);
+        final FileInputStream fis = new FileInputStream(file);
+        final StringArtifact artifact = Artifact.createArtifact(StringArtifact.class,
+                fileName, ChangeType.INCLUDED);
+        artifact.setMappedTo(fileName);
+        artifact.setMappedFrom(fileName);
+        artifact.setLastChange(System.currentTimeMillis());
+        artifact.setOriginalName(fileName);
+        final SimplePersistCapable<StorageNode, StorageSession> simplePersist = injector
+            .getInstance(SimplePersistFactory.class).createSimplePersist(
+                        RegularPartitions.FEDERATION);
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+        String line;
+        final List<String> content = newLinkedList();
+        while ((line = reader.readLine()) != null) {
+            content.add(line);
+        }
+        artifact.getContent().setTransient(content);
+        simplePersist.convertBeanToNode(artifact);
 
-	}
+    }
 
 }

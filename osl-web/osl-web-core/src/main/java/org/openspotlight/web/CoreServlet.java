@@ -103,7 +103,7 @@ public class CoreServlet extends HttpServlet {
          * @param actionName the action name
          * @return the web command
          */
-        public synchronized WebCommand loadCommand( final String actionName ) {
+        public synchronized WebCommand loadCommand(final String actionName) {
             try {
                 String newActionName = actionName;
                 String className = actionName != null ? properties.getProperty(actionName) : null;
@@ -113,8 +113,8 @@ public class CoreServlet extends HttpServlet {
                 WebCommand loaded = commandCache.get(newActionName);
                 if (loaded == null) {
                     className = properties.getProperty(newActionName);
-                    @SuppressWarnings( "unchecked" )
-                    final Class<? extends WebCommand> commandClass = (Class<? extends WebCommand>)Class.forName(className);
+                    @SuppressWarnings("unchecked")
+                    final Class<? extends WebCommand> commandClass = (Class<? extends WebCommand>) Class.forName(className);
                     loaded = commandClass.newInstance();
                     commandCache.put(newActionName, loaded);
                 }
@@ -138,8 +138,8 @@ public class CoreServlet extends HttpServlet {
      * @param req the req
      * @param resp the resp
      */
-    protected void doAction( final HttpServletRequest req,
-                             final HttpServletResponse resp ) {
+    protected void doAction(final HttpServletRequest req,
+                             final HttpServletResponse resp) {
         ExecutionContext context = null;
         try {
             context = OslContextListener.factory.get();
@@ -148,7 +148,7 @@ public class CoreServlet extends HttpServlet {
             final Map<String, String> parameters = new TreeMap<String, String>();
             final Enumeration<?> names = req.getParameterNames();
             while (names.hasMoreElements()) {
-                final String name = (String)names.nextElement();
+                final String name = (String) names.nextElement();
                 parameters.put(name, req.getParameter(name));
             }
 
@@ -173,8 +173,9 @@ public class CoreServlet extends HttpServlet {
      * {@inheritDoc}
      */
     @Override
-    protected void doGet( final HttpServletRequest req,
-                          final HttpServletResponse resp ) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest req,
+                          final HttpServletResponse resp)
+        throws ServletException, IOException {
         doAction(req, resp);
     }
 
@@ -182,8 +183,9 @@ public class CoreServlet extends HttpServlet {
      * {@inheritDoc}
      */
     @Override
-    protected void doPost( final HttpServletRequest req,
-                           final HttpServletResponse resp ) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req,
+                           final HttpServletResponse resp)
+        throws ServletException, IOException {
         doAction(req, resp);
     }
 
@@ -191,7 +193,8 @@ public class CoreServlet extends HttpServlet {
      * {@inheritDoc}
      */
     @Override
-    public void init( final ServletConfig config ) throws ServletException {
+    public void init(final ServletConfig config)
+        throws ServletException {
         config.getServletContext();
         super.init(config);
     }

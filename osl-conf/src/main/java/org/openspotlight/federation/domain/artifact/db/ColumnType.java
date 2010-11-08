@@ -57,7 +57,7 @@ import java.util.Map;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "boxing" )
+@SuppressWarnings("boxing")
 public enum ColumnType {
 
     /**
@@ -186,7 +186,7 @@ public enum ColumnType {
      */
     private static final Map<Integer, ColumnType> typesCache = new HashMap<Integer, ColumnType>();
     static {
-        for (final ColumnType t : values()) {
+        for (final ColumnType t: values()) {
             typesCache.put(t.getSqlTypeValue(), t);
         }
     }
@@ -197,14 +197,14 @@ public enum ColumnType {
      * @param sqlType
      * @return the correct column type by sql int constant
      */
-    public static ColumnType getTypeByInt( final int sqlType ) {
+    public static ColumnType getTypeByInt(final int sqlType) {
         return typesCache.get(sqlType);
     }
 
     private final int sqlTypeValue;
 
     private ColumnType(
-                        final int sqlTypeValue ) {
+                        final int sqlTypeValue) {
         this.sqlTypeValue = sqlTypeValue;
     }
 
@@ -212,7 +212,7 @@ public enum ColumnType {
      * @return the int value equivalent to {@link Types} constants
      */
     public int getSqlTypeValue() {
-        return this.sqlTypeValue;
+        return sqlTypeValue;
     }
 
 }

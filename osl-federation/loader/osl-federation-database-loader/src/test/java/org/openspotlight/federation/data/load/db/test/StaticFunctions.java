@@ -66,8 +66,8 @@ public class StaticFunctions {
      * @param i1
      * @param i2
      */
-    public static void anotherFlagProcedure( final int i1,
-                                             final int i2 ) {
+    public static void anotherFlagProcedure(final int i1,
+                                             final int i2) {
         procedureCalled = true;
     }
 
@@ -77,8 +77,8 @@ public class StaticFunctions {
      * @param i1
      * @param i2
      */
-    public static void flagProcedure( final int i1,
-                                      final int i2 ) {
+    public static void flagProcedure(final int i1,
+                                      final int i2) {
         procedureCalled = true;
     }
 
@@ -88,7 +88,7 @@ public class StaticFunctions {
      * @param i
      * @return the parameter plus one
      */
-    public static int increment( final int i ) {
+    public static int increment(final int i) {
         return i + 1;
     }
 
@@ -99,9 +99,9 @@ public class StaticFunctions {
      * @param i2
      * @param result
      */
-    public static void sum( final int i1,
+    public static void sum(final int i1,
                             final int i2,
-                            final int[] result ) {
+                            final int[] result) {
         result[0] = i1 + i2;
     }
 

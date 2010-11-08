@@ -97,8 +97,9 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
      * @return the result set
      * @throws SQLException if anything wrong happens
      */
-    static ResultSet executeStatement( final String sql,
-                                       final Connection connection ) throws SQLException {
+    static ResultSet executeStatement(final String sql,
+                                       final Connection connection)
+        throws SQLException {
         ResultSet rs;
         if (sql.trim().startsWith("{")) {
             rs = connection.prepareCall(sql).executeQuery();
@@ -110,16 +111,17 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
 
     private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
 
+    @Override
     protected synchronized void internalCloseResources() {
-        final ArrayList<Connection> connections = new ArrayList<Connection>(this.connectionMap.values());
-        for (final Connection conn : connections) {
+        final ArrayList<Connection> connections = new ArrayList<Connection>(connectionMap.values());
+        for (final Connection conn: connections) {
             try {
                 conn.close();
             } catch (final Exception e) {
                 Exceptions.catchAndLog(e);
             }
         }
-        this.connectionMap.clear();
+        connectionMap.clear();
     }
 
     /**
@@ -131,9 +133,10 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
      * @return the artifact name
      * @throws SQLException the SQL exception
      */
-    private String fillName( final DatabaseMetadataScript script,
+    private String fillName(final DatabaseMetadataScript script,
                              final ResultSet resultSet,
-                             final DatabaseArtifactNameHandler nameHandler ) throws SQLException {
+                             final DatabaseArtifactNameHandler nameHandler)
+        throws SQLException {
         final StringBuilder buffer = new StringBuilder("/");
         String catalogColumnName = script.getColumnAliasMap().get(ColumnsNamesForMetadataSelect.catalog_name);
         String nameColumnName = script.getColumnAliasMap().get(ColumnsNamesForMetadataSelect.name);
@@ -143,7 +146,8 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
         schemaColumnName = schemaColumnName != null ? schemaColumnName : ColumnsNamesForMetadataSelect.schema_name.name();
 
         final String catalog = resultSet.getString(catalogColumnName);
-        final String name = nameHandler == null ? resultSet.getString(nameColumnName) : nameHandler.fixName(resultSet.getString(nameColumnName));
+        final String name =
+            nameHandler == null ? resultSet.getString(nameColumnName) : nameHandler.fixName(resultSet.getString(nameColumnName));
         final String schema = resultSet.getString(schemaColumnName);
         buffer.append(schema);
         buffer.append('/');
@@ -158,46 +162,52 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
         return result;
     }
 
-    protected synchronized Connection getConnectionFromSource( final DbArtifactSource dbBundle ) throws Exception {
+    protected synchronized Connection getConnectionFromSource(final DbArtifactSource dbBundle)
+        throws Exception {
 
-        Connection conn = this.connectionMap.get(dbBundle);
+        Connection conn = connectionMap.get(dbBundle);
         if (conn == null) {
             conn = createConnection(dbBundle);
-            this.connectionMap.put(dbBundle, conn);
+            connectionMap.put(dbBundle, conn);
         }
         return conn;
 
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames( Class<A> type,
-                                                                              ArtifactSource source,
-                                                                              String initialPath ) throws Exception {
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(final Class<A> type,
+                                                                              final ArtifactSource source,
+                                                                              final String initialPath)
+        throws Exception {
 
-        final DbArtifactSource dbBundle = (DbArtifactSource)source;
+        final DbArtifactSource dbBundle = (DbArtifactSource) source;
         try {
-            final Connection conn = this.getConnectionFromSource(dbBundle);
+            final Connection conn = getConnectionFromSource(dbBundle);
             synchronized (conn) {
                 final Set<String> loadedNames = new HashSet<String>();
 
                 try {
                     final DatabaseType databaseType = dbBundle.getType();
-                    for (final ScriptType scriptType : ScriptType.values()) {
+                    for (final ScriptType scriptType: ScriptType.values()) {
                         if (!scriptType.acceptType(type)) {
                             continue;
                         }
-                        final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE.getScript(
+                        final DatabaseMetadataScript scriptDescription =
+                            DatabaseMetadataScriptManager.INSTANCE
+                                .getScript(
                                                                                                                           databaseType,
                                                                                                                           scriptType);
                         if (scriptDescription == null) {
                             continue;
                         }
-                        final Class<? extends DatabaseArtifactNameHandler> dataHandlerType = scriptDescription.getNameHandlerClass();
-                        final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType.newInstance() : null;
+                        final Class<? extends DatabaseArtifactNameHandler> dataHandlerType =
+                            scriptDescription.getNameHandlerClass();
+                        final DatabaseArtifactNameHandler nameHandler =
+                            dataHandlerType != null ? dataHandlerType.newInstance() : null;
 
                         final ResultSet resultSet = executeStatement(scriptDescription.getDataSelect(), conn);
                         walkingOnResult: while (resultSet.next()) {
-                            final String result = this.fillName(scriptDescription, resultSet, nameHandler);
+                            final String result = fillName(scriptDescription, resultSet, nameHandler);
                             if (nameHandler != null) {
                                 final boolean shouldProcess = nameHandler.shouldIncludeName(result, scriptType, resultSet);
                                 if (!shouldProcess) {
@@ -207,11 +217,16 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
                             if (isMatchingWithoutCaseSentitiveness(result, initialPath != null ? initialPath + "**" : "**")
                                 && scriptType.acceptName(result)) {
                                 loadedNames.add(result);
-                                if (logger.isDebugEnabled()) logger.debug("loading " + result + " due to its matching with "
-                                                                          + initialPath + "**");
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug("loading " + result + " due to its matching with "
+                                                                              + initialPath + "**");
+                                }
                             } else {
-                                if (logger.isDebugEnabled()) logger.debug("not loading " + result
+                                if (logger.isDebugEnabled()) {
+                                    logger
+                                        .debug("not loading " + result
                                                                           + " due to its not matching with " + initialPath + "**");
+                                }
 
                             }
 
@@ -241,13 +256,15 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
      * @return the stream loaded from a sql query
      * @throws Exception the exception
      */
-    protected byte[] loadFromSql( final String catalog,
+    protected byte[] loadFromSql(final String catalog,
                                   final String schema,
                                   final String name,
                                   final DatabaseMetadataScript scriptDescription,
                                   final DatabaseStreamHandler streamHandler,
-                                  final Connection conn ) throws Exception {
-        final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
+                                  final Connection conn)
+        throws Exception {
+        final Map<ColumnsNamesForMetadataSelect, String> columnValues =
+            new EnumMap<ColumnsNamesForMetadataSelect, String>(
                                                                                                                            ColumnsNamesForMetadataSelect.class);
 
         columnValues.put(ColumnsNamesForMetadataSelect.catalog_name, catalog);
@@ -255,7 +272,7 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
         columnValues.put(ColumnsNamesForMetadataSelect.name, name);
 
         final StringTemplate template = new StringTemplate(scriptDescription.getContentSelect(), DefaultTemplateLexer.class);
-        for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry : columnValues.entrySet()) {
+        for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry: columnValues.entrySet()) {
             template.setAttribute(entry.getKey().name(), entry.getValue());
         }
         if (streamHandler != null) {
@@ -268,7 +285,8 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
         try {
             resultSet = executeStatement(sql, conn);
             if (resultSet.next()) {
-                final int columnToUse = scriptDescription.getContentColumnToUse() != null ? scriptDescription.getContentColumnToUse().intValue() : 1;
+                final int columnToUse =
+                    scriptDescription.getContentColumnToUse() != null ? scriptDescription.getContentColumnToUse().intValue() : 1;
                 final String content = resultSet.getString(columnToUse);
                 return content != null ? content.getBytes() : null;
             }
@@ -293,13 +311,15 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
      * @return the stream loaded from a sql query and its {@link StringTemplate}
      * @throws Exception the exception
      */
-    protected byte[] loadFromTemplate( final String catalog,
+    protected byte[] loadFromTemplate(final String catalog,
                                        final String schema,
                                        final String name,
                                        final DatabaseMetadataScript scriptDescription,
                                        final DatabaseStreamHandler streamHandler,
-                                       final Connection conn ) throws Exception {
-        final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
+                                       final Connection conn)
+        throws Exception {
+        final Map<ColumnsNamesForMetadataSelect, String> columnValues =
+            new EnumMap<ColumnsNamesForMetadataSelect, String>(
                                                                                                                            ColumnsNamesForMetadataSelect.class);
 
         columnValues.put(ColumnsNamesForMetadataSelect.catalog_name, catalog);
@@ -307,7 +327,7 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
         columnValues.put(ColumnsNamesForMetadataSelect.name, name);
 
         final StringTemplate template = new StringTemplate(scriptDescription.getTemplatesSelect(), DefaultTemplateLexer.class);
-        for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry : columnValues.entrySet()) {
+        for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry: columnValues.entrySet()) {
             template.setAttribute(entry.getKey().name(), entry.getValue());
         }
 
@@ -318,7 +338,7 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
             final String templateString = scriptDescription.getTemplate();
             final CustomizedStringTemplate contentTemplate = new CustomizedStringTemplate(templateString,
                                                                                           DefaultTemplateLexer.class);
-            for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry : columnValues.entrySet()) {
+            for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry: columnValues.entrySet()) {
                 contentTemplate.setAttributeArray(entry.getKey().name(), entry.getValue());
             }
             int count = 0;
@@ -375,9 +395,10 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
     }
 
     @Override
-    protected <A extends Artifact> boolean internalIsMaybeChanged( ArtifactSource source,
-                                                                   String artifactName,
-                                                                   A oldOne ) throws Exception {
+    protected <A extends Artifact> boolean internalIsMaybeChanged(final ArtifactSource source,
+                                                                   final String artifactName,
+                                                                   final A oldOne)
+        throws Exception {
         return true;
     }
 
