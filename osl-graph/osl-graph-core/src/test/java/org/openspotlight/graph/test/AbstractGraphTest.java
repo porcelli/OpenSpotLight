@@ -131,9 +131,7 @@ public abstract class AbstractGraphTest {
                               final Element link) {
         final TreeLineReference lineRefs = reader.getTreeLineReferences(link);
         boolean hasArtifact1 = false, hasArtifact2 = false, hasLineRef1 = false, hasLineRef2 = false;
-        final boolean hasLineRef3 = false;
-        boolean hasLineRef4 =
-            false;
+        boolean hasLineRef4 = false;
 
         for (final ArtifactLineReference ref: lineRefs.getArtifacts()) {
             if (sampleArtifact1.equals(ref.getArtifactId())) {

@@ -50,11 +50,7 @@ package org.openspotlight.bundle.common.parser;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.Node;
-import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
-import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * A supporter class for parsing related actions.
@@ -63,11 +59,10 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public class ParsingSupport {
 
-    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+//    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     public ParsingSupport(final SimplePersistFactory simplePersistFactory) {
-        simplePersist = simplePersistFactory
-                .createSimplePersist(RegularPartitions.LINE_REFERENCE);
+//        simplePersist = simplePersistFactory.createSimplePersist(RegularPartitions.LINE_REFERENCE);
     }
 
     /**

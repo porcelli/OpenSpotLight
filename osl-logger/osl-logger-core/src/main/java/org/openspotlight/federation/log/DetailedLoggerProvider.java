@@ -69,7 +69,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
     private final Partition                partition = RegularPartitions.LOG;
 
-    private final Provider<StorageSession> sessionProvider;
+//    private final Provider<StorageSession> sessionProvider;
 
     private final SimplePersistFactory     simplePersistFactory;
 
@@ -77,7 +77,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
     public DetailedLoggerProvider(
                                   final SimplePersistFactory simplePersistFactory, final Provider<StorageSession> sessionProvider) {
         this.simplePersistFactory = simplePersistFactory;
-        this.sessionProvider = sessionProvider;
+//        this.sessionProvider = sessionProvider;
     }
 
     @Override

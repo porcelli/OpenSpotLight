@@ -98,7 +98,7 @@ public abstract class Wrapper<W> {
         if (this == o) { return true; }
         if (!(o instanceof Wrapper)) { return false; }
 
-        final Wrapper wrapper = (Wrapper) o;
+        final Wrapper<?> wrapper = (Wrapper<?>) o;
 
         if (wrapped != null ? !wrapped.equals(wrapper.wrapped) : wrapper.wrapped != null) { return false; }
 

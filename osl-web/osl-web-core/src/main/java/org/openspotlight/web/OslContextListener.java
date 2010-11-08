@@ -58,11 +58,9 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.graph.GraphModule;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.StorageSession;
@@ -105,15 +103,10 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
 
-            final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
-            final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
-
-            final int remotePort =
-                Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer
-                    .parseInt(remotePortAsString);
-            final long remoteGraphTimeout =
-                Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long
-                    .parseLong(remoteGraphTimeoutAsString);
+//            final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
+//            final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
+//            final int remotePort = Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer.parseInt(remotePortAsString);
+//            final long remoteGraphTimeout = Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long.parseLong(remoteGraphTimeoutAsString);
 
             factory = injector.getInstance(ExecutionContextFactory.class);
 

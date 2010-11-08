@@ -91,7 +91,7 @@ public class SLQLFileNameCompletor extends FileNameCompletor {
     @Override
     public int complete(String buf,
                          final int cursor,
-                         @SuppressWarnings("unchecked") final List candidates) {
+                         @SuppressWarnings("rawtypes") final List candidates) {
         for (final Command activeCommand: commands) {
             int complementCursorPosition = 0;
             boolean commandAccepted = false;

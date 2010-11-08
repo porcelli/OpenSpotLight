@@ -375,7 +375,7 @@ public abstract class AbstractStorageSessionTest {
     @Test
     public void shouldCheckPartitionsFactoryBehavior() {
         final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
-
+        assertThat(session, is(notNullValue()));
     }
 
     @Test

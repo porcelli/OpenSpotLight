@@ -63,6 +63,7 @@ import java.util.concurrent.Callable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Files;
@@ -609,7 +610,7 @@ public abstract class AbstractGeneralQueryTest {
             final JavaInnerInterface javaInnerInterface = writer.addChildNode(
                     utilJavaPackage, JavaInnerInterface.class,
                     java.util.Map.Entry.class.getName());
-
+            Assert.assertNotNull(javaInnerInterface);
             writer.flush();
         }
 

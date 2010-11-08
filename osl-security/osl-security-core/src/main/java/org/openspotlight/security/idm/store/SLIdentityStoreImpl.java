@@ -202,7 +202,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
                                                          java.util.Collections.<IdentityObjectSearchCriteriaType>emptySet(),
                                                          true, true, java.util.Collections.<String>emptySet());
             final Injector injector = StaticInjector.INSTANCE.getInjector();
-            final StorageSession session = injector.getInstance(StorageSession.class);
+            //final StorageSession session = injector.getInstance(StorageSession.class);
 
             final SimplePersistFactory factory = injector.getInstance(SimplePersistFactory.class);
             simplePersist = factory.createSimplePersist(RegularPartitions.SECURITY);

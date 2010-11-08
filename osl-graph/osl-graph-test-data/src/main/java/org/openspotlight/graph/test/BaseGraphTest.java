@@ -979,9 +979,10 @@ public abstract class BaseGraphTest {
                 LinkDirection.BIDIRECTIONAL);
         assertLinksInOrder(bidLinks, simpleBidLink);
 
-        Iterable<Link> twoLinkTypes = reader.getLinks(javaClassNode1, null,
-                LinkDirection.ANY);
+        Iterable<Link> twoLinkTypes = reader.getLinks(javaClassNode1, null, LinkDirection.ANY);
 
+        Assert.assertNotNull(twoLinkTypes);
+        
         assertLinksInOrder(bidLinks, simpleBidLink, simpleUniLinkClass);
 
         twoLinkTypes = reader.getLinks(javaClassNode1, javaMethodNode1,
@@ -1058,8 +1059,8 @@ public abstract class BaseGraphTest {
         session.addNode(root1, JavaPackageNode.class, "javaPackageNode1");
         session.addNode(root1, JavaPackageNode.class, "javaPackageNode2");
         session.addNode(root1, JavaClassNode.class, "javaClassNode1");
-        final JavaClassNode createdNode = session.addNode(root1,
-                JavaClassNode.class, "javaClassNode2");
+        final JavaClassNode createdNode = session.addNode(root1, JavaClassNode.class, "javaClassNode2");
+        Assert.assertNotNull(createdNode);
         session.flush();
 
         final Metadata metadata = reader.getMetadata();

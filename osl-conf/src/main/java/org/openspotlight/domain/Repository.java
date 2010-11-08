@@ -102,16 +102,16 @@ public class Repository implements SimpleNodeType, Serializable {
             return this;
         }
 
-        public Builder withBundleConfig(final String name, final Class<? extends Callable<Void>>... taskType) {
-            final BundleConfig bundleProcessorType = new BundleConfig();
-            bundleProcessorType.setActive(true);
-            bundleProcessorType.setName(name);
-            for (final Class<? extends Callable<Void>> t: taskType) {
-                bundleProcessorType.getTasks().add(t);
-            }
-            currentMapping.getBundleConfig().add(bundleProcessorType);
-            return this;
-        }
+//        public Builder withBundleConfig(final String name, final Class<? extends Callable<Void>>... taskType) {
+//            final BundleConfig bundleProcessorType = new BundleConfig();
+//            bundleProcessorType.setActive(true);
+//            bundleProcessorType.setName(name);
+//            for (final Class<? extends Callable<Void>> t: taskType) {
+//                bundleProcessorType.getTasks().add(t);
+//            }
+//            currentMapping.getBundleConfig().add(bundleProcessorType);
+//            return this;
+//        }
 
         public Builder withGroup(final String groupName) {
             currentGroup = new Group();

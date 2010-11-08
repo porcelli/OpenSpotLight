@@ -116,9 +116,8 @@ public class Conversion {
         Conversion.CONVERTERS.put(Date.class, new Converter() {
 
             @Override
-            @SuppressWarnings("unchecked")
             public Object convert(final Class type,
-                                   final Object value) {
+                                  final Object value) {
                 try {
                     if (type.equals(Date.class) && value instanceof String
                             && ((String) value).isEmpty() == false) {
@@ -135,7 +134,6 @@ public class Conversion {
         Conversion.CONVERTERS.put(String.class, new Converter() {
 
             @Override
-            @SuppressWarnings("unchecked")
             public Object convert(final Class type,
                                    final Object value) {
                 try {
@@ -173,7 +171,6 @@ public class Conversion {
         Conversion.CONVERTERS.put(Class.class, new Converter() {
 
             @Override
-            @SuppressWarnings("unchecked")
             public Object convert(final Class type,
                                    final Object value) {
                 try {

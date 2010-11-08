@@ -136,7 +136,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             } while (option != 0);
             System.out.println("bye!");
         } finally {
-            test.finish();
+            AbstractGeneralQueryTest.finish();
         }
     }
 

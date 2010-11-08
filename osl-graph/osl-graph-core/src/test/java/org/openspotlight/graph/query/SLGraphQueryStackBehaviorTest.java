@@ -61,11 +61,8 @@ import org.openspotlight.graph.test.domain.link.PackageContainsType;
 import org.openspotlight.graph.test.domain.node.JavaInterface;
 import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaType;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
-    private static AuthenticatedUser user;
-
     @Override
     protected Callable<Void> createShutdownHandler() {
         throw new UnsupportedOperationException();

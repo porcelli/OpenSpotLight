@@ -51,15 +51,11 @@ package org.openspotlight.graph.server;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.remote.server.RemoteObjectServer;
 import org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
 import org.openspotlight.storage.StorageSession;
 
 import com.google.inject.Provider;
@@ -76,7 +72,7 @@ public class RemoteGraphSessionServer {
         InternalObjectFactory<GraphSessionFactory> {
 
         private final GraphSessionFactory      graph;
-        private final Provider<StorageSession> sessionProvider;
+//        private final Provider<StorageSession> sessionProvider;
 
         /**
          * Instantiates a new internal graph session factory.
@@ -84,7 +80,7 @@ public class RemoteGraphSessionServer {
         public InternalGraphSessionFactory(final GraphSessionFactory graph,
                                            final Provider<StorageSession> sessionProvider) {
             this.graph = graph;
-            this.sessionProvider = sessionProvider;
+//            this.sessionProvider = sessionProvider;
         }
 
         /*
@@ -103,15 +99,12 @@ public class RemoteGraphSessionServer {
                     parameters[1] instanceof String);
             checkCondition("correctTypeForThirdParam",
                     parameters[2] instanceof String);
-            final String user = (String) parameters[0];
-            final String pass = (String) parameters[1];
-            final String repository = (String) parameters[2];
-            final SecurityFactory securityFactory = AbstractFactory
-                .getDefaultInstance(SecurityFactory.class);
-            final User simpleUser = securityFactory.createUser(user);
-            final AuthenticatedUser authenticatedUser = securityFactory
-                .createIdentityManager(sessionProvider.get()).authenticate(
-                    simpleUser, pass);
+//            final String user = (String) parameters[0];
+//            final String pass = (String) parameters[1];
+//            final String repository = (String) parameters[2];
+//            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+//            final User simpleUser = securityFactory.createUser(user);
+//            final AuthenticatedUser authenticatedUser = securityFactory.createIdentityManager(sessionProvider.get()).authenticate(simpleUser, pass);
 
             return graph;
         }

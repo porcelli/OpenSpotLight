@@ -77,8 +77,6 @@ import org.openspotlight.graph.query.console.test.domain.TypeContainsMethod;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.User;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -255,9 +253,8 @@ public class ExampleRemoteServerWithData {
                             ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
 
-            final SecurityFactory securityFactory = injector
-                    .getInstance(SecurityFactory.class);
-            final User simpleUser = securityFactory.createUser("testUser");
+//            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
+//            final User simpleUser = securityFactory.createUser("testUser");
 
             final Collection<Class<?>> iFaces = loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = loadClasses("java-util-classes.txt");

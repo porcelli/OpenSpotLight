@@ -357,7 +357,7 @@ public class SimplePersistImpl implements
                                         .getItemType());
                     }
                     if (mayBeStreamPropertyWithParent) {
-                        final Collection valueAsCollection = (Collection) value;
+                        final Collection<?> valueAsCollection = (Collection<?>) value;
                         for (final Object o: valueAsCollection) {
                             if (o instanceof StreamPropertyWithParent) {
                                 ((StreamPropertyWithParent) o).setParent(bean);

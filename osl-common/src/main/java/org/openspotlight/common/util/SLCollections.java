@@ -123,7 +123,6 @@ public class SLCollections {
      * @param initialSize the initial size
      * @return the c
      */
-    @SuppressWarnings("unchecked")
     public static <I> Collection<I> createNewCollection(
                                                         final Class<? extends Iterable> collectionType,
                                                         final int initialSize) {

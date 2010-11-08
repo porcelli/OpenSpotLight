@@ -136,7 +136,7 @@ public class Pair<K1, K2> {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
-        final Pair pair = (Pair) o;
+        final Pair<?, ?> pair = (Pair<?, ?>) o;
 
         if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K1.equals(equalsMode)) {
             if (k1 != null ? !k1.equals(pair.k1) : pair.k1 != null) { return false; }

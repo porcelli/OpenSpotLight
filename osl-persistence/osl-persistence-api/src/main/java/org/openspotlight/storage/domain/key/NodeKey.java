@@ -54,15 +54,13 @@ import java.util.Set;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.domain.StorageDataMarker;
 import org.openspotlight.storage.domain.StorageNode;
-import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
-import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 
 /**
  * Identifies uniquely a {@link StorageNode}. The node uniquiness is achieved by: <br>
  * <ul>
  * <li>its {@link Partition} (where its stored)
  * <li>its parent node (that can be null)
- * <li>and its {@link CompositeKey} (that aggregates simple keys and node type)
+ * <li>and its {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey} (that aggregates simple keys and node type)
  * </ul>
  * NodeKeys shouldn't be instantiated direclty, to create new instances of NodeKeys you should use the
  * {@link org.openspotlight.storage.StorageSession.NodeKeyBuilder} interface.<br>
@@ -73,7 +71,7 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
     /**
-     * The composite key aggregates all {@link SimpleKey}s and the node type.
+     * The composite key aggregates all {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}s and the node type.
      * 
      * @author feuteston
      * @author porcelli
@@ -111,14 +109,14 @@ public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
         String getKeyAsString();
 
         /**
-         * Returns all existing {@link SimpleKey} names, or an empty {@link Set} if there is no SimpleKeys. <br>
+         * Returns all existing {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey} names, or an empty {@link Set} if there is no SimpleKeys. <br>
          * 
          * @return all simple key names of this composite key
          */
         Set<String> getKeyNames();
 
         /**
-         * Returns all existing {@link SimpleKey}, or an empty {@link Set} if there is no SimpleKeys. <br>
+         * Returns all existing {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}, or an empty {@link Set} if there is no SimpleKeys. <br>
          * 
          * @return all simple key of this composite key
          */
@@ -133,7 +131,7 @@ public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
     }
 
     /**
-     * Returns the {@link CompositeKey}
+     * Returns the {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey}
      * 
      * @return the composite key
      */
