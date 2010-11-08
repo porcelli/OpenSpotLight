@@ -43,7 +43,9 @@ import com.google.inject.Injector;
  */
 @Ignore
 public class FilesStressTest {
-    private final Injector injector;
+    private static final String FROM = "../../", TO = "/tmp";
+
+    private final Injector      injector;
 
     public FilesStressTest() {
         injector = Guice.createInjector(
@@ -52,8 +54,6 @@ public class FilesStressTest {
                 new SimplePersistModule(), new DetailedLoggerModule());
 
     }
-
-    private static final String FROM = "../../", TO = "/tmp";
 
     @Test
     // 61s copying directories

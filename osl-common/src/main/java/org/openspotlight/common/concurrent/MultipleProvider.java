@@ -63,9 +63,29 @@ import org.openspotlight.common.Disposable;
  */
 public class MultipleProvider<T> implements Disposable {
 
-    public boolean useOnePerThread() {
-        return useOnePerThread;
+    /**
+     * Item factory class to describe if the item should be shared between threads or not.
+     * 
+     * @author feu
+     * @param <T>
+     */
+    public interface ItemFactory<T> {
+
+        public T createNew();
+
+        public boolean useOnePerThread();
+
     }
+
+    private final ItemFactory<T>                   factory;
+
+    private final CopyOnWriteArrayList<Disposable> openedItems = new CopyOnWriteArrayList<Disposable>();
+
+    private final T                                singleItem;
+
+    private final ThreadLocal<T>                   threadLocalItem;
+
+    private final boolean                          useOnePerThread;
 
     /**
      * constructor
@@ -86,28 +106,24 @@ public class MultipleProvider<T> implements Disposable {
     }
 
     /**
-     * Item factory class to describe if the item should be shared between threads or not.
-     * 
-     * @author feu
-     * @param <T>
+     * It will close all opened items and its factory in case of each one implemented or not {@link Disposable}.
      */
-    public interface ItemFactory<T> {
-
-        public T createNew();
-
-        public boolean useOnePerThread();
+    @Override
+    public synchronized void closeResources() {
+        if (useOnePerThread) {
+            if (singleItem instanceof Disposable) {
+                ((Disposable) singleItem).closeResources();
+            } else {
+                for (final Disposable d: openedItems) {
+                    d.closeResources();
+                }
+            }
+        }
+        if (factory instanceof Disposable) {
+            ((Disposable) factory).closeResources();
+        }
 
     }
-
-    private final CopyOnWriteArrayList<Disposable> openedItems = new CopyOnWriteArrayList<Disposable>();
-
-    private final boolean                          useOnePerThread;
-
-    private final ItemFactory<T>                   factory;
-
-    private final ThreadLocal<T>                   threadLocalItem;
-
-    private final T                                singleItem;
 
     /**
      * returns the item. If this is a multithreaded environment it will newPair one if this one doesn't exists.
@@ -130,24 +146,8 @@ public class MultipleProvider<T> implements Disposable {
         }
     }
 
-    /**
-     * It will close all opened items and its factory in case of each one implemented or not {@link Disposable}.
-     */
-    @Override
-    public synchronized void closeResources() {
-        if (useOnePerThread) {
-            if (singleItem instanceof Disposable) {
-                ((Disposable) singleItem).closeResources();
-            } else {
-                for (final Disposable d: openedItems) {
-                    d.closeResources();
-                }
-            }
-        }
-        if (factory instanceof Disposable) {
-            ((Disposable) factory).closeResources();
-        }
-
+    public boolean useOnePerThread() {
+        return useOnePerThread;
     }
 
 }

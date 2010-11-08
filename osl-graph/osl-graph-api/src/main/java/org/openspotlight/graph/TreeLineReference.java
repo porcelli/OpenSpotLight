@@ -30,20 +30,6 @@ import java.io.Serializable;
 public interface TreeLineReference extends Serializable {
 
     /**
-     * Returns the {@link Element#getId()}
-     * 
-     * @return the element id
-     */
-    public String getId();
-
-    /**
-     * Returns an iterable of line references by artifacts
-     * 
-     * @return the artifacts
-     */
-    public Iterable<ArtifactLineReference> getArtifacts();
-
-    /**
      * This interface represents an artifacts with its line references grouped by statements
      * 
      * @author porcelli
@@ -73,48 +59,11 @@ public interface TreeLineReference extends Serializable {
     }
 
     /**
-     * The Interface SLStatementLineReference.
-     * 
-     * @author porcelli
-     */
-    public interface StatementLineReference extends Serializable {
-
-        /**
-         * Return the statement
-         * 
-         * @return the statement
-         */
-        public String getStatement();
-
-        /**
-         * Returns an iterable of line references
-         * 
-         * @return the line references
-         */
-        public Iterable<SimpleLineReference> getLineReferences();
-
-    }
-
-    /**
      * Interface that represents region of an artifact
      * 
      * @author porcelli
      */
     public interface SimpleLineReference extends Serializable {
-
-        /**
-         * Returns the initial line
-         * 
-         * @return the initial line
-         */
-        public int getBeginLine();
-
-        /**
-         * Returns the end line
-         * 
-         * @return the end line
-         */
-        public int getEndLine();
 
         /**
          * Returns the initial column
@@ -124,10 +73,61 @@ public interface TreeLineReference extends Serializable {
         public int getBeginColumn();
 
         /**
+         * Returns the initial line
+         * 
+         * @return the initial line
+         */
+        public int getBeginLine();
+
+        /**
          * Returns the end column
          * 
          * @return the end column
          */
         public int getEndColumn();
+
+        /**
+         * Returns the end line
+         * 
+         * @return the end line
+         */
+        public int getEndLine();
     }
+
+    /**
+     * The Interface SLStatementLineReference.
+     * 
+     * @author porcelli
+     */
+    public interface StatementLineReference extends Serializable {
+
+        /**
+         * Returns an iterable of line references
+         * 
+         * @return the line references
+         */
+        public Iterable<SimpleLineReference> getLineReferences();
+
+        /**
+         * Return the statement
+         * 
+         * @return the statement
+         */
+        public String getStatement();
+
+    }
+
+    /**
+     * Returns an iterable of line references by artifacts
+     * 
+     * @return the artifacts
+     */
+    public Iterable<ArtifactLineReference> getArtifacts();
+
+    /**
+     * Returns the {@link Element#getId()}
+     * 
+     * @return the element id
+     */
+    public String getId();
 }

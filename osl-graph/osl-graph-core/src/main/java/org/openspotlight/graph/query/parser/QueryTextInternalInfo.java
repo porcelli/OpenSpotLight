@@ -61,47 +61,47 @@ import java.util.Set;
  */
 public class QueryTextInternalInfo {
 
-    /** The query unique id. */
-    private String                         id                  = null;
+    /** The bool variables. */
+    private Set<String>                    boolVariables       = new HashSet<String>();
 
-    /** The target unique id. */
-    private String                         targetUniqueId      = null;
-
-    /** The int variables. */
-    private Set<String>                    intVariables        = new HashSet<String>();
+    /** The content. */
+    private String                         content             = null;
 
     /** The dec variables. */
     private Set<String>                    decVariables        = new HashSet<String>();
 
-    /** The bool variables. */
-    private Set<String>                    boolVariables       = new HashSet<String>();
-
-    /** The string variables. */
-    private Set<String>                    stringVariables     = new HashSet<String>();
-
-    /** The message variables. */
-    private Map<String, String>            messageVariables    = new HashMap<String, String>();
+    /** The define target content. */
+    private String                         defineTargetContent = null;
 
     /** The domain variables. */
     private Map<String, Set<Serializable>> domainVariables     = new HashMap<String, Set<Serializable>>();
 
-    /** The string constants . */
-    private Map<Integer, String>           stringsConstant     = new HashMap<Integer, String>();
-
     /** The has target. */
     private boolean                        hasTarget           = false;
 
-    /** The target keeps result. */
-    private boolean                        targetKeepsResult   = false;
+    /** The query unique id. */
+    private String                         id                  = null;
+
+    /** The int variables. */
+    private Set<String>                    intVariables        = new HashSet<String>();
+
+    /** The message variables. */
+    private Map<String, String>            messageVariables    = new HashMap<String, String>();
 
     /** The output model name. */
     private String                         outputModelName     = null;
 
-    /** The define target content. */
-    private String                         defineTargetContent = null;
+    /** The string constants . */
+    private Map<Integer, String>           stringsConstant     = new HashMap<Integer, String>();
 
-    /** The content. */
-    private String                         content             = null;
+    /** The string variables. */
+    private Set<String>                    stringVariables     = new HashSet<String>();
+
+    /** The target keeps result. */
+    private boolean                        targetKeepsResult   = false;
+
+    /** The target unique id. */
+    private String                         targetUniqueId      = null;
 
     /**
      * Gets the bool variables.
@@ -182,6 +182,15 @@ public class QueryTextInternalInfo {
      */
     public String getOutputModelName() {
         return outputModelName;
+    }
+
+    /**
+     * Gets the strings constant.
+     * 
+     * @return the strings constant
+     */
+    public Map<Integer, String> getStringsConstant() {
+        return stringsConstant;
     }
 
     /**
@@ -341,6 +350,15 @@ public class QueryTextInternalInfo {
     }
 
     /**
+     * Sets the strings constant.
+     * 
+     * @param stringsConstant the strings constant
+     */
+    public void setStringsConstant(final Map<Integer, String> stringsConstant) {
+        this.stringsConstant = stringsConstant;
+    }
+
+    /**
      * Sets the string variables.
      * 
      * @param stringVariables the new string variables
@@ -365,23 +383,5 @@ public class QueryTextInternalInfo {
      */
     public void setTargetUniqueId(final String targetUniqueId) {
         this.targetUniqueId = targetUniqueId;
-    }
-
-    /**
-     * Gets the strings constant.
-     * 
-     * @return the strings constant
-     */
-    public Map<Integer, String> getStringsConstant() {
-        return stringsConstant;
-    }
-
-    /**
-     * Sets the strings constant.
-     * 
-     * @param stringsConstant the strings constant
-     */
-    public void setStringsConstant(final Map<Integer, String> stringsConstant) {
-        this.stringsConstant = stringsConstant;
     }
 }

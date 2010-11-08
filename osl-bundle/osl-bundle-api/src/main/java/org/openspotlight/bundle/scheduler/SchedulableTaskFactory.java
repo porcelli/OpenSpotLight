@@ -57,12 +57,12 @@ import org.openspotlight.domain.Schedulable;
  */
 public interface SchedulableTaskFactory<S extends Schedulable> {
 
-    public SchedulerTask[] createTasks(S schedulable, ExecutionContextFactory factory);
-
     public static class TaskSupport {
         public static SchedulerTask[] wrapTask(final SchedulerTask task) {
             return new SchedulerTask[] {task};
         }
     }
+
+    public SchedulerTask[] createTasks(S schedulable, ExecutionContextFactory factory);
 
 }

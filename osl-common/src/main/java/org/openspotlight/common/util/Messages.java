@@ -62,6 +62,10 @@ public class Messages {
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
+    private Messages() {
+        //
+    }
+
     /**
      * @param key
      * @return the string for this key
@@ -72,9 +76,5 @@ public class Messages {
         } catch (final MissingResourceException e) {
             return '!' + key + '!';
         }
-    }
-
-    private Messages() {
-        //
     }
 }

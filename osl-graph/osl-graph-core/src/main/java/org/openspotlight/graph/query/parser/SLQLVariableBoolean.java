@@ -98,6 +98,14 @@ public class SLQLVariableBoolean extends SLQLVariable {
      * {@inheritDoc}
      */
     @Override
+    public SLQLVariableType getType() {
+        return SLQLVariableType.BOOLEAN;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Boolean getValue() {
         return (Boolean) value;
     }
@@ -127,13 +135,5 @@ public class SLQLVariableBoolean extends SLQLVariable {
         if (value.getClass().getName().equals(boolean.class.getName())) { return true; }
         if (value instanceof Boolean) { return true; }
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SLQLVariableType getType() {
-        return SLQLVariableType.BOOLEAN;
     }
 }

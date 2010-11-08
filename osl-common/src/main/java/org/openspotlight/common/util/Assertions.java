@@ -63,6 +63,13 @@ import java.util.Map;
 public class Assertions {
 
     /**
+     * Should not be instantiated
+     */
+    private Assertions() {
+        throw logAndReturn(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Assert that this parameter is marked as valid by the condition passed as parameter.
      * 
      * @param name of parameter
@@ -189,13 +196,6 @@ public class Assertions {
                                                             MessageFormat.format(
                                                                                  Messages.getString("Assertions.nullMandatory"), name))); //$NON-NLS-1$
         }
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Assertions() {
-        throw logAndReturn(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

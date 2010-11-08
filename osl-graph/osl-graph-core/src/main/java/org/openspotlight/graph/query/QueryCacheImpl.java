@@ -67,11 +67,11 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public class QueryCacheImpl implements QueryCache {
 
-    /** The tree session. */
-    private final StorageSession treeSession;
-
     /** The session. */
     private final GraphReader    session;
+
+    /** The tree session. */
+    private final StorageSession treeSession;
 
     /**
      * Instantiates a new query cache impl.
@@ -147,6 +147,14 @@ public class QueryCacheImpl implements QueryCache {
      * {@inheritDoc}
      */
     @Override
+    public void flush() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public QueryResultImpl getCache(final String queryId) {
         throw new UnsupportedOperationException();
         //
@@ -168,13 +176,5 @@ public class QueryCacheImpl implements QueryCache {
         // } catch (final Exception e) {
         // }
         // return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void flush() {
-        throw new UnsupportedOperationException();
     }
 }

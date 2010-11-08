@@ -57,8 +57,6 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 public interface Schedulable extends SimpleNodeType {
 
-    public Repository getRepositoryForSchedulable();
-
     /**
      * Gets the cron information. For each String, please follow the cron syntax described on
      * http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
@@ -66,6 +64,8 @@ public interface Schedulable extends SimpleNodeType {
      * @return the cron information
      */
     public List<String> getCronInformation();
+
+    public Repository getRepositoryForSchedulable();
 
     /**
      * This string should return an unique identifier for this job to be used inside the scheduler.

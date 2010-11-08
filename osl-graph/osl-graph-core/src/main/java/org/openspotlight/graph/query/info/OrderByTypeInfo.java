@@ -74,73 +74,28 @@ public class OrderByTypeInfo implements Serializable {
     /** The Constant serialVersionUID. */
     private static final long    serialVersionUID = 1L;
 
-    /** The type name. */
-    private String               typeName;
-
-    /** The sub types. */
-    private boolean              subTypes;
-
-    /** The property name. */
-    private String               propertyName;
+    /** The order by statement info. */
+    private OrderByStatementInfo orderByStatementInfo;
 
     /** The order type. */
     private OrderType            orderType        = OrderType.ASCENDING;
 
-    /** The order by statement info. */
-    private OrderByStatementInfo orderByStatementInfo;
+    /** The property name. */
+    private String               propertyName;
+
+    /** The sub types. */
+    private boolean              subTypes;
+
+    /** The type name. */
+    private String               typeName;
 
     /**
-     * Gets the type name.
+     * Gets the order by statement info.
      * 
-     * @return the type name
+     * @return the order by statement info
      */
-    public String getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * Sets the type name.
-     * 
-     * @param typeName the new type name
-     */
-    public void setTypeName(final String typeName) {
-        this.typeName = typeName;
-    }
-
-    /**
-     * Checks if is sub types.
-     * 
-     * @return true, if is sub types
-     */
-    public boolean isSubTypes() {
-        return subTypes;
-    }
-
-    /**
-     * Sets the sub types.
-     * 
-     * @param subTypes the new sub types
-     */
-    public void setSubTypes(final boolean subTypes) {
-        this.subTypes = subTypes;
-    }
-
-    /**
-     * Gets the property name.
-     * 
-     * @return the property name
-     */
-    public String getPropertyName() {
-        return propertyName;
-    }
-
-    /**
-     * Sets the property name.
-     * 
-     * @param propertyName the new property name
-     */
-    public void setPropertyName(final String propertyName) {
-        this.propertyName = propertyName;
+    public OrderByStatementInfo getOrderByStatementInfo() {
+        return orderByStatementInfo;
     }
 
     /**
@@ -153,21 +108,30 @@ public class OrderByTypeInfo implements Serializable {
     }
 
     /**
-     * Sets the order type.
+     * Gets the property name.
      * 
-     * @param orderType the new order type
+     * @return the property name
      */
-    public void setOrderType(final OrderType orderType) {
-        this.orderType = orderType;
+    public String getPropertyName() {
+        return propertyName;
     }
 
     /**
-     * Gets the order by statement info.
+     * Gets the type name.
      * 
-     * @return the order by statement info
+     * @return the type name
      */
-    public OrderByStatementInfo getOrderByStatementInfo() {
-        return orderByStatementInfo;
+    public String getTypeName() {
+        return typeName;
+    }
+
+    /**
+     * Checks if is sub types.
+     * 
+     * @return true, if is sub types
+     */
+    public boolean isSubTypes() {
+        return subTypes;
     }
 
     /**
@@ -177,6 +141,42 @@ public class OrderByTypeInfo implements Serializable {
      */
     public void setOrderByStatementInfo(final OrderByStatementInfo orderByStatementInfo) {
         this.orderByStatementInfo = orderByStatementInfo;
+    }
+
+    /**
+     * Sets the order type.
+     * 
+     * @param orderType the new order type
+     */
+    public void setOrderType(final OrderType orderType) {
+        this.orderType = orderType;
+    }
+
+    /**
+     * Sets the property name.
+     * 
+     * @param propertyName the new property name
+     */
+    public void setPropertyName(final String propertyName) {
+        this.propertyName = propertyName;
+    }
+
+    /**
+     * Sets the sub types.
+     * 
+     * @param subTypes the new sub types
+     */
+    public void setSubTypes(final boolean subTypes) {
+        this.subTypes = subTypes;
+    }
+
+    /**
+     * Sets the type name.
+     * 
+     * @param typeName the new type name
+     */
+    public void setTypeName(final String typeName) {
+        this.typeName = typeName;
     }
 
     /**

@@ -60,22 +60,29 @@ import java.util.Map;
 @SuppressWarnings("boxing")
 public enum RoutineType {
     /**
-     * Type to describe a routine without return values from the routine itself. But it should have multiple out parameters.
+     * Type to describe a routine on a situation that wasn't possible to retrieve the routine type.
      */
-    PROCEDURE(1),
+    DONT_KNOW(0),
     /**
      * Type to descibe a routine with return value, but without out parameters.
      */
     FUNCTION(2),
     /**
-     * Type to describe a routine on a situation that wasn't possible to retrieve the routine type.
+     * Type to describe a routine without return values from the routine itself. But it should have multiple out parameters.
      */
-    DONT_KNOW(0);
+    PROCEDURE(1);
 
     /**
      * Internal cache
      */
     private static final Map<Integer, RoutineType> cache = new HashMap<Integer, RoutineType>();
+    private final int                              sqlTypeValue;
+
+    private RoutineType(
+                         final int sqlTypeValue) {
+        this.sqlTypeValue = sqlTypeValue;
+    }
+
     static {
         for (final RoutineType n: values()) {
             cache.put(n.getSqlTypeValue(), n);
@@ -90,13 +97,6 @@ public enum RoutineType {
      */
     public static RoutineType getTypeByInt(final int sqlType) {
         return cache.get(sqlType);
-    }
-
-    private final int sqlTypeValue;
-
-    private RoutineType(
-                         final int sqlTypeValue) {
-        this.sqlTypeValue = sqlTypeValue;
     }
 
     /**

@@ -83,14 +83,11 @@ import com.google.inject.internal.ImmutableList;
 
 public abstract class AbstractFileSystemLoadingStressTest {
 
-    private static ArtifactSource artifactSource;
-    protected Injector            injector;
-
     private static class RepositoryData {
-        public final GlobalSettings settings;
-        public final Repository     repository;
-        public final Group          group;
         public final ArtifactSource artifactSource;
+        public final Group          group;
+        public final Repository     repository;
+        public final GlobalSettings settings;
 
         public RepositoryData(final GlobalSettings settings,
                               final Repository repository, final Group group,
@@ -102,13 +99,17 @@ public abstract class AbstractFileSystemLoadingStressTest {
         }
     }
 
-    private static RepositoryData data;
+    private static ArtifactSource       artifactSource;
 
-    @AfterClass
-    public static void closeResources()
-        throws Exception {
-        // TODO
-    }
+    private static RepositoryData       data;
+
+    private MutableConfigurationManager configurationManager;
+
+    private PersistentArtifactManager   persistentArtifactManager;
+
+    private boolean                     runned = false;
+
+    protected Injector                  injector;
 
     private static RepositoryData createRepositoryData() {
         final GlobalSettings settings = new GlobalSettings();
@@ -144,9 +145,38 @@ public abstract class AbstractFileSystemLoadingStressTest {
         return new RepositoryData(settings, repository, group, artifactSource);
     }
 
-    private boolean                     runned = false;
-    private MutableConfigurationManager configurationManager;
-    private PersistentArtifactManager   persistentArtifactManager;
+    @AfterClass
+    public static void closeResources()
+        throws Exception {
+        // TODO
+    }
+
+    private List<String> getFileContentAsStringList(final String originalName)
+            throws Exception {
+        final BufferedReader reader = new BufferedReader(new FileReader(originalName));
+        final ImmutableList.Builder<String> builder = ImmutableList.builder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            builder.add(line);
+        }
+        reader.close();
+        return builder.build();
+    }
+
+    private void reloadArtifacts() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected abstract void clearData()
+        throws Exception;
+
+    protected abstract Module createStorageModule()
+            throws Exception;
+
+    @After
+    public void closeTestResources() {
+        // TODO
+    }
 
     @Before
     public void setupResources()
@@ -166,21 +196,6 @@ public abstract class AbstractFileSystemLoadingStressTest {
             runned = true;
         }
 
-    }
-
-    protected abstract void clearData()
-        throws Exception;
-
-    protected abstract Module createStorageModule()
-            throws Exception;
-
-    @After
-    public void closeTestResources() {
-        // TODO
-    }
-
-    private void reloadArtifacts() {
-        throw new UnsupportedOperationException();
     }
 
     @Test
@@ -243,18 +258,6 @@ public abstract class AbstractFileSystemLoadingStressTest {
         assertThat(nullSize.get(), is(0));
         assertThat(fileContentNotEqualsSize.get(), is(0));
 
-    }
-
-    private List<String> getFileContentAsStringList(final String originalName)
-            throws Exception {
-        final BufferedReader reader = new BufferedReader(new FileReader(originalName));
-        final ImmutableList.Builder<String> builder = ImmutableList.builder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            builder.add(line);
-        }
-        reader.close();
-        return builder.build();
     }
 
 }

@@ -66,12 +66,26 @@ import org.openspotlight.graph.annotation.LinkAutoBidirectional;
 public abstract class Link implements Element, Comparable<Link> {
 
     /**
+     * Returns the count value.
+     * 
+     * @return the count value
+     */
+    public abstract int getCount();
+
+    /**
      * This method returns the {@link LinkDirection}. But the {@link LinkDirection} itself could be promoted to
      * {@link LinkDirection#BIDIRECTIONAL} if the {@link Link} implementation is annotated with {@link LinkAutoBidirectional}
      * 
      * @return the LinkType
      */
     public abstract LinkDirection getLinkDirection();
+
+    /**
+     * Gets the raw Link Class. This is useful since the instances will be extended at runtime.
+     * 
+     * @return
+     */
+    public abstract Class<? extends Link> getLinkType();
 
     /**
      * A convenience operation that, given a node that is attached to this link, returns the other node. For example if node is a
@@ -114,24 +128,10 @@ public abstract class Link implements Element, Comparable<Link> {
     public abstract boolean isBidirectional();
 
     /**
-     * Returns the count value.
-     * 
-     * @return the count value
-     */
-    public abstract int getCount();
-
-    /**
      * Sets the count value
      * 
      * @param value the count
      */
     public abstract void setCount(
                                   int value);
-
-    /**
-     * Gets the raw Link Class. This is useful since the instances will be extended at runtime.
-     * 
-     * @return
-     */
-    public abstract Class<? extends Link> getLinkType();
 }

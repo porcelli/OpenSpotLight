@@ -60,8 +60,6 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class GroupDifferences implements SimpleNodeType, Serializable {
 
-    private String            repositoryName;
-
     /**
 	 * 
 	 */
@@ -70,6 +68,8 @@ public class GroupDifferences implements SimpleNodeType, Serializable {
     private Set<String>       addedGroups      = new HashSet<String>();
 
     private Set<String>       removedGroups    = new HashSet<String>();
+
+    private String            repositoryName;
 
     @Override
     public boolean equals(final Object obj) {

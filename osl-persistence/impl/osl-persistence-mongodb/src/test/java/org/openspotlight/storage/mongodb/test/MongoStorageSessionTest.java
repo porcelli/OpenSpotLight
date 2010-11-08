@@ -86,21 +86,6 @@ public class MongoStorageSessionTest extends AbstractStorageSessionTest {
     }
 
     @Override
-    protected boolean supportsAutoFlushInjector() {
-        return true;
-    }
-
-    @Override
-    protected boolean supportsExplicitFlushInjector() {
-        return true;
-    }
-
-    @Override
-    protected boolean supportsAdvancedQueries() {
-        return true;
-    }
-
-    @Override
     protected void internalCleanPreviousData()
         throws Exception {
         final BasicDBObject dbObject = new BasicDBObject();
@@ -110,5 +95,20 @@ public class MongoStorageSessionTest extends AbstractStorageSessionTest {
                 db.getCollection(colName).remove(dbObject);
             }
         }
+    }
+
+    @Override
+    protected boolean supportsAdvancedQueries() {
+        return true;
+    }
+
+    @Override
+    protected boolean supportsAutoFlushInjector() {
+        return true;
+    }
+
+    @Override
+    protected boolean supportsExplicitFlushInjector() {
+        return true;
     }
 }

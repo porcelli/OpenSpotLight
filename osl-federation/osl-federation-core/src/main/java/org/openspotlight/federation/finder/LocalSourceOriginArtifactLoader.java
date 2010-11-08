@@ -75,6 +75,31 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoader {
 
+    @SuppressWarnings("unchecked")
+    private static final Set<Class<? extends Artifact>> availableTypes =
+                                                                           SLCollections
+                                                                               .<Class<? extends Artifact>>setOf(
+                                                                                                                        StringArtifact.class,
+                                                                                                                        StreamArtifact.class);
+
+    private String fixPathInformation(final ArtifactSource artifactSource,
+                                       final String rawPath,
+                                       final ChangeType change) {
+        final String location = Strings.concatPaths(artifactSource.getInitialLookup(), change.toString().toLowerCase(), rawPath);
+        return location;
+    }
+
+    @Override
+    protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
+                                                           final Class<A> type) {
+        if (!availableTypes.contains(source)) { return false; }
+        final File f = new File(source.getInitialLookup());
+        if (!f.exists() || !f.isDirectory()) { return false; }
+        if (type.equals(StringArtifact.class) && !source.isBinary()) { return true; }
+        if (type.equals(StreamArtifact.class) && source.isBinary()) { return true; }
+        return false;
+    }
+
     @Override
     protected void internalCloseResources() {
 
@@ -127,13 +152,6 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
-
-    @SuppressWarnings("unchecked")
-    private static final Set<Class<? extends Artifact>> availableTypes =
-                                                                           SLCollections
-                                                                               .<Class<? extends Artifact>>setOf(
-                                                                                                                        StringArtifact.class,
-                                                                                                                        StreamArtifact.class);
 
     @Override
     protected Set<Class<? extends Artifact>> internalGetAvailableTypes() {
@@ -190,24 +208,6 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
-    }
-
-    private String fixPathInformation(final ArtifactSource artifactSource,
-                                       final String rawPath,
-                                       final ChangeType change) {
-        final String location = Strings.concatPaths(artifactSource.getInitialLookup(), change.toString().toLowerCase(), rawPath);
-        return location;
-    }
-
-    @Override
-    protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
-                                                           final Class<A> type) {
-        if (!availableTypes.contains(source)) { return false; }
-        final File f = new File(source.getInitialLookup());
-        if (!f.exists() || !f.isDirectory()) { return false; }
-        if (type.equals(StringArtifact.class) && !source.isBinary()) { return true; }
-        if (type.equals(StreamArtifact.class) && source.isBinary()) { return true; }
-        return false;
     }
 
     @Override

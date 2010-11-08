@@ -78,19 +78,19 @@ public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
     /** The Constant LOGGER. */
     static final Logger          LOGGER           = Logger.getLogger(QueryApiImpl.class);
 
-    /** The metadata. */
-    private final Metadata       metadata;
-
-    private final StorageSession treeSession;
-
-    /** The selects. */
-    private final List<Select>   selects          = new ArrayList<Select>();
-
     /** The cache. */
     private QueryCache           cache            = null;
 
     /** The collator strength. */
     private int                  collatorStrength = Collator.IDENTICAL;
+
+    /** The metadata. */
+    private final Metadata       metadata;
+
+    /** The selects. */
+    private final List<Select>   selects          = new ArrayList<Select>();
+
+    private final StorageSession treeSession;
 
     /**
      * Instantiates a new sL query impl.
@@ -128,113 +128,6 @@ public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
         }
 
         return resultList;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QueryResult execute(final String[] inputNodesIDs,
-                               final SortMode sortMode, final boolean showSLQL,
-                               final Integer limit, final Integer offset)
-            throws InvalidQuerySyntaxException, InvalidQueryElementException,
-            QueryException {
-
-        validateSelects();
-
-        // try {
-        //
-        // final String queryId = cache.buildQueryId(selects, collatorStrength,
-        // inputNodesIDs, sortMode, limit, offset);
-        //
-        // final SLQueryResult queryResult = cache.getCache(queryId);
-        // if (queryResult != null) {
-        // return queryResult;
-        // }
-        //
-        // Collection<StorageNode> resultSelectNodeWrappers = null;
-        // // here is the result
-        // Collection<StorageNode> resultNodeWrappers = null;
-        //
-        // final SLSelectCommandDO commandDO = new SLSelectCommandDO();
-        // commandDO.setMetadata(metadata);
-        // commandDO.setTreeSession(treeSession);
-        //
-        // final Set<StorageNode> wrappers =
-        // QuerySupport.getNodeWrappers(treeSession, inputNodesIDs);
-        // commandDO.setPreviousNodeWrappers(wrappers);
-        //
-        // final SLSelectStatementInfo lastSelectInfo = getLastSelect();
-        // resultNodeWrappers = getResultCollection(lastSelectInfo, sortMode);
-        //
-        // for (final SLSelect select : selects) {
-        // Collection<StorageNode> selectNodeWrappers = null;
-        // final SLSelectStatementInfo selectStatementInfo =
-        // QuerySupport.getSelectStatementInfo(select);
-        // final Integer xTimes = selectStatementInfo.getXTimes() == null ? 1 :
-        // selectStatementInfo.getXTimes();
-        // final SLSelectAbstractCommand command =
-        // SLSelectAbstractCommand.getCommand(select, selectStatementInfo,
-        // commandDO);
-        // commandDO.setCollatorStrength(this.getCollatorStrength(selectStatementInfo));
-        // resultSelectNodeWrappers = getResultCollection(selectStatementInfo,
-        // sortMode);
-        //
-        // if (xTimes == SLSelectInfo.INDEFINITE) {
-        // print(showSLQL, selectStatementInfo);
-        // do {
-        // command.execute();
-        // selectNodeWrappers = commandDO.getNodeWrappers();
-        // resultSelectNodeWrappers.addAll(selectNodeWrappers);
-        // commandDO.setPreviousNodeWrappers(selectNodeWrappers);
-        // } while (!selectNodeWrappers.isEmpty());
-        // } else {
-        // print(showSLQL, selectStatementInfo);
-        // for (int i = 0; i < xTimes; i++) {
-        // command.execute();
-        // selectNodeWrappers = commandDO.getNodeWrappers();
-        // if (selectNodeWrappers.isEmpty()) {
-        // if (commandDO.getPreviousNodeWrappers() != null) {
-        // commandDO.getPreviousNodeWrappers().clear();
-        // }
-        // break;
-        // }
-        // resultSelectNodeWrappers.addAll(selectNodeWrappers);
-        // commandDO.setPreviousNodeWrappers(selectNodeWrappers);
-        // }
-        // }
-        //
-        // resultSelectNodeWrappers = applyLimitOffset(resultSelectNodeWrappers,
-        // selectStatementInfo.getLimit(),
-        // selectStatementInfo.getOffset());
-        //
-        // if (selectStatementInfo.isKeepResult()) {
-        // resultNodeWrappers.addAll(resultSelectNodeWrappers);
-        // }
-        // }
-        //
-        // if (resultSelectNodeWrappers != null) {
-        // resultNodeWrappers.addAll(resultSelectNodeWrappers);
-        // }
-        //
-        // resultNodeWrappers = applyLimitOffset(resultNodeWrappers, limit,
-        // offset);
-        //
-        // cache.add2Cache(queryId, resultNodeWrappers);
-        //
-        // return cache.getCache(queryId);
-        // } catch (final SLException e) {
-        // throw new QueryException("Error on attempt to execute query.", e);
-        // }
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getCollatorStrength() {
-        return collatorStrength;
     }
 
     /**
@@ -415,6 +308,27 @@ public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
         // };
     }
 
+    private Collection<StorageNode> getResultCollection(
+                                                        final SelectStatementInfo selectStatementInfo,
+                                                        final SortMode sortMode) {
+        throw new UnsupportedOperationException();
+        // final SLOrderByStatementInfo orderByStatementInfo =
+        // selectStatementInfo.getOrderByStatementInfo();
+        // if (orderByStatementInfo == null) {
+        // if (sortMode.equals(SortMode.SORTED)) {
+        // final Comparator<StorageNode> comparator =
+        // getStorageNodeComparator();
+        // return new TreeSet<StorageNode>(comparator);
+        // } else {
+        // return new HashSet<StorageNode>();
+        // }
+        // } else {
+        // final Comparator<StorageNode> comparator =
+        // getOrderByStorageNodeComparator(orderByStatementInfo);
+        // return new TreeSet<StorageNode>(comparator);
+        // }
+    }
+
     /**
      * Gets the p node wrapper comparator.
      * 
@@ -444,27 +358,6 @@ public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
         // }
         // }
         // };
-    }
-
-    private Collection<StorageNode> getResultCollection(
-                                                        final SelectStatementInfo selectStatementInfo,
-                                                        final SortMode sortMode) {
-        throw new UnsupportedOperationException();
-        // final SLOrderByStatementInfo orderByStatementInfo =
-        // selectStatementInfo.getOrderByStatementInfo();
-        // if (orderByStatementInfo == null) {
-        // if (sortMode.equals(SortMode.SORTED)) {
-        // final Comparator<StorageNode> comparator =
-        // getStorageNodeComparator();
-        // return new TreeSet<StorageNode>(comparator);
-        // } else {
-        // return new HashSet<StorageNode>();
-        // }
-        // } else {
-        // final Comparator<StorageNode> comparator =
-        // getOrderByStorageNodeComparator(orderByStatementInfo);
-        // return new TreeSet<StorageNode>(comparator);
-        // }
     }
 
     /**
@@ -570,54 +463,6 @@ public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
         if (showSLQL) {
             QueryApiImpl.LOGGER.info(object);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SelectStatement select() {
-        final SelectStatement select = new SelectStatementImpl(this);
-        selects.add(select);
-        return select;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SelectByLinkCount selectByLinkCount() {
-        final SelectByLinkCount select = new SelectByLinkCountImpl(this);
-        selects.add(select);
-        return select;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SelectByLinkType selectByLinkType() {
-        final SelectByLinkType select = new SelectByLinkTypeImpl(this);
-        selects.add(select);
-        return select;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SelectByNodeType selectByNodeType() {
-        final SelectByNodeType select = new SelectByNodeTypeImpl(this);
-        selects.add(select);
-        return select;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setCollatorStrength(final int collatorStrength) {
-        this.collatorStrength = collatorStrength;
     }
 
     /**
@@ -896,6 +741,161 @@ public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
         // validateLinkTypeStatementInfo(whereTypeInfo.getLinkTypeStatementInfo());
         // }
         // }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public QueryResult execute(final String[] inputNodesIDs,
+                               final SortMode sortMode, final boolean showSLQL,
+                               final Integer limit, final Integer offset)
+            throws InvalidQuerySyntaxException, InvalidQueryElementException,
+            QueryException {
+
+        validateSelects();
+
+        // try {
+        //
+        // final String queryId = cache.buildQueryId(selects, collatorStrength,
+        // inputNodesIDs, sortMode, limit, offset);
+        //
+        // final SLQueryResult queryResult = cache.getCache(queryId);
+        // if (queryResult != null) {
+        // return queryResult;
+        // }
+        //
+        // Collection<StorageNode> resultSelectNodeWrappers = null;
+        // // here is the result
+        // Collection<StorageNode> resultNodeWrappers = null;
+        //
+        // final SLSelectCommandDO commandDO = new SLSelectCommandDO();
+        // commandDO.setMetadata(metadata);
+        // commandDO.setTreeSession(treeSession);
+        //
+        // final Set<StorageNode> wrappers =
+        // QuerySupport.getNodeWrappers(treeSession, inputNodesIDs);
+        // commandDO.setPreviousNodeWrappers(wrappers);
+        //
+        // final SLSelectStatementInfo lastSelectInfo = getLastSelect();
+        // resultNodeWrappers = getResultCollection(lastSelectInfo, sortMode);
+        //
+        // for (final SLSelect select : selects) {
+        // Collection<StorageNode> selectNodeWrappers = null;
+        // final SLSelectStatementInfo selectStatementInfo =
+        // QuerySupport.getSelectStatementInfo(select);
+        // final Integer xTimes = selectStatementInfo.getXTimes() == null ? 1 :
+        // selectStatementInfo.getXTimes();
+        // final SLSelectAbstractCommand command =
+        // SLSelectAbstractCommand.getCommand(select, selectStatementInfo,
+        // commandDO);
+        // commandDO.setCollatorStrength(this.getCollatorStrength(selectStatementInfo));
+        // resultSelectNodeWrappers = getResultCollection(selectStatementInfo,
+        // sortMode);
+        //
+        // if (xTimes == SLSelectInfo.INDEFINITE) {
+        // print(showSLQL, selectStatementInfo);
+        // do {
+        // command.execute();
+        // selectNodeWrappers = commandDO.getNodeWrappers();
+        // resultSelectNodeWrappers.addAll(selectNodeWrappers);
+        // commandDO.setPreviousNodeWrappers(selectNodeWrappers);
+        // } while (!selectNodeWrappers.isEmpty());
+        // } else {
+        // print(showSLQL, selectStatementInfo);
+        // for (int i = 0; i < xTimes; i++) {
+        // command.execute();
+        // selectNodeWrappers = commandDO.getNodeWrappers();
+        // if (selectNodeWrappers.isEmpty()) {
+        // if (commandDO.getPreviousNodeWrappers() != null) {
+        // commandDO.getPreviousNodeWrappers().clear();
+        // }
+        // break;
+        // }
+        // resultSelectNodeWrappers.addAll(selectNodeWrappers);
+        // commandDO.setPreviousNodeWrappers(selectNodeWrappers);
+        // }
+        // }
+        //
+        // resultSelectNodeWrappers = applyLimitOffset(resultSelectNodeWrappers,
+        // selectStatementInfo.getLimit(),
+        // selectStatementInfo.getOffset());
+        //
+        // if (selectStatementInfo.isKeepResult()) {
+        // resultNodeWrappers.addAll(resultSelectNodeWrappers);
+        // }
+        // }
+        //
+        // if (resultSelectNodeWrappers != null) {
+        // resultNodeWrappers.addAll(resultSelectNodeWrappers);
+        // }
+        //
+        // resultNodeWrappers = applyLimitOffset(resultNodeWrappers, limit,
+        // offset);
+        //
+        // cache.add2Cache(queryId, resultNodeWrappers);
+        //
+        // return cache.getCache(queryId);
+        // } catch (final SLException e) {
+        // throw new QueryException("Error on attempt to execute query.", e);
+        // }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getCollatorStrength() {
+        return collatorStrength;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectStatement select() {
+        final SelectStatement select = new SelectStatementImpl(this);
+        selects.add(select);
+        return select;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectByLinkCount selectByLinkCount() {
+        final SelectByLinkCount select = new SelectByLinkCountImpl(this);
+        selects.add(select);
+        return select;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectByLinkType selectByLinkType() {
+        final SelectByLinkType select = new SelectByLinkTypeImpl(this);
+        selects.add(select);
+        return select;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectByNodeType selectByNodeType() {
+        final SelectByNodeType select = new SelectByNodeTypeImpl(this);
+        selects.add(select);
+        return select;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCollatorStrength(final int collatorStrength) {
+        this.collatorStrength = collatorStrength;
     }
 
 }

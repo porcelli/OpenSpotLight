@@ -60,151 +60,6 @@ import org.openspotlight.graph.query.info.SelectStatementInfo;
  */
 public class OrderByStatementImpl implements OrderByStatement {
 
-    /** The select facade. */
-    private final SelectFacade         selectFacade;
-
-    /** The order by statement info. */
-    private final OrderByStatementInfo orderByStatementInfo;
-
-    /**
-     * Instantiates a new sL order by statement impl.
-     * 
-     * @param selectFacade the select facade
-     * @param orderByStatementInfo the order by statement info
-     */
-    public OrderByStatementImpl(
-                                   final SelectFacade selectFacade, final OrderByStatementInfo orderByStatementInfo) {
-        this.selectFacade = selectFacade;
-        this.orderByStatementInfo = orderByStatementInfo;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type type(final String typeName) {
-        final OrderByTypeInfo typeInfo = new OrderByTypeInfo();
-        typeInfo.setOrderByStatementInfo(orderByStatementInfo);
-        typeInfo.setTypeName(typeName);
-        orderByStatementInfo.getOrderByTypeInfoList().add(typeInfo);
-        return new TypeImpl(this, selectFacade, typeInfo);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public End orderByEnd() {
-        return new EndImpl(selectFacade, orderByStatementInfo.getSelectStatementInfo());
-    }
-
-    /**
-     * The Class TypeImpl.
-     * 
-     * @author Vitor Hugo Chagas
-     */
-    public static class TypeImpl implements Type {
-
-        /** The order by statement. */
-        private final OrderByStatement orderByStatement;
-
-        /** The select facade. */
-        private final SelectFacade     selectFacade;
-
-        /** The type info. */
-        private final OrderByTypeInfo  typeInfo;
-
-        /**
-         * Instantiates a new type impl.
-         * 
-         * @param orderByStatement the order by statement
-         * @param selectFacade the select facade
-         * @param typeInfo the type info
-         */
-        public TypeImpl(
-                         final OrderByStatement orderByStatement, final SelectFacade selectFacade, final OrderByTypeInfo typeInfo) {
-            this.orderByStatement = orderByStatement;
-            this.selectFacade = selectFacade;
-            this.typeInfo = typeInfo;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Type subTypes() {
-            typeInfo.setSubTypes(true);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Property property(final String name) {
-            typeInfo.setPropertyName(name);
-            return new PropertyImpl(orderByStatement, selectFacade, typeInfo);
-        }
-
-        /**
-         * The Class PropertyImpl.
-         * 
-         * @author Vitor Hugo Chagas
-         */
-        public static class PropertyImpl implements Property {
-
-            /** The order by statement. */
-            OrderByStatement              orderByStatement;
-
-            /** The select facade. */
-            private final SelectFacade    selectFacade;
-
-            /** The type info. */
-            private final OrderByTypeInfo typeInfo;
-
-            /**
-             * Instantiates a new property impl.
-             * 
-             * @param orderByStatement the order by statement
-             * @param selectFacade the select facade
-             * @param typeInfo the type info
-             */
-            public PropertyImpl(
-                                 final OrderByStatement orderByStatement, final SelectFacade selectFacade,
-                                final OrderByTypeInfo typeInfo) {
-                this.selectFacade = selectFacade;
-                this.typeInfo = typeInfo;
-                this.orderByStatement = orderByStatement;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public OrderByStatement ascending() {
-                typeInfo.setOrderType(OrderType.ASCENDING);
-                return orderByStatement;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public OrderByStatement descending() {
-                typeInfo.setOrderType(OrderType.DESCENDING);
-                return orderByStatement;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public End orderByEnd() {
-                return new EndImpl(selectFacade, typeInfo.getOrderByStatementInfo().getSelectStatementInfo());
-            }
-        }
-    }
-
     /**
      * The Class EndImpl.
      * 
@@ -317,5 +172,150 @@ public class OrderByStatementImpl implements OrderByStatement {
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
+    }
+
+    /**
+     * The Class TypeImpl.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class TypeImpl implements Type {
+
+        /**
+         * The Class PropertyImpl.
+         * 
+         * @author Vitor Hugo Chagas
+         */
+        public static class PropertyImpl implements Property {
+
+            /** The select facade. */
+            private final SelectFacade    selectFacade;
+
+            /** The type info. */
+            private final OrderByTypeInfo typeInfo;
+
+            /** The order by statement. */
+            OrderByStatement              orderByStatement;
+
+            /**
+             * Instantiates a new property impl.
+             * 
+             * @param orderByStatement the order by statement
+             * @param selectFacade the select facade
+             * @param typeInfo the type info
+             */
+            public PropertyImpl(
+                                 final OrderByStatement orderByStatement, final SelectFacade selectFacade,
+                                final OrderByTypeInfo typeInfo) {
+                this.selectFacade = selectFacade;
+                this.typeInfo = typeInfo;
+                this.orderByStatement = orderByStatement;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public OrderByStatement ascending() {
+                typeInfo.setOrderType(OrderType.ASCENDING);
+                return orderByStatement;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public OrderByStatement descending() {
+                typeInfo.setOrderType(OrderType.DESCENDING);
+                return orderByStatement;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public End orderByEnd() {
+                return new EndImpl(selectFacade, typeInfo.getOrderByStatementInfo().getSelectStatementInfo());
+            }
+        }
+
+        /** The order by statement. */
+        private final OrderByStatement orderByStatement;
+
+        /** The select facade. */
+        private final SelectFacade     selectFacade;
+
+        /** The type info. */
+        private final OrderByTypeInfo  typeInfo;
+
+        /**
+         * Instantiates a new type impl.
+         * 
+         * @param orderByStatement the order by statement
+         * @param selectFacade the select facade
+         * @param typeInfo the type info
+         */
+        public TypeImpl(
+                         final OrderByStatement orderByStatement, final SelectFacade selectFacade, final OrderByTypeInfo typeInfo) {
+            this.orderByStatement = orderByStatement;
+            this.selectFacade = selectFacade;
+            this.typeInfo = typeInfo;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Property property(final String name) {
+            typeInfo.setPropertyName(name);
+            return new PropertyImpl(orderByStatement, selectFacade, typeInfo);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Type subTypes() {
+            typeInfo.setSubTypes(true);
+            return this;
+        }
+    }
+
+    /** The order by statement info. */
+    private final OrderByStatementInfo orderByStatementInfo;
+
+    /** The select facade. */
+    private final SelectFacade         selectFacade;
+
+    /**
+     * Instantiates a new sL order by statement impl.
+     * 
+     * @param selectFacade the select facade
+     * @param orderByStatementInfo the order by statement info
+     */
+    public OrderByStatementImpl(
+                                   final SelectFacade selectFacade, final OrderByStatementInfo orderByStatementInfo) {
+        this.selectFacade = selectFacade;
+        this.orderByStatementInfo = orderByStatementInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public End orderByEnd() {
+        return new EndImpl(selectFacade, orderByStatementInfo.getSelectStatementInfo());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type type(final String typeName) {
+        final OrderByTypeInfo typeInfo = new OrderByTypeInfo();
+        typeInfo.setOrderByStatementInfo(orderByStatementInfo);
+        typeInfo.setTypeName(typeName);
+        orderByStatementInfo.getOrderByTypeInfoList().add(typeInfo);
+        return new TypeImpl(this, selectFacade, typeInfo);
     }
 }

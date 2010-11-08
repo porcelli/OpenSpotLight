@@ -28,19 +28,60 @@ package org.openspotlight.graph.query;
 public interface OrderByStatement {
 
     /**
-     * Type.
+     * The Interface End.
      * 
-     * @param typeName the type name
-     * @return the type
+     * @author Vitor Hugo Chagas
      */
-    public Type type(String typeName);
+    public static interface End extends SelectFacade {
 
-    /**
-     * Order by end.
-     * 
-     * @return the end
-     */
-    public End orderByEnd();
+        /**
+         * Collator.
+         * 
+         * @param strength the strength
+         * @return the end
+         */
+        public End collator(int strength);
+
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
+
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes(int x);
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit(Integer size);
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit(Integer size,
+                          Integer offset);
+    }
 
     /**
      * The Interface Type.
@@ -48,21 +89,6 @@ public interface OrderByStatement {
      * @author Vitor Hugo Chagas
      */
     public static interface Type {
-
-        /**
-         * Sub types.
-         * 
-         * @return the type
-         */
-        public Type subTypes();
-
-        /**
-         * Property.
-         * 
-         * @param name the name
-         * @return the property
-         */
-        public Property property(String name);
 
         /**
          * The Interface Property.
@@ -93,62 +119,36 @@ public interface OrderByStatement {
             public End orderByEnd();
 
         }
+
+        /**
+         * Property.
+         * 
+         * @param name the name
+         * @return the property
+         */
+        public Property property(String name);
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
     }
 
     /**
-     * The Interface End.
+     * Order by end.
      * 
-     * @author Vitor Hugo Chagas
+     * @return the end
      */
-    public static interface End extends SelectFacade {
+    public End orderByEnd();
 
-        /**
-         * Keep result.
-         * 
-         * @return the end
-         */
-        public End keepResult();
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @return the end
-         */
-        public End limit(Integer size);
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @param offset the offset
-         * @return the end
-         */
-        public End limit(Integer size,
-                          Integer offset);
-
-        /**
-         * Execute x times.
-         * 
-         * @return the end
-         */
-        public End executeXTimes();
-
-        /**
-         * Execute x times.
-         * 
-         * @param x the x
-         * @return the end
-         */
-        public End executeXTimes(int x);
-
-        /**
-         * Collator.
-         * 
-         * @param strength the strength
-         * @return the end
-         */
-        public End collator(int strength);
-    }
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type(String typeName);
 
 }

@@ -54,13 +54,13 @@ public class CustomizedFormat {
     private final String[] items;
     public final int       sizeOfParameters;
 
-    public static CustomizedFormat cf(final String itemsAsStrings) {
-        return new CustomizedFormat(itemsAsStrings);
-    }
-
     public CustomizedFormat(final String itemsAsString) {
         items = itemsAsString.split("[ ]");
         sizeOfParameters = items.length - 1;
+    }
+
+    public static CustomizedFormat cf(final String itemsAsStrings) {
+        return new CustomizedFormat(itemsAsStrings);
     }
 
     public String format(final String s) {

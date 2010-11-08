@@ -78,7 +78,19 @@ import org.openspotlight.common.exception.SLRuntimeException;
  */
 public class Conversion {
 
+    /**
+     * Internal map of types and converters.
+     */
+    private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
+
     private static final Map<String, Class<?>>    PRIMITIVE_TYPES = new HashMap<String, Class<?>>();
+
+    /**
+     * Should not be instantiated
+     */
+    private Conversion() {
+        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
 
     static {
         Conversion.PRIMITIVE_TYPES.put("int", int.class);
@@ -90,11 +102,6 @@ public class Conversion {
         Conversion.PRIMITIVE_TYPES.put("byte", byte.class);
         Conversion.PRIMITIVE_TYPES.put("float", float.class);
     }
-
-    /**
-     * Internal map of types and converters.
-     */
-    private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
 
     static {
 
@@ -230,12 +237,5 @@ public class Conversion {
 
     public static Class<?> getPrimitiveClass(final String name) {
         return Conversion.PRIMITIVE_TYPES.get(name);
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Conversion() {
-        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

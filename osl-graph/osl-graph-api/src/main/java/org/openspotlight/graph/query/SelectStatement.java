@@ -28,41 +28,19 @@ package org.openspotlight.graph.query;
 public interface SelectStatement extends Select {
 
     /**
-     * All types.
-     * 
-     * @return the all types
-     */
-    public AllTypes allTypes();
-
-    /**
-     * Type.
-     * 
-     * @param typeName the type name
-     * @return the type
-     */
-    public Type type(String typeName);
-
-    /**
-     * By link.
-     * 
-     * @param typeName the type name
-     * @return the by link
-     */
-    public ByLink byLink(String typeName);
-
-    /**
-     * End.
-     * 
-     * @return the end
-     */
-    public End end();
-
-    /**
      * The Interface AllTypes.
      * 
      * @author Vitor Hugo Chagas
      */
     public static interface AllTypes {
+
+        /**
+         * By link.
+         * 
+         * @param name the name
+         * @return the by link
+         */
+        public ByLink byLink(String name);
 
         /**
          * On where.
@@ -72,56 +50,11 @@ public interface SelectStatement extends Select {
         public AllTypes onWhere();
 
         /**
-         * By link.
-         * 
-         * @param name the name
-         * @return the by link
-         */
-        public ByLink byLink(String name);
-
-        /**
          * Select end.
          * 
          * @return the end
          */
         public End selectEnd();
-    }
-
-    /**
-     * The Interface Type.
-     * 
-     * @author Vitor Hugo Chagas
-     */
-    public static interface Type {
-
-        /**
-         * Comma.
-         * 
-         * @return the sL select statement
-         */
-        public SelectStatement comma();
-
-        /**
-         * By link.
-         * 
-         * @param name the name
-         * @return the by link
-         */
-        public ByLink byLink(String name);
-
-        /**
-         * Select end.
-         * 
-         * @return the end
-         */
-        public End selectEnd();
-
-        /**
-         * Sub types.
-         * 
-         * @return the type
-         */
-        public Type subTypes();
     }
 
     /**
@@ -132,6 +65,27 @@ public interface SelectStatement extends Select {
     public static interface ByLink {
 
         /**
+         * A.
+         * 
+         * @return the by link
+         */
+        public ByLink a();
+
+        /**
+         * Any.
+         * 
+         * @return the by link
+         */
+        public ByLink any();
+
+        /**
+         * B.
+         * 
+         * @return the by link
+         */
+        public ByLink b();
+
+        /**
          * Comma.
          * 
          * @return the sL select statement
@@ -144,27 +98,6 @@ public interface SelectStatement extends Select {
          * @return the end
          */
         public End selectEnd();
-
-        /**
-         * A.
-         * 
-         * @return the by link
-         */
-        public ByLink a();
-
-        /**
-         * B.
-         * 
-         * @return the by link
-         */
-        public ByLink b();
-
-        /**
-         * Any.
-         * 
-         * @return the by link
-         */
-        public ByLink any();
     }
 
     /**
@@ -175,18 +108,19 @@ public interface SelectStatement extends Select {
     public static interface End extends SelectFacade {
 
         /**
-         * Where.
+         * Execute x times.
          * 
-         * @return the sL where statement
+         * @return the end
          */
-        public WhereStatement where();
+        public End executeXTimes();
 
         /**
-         * Order by.
+         * Execute x times.
          * 
-         * @return the sL order by statement
+         * @param x the x
+         * @return the end
          */
-        public OrderByStatement orderBy();
+        public End executeXTimes(Integer x);
 
         /**
          * Keep result.
@@ -214,18 +148,84 @@ public interface SelectStatement extends Select {
                           Integer offset);
 
         /**
-         * Execute x times.
+         * Order by.
          * 
-         * @return the end
+         * @return the sL order by statement
          */
-        public End executeXTimes();
+        public OrderByStatement orderBy();
 
         /**
-         * Execute x times.
+         * Where.
          * 
-         * @param x the x
+         * @return the sL where statement
+         */
+        public WhereStatement where();
+    }
+
+    /**
+     * The Interface Type.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface Type {
+
+        /**
+         * By link.
+         * 
+         * @param name the name
+         * @return the by link
+         */
+        public ByLink byLink(String name);
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select statement
+         */
+        public SelectStatement comma();
+
+        /**
+         * Select end.
+         * 
          * @return the end
          */
-        public End executeXTimes(Integer x);
+        public End selectEnd();
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
     }
+
+    /**
+     * All types.
+     * 
+     * @return the all types
+     */
+    public AllTypes allTypes();
+
+    /**
+     * By link.
+     * 
+     * @param typeName the type name
+     * @return the by link
+     */
+    public ByLink byLink(String typeName);
+
+    /**
+     * End.
+     * 
+     * @return the end
+     */
+    public End end();
+
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type(String typeName);
 }

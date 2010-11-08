@@ -65,8 +65,15 @@ import org.openspotlight.common.util.Exceptions;
  */
 public abstract class AtomicLazyResource<R> implements Disposable {
 
-    private R          reference = null;
     private final Lock lock;
+    private R          reference = null;
+
+    /**
+     * creates a new instance using the specified {@link Lock} .
+     */
+    protected AtomicLazyResource() {
+        this.lock = new ReentrantLock();
+    }
 
     /**
      * creates a new instance using the specified {@link Lock} .
@@ -79,13 +86,6 @@ public abstract class AtomicLazyResource<R> implements Disposable {
     }
 
     /**
-     * creates a new instance using the specified {@link Lock} .
-     */
-    protected AtomicLazyResource() {
-        this.lock = new ReentrantLock();
-    }
-
-    /**
      * This method will be called before try to close resources. Why try? Because the wrapped resource "could" implement
      * {@link Disposable}, but this isn't mandatory.
      * 
@@ -94,6 +94,14 @@ public abstract class AtomicLazyResource<R> implements Disposable {
     protected void afterTryToCloseResources(final R mayBeNullReference) {
 
     }
+
+    /**
+     * Method used to newPair a new reference. It will be called once and within a synchronized block.
+     * 
+     * @return
+     */
+    protected abstract R createReference()
+        throws Exception;
 
     @Override
     public final void closeResources() {
@@ -105,14 +113,6 @@ public abstract class AtomicLazyResource<R> implements Disposable {
         }
 
     }
-
-    /**
-     * Method used to newPair a new reference. It will be called once and within a synchronized block.
-     * 
-     * @return
-     */
-    protected abstract R createReference()
-        throws Exception;
 
     public final R get()
         throws SLRuntimeException {

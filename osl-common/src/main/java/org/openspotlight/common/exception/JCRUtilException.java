@@ -72,21 +72,21 @@ public class JCRUtilException extends SLException {
     /**
      * Instantiates a new jCR util exception.
      * 
-     * @param cause the cause
-     */
-    public JCRUtilException(
-                             final Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * Instantiates a new jCR util exception.
-     * 
      * @param message the message
      * @param cause the cause
      */
     public JCRUtilException(
                              final String message, final Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Instantiates a new jCR util exception.
+     * 
+     * @param cause the cause
+     */
+    public JCRUtilException(
+                             final Throwable cause) {
+        super(cause);
     }
 }

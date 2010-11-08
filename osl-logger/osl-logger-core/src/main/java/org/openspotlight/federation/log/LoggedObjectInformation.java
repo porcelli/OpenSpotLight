@@ -27,44 +27,21 @@ public class LoggedObjectInformation implements SimpleNodeType, Serializable {
     private static final long serialVersionUID = 2812040814742711306L;
 
     /**
-     * Gets the hierarchy from.
-     * 
-     * @param anotherNodes the another nodes
-     * @return the hierarchy from
-     */
-    public static List<LoggedObjectInformation> getHierarchyFrom(
-                                                                 final Object... anotherNodes) {
-        final List<Object> nodes = new LinkedList<Object>();
-        for (final Object o: anotherNodes) {
-            nodes.add(o);
-        }
-        Collections.reverse(nodes);
-        final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(
-                nodes.size());
-        for (int i = 0, size = nodes.size(); i < size; i++) {
-            result.add(new LoggedObjectInformation(i, nodes.get(i)));
-        }
-        return result;
-    }
-
-    private int    order;
-
-    /**
-     * The unique id.
-     */
-    private String uniqueId;
-
-    /**
      * The friendly description.
      */
-    private String friendlyDescription;
+    private String            friendlyDescription;
+
+    private int               order;
 
     /**
      * The class name.
      */
-    private String typeName;
+    private String            typeName;
 
-    public LoggedObjectInformation() {}
+    /**
+     * The unique id.
+     */
+    private String            uniqueId;
 
     /**
      * Instantiates a new logged object information.
@@ -115,6 +92,29 @@ public class LoggedObjectInformation implements SimpleNodeType, Serializable {
         this.friendlyDescription = friendlyDescription;
         typeName = className;
 
+    }
+
+    public LoggedObjectInformation() {}
+
+    /**
+     * Gets the hierarchy from.
+     * 
+     * @param anotherNodes the another nodes
+     * @return the hierarchy from
+     */
+    public static List<LoggedObjectInformation> getHierarchyFrom(
+                                                                 final Object... anotherNodes) {
+        final List<Object> nodes = new LinkedList<Object>();
+        for (final Object o: anotherNodes) {
+            nodes.add(o);
+        }
+        Collections.reverse(nodes);
+        final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(
+                nodes.size());
+        for (int i = 0, size = nodes.size(); i < size; i++) {
+            result.add(new LoggedObjectInformation(i, nodes.get(i)));
+        }
+        return result;
     }
 
     public String getClassName() {

@@ -55,11 +55,11 @@ package org.openspotlight.graph.query.info;
  */
 public class AllTypesInfo {
 
-    /** The select info. */
-    private SelectStatementInfo selectInfo;
-
     /** The on where. */
     private boolean             onWhere;
+
+    /** The select info. */
+    private SelectStatementInfo selectInfo;
 
     /**
      * Instantiates a new sL all types info.

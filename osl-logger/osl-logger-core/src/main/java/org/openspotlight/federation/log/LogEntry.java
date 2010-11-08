@@ -26,19 +26,9 @@ public class LogEntry implements SimpleNodeType, Serializable {
     private static final long             serialVersionUID = -1429744150741798679L;
 
     /**
-     * The error code.
+     * The date.
      */
-    private DetailedLogger.ErrorCode      errorCode;
-
-    /**
-     * The type.
-     */
-    private DetailedLogger.LogEventType   type;
-
-    /**
-     * The message.
-     */
-    private String                        message;
+    private Date                          date;
 
     /**
      * The detailed message.
@@ -46,23 +36,31 @@ public class LogEntry implements SimpleNodeType, Serializable {
     private String                        detailedMessage;
 
     /**
-     * The nodes.
+     * The error code.
      */
-    private List<LoggedObjectInformation> nodes;
-
-    /**
-     * The date.
-     */
-    private Date                          date;
-
-    private long                          timestamp;
+    private DetailedLogger.ErrorCode      errorCode;
 
     /**
      * The hash code.
      */
     private int                           hashCode;
 
-    public LogEntry() {}
+    /**
+     * The message.
+     */
+    private String                        message;
+
+    /**
+     * The nodes.
+     */
+    private List<LoggedObjectInformation> nodes;
+
+    private long                          timestamp;
+
+    /**
+     * The type.
+     */
+    private DetailedLogger.LogEventType   type;
 
     /**
      * Instantiates a new log entry.
@@ -87,6 +85,8 @@ public class LogEntry implements SimpleNodeType, Serializable {
         hashCode = HashCodes.hashOf(this.type, this.message, this.detailedMessage, this.nodes, date, this.errorCode);
     }
 
+    public LogEntry() {}
+
     /*
      * (non-Javadoc)
      * @see java.lang.Object#equalsTo(java.lang.Object)
@@ -109,15 +109,6 @@ public class LogEntry implements SimpleNodeType, Serializable {
      */
     public Date getDate() {
         return date;
-    }
-
-    @KeyProperty
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(final long timestamp) {
-        this.timestamp = timestamp;
     }
 
     /**
@@ -152,6 +143,11 @@ public class LogEntry implements SimpleNodeType, Serializable {
         return nodes;
     }
 
+    @KeyProperty
+    public long getTimestamp() {
+        return timestamp;
+    }
+
     /**
      * Gets the type.
      * 
@@ -162,15 +158,15 @@ public class LogEntry implements SimpleNodeType, Serializable {
         return type;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-
     @Override
     public int hashCode() {
         return hashCode;
     }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
 
     public void setDate(final Date date) {
         this.date = date;
@@ -190,6 +186,10 @@ public class LogEntry implements SimpleNodeType, Serializable {
 
     public void setNodes(final List<LoggedObjectInformation> nodes) {
         this.nodes = nodes;
+    }
+
+    public void setTimestamp(final long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public void setType(final DetailedLogger.LogEventType type) {

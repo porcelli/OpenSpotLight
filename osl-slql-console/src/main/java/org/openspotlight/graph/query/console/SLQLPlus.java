@@ -75,9 +75,6 @@ import org.openspotlight.graph.query.console.util.Messages;
  */
 public class SLQLPlus {
 
-    /** The Constant VERSION. */
-    public final static String VERSION    = "0.5";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      //$NON-NLS-1$
-
     /** The logos. */
     private static String[]    LOGO_TYPES =
                                               {
@@ -86,6 +83,9 @@ public class SLQLPlus {
                                               " ____  _     ___  _       ____  _           \n/ ___|| |   / _ \\| |     |  _ \\| |_   _ ___ \n\\___ \\| |  | | | | |     | |_) | | | | / __|\n ___) | |___ |_| | |___  |  __/| | |_| \\__ \\\n|____/|_____\\__\\_\\_____| |_|   |_|\\__,_|___/",
                                               "  ______   _____       ___      _____      _______  __                 \n.' ____ \\ |_   _|    .'   `.   |_   _|    |_   __ \\[  |                \n| (___ \\_|  | |     /  .-.  \\    | |        | |__) || | __   _   .--.  \n _.____`.   | |   _ | |   | |    | |   _    |  ___/ | |[  | | | ( (`\\] \n| \\____) | _| |__/ |\\  `-'  \\_  _| |__/ |  _| |_    | | | \\_/ |, `'.'. \n \\______.'|________| `.___.\\__||________| |_____|  [___]'.__.'_/[\\__) )",
                                               "   ___    _     ___     _                ___    _                        \n  / __|  | |   / _ \\   | |       o O O  | _ \\  | |   _  _    ___         \n  \\__ \\  | |__| (_) |  | |__    o       |  _/  | |  | +| |  (_-<         \n  |___/  |____|\\__\\_\\  |____|  TS__[O] _|_|_  _|_|_  \\_,_|  /__/_        \n_|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"| {======|| \"\"\" ||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|       \n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'./o--000'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'"};
+
+    /** The Constant VERSION. */
+    public final static String VERSION    = "0.5";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      //$NON-NLS-1$
 
     /**
      * Gets the prompt.
@@ -214,6 +214,37 @@ public class SLQLPlus {
     }
 
     /**
+     * Validate credentials.
+     * 
+     * @param serverName the server name
+     * @param portNumber the port number
+     * @param userName the user name
+     * @param password the password
+     * @param repositoryName the repository Name
+     * @param out the out
+     * @return the pair< boolean, sl graph session>
+     * @throws SLException the SL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
+    private static Pair<Boolean, SimpleGraphSession> validateCredentials(
+                                                                         final String serverName, final int portNumber,
+                                                                         final String userName, final String password,
+                                                                         final String repositoryName, final PrintWriter out)
+            throws SLException, IOException, ClassNotFoundException {
+        if (userName.equalsIgnoreCase("sa")) { //$NON-NLS-1$
+            final GraphConnection connection = new GraphConnection();
+            return new Pair<Boolean, SimpleGraphSession>(true,
+                    connection.connect(serverName, portNumber, userName,
+                            password, repositoryName));
+        }
+
+        out.println(Messages.getString("SLQLPlus.13")); //$NON-NLS-1$
+        out.flush();
+        return new Pair<Boolean, SimpleGraphSession>(false, null);
+    }
+
+    /**
      * The main method.
      * 
      * @param args the arguments
@@ -293,37 +324,6 @@ public class SLQLPlus {
         out.println();
         out.println();
         out.flush();
-    }
-
-    /**
-     * Validate credentials.
-     * 
-     * @param serverName the server name
-     * @param portNumber the port number
-     * @param userName the user name
-     * @param password the password
-     * @param repositoryName the repository Name
-     * @param out the out
-     * @return the pair< boolean, sl graph session>
-     * @throws SLException the SL exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ClassNotFoundException the class not found exception
-     */
-    private static Pair<Boolean, SimpleGraphSession> validateCredentials(
-                                                                         final String serverName, final int portNumber,
-                                                                         final String userName, final String password,
-                                                                         final String repositoryName, final PrintWriter out)
-            throws SLException, IOException, ClassNotFoundException {
-        if (userName.equalsIgnoreCase("sa")) { //$NON-NLS-1$
-            final GraphConnection connection = new GraphConnection();
-            return new Pair<Boolean, SimpleGraphSession>(true,
-                    connection.connect(serverName, portNumber, userName,
-                            password, repositoryName));
-        }
-
-        out.println(Messages.getString("SLQLPlus.13")); //$NON-NLS-1$
-        out.flush();
-        return new Pair<Boolean, SimpleGraphSession>(false, null);
     }
 
 }

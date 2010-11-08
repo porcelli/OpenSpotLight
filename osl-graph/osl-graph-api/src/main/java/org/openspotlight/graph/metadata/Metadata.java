@@ -43,6 +43,40 @@ public interface Metadata {
     String getMetaContextId();
 
     /**
+     * Returns a meta link type based on specific link type class
+     * 
+     * @param linkType the link type class
+     * @return the meta link type or null if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    MetaLinkType getMetaLinkType(Class<? extends Link> linkType)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns a meta link type based on specific link type name
+     * 
+     * @param linkTypeName the link type name
+     * @return the meta link type or null if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    MetaLinkType getMetaLinkType(String linkTypeName)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns an iterable of all meta link types registered into metadata context.
+     * 
+     * @return all registered metadata link types
+     */
+    Iterable<MetaLinkType> getMetaLinkTypes();
+
+    /**
+     * Returns an iterable of all meta node types registered into metadata context.
+     * 
+     * @return all registered metadata node types
+     */
+    Iterable<MetaNodeType> getMetaNodesTypes();
+
+    /**
      * Returns a meta node type based on specific node type class
      * 
      * @param nodeType the node type class
@@ -60,6 +94,26 @@ public interface Metadata {
      * @throws IllegalArgumentException if the input param is null
      */
     MetaNodeType getMetaNodeType(String nodeTypeName)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns the children meta node type in hierarchy.
+     * 
+     * @param nodeTypeName the input meta node type
+     * @return the children meta node type, or null if there is no children
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<MetaNodeType> getMetaNodeTypeChildrenHierarchy(MetaNodeType nodeTypeName)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns recursively the children meta node types in hierarchy.
+     * 
+     * @param nodeTypeName the input meta node type
+     * @return the children meta node types list, or empty if there is no children
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<MetaNodeType> getMetaNodeTypeChildrenRecursiveHierarchy(MetaNodeType nodeTypeName)
         throws IllegalArgumentException;
 
     /**
@@ -93,53 +147,6 @@ public interface Metadata {
         throws IllegalArgumentException;
 
     /**
-     * Returns the children meta node type in hierarchy.
-     * 
-     * @param nodeTypeName the input meta node type
-     * @return the children meta node type, or null if there is no children
-     * @throws IllegalArgumentException if the input param is null
-     */
-    Iterable<MetaNodeType> getMetaNodeTypeChildrenHierarchy(MetaNodeType nodeTypeName)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns recursively the children meta node types in hierarchy.
-     * 
-     * @param nodeTypeName the input meta node type
-     * @return the children meta node types list, or empty if there is no children
-     * @throws IllegalArgumentException if the input param is null
-     */
-    Iterable<MetaNodeType> getMetaNodeTypeChildrenRecursiveHierarchy(MetaNodeType nodeTypeName)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns a meta link type based on specific link type class
-     * 
-     * @param linkType the link type class
-     * @return the meta link type or null if not found
-     * @throws IllegalArgumentException if the input param is null
-     */
-    MetaLinkType getMetaLinkType(Class<? extends Link> linkType)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns a meta link type based on specific link type name
-     * 
-     * @param linkTypeName the link type name
-     * @return the meta link type or null if not found
-     * @throws IllegalArgumentException if the input param is null
-     */
-    MetaLinkType getMetaLinkType(String linkTypeName)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns an iterable of all meta link types registered into metadata context.
-     * 
-     * @return all registered metadata link types
-     */
-    Iterable<MetaLinkType> getMetaLinkTypes();
-
-    /**
      * Returns an iterable of all source meta node types registered into metadata context of a given meta link type.
      * 
      * @param metaLinkType the meta link type
@@ -158,12 +165,5 @@ public interface Metadata {
      */
     Iterable<MetaNodeType> getTargetMetaNodeTypes(MetaLinkType metaLinkType)
         throws IllegalArgumentException;
-
-    /**
-     * Returns an iterable of all meta node types registered into metadata context.
-     * 
-     * @return all registered metadata node types
-     */
-    Iterable<MetaNodeType> getMetaNodesTypes();
 
 }

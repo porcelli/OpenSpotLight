@@ -55,30 +55,25 @@ import org.openspotlight.persist.internal.StreamPropertyWithParent;
  * The Class SyntaxInformation.
  */
 public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Comparable<SyntaxInformation> {
-    private static final long serialVersionUID = 9056717121341748618L;
+    private static final long      serialVersionUID = 9056717121341748618L;
 
-    private static int compare(final int anotherVal,
-                                final int thisVal) {
-        return thisVal < anotherVal ? -1 : thisVal == anotherVal ? 0 : 1;
-    }
-
-    /** The hashcode. */
-    private volatile transient int hashcode;
-
-    /** The stream artifact. */
-    private Artifact               parent;
-
-    /** The line start. */
-    private int                    lineStart;
-
-    /** The line end. */
-    private int                    lineEnd;
+    /** The column end. */
+    private int                    columnEnd;
 
     /** The column start. */
     private int                    columnStart;
 
-    /** The column end. */
-    private int                    columnEnd;
+    /** The hashcode. */
+    private volatile transient int hashcode;
+
+    /** The line end. */
+    private int                    lineEnd;
+
+    /** The line start. */
+    private int                    lineStart;
+
+    /** The stream artifact. */
+    private Artifact               parent;
 
     /** The type. */
     private SyntaxInformationType  type;
@@ -94,6 +89,11 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
         this.columnStart = columnStart;
         this.columnEnd = columnEnd;
         this.type = type;
+    }
+
+    private static int compare(final int anotherVal,
+                                final int thisVal) {
+        return thisVal < anotherVal ? -1 : thisVal == anotherVal ? 0 : 1;
     }
 
     @Override

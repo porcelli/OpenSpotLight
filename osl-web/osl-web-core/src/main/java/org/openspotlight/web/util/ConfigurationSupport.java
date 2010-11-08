@@ -66,21 +66,6 @@ import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 public class ConfigurationSupport {
 
     /**
-     * Initialize configuration.
-     */
-    public static boolean initializeConfiguration(final boolean forceReload,
-                                                  final MutableConfigurationManager jcrConfigurationManager)
-        throws Exception {
-        final boolean firstTime = jcrConfigurationManager.getAllRepositories().iterator().hasNext();
-        boolean reloaded = false;
-        if (firstTime || forceReload) {
-            saveXmlOnJcr(jcrConfigurationManager);
-            reloaded = true;
-        }
-        return reloaded;
-    }
-
-    /**
      * Save xml on jcr.
      * 
      * @param manager the manager
@@ -102,5 +87,20 @@ public class ConfigurationSupport {
         for (final Repository repository: repositories) {
             manager.saveRepository(repository);
         }
+    }
+
+    /**
+     * Initialize configuration.
+     */
+    public static boolean initializeConfiguration(final boolean forceReload,
+                                                  final MutableConfigurationManager jcrConfigurationManager)
+        throws Exception {
+        final boolean firstTime = jcrConfigurationManager.getAllRepositories().iterator().hasNext();
+        boolean reloaded = false;
+        if (firstTime || forceReload) {
+            saveXmlOnJcr(jcrConfigurationManager);
+            reloaded = true;
+        }
+        return reloaded;
     }
 }

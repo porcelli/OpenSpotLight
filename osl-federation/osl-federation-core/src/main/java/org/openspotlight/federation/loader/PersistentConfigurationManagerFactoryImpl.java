@@ -71,91 +71,22 @@ import com.google.inject.Inject;
  */
 public class PersistentConfigurationManagerFactoryImpl implements ConfigurationManagerFactory {
 
-    private final SimplePersistFactory factory;
-
-    @Inject
-    public PersistentConfigurationManagerFactoryImpl(final SimplePersistFactory factory) {
-        this.factory = factory;
-    }
-
-    @Override
-    public ImmutableConfigurationManager createImmutable() {
-        return createMutableUsingSession(factory.createSimplePersist(RegularPartitions.FEDERATION));
-    }
-
-    @Override
-    public org.openspotlight.federation.loader.MutableConfigurationManager createMutable() {
-        return createMutableUsingSession(factory.createSimplePersist(RegularPartitions.FEDERATION));
-    }
-
-    /**
-     * The Class MutableConfigurationManager.
-     */
-    private static class MutablePersistentConfigurationManager extends ImmutablePersistentConfigurationManager implements
-            org.openspotlight.federation.loader.MutableConfigurationManager {
-
-        public MutablePersistentConfigurationManager(
-                                                     final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
-            super(simplePersist);
-        }
-
-        /*
-         * (non-Javadoc)
-         * @seeorg.openspotlight.federation.loader.MutableConfigurationManager# saveGlobalSettings
-         * (org.openspotlight.federation.domain.GlobalSettings)
-         */
-
-        @Override
-        public void saveGlobalSettings(final GlobalSettings globalSettings)
-                throws ConfigurationException {
-            try {
-                simplePersist.convertBeanToNode(globalSettingsRootNode,
-                        globalSettings);
-                simplePersist.getCurrentSession().flushTransient();
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                        ConfigurationException.class);
-            }
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.openspotlight.federation.loader.MutableConfigurationManager#saveRepository
-         * (org.openspotlight.federation.domain.Repository)
-         */
-
-        @Override
-        public void saveRepository(final Repository configuration)
-                throws ConfigurationException {
-            try {
-                applyGroupDeltas(configuration);
-                simplePersist.convertBeanToNode(repositoriesRootNode,
-                        configuration);
-                simplePersist.getCurrentSession().flushTransient();
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                        ConfigurationException.class);
-            }
-        }
-
-    }
-
     private static class ImmutablePersistentConfigurationManager implements
             org.openspotlight.federation.loader.ImmutableConfigurationManager {
-
-        /**
-         * The session.
-         */
-        protected final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
         /**
          * The Constant globalSettingsRootNode.
          */
         protected final StorageNode                                       globalSettingsRootNode;
+
         /**
          * The Constant repositoriesRootNode.
          */
         protected final StorageNode                                       repositoriesRootNode;
+        /**
+         * The session.
+         */
+        protected final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
         /**
          * Instantiates a new mutable jcr session configuration manager.
@@ -265,10 +196,79 @@ public class PersistentConfigurationManagerFactoryImpl implements ConfigurationM
 
     }
 
+    /**
+     * The Class MutableConfigurationManager.
+     */
+    private static class MutablePersistentConfigurationManager extends ImmutablePersistentConfigurationManager implements
+            org.openspotlight.federation.loader.MutableConfigurationManager {
+
+        public MutablePersistentConfigurationManager(
+                                                     final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+            super(simplePersist);
+        }
+
+        /*
+         * (non-Javadoc)
+         * @seeorg.openspotlight.federation.loader.MutableConfigurationManager# saveGlobalSettings
+         * (org.openspotlight.federation.domain.GlobalSettings)
+         */
+
+        @Override
+        public void saveGlobalSettings(final GlobalSettings globalSettings)
+                throws ConfigurationException {
+            try {
+                simplePersist.convertBeanToNode(globalSettingsRootNode,
+                        globalSettings);
+                simplePersist.getCurrentSession().flushTransient();
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e,
+                        ConfigurationException.class);
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.federation.loader.MutableConfigurationManager#saveRepository
+         * (org.openspotlight.federation.domain.Repository)
+         */
+
+        @Override
+        public void saveRepository(final Repository configuration)
+                throws ConfigurationException {
+            try {
+                applyGroupDeltas(configuration);
+                simplePersist.convertBeanToNode(repositoriesRootNode,
+                        configuration);
+                simplePersist.getCurrentSession().flushTransient();
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e,
+                        ConfigurationException.class);
+            }
+        }
+
+    }
+
+    private final SimplePersistFactory factory;
+
+    @Inject
+    public PersistentConfigurationManagerFactoryImpl(final SimplePersistFactory factory) {
+        this.factory = factory;
+    }
+
     public static org.openspotlight.federation.loader.MutableConfigurationManager
         createMutableUsingSession(
                                   final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
         return new MutablePersistentConfigurationManager(simplePersist);
+    }
+
+    @Override
+    public ImmutableConfigurationManager createImmutable() {
+        return createMutableUsingSession(factory.createSimplePersist(RegularPartitions.FEDERATION));
+    }
+
+    @Override
+    public org.openspotlight.federation.loader.MutableConfigurationManager createMutable() {
+        return createMutableUsingSession(factory.createSimplePersist(RegularPartitions.FEDERATION));
     }
 
 }

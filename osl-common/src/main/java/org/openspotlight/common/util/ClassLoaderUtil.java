@@ -64,32 +64,6 @@ import java.util.List;
 public class ClassLoaderUtil {
 
     /**
-     * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
-     * 
-     * @param packageName The base package
-     * @return The classes
-     * @throws ClassNotFoundException the class not found exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public static Class<?>[] getClasses(final String packageName)
-        throws ClassNotFoundException, IOException {
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        assert classLoader != null;
-        final String path = packageName.replace('.', '/');
-        final Enumeration<URL> resources = classLoader.getResources(path);
-        final List<File> dirs = new ArrayList<File>();
-        while (resources.hasMoreElements()) {
-            final URL resource = resources.nextElement();
-            dirs.add(new File(resource.getFile()));
-        }
-        final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
-        for (final File directory: dirs) {
-            classes.addAll(findClasses(directory, packageName));
-        }
-        return classes.toArray(new Class[classes.size()]);
-    }
-
-    /**
      * Recursive method used to find all classes in a given directory and subdirs.
      * 
      * @param directory The base directory
@@ -141,6 +115,32 @@ public class ClassLoaderUtil {
         } catch (final ClassNotFoundException e) {
             return null;
         }
+    }
+
+    /**
+     * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
+     * 
+     * @param packageName The base package
+     * @return The classes
+     * @throws ClassNotFoundException the class not found exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static Class<?>[] getClasses(final String packageName)
+        throws ClassNotFoundException, IOException {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        assert classLoader != null;
+        final String path = packageName.replace('.', '/');
+        final Enumeration<URL> resources = classLoader.getResources(path);
+        final List<File> dirs = new ArrayList<File>();
+        while (resources.hasMoreElements()) {
+            final URL resource = resources.nextElement();
+            dirs.add(new File(resource.getFile()));
+        }
+        final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        for (final File directory: dirs) {
+            classes.addAll(findClasses(directory, packageName));
+        }
+        return classes.toArray(new Class[classes.size()]);
     }
 
 }

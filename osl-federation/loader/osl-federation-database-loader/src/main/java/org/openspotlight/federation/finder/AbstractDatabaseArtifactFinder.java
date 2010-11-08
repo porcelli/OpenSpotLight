@@ -87,7 +87,9 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtifactLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(AbstractDatabaseArtifactFinder.class);
+    private static Logger                           logger        = LoggerFactory.getLogger(AbstractDatabaseArtifactFinder.class);
+
+    private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
 
     /**
      * Execute the statement as a normal SQL query or as a {@link CallableStatement} if the script starts with '{'.
@@ -107,21 +109,6 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
             rs = connection.prepareStatement(sql).executeQuery();
         }
         return rs;
-    }
-
-    private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
-
-    @Override
-    protected synchronized void internalCloseResources() {
-        final ArrayList<Connection> connections = new ArrayList<Connection>(connectionMap.values());
-        for (final Connection conn: connections) {
-            try {
-                conn.close();
-            } catch (final Exception e) {
-                Exceptions.catchAndLog(e);
-            }
-        }
-        connectionMap.clear();
     }
 
     /**
@@ -172,6 +159,27 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
         }
         return conn;
 
+    }
+
+    @Override
+    protected synchronized void internalCloseResources() {
+        final ArrayList<Connection> connections = new ArrayList<Connection>(connectionMap.values());
+        for (final Connection conn: connections) {
+            try {
+                conn.close();
+            } catch (final Exception e) {
+                Exceptions.catchAndLog(e);
+            }
+        }
+        connectionMap.clear();
+    }
+
+    @Override
+    protected <A extends Artifact> boolean internalIsMaybeChanged(final ArtifactSource source,
+                                                                   final String artifactName,
+                                                                   final A oldOne)
+        throws Exception {
+        return true;
     }
 
     @Override
@@ -243,6 +251,11 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
             logAndReturnNew(e, ConfigurationException.class);
         }
         return emptySet();
+    }
+
+    @Override
+    protected boolean isMultithreaded() {
+        return false;
     }
 
     /**
@@ -392,19 +405,6 @@ public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtif
                 resultSet.close();
             }
         }
-    }
-
-    @Override
-    protected <A extends Artifact> boolean internalIsMaybeChanged(final ArtifactSource source,
-                                                                   final String artifactName,
-                                                                   final A oldOne)
-        throws Exception {
-        return true;
-    }
-
-    @Override
-    protected boolean isMultithreaded() {
-        return false;
     }
 
 }

@@ -62,13 +62,17 @@ public enum ExampleRedisConfig implements JRedisServerDetail {
 
     EXAMPLE("localhost", 6379, 0, null, false);
 
-    private final ImmutableMap<Partition, JRedisServerDetail> mappedServerConfig;
+    private final int                                         db;
 
     private final boolean                                     defaultConfig;
 
-    public ImmutableMap<Partition, JRedisServerDetail> getMappedServerConfig() {
-        return mappedServerConfig;
-    }
+    private final ImmutableMap<Partition, JRedisServerDetail> mappedServerConfig;
+
+    private final String                                      password;
+
+    private final String                                      serverName;
+
+    private final int                                         serverPort;
 
     private ExampleRedisConfig(final String serverName, final int serverPort, final int db,
                                final String password, final boolean defaultConfig) {
@@ -85,13 +89,19 @@ public enum ExampleRedisConfig implements JRedisServerDetail {
         mappedServerConfig = builder.build();
     }
 
-    private final String serverName;
+    @Override
+    public int getDb() {
+        return db;
+    }
 
-    private final int    serverPort;
+    public ImmutableMap<Partition, JRedisServerDetail> getMappedServerConfig() {
+        return mappedServerConfig;
+    }
 
-    private final int    db;
-
-    private final String password;
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
     @Override
     public String getServerName() {
@@ -101,16 +111,6 @@ public enum ExampleRedisConfig implements JRedisServerDetail {
     @Override
     public int getServerPort() {
         return serverPort;
-    }
-
-    @Override
-    public int getDb() {
-        return db;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
     }
 
     @Override

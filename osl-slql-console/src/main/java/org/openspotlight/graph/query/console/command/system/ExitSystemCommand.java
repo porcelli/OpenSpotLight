@@ -67,6 +67,16 @@ public class ExitSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("exit")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(final ConsoleReader reader,
                          final PrintWriter out,
                          final ConsoleState state) {
@@ -83,16 +93,16 @@ public class ExitSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
-        return "exit";
+    public String getAutoCompleteCommand() {
+        return getCommand();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getAutoCompleteCommand() {
-        return getCommand();
+    public String getCommand() {
+        return "exit";
     }
 
     /**
@@ -124,16 +134,6 @@ public class ExitSystemCommand implements SystemCommand {
      */
     @Override
     public boolean hasFileCompletion() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("exit")) { return true; }
         return false;
     }
 }

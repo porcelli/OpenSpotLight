@@ -93,29 +93,21 @@ public class SLGraphQueryLinkCountTest {
     private static String            DEFAULT_REPOSITORY_NAME = "default-repository";
 
     /**
-     * The Constant LOGGER.
-     */
-    static final Logger              LOGGER                  = Logger
-                                                                 .getLogger(SLGraphQueryLinkCountTest.class);
-
-    /**
      * The session.
      */
     private static GraphReader       session;
+
+    private static StorageSession    storageSession;
 
     private static AuthenticatedUser user;
 
     private static GraphWriter       writer;
 
-    private static StorageSession    storageSession;
-
     /**
-     * Finish.
+     * The Constant LOGGER.
      */
-    @AfterClass
-    public static void finish() {
-
-    }
+    static final Logger              LOGGER                  = Logger
+                                                                 .getLogger(SLGraphQueryLinkCountTest.class);
 
     /**
      * Gets the i face type set.
@@ -130,6 +122,14 @@ public class SLGraphQueryLinkCountTest {
         set.add(java.util.Set.class);
         set.add(java.util.SortedSet.class);
         return set;
+    }
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish() {
+
     }
 
     /**

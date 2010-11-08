@@ -56,8 +56,8 @@ import org.antlr.runtime.CharStream;
 public class SLArtifactStreamCaseInsensitiveImpl extends SLArtifactStreamBasicImpl {
 
     public enum CaseMode {
-        UPPER,
-        LOWER
+        LOWER,
+        UPPER
     }
 
     private final CaseMode caseMode;

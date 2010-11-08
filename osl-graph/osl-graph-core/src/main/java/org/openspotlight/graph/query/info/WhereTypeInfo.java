@@ -68,6 +68,518 @@ import org.openspotlight.graph.query.SideType;
  */
 public class WhereTypeInfo implements Serializable {
 
+    /**
+     * The Class SLTypeStatementInfo.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class SLTypeStatementInfo implements Serializable {
+
+        /**
+         * The Class SLTypeConditionInfo.
+         * 
+         * @author Vitor Hugo Chagas
+         */
+        public static class SLTypeConditionInfo implements Serializable {
+
+            /** The Constant serialVersionUID. */
+            private static final long       serialVersionUID = 1L;
+
+            /** The closed. */
+            private boolean                 closed;
+
+            /** The conditional not operator. */
+            private boolean                 conditionalNotOperator;
+
+            /** The conditional operator. */
+            private ConditionalOperatorType conditionalOperator;
+
+            /** The inner statement info. */
+            private SLTypeStatementInfo     innerStatementInfo;
+
+            /** The link type name. */
+            private String                  linkTypeName;
+
+            /** The outer statement info. */
+            private SLTypeStatementInfo     outerStatementInfo;
+
+            /** The property name. */
+            private String                  propertyName;
+
+            /** The relational not operator. */
+            private boolean                 relationalNotOperator;
+
+            /** The relational operator. */
+            private RelationalOperatorType  relationalOperator;
+
+            /** The side. */
+            private SideType                side;
+
+            /** The type info. */
+            private WhereTypeInfo           typeInfo;
+
+            /** The value. */
+            private Object                  value;
+
+            /**
+             * Instantiates a new sL type condition info.
+             * 
+             * @param typeInfo the type info
+             */
+            public SLTypeConditionInfo(
+                                        final WhereTypeInfo typeInfo) {
+                this(typeInfo, null);
+            }
+
+            /**
+             * Instantiates a new sL type condition info.
+             * 
+             * @param typeInfo the type info
+             * @param conditionalOperator the conditional operator
+             */
+            public SLTypeConditionInfo(
+                                        final WhereTypeInfo typeInfo, final ConditionalOperatorType conditionalOperator) {
+                this.typeInfo = typeInfo;
+                this.conditionalOperator = conditionalOperator;
+            }
+
+            /**
+             * Gets the conditional operator.
+             * 
+             * @return the conditional operator
+             */
+            public ConditionalOperatorType getConditionalOperator() {
+                return conditionalOperator;
+            }
+
+            /**
+             * Gets the inner statement info.
+             * 
+             * @return the inner statement info
+             */
+            public SLTypeStatementInfo getInnerStatementInfo() {
+                return innerStatementInfo;
+            }
+
+            /**
+             * Gets the link type name.
+             * 
+             * @return the link type name
+             */
+            public String getLinkTypeName() {
+                return linkTypeName;
+            }
+
+            /**
+             * Gets the outer statement info.
+             * 
+             * @return the outer statement info
+             */
+            public SLTypeStatementInfo getOuterStatementInfo() {
+                return outerStatementInfo;
+            }
+
+            /**
+             * Gets the property name.
+             * 
+             * @return the property name
+             */
+            public String getPropertyName() {
+                return propertyName;
+            }
+
+            /**
+             * Gets the relational operator.
+             * 
+             * @return the relational operator
+             */
+            public RelationalOperatorType getRelationalOperator() {
+                return relationalOperator;
+            }
+
+            /**
+             * Gets the side.
+             * 
+             * @return the side
+             */
+            public SideType getSide() {
+                return side;
+            }
+
+            /**
+             * Gets the type info.
+             * 
+             * @return the type info
+             */
+            public WhereTypeInfo getTypeInfo() {
+                return typeInfo;
+            }
+
+            /**
+             * Gets the value.
+             * 
+             * @return the value
+             */
+            public Object getValue() {
+                return value;
+            }
+
+            /**
+             * Checks if is closed.
+             * 
+             * @return true, if is closed
+             */
+            public boolean isClosed() {
+                return closed;
+            }
+
+            /**
+             * Checks if is conditional not operator.
+             * 
+             * @return true, if is conditional not operator
+             */
+            public boolean isConditionalNotOperator() {
+                return conditionalNotOperator;
+            }
+
+            /**
+             * Checks if is relational not operator.
+             * 
+             * @return true, if is relational not operator
+             */
+            public boolean isRelationalNotOperator() {
+                return relationalNotOperator;
+            }
+
+            /**
+             * Sets the closed.
+             * 
+             * @param closed the new closed
+             */
+            public void setClosed(final boolean closed) {
+                this.closed = closed;
+            }
+
+            /**
+             * Sets the conditional not operator.
+             * 
+             * @param conditionalNotOperator the new conditional not operator
+             */
+            public void setConditionalNotOperator(final boolean conditionalNotOperator) {
+                this.conditionalNotOperator = conditionalNotOperator;
+            }
+
+            /**
+             * Sets the conditional operator.
+             * 
+             * @param conditionalOperator the new conditional operator
+             */
+            public void setConditionalOperator(final ConditionalOperatorType conditionalOperator) {
+                this.conditionalOperator = conditionalOperator;
+            }
+
+            /**
+             * Sets the inner statement info.
+             * 
+             * @param statementInfo the new inner statement info
+             */
+            public void setInnerStatementInfo(final SLTypeStatementInfo statementInfo) {
+                innerStatementInfo = statementInfo;
+            }
+
+            /**
+             * Sets the link type name.
+             * 
+             * @param linkTypeName the new link type name
+             */
+            public void setLinkTypeName(final String linkTypeName) {
+                this.linkTypeName = linkTypeName;
+            }
+
+            /**
+             * Sets the outer statement info.
+             * 
+             * @param outerStatementInfo the new outer statement info
+             */
+            public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
+                this.outerStatementInfo = outerStatementInfo;
+            }
+
+            /**
+             * Sets the property name.
+             * 
+             * @param propertyName the new property name
+             */
+            public void setPropertyName(final String propertyName) {
+                this.propertyName = propertyName;
+            }
+
+            /**
+             * Sets the relational not operator.
+             * 
+             * @param relationalNotOperator the new relational not operator
+             */
+            public void setRelationalNotOperator(final boolean relationalNotOperator) {
+                this.relationalNotOperator = relationalNotOperator;
+            }
+
+            /**
+             * Sets the relational operator.
+             * 
+             * @param relationalOperator the new relational operator
+             */
+            public void setRelationalOperator(final RelationalOperatorType relationalOperator) {
+                this.relationalOperator = relationalOperator;
+            }
+
+            /**
+             * Sets the side.
+             * 
+             * @param side the new side
+             */
+            public void setSide(final SideType side) {
+                this.side = side;
+            }
+
+            /**
+             * Sets the type info.
+             * 
+             * @param typeInfo the new type info
+             */
+            public void setTypeInfo(final WhereTypeInfo typeInfo) {
+                this.typeInfo = typeInfo;
+            }
+
+            /**
+             * Sets the value.
+             * 
+             * @param value the new value
+             */
+            public void setValue(final Object value) {
+                this.value = value;
+                setClosed(true);
+            }
+
+            /*
+             * (non-Javadoc)
+             * @see java.lang.Object#toString()
+             */
+            @Override
+            public String toString() {
+
+                final String typeName = typeInfo.getName();
+                final boolean subTypes = typeInfo.isSubTypes();
+
+                final StringBuilder buffer = new StringBuilder();
+                appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
+                appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
+                appendIfNotNull(buffer, propertyName, "property \"", propertyName, "\" ");
+                if (linkTypeName != null) {
+                    append(buffer, "link \"", linkTypeName, "\" (", side.symbol(), ") ");
+                }
+                appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
+                if (value != null) {
+                    if (value instanceof Number) {
+                        appendIfNotNull(buffer, value, ' ', value);
+                    } else {
+                        appendIfNotNull(buffer, value, " \"", value, '"');
+                    }
+                }
+                return buffer.toString();
+            }
+        }
+
+        /** The Constant serialVersionUID. */
+        private static final long         serialVersionUID = 1L;
+
+        /** The closed. */
+        private boolean                   closed;
+
+        /** The condition info list. */
+        private List<SLTypeConditionInfo> conditionInfoList;
+
+        /** The open brace stack trace. */
+        private StackTraceElement[]       openBraceStackTrace;
+
+        /** The opened. */
+        private boolean                   opened;
+
+        /** The outer statement info. */
+        private SLTypeStatementInfo       outerStatementInfo;
+
+        /** The type info. */
+        private WhereTypeInfo             typeInfo;
+
+        /**
+         * Instantiates a new sL type statement info.
+         * 
+         * @param typeInfo the type info
+         */
+        public SLTypeStatementInfo(
+                                    final WhereTypeInfo typeInfo, final SLTypeStatementInfo outerStatementInfo) {
+            setOpened(true);
+            conditionInfoList = new ArrayList<SLTypeConditionInfo>();
+            this.typeInfo = typeInfo;
+            this.outerStatementInfo = outerStatementInfo;
+        }
+
+        /**
+         * Prints the where statement.
+         * 
+         * @param buffer the buffer
+         * @param statementInfo the statement info
+         * @param tabLevel the tab level
+         */
+        private void printWhereStatement(final StringBuilder buffer,
+                                          final SLTypeStatementInfo statementInfo,
+                                          final int tabLevel) {
+            for (int i = 0; i < statementInfo.conditionInfoList.size(); i++) {
+                final SLTypeConditionInfo conditionInfo = statementInfo.conditionInfoList.get(i);
+                final String tabs = StringUtils.repeat("\t", tabLevel);
+                append(buffer, tabs, conditionInfo);
+                if (conditionInfo.getInnerStatementInfo() != null) {
+                    append(buffer, '(', '\n');
+                    printWhereStatement(buffer, conditionInfo.getInnerStatementInfo(), tabLevel + 1);
+                    append(buffer, tabs, ')', '\n');
+                } else {
+                    append(buffer, '\n');
+                }
+            }
+        }
+
+        /**
+         * Adds the condition.
+         * 
+         * @return the sL type condition info
+         */
+        public SLTypeConditionInfo addCondition() {
+            final SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo);
+            conditionInfoList.add(conditionInfo);
+            conditionInfo.setOuterStatementInfo(this);
+            return conditionInfo;
+        }
+
+        /**
+         * Adds the condition.
+         * 
+         * @param operator the operator
+         * @return the sL type condition info
+         */
+        public SLTypeConditionInfo addCondition(final ConditionalOperatorType operator) {
+            final SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo, operator);
+            conditionInfoList.add(conditionInfo);
+            conditionInfo.setOuterStatementInfo(this);
+            return conditionInfo;
+        }
+
+        /**
+         * Bookmark open bracket.
+         */
+        public void bookmarkOpenBracket() {
+            openBraceStackTrace = Thread.currentThread().getStackTrace();
+        }
+
+        /**
+         * Gets the condition info list.
+         * 
+         * @return the condition info list
+         */
+        public List<SLTypeConditionInfo> getConditionInfoList() {
+            return conditionInfoList;
+        }
+
+        /**
+         * Gets the open brace stack trace.
+         * 
+         * @return the open brace stack trace
+         */
+        public StackTraceElement[] getOpenBraceStackTrace() {
+            return openBraceStackTrace;
+        }
+
+        public SLTypeStatementInfo getOuterStatementInfo() {
+            return outerStatementInfo;
+        }
+
+        /**
+         * Gets the type info.
+         * 
+         * @return the type info
+         */
+        public WhereTypeInfo getTypeInfo() {
+            return typeInfo;
+        }
+
+        /**
+         * Checks if is closed.
+         * 
+         * @return true, if is closed
+         */
+        public boolean isClosed() {
+            return closed;
+        }
+
+        /**
+         * Checks if is opened.
+         * 
+         * @return true, if is opened
+         */
+        public boolean isOpened() {
+            return opened;
+        }
+
+        /**
+         * Sets the closed.
+         * 
+         * @param closed the new closed
+         */
+        public void setClosed(final boolean closed) {
+            this.closed = closed;
+        }
+
+        /**
+         * Sets the condition info list.
+         * 
+         * @param conditionalInfoList the new condition info list
+         */
+        public void setConditionInfoList(final List<SLTypeConditionInfo> conditionalInfoList) {
+            conditionInfoList = conditionalInfoList;
+        }
+
+        /**
+         * Sets the opened.
+         * 
+         * @param opened the new opened
+         */
+        public void setOpened(final boolean opened) {
+            this.opened = opened;
+        }
+
+        public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
+            this.outerStatementInfo = outerStatementInfo;
+        }
+
+        /**
+         * Sets the type info.
+         * 
+         * @param typeInfo the new type info
+         */
+        public void setTypeInfo(final WhereTypeInfo typeInfo) {
+            this.typeInfo = typeInfo;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            final StringBuilder buffer = new StringBuilder();
+            printWhereStatement(buffer, this, 1);
+            return buffer.toString();
+        }
+    }
+
     /** The Constant serialVersionUID. */
     private static final long   serialVersionUID = 1L;
 
@@ -100,48 +612,12 @@ public class WhereTypeInfo implements Serializable {
     }
 
     /**
-     * Sets the name.
-     * 
-     * @param name the new name
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Checks if is sub types.
-     * 
-     * @return true, if is sub types
-     */
-    public boolean isSubTypes() {
-        return subTypes;
-    }
-
-    /**
-     * Sets the sub types.
-     * 
-     * @param subTypes the new sub types
-     */
-    public void setSubTypes(final boolean subTypes) {
-        this.subTypes = subTypes;
-    }
-
-    /**
      * Gets the type statement info.
      * 
      * @return the type statement info
      */
     public SLTypeStatementInfo getTypeStatementInfo() {
         return typeStatementInfo;
-    }
-
-    /**
-     * Sets the type statement info.
-     * 
-     * @param whereStatementInfo the new type statement info
-     */
-    public void setTypeStatementInfo(final SLTypeStatementInfo whereStatementInfo) {
-        typeStatementInfo = whereStatementInfo;
     }
 
     /*
@@ -154,514 +630,38 @@ public class WhereTypeInfo implements Serializable {
     }
 
     /**
-     * The Class SLTypeStatementInfo.
+     * Checks if is sub types.
      * 
-     * @author Vitor Hugo Chagas
+     * @return true, if is sub types
      */
-    public static class SLTypeStatementInfo implements Serializable {
-
-        /** The Constant serialVersionUID. */
-        private static final long         serialVersionUID = 1L;
-
-        /** The type info. */
-        private WhereTypeInfo             typeInfo;
-
-        /** The condition info list. */
-        private List<SLTypeConditionInfo> conditionInfoList;
-
-        /** The closed. */
-        private boolean                   closed;
-
-        /** The opened. */
-        private boolean                   opened;
-
-        /** The open brace stack trace. */
-        private StackTraceElement[]       openBraceStackTrace;
-
-        /** The outer statement info. */
-        private SLTypeStatementInfo       outerStatementInfo;
-
-        /**
-         * Instantiates a new sL type statement info.
-         * 
-         * @param typeInfo the type info
-         */
-        public SLTypeStatementInfo(
-                                    final WhereTypeInfo typeInfo, final SLTypeStatementInfo outerStatementInfo) {
-            setOpened(true);
-            conditionInfoList = new ArrayList<SLTypeConditionInfo>();
-            this.typeInfo = typeInfo;
-            this.outerStatementInfo = outerStatementInfo;
-        }
-
-        /**
-         * Bookmark open bracket.
-         */
-        public void bookmarkOpenBracket() {
-            openBraceStackTrace = Thread.currentThread().getStackTrace();
-        }
-
-        /**
-         * Gets the open brace stack trace.
-         * 
-         * @return the open brace stack trace
-         */
-        public StackTraceElement[] getOpenBraceStackTrace() {
-            return openBraceStackTrace;
-        }
-
-        /**
-         * Gets the type info.
-         * 
-         * @return the type info
-         */
-        public WhereTypeInfo getTypeInfo() {
-            return typeInfo;
-        }
-
-        /**
-         * Sets the type info.
-         * 
-         * @param typeInfo the new type info
-         */
-        public void setTypeInfo(final WhereTypeInfo typeInfo) {
-            this.typeInfo = typeInfo;
-        }
-
-        /**
-         * Adds the condition.
-         * 
-         * @return the sL type condition info
-         */
-        public SLTypeConditionInfo addCondition() {
-            final SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo);
-            conditionInfoList.add(conditionInfo);
-            conditionInfo.setOuterStatementInfo(this);
-            return conditionInfo;
-        }
-
-        /**
-         * Adds the condition.
-         * 
-         * @param operator the operator
-         * @return the sL type condition info
-         */
-        public SLTypeConditionInfo addCondition(final ConditionalOperatorType operator) {
-            final SLTypeConditionInfo conditionInfo = new SLTypeConditionInfo(typeInfo, operator);
-            conditionInfoList.add(conditionInfo);
-            conditionInfo.setOuterStatementInfo(this);
-            return conditionInfo;
-        }
-
-        /**
-         * Gets the condition info list.
-         * 
-         * @return the condition info list
-         */
-        public List<SLTypeConditionInfo> getConditionInfoList() {
-            return conditionInfoList;
-        }
-
-        /**
-         * Sets the condition info list.
-         * 
-         * @param conditionalInfoList the new condition info list
-         */
-        public void setConditionInfoList(final List<SLTypeConditionInfo> conditionalInfoList) {
-            conditionInfoList = conditionalInfoList;
-        }
-
-        /**
-         * Checks if is closed.
-         * 
-         * @return true, if is closed
-         */
-        public boolean isClosed() {
-            return closed;
-        }
-
-        /**
-         * Sets the closed.
-         * 
-         * @param closed the new closed
-         */
-        public void setClosed(final boolean closed) {
-            this.closed = closed;
-        }
-
-        /**
-         * Checks if is opened.
-         * 
-         * @return true, if is opened
-         */
-        public boolean isOpened() {
-            return opened;
-        }
-
-        /**
-         * Sets the opened.
-         * 
-         * @param opened the new opened
-         */
-        public void setOpened(final boolean opened) {
-            this.opened = opened;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString() {
-            final StringBuilder buffer = new StringBuilder();
-            printWhereStatement(buffer, this, 1);
-            return buffer.toString();
-        }
-
-        /**
-         * Prints the where statement.
-         * 
-         * @param buffer the buffer
-         * @param statementInfo the statement info
-         * @param tabLevel the tab level
-         */
-        private void printWhereStatement(final StringBuilder buffer,
-                                          final SLTypeStatementInfo statementInfo,
-                                          final int tabLevel) {
-            for (int i = 0; i < statementInfo.conditionInfoList.size(); i++) {
-                final SLTypeConditionInfo conditionInfo = statementInfo.conditionInfoList.get(i);
-                final String tabs = StringUtils.repeat("\t", tabLevel);
-                append(buffer, tabs, conditionInfo);
-                if (conditionInfo.getInnerStatementInfo() != null) {
-                    append(buffer, '(', '\n');
-                    printWhereStatement(buffer, conditionInfo.getInnerStatementInfo(), tabLevel + 1);
-                    append(buffer, tabs, ')', '\n');
-                } else {
-                    append(buffer, '\n');
-                }
-            }
-        }
-
-        /**
-         * The Class SLTypeConditionInfo.
-         * 
-         * @author Vitor Hugo Chagas
-         */
-        public static class SLTypeConditionInfo implements Serializable {
-
-            /** The Constant serialVersionUID. */
-            private static final long       serialVersionUID = 1L;
-
-            /** The type info. */
-            private WhereTypeInfo           typeInfo;
-
-            /** The relational operator. */
-            private RelationalOperatorType  relationalOperator;
-
-            /** The conditional operator. */
-            private ConditionalOperatorType conditionalOperator;
-
-            /** The inner statement info. */
-            private SLTypeStatementInfo     innerStatementInfo;
-
-            /** The outer statement info. */
-            private SLTypeStatementInfo     outerStatementInfo;
-
-            /** The side. */
-            private SideType                side;
-
-            /** The property name. */
-            private String                  propertyName;
-
-            /** The link type name. */
-            private String                  linkTypeName;
-
-            /** The value. */
-            private Object                  value;
-
-            /** The closed. */
-            private boolean                 closed;
-
-            /** The relational not operator. */
-            private boolean                 relationalNotOperator;
-
-            /** The conditional not operator. */
-            private boolean                 conditionalNotOperator;
-
-            /**
-             * Instantiates a new sL type condition info.
-             * 
-             * @param typeInfo the type info
-             */
-            public SLTypeConditionInfo(
-                                        final WhereTypeInfo typeInfo) {
-                this(typeInfo, null);
-            }
-
-            /**
-             * Instantiates a new sL type condition info.
-             * 
-             * @param typeInfo the type info
-             * @param conditionalOperator the conditional operator
-             */
-            public SLTypeConditionInfo(
-                                        final WhereTypeInfo typeInfo, final ConditionalOperatorType conditionalOperator) {
-                this.typeInfo = typeInfo;
-                this.conditionalOperator = conditionalOperator;
-            }
-
-            /**
-             * Gets the property name.
-             * 
-             * @return the property name
-             */
-            public String getPropertyName() {
-                return propertyName;
-            }
-
-            /**
-             * Sets the property name.
-             * 
-             * @param propertyName the new property name
-             */
-            public void setPropertyName(final String propertyName) {
-                this.propertyName = propertyName;
-            }
-
-            /**
-             * Gets the value.
-             * 
-             * @return the value
-             */
-            public Object getValue() {
-                return value;
-            }
-
-            /**
-             * Sets the value.
-             * 
-             * @param value the new value
-             */
-            public void setValue(final Object value) {
-                this.value = value;
-                setClosed(true);
-            }
-
-            /**
-             * Gets the side.
-             * 
-             * @return the side
-             */
-            public SideType getSide() {
-                return side;
-            }
-
-            /**
-             * Sets the side.
-             * 
-             * @param side the new side
-             */
-            public void setSide(final SideType side) {
-                this.side = side;
-            }
-
-            /**
-             * Gets the link type name.
-             * 
-             * @return the link type name
-             */
-            public String getLinkTypeName() {
-                return linkTypeName;
-            }
-
-            /**
-             * Sets the link type name.
-             * 
-             * @param linkTypeName the new link type name
-             */
-            public void setLinkTypeName(final String linkTypeName) {
-                this.linkTypeName = linkTypeName;
-            }
-
-            /**
-             * Gets the inner statement info.
-             * 
-             * @return the inner statement info
-             */
-            public SLTypeStatementInfo getInnerStatementInfo() {
-                return innerStatementInfo;
-            }
-
-            /**
-             * Sets the inner statement info.
-             * 
-             * @param statementInfo the new inner statement info
-             */
-            public void setInnerStatementInfo(final SLTypeStatementInfo statementInfo) {
-                innerStatementInfo = statementInfo;
-            }
-
-            /**
-             * Checks if is closed.
-             * 
-             * @return true, if is closed
-             */
-            public boolean isClosed() {
-                return closed;
-            }
-
-            /**
-             * Sets the closed.
-             * 
-             * @param closed the new closed
-             */
-            public void setClosed(final boolean closed) {
-                this.closed = closed;
-            }
-
-            /**
-             * Gets the relational operator.
-             * 
-             * @return the relational operator
-             */
-            public RelationalOperatorType getRelationalOperator() {
-                return relationalOperator;
-            }
-
-            /**
-             * Sets the relational operator.
-             * 
-             * @param relationalOperator the new relational operator
-             */
-            public void setRelationalOperator(final RelationalOperatorType relationalOperator) {
-                this.relationalOperator = relationalOperator;
-            }
-
-            /**
-             * Gets the conditional operator.
-             * 
-             * @return the conditional operator
-             */
-            public ConditionalOperatorType getConditionalOperator() {
-                return conditionalOperator;
-            }
-
-            /**
-             * Sets the conditional operator.
-             * 
-             * @param conditionalOperator the new conditional operator
-             */
-            public void setConditionalOperator(final ConditionalOperatorType conditionalOperator) {
-                this.conditionalOperator = conditionalOperator;
-            }
-
-            /**
-             * Gets the outer statement info.
-             * 
-             * @return the outer statement info
-             */
-            public SLTypeStatementInfo getOuterStatementInfo() {
-                return outerStatementInfo;
-            }
-
-            /**
-             * Sets the outer statement info.
-             * 
-             * @param outerStatementInfo the new outer statement info
-             */
-            public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
-                this.outerStatementInfo = outerStatementInfo;
-            }
-
-            /**
-             * Gets the type info.
-             * 
-             * @return the type info
-             */
-            public WhereTypeInfo getTypeInfo() {
-                return typeInfo;
-            }
-
-            /**
-             * Sets the type info.
-             * 
-             * @param typeInfo the new type info
-             */
-            public void setTypeInfo(final WhereTypeInfo typeInfo) {
-                this.typeInfo = typeInfo;
-            }
-
-            /*
-             * (non-Javadoc)
-             * @see java.lang.Object#toString()
-             */
-            @Override
-            public String toString() {
-
-                final String typeName = typeInfo.getName();
-                final boolean subTypes = typeInfo.isSubTypes();
-
-                final StringBuilder buffer = new StringBuilder();
-                appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
-                appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
-                appendIfNotNull(buffer, propertyName, "property \"", propertyName, "\" ");
-                if (linkTypeName != null) {
-                    append(buffer, "link \"", linkTypeName, "\" (", side.symbol(), ") ");
-                }
-                appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
-                if (value != null) {
-                    if (value instanceof Number) {
-                        appendIfNotNull(buffer, value, ' ', value);
-                    } else {
-                        appendIfNotNull(buffer, value, " \"", value, '"');
-                    }
-                }
-                return buffer.toString();
-            }
-
-            /**
-             * Checks if is relational not operator.
-             * 
-             * @return true, if is relational not operator
-             */
-            public boolean isRelationalNotOperator() {
-                return relationalNotOperator;
-            }
-
-            /**
-             * Sets the relational not operator.
-             * 
-             * @param relationalNotOperator the new relational not operator
-             */
-            public void setRelationalNotOperator(final boolean relationalNotOperator) {
-                this.relationalNotOperator = relationalNotOperator;
-            }
-
-            /**
-             * Checks if is conditional not operator.
-             * 
-             * @return true, if is conditional not operator
-             */
-            public boolean isConditionalNotOperator() {
-                return conditionalNotOperator;
-            }
-
-            /**
-             * Sets the conditional not operator.
-             * 
-             * @param conditionalNotOperator the new conditional not operator
-             */
-            public void setConditionalNotOperator(final boolean conditionalNotOperator) {
-                this.conditionalNotOperator = conditionalNotOperator;
-            }
-        }
-
-        public SLTypeStatementInfo getOuterStatementInfo() {
-            return outerStatementInfo;
-        }
-
-        public void setOuterStatementInfo(final SLTypeStatementInfo outerStatementInfo) {
-            this.outerStatementInfo = outerStatementInfo;
-        }
+    public boolean isSubTypes() {
+        return subTypes;
+    }
+
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the sub types.
+     * 
+     * @param subTypes the new sub types
+     */
+    public void setSubTypes(final boolean subTypes) {
+        this.subTypes = subTypes;
+    }
+
+    /**
+     * Sets the type statement info.
+     * 
+     * @param whereStatementInfo the new type statement info
+     */
+    public void setTypeStatementInfo(final SLTypeStatementInfo whereStatementInfo) {
+        typeStatementInfo = whereStatementInfo;
     }
 }

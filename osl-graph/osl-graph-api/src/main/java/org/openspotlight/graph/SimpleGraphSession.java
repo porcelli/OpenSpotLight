@@ -41,19 +41,11 @@ import org.openspotlight.security.idm.User;
 public interface SimpleGraphSession extends Disposable {
 
     /**
-     * Gives access to graph reader operations.
-     * 
-     * @param location where the reader should look for data
-     * @return the graph reader interface
+     * Should be executed after session use, this method cleans the cache and prevent memory leaks.
      */
-    GraphReader from(GraphLocation location);
-
-    /**
-     * Gives access to the interface that enables write transient data.
-     * 
-     * @return the transient writter interface
-     */
-    GraphTransientWriter toTransient();
+    @Override
+    @DisposeMethod(callOnTimeout = true)
+    void closeResources();
 
     /**
      * Flush the changed properties of the given node into graph server.
@@ -63,11 +55,12 @@ public interface SimpleGraphSession extends Disposable {
     void flushChangedProperties(Node node);
 
     /**
-     * Returns the active user.
+     * Gives access to graph reader operations.
      * 
-     * @return the user
+     * @param location where the reader should look for data
+     * @return the graph reader interface
      */
-    User getUser();
+    GraphReader from(GraphLocation location);
 
     /**
      * Returns the policy enforcement.
@@ -77,9 +70,16 @@ public interface SimpleGraphSession extends Disposable {
     PolicyEnforcement getPolicyEnforcement();
 
     /**
-     * Should be executed after session use, this method cleans the cache and prevent memory leaks.
+     * Returns the active user.
+     * 
+     * @return the user
      */
-    @Override
-    @DisposeMethod(callOnTimeout = true)
-    void closeResources();
+    User getUser();
+
+    /**
+     * Gives access to the interface that enables write transient data.
+     * 
+     * @return the transient writter interface
+     */
+    GraphTransientWriter toTransient();
 }

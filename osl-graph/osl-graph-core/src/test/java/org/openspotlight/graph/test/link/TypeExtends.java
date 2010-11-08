@@ -54,15 +54,11 @@ import org.openspotlight.graph.annotation.InitialWeight;
 
 @InitialWeight(4)
 public abstract class TypeExtends extends Link {
-    private String  extendsName;
     private boolean extendsFlag;
+    private String  extendsName;
 
     public String getExtendsName() {
         return extendsName;
-    }
-
-    public void setExtendsName(final String extendsName) {
-        this.extendsName = extendsName;
     }
 
     public boolean isExtendsFlag() {
@@ -71,5 +67,9 @@ public abstract class TypeExtends extends Link {
 
     public void setExtendsFlag(final boolean extendsFlag) {
         this.extendsFlag = extendsFlag;
+    }
+
+    public void setExtendsName(final String extendsName) {
+        this.extendsName = extendsName;
     }
 }

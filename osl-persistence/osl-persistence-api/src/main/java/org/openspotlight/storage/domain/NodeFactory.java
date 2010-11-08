@@ -60,17 +60,6 @@ import org.openspotlight.storage.StorageSession;
 public interface NodeFactory {
 
     /**
-     * Start point to create a {@link StorageNode}.
-     * 
-     * @param session the storage session
-     * @param type the node type
-     * @return the node builder
-     * @throws IllegalArgumentException if any input param is null or empty
-     */
-    NodeBuilder createWithType(StorageSession session, String type)
-        throws IllegalArgumentException;
-
-    /**
      * The builder interface for {@link StorageNode}.
      * 
      * @author feuteston
@@ -79,16 +68,11 @@ public interface NodeFactory {
     interface NodeBuilder {
 
         /**
-         * Add to the builder a simple key-value pair.
+         * Creates the {@link StorageNode}.
          * 
-         * @param name
-         * @param value
-         * @return the builder
-         * @throws IllegalStateException if key name already added on builder
-         * @throws IllegalArgumentException if any input param is null or empty
+         * @return the new storage node
          */
-        NodeBuilder withSimpleKey(String name, String value)
-            throws IllegalArgumentException, IllegalStateException;
+        StorageNode andCreate();
 
         /**
          * Add to the builder a parent reference.
@@ -113,10 +97,26 @@ public interface NodeFactory {
             throws IllegalArgumentException;
 
         /**
-         * Creates the {@link StorageNode}.
+         * Add to the builder a simple key-value pair.
          * 
-         * @return the new storage node
+         * @param name
+         * @param value
+         * @return the builder
+         * @throws IllegalStateException if key name already added on builder
+         * @throws IllegalArgumentException if any input param is null or empty
          */
-        StorageNode andCreate();
+        NodeBuilder withSimpleKey(String name, String value)
+            throws IllegalArgumentException, IllegalStateException;
     }
+
+    /**
+     * Start point to create a {@link StorageNode}.
+     * 
+     * @param session the storage session
+     * @param type the node type
+     * @return the node builder
+     * @throws IllegalArgumentException if any input param is null or empty
+     */
+    NodeBuilder createWithType(StorageSession session, String type)
+        throws IllegalArgumentException;
 }

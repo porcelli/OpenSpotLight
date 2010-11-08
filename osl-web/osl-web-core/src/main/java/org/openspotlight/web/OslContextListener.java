@@ -82,9 +82,9 @@ import com.google.inject.Injector;
  */
 public class OslContextListener implements ServletContextListener, OslDataConstants {
 
-    private RemoteGraphSessionServer      server;
-    public static Scheduler               scheduler;
     public static ExecutionContextFactory factory;
+    public static Scheduler               scheduler;
+    private RemoteGraphSessionServer      server;
 
     /**
      * {@inheritDoc}

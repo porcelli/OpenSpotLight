@@ -61,23 +61,23 @@ public class SelectStatementInfo extends SelectInfo {
     /** The Constant serialVersionUID. */
     private static final long            serialVersionUID = 1L;
 
-    /** The type info list. */
-    private final List<SelectTypeInfo>   typeInfoList;
+    /** The all types info. */
+    private AllTypesInfo                 allTypesInfo;
 
     /** The by link info list. */
     private final List<SelectByLinkInfo> byLinkInfoList;
 
-    /** The where statement info. */
-    private WhereStatementInfo           whereStatementInfo;
+    /** The collator strength. */
+    private Integer                      collatorStrength;
 
     /** The order by statement info. */
     private OrderByStatementInfo         orderByStatementInfo;
 
-    /** The all types info. */
-    private AllTypesInfo                 allTypesInfo;
+    /** The type info list. */
+    private final List<SelectTypeInfo>   typeInfoList;
 
-    /** The collator strength. */
-    private Integer                      collatorStrength;
+    /** The where statement info. */
+    private WhereStatementInfo           whereStatementInfo;
 
     /**
      * Instantiates a new sL select statement info.
@@ -85,15 +85,6 @@ public class SelectStatementInfo extends SelectInfo {
     public SelectStatementInfo() {
         typeInfoList = new ArrayList<SelectTypeInfo>();
         byLinkInfoList = new ArrayList<SelectByLinkInfo>();
-    }
-
-    /**
-     * Gets the all types.
-     * 
-     * @return the all types
-     */
-    public AllTypesInfo getAllTypes() {
-        return allTypesInfo;
     }
 
     /**
@@ -109,18 +100,6 @@ public class SelectStatementInfo extends SelectInfo {
     }
 
     /**
-     * Adds the type.
-     * 
-     * @param name the name
-     * @return the sL select type info
-     */
-    public SelectTypeInfo addType(final String name) {
-        final SelectTypeInfo typeInfo = new SelectTypeInfo(this, name);
-        typeInfoList.add(typeInfo);
-        return typeInfo;
-    }
-
-    /**
      * Adds the by link.
      * 
      * @param name the name
@@ -133,12 +112,46 @@ public class SelectStatementInfo extends SelectInfo {
     }
 
     /**
+     * Adds the type.
+     * 
+     * @param name the name
+     * @return the sL select type info
+     */
+    public SelectTypeInfo addType(final String name) {
+        final SelectTypeInfo typeInfo = new SelectTypeInfo(this, name);
+        typeInfoList.add(typeInfo);
+        return typeInfo;
+    }
+
+    /**
+     * Gets the all types.
+     * 
+     * @return the all types
+     */
+    public AllTypesInfo getAllTypes() {
+        return allTypesInfo;
+    }
+
+    /**
      * Gets the by link info list.
      * 
      * @return the by link info list
      */
     public List<SelectByLinkInfo> getByLinkInfoList() {
         return byLinkInfoList;
+    }
+
+    /**
+     * Gets the collator strength.
+     * 
+     * @return the collator strength
+     */
+    public Integer getCollatorStrength() {
+        return collatorStrength;
+    }
+
+    public OrderByStatementInfo getOrderByStatementInfo() {
+        return orderByStatementInfo;
     }
 
     /**
@@ -160,30 +173,25 @@ public class SelectStatementInfo extends SelectInfo {
     }
 
     /**
-     * Sets the where statement info.
-     * 
-     * @param whereStatementInfo the new where statement info
-     */
-    public void setWhereStatementInfo(final WhereStatementInfo whereStatementInfo) {
-        this.whereStatementInfo = whereStatementInfo;
-    }
-
-    /**
-     * Gets the collator strength.
-     * 
-     * @return the collator strength
-     */
-    public Integer getCollatorStrength() {
-        return collatorStrength;
-    }
-
-    /**
      * Sets the collator strength.
      * 
      * @param collatorStrength the new collator strength
      */
     public void setCollatorStrength(final Integer collatorStrength) {
         this.collatorStrength = collatorStrength;
+    }
+
+    public void setOrderByStatementInfo(final OrderByStatementInfo orderByStatementInfo) {
+        this.orderByStatementInfo = orderByStatementInfo;
+    }
+
+    /**
+     * Sets the where statement info.
+     * 
+     * @param whereStatementInfo the new where statement info
+     */
+    public void setWhereStatementInfo(final WhereStatementInfo whereStatementInfo) {
+        this.whereStatementInfo = whereStatementInfo;
     }
 
     /*
@@ -246,13 +254,5 @@ public class SelectStatementInfo extends SelectInfo {
         buffer.append(super.toString());
 
         return buffer.toString();
-    }
-
-    public OrderByStatementInfo getOrderByStatementInfo() {
-        return orderByStatementInfo;
-    }
-
-    public void setOrderByStatementInfo(final OrderByStatementInfo orderByStatementInfo) {
-        this.orderByStatementInfo = orderByStatementInfo;
     }
 }

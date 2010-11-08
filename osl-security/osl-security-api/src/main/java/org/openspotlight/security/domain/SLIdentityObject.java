@@ -65,15 +65,15 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType, Seriali
 
     private static final long     serialVersionUID = -4651245099086963026L;
 
-    private String                typeAsString;
-
     private Set<SLAttributeEntry> attributes       = new HashSet<SLAttributeEntry>();
 
     private String                id;
 
-    private SLIdentityObjectType  typedIdentityType;
-
     private String                name;
+
+    private String                typeAsString;
+
+    private SLIdentityObjectType  typedIdentityType;
 
     public Set<SLAttributeEntry> getAttributes() {
         return attributes;

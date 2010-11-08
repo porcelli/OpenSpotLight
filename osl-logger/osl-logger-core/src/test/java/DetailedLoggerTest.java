@@ -116,11 +116,13 @@ public class DetailedLoggerTest {
 
     }
 
+    private static FullGraphSession                                  graphSession;
+
     private static DetailedLoggerProvider                            loggerProvider;
 
     private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-    private static FullGraphSession                                  graphSession;
+    private DetailedLogger                                           logger;
 
     @BeforeClass
     public static void setupJcr()
@@ -143,8 +145,6 @@ public class DetailedLoggerTest {
                         .getInstance(JRedisStorageSessionProvider.class));
 
     }
-
-    private DetailedLogger logger;
 
     @After
     public void releaseAttributes()

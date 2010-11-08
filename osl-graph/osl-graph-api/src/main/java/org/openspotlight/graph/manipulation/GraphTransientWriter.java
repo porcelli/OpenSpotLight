@@ -35,6 +35,22 @@ import org.openspotlight.graph.Node;
 public interface GraphTransientWriter {
 
     /**
+     * Adds a new transient child node for the parametered parent of the specified type inside the parents context. <br>
+     * <b>Note</b> that if child node, transient or not, already exists its not duplicated.
+     * 
+     * @param <T> node type
+     * @param parent the parent node
+     * @param clazz the node type to be created
+     * @param name the node name
+     * @return the added transient node
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <T extends Node> T addTransientChildNode(Node parent,
+                                              Class<T> clazz,
+                                              String name)
+        throws IllegalArgumentException;
+
+    /**
      * Adds a new transient node, based on the parameter node type, inside the given context.<br>
      * <b>Note</b> that if node, transient or not, already exists inside context its not duplicated.
      * 
@@ -51,19 +67,19 @@ public interface GraphTransientWriter {
         throws IllegalArgumentException;
 
     /**
-     * Adds a new transient child node for the parametered parent of the specified type inside the parents context. <br>
-     * <b>Note</b> that if child node, transient or not, already exists its not duplicated.
+     * Adds a transient bidirectional link between nodes with the specified link type. <br>
+     * <b>Note</b> that if link already exists, transient or not, its not duplicated.
      * 
-     * @param <T> node type
-     * @param parent the parent node
-     * @param clazz the node type to be created
-     * @param name the node name
-     * @return the added transient node
+     * @param <L> link type
+     * @param linkClass the link type to be created
+     * @param nodea the node
+     * @param nodeb the node
+     * @return the created link
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addTransientChildNode(Node parent,
-                                              Class<T> clazz,
-                                              String name)
+    <L extends Link> L createTransientBidirectionalLink(Class<L> linkClass,
+                                                         Node nodea,
+                                                         Node nodeb)
         throws IllegalArgumentException;
 
     /**
@@ -84,21 +100,5 @@ public interface GraphTransientWriter {
     <L extends Link> L createTransientLink(Class<L> linkClass,
                                             Node source,
                                             Node target)
-        throws IllegalArgumentException;
-
-    /**
-     * Adds a transient bidirectional link between nodes with the specified link type. <br>
-     * <b>Note</b> that if link already exists, transient or not, its not duplicated.
-     * 
-     * @param <L> link type
-     * @param linkClass the link type to be created
-     * @param nodea the node
-     * @param nodeb the node
-     * @return the created link
-     * @throws IllegalArgumentException if any input param is null
-     */
-    <L extends Link> L createTransientBidirectionalLink(Class<L> linkClass,
-                                                         Node nodea,
-                                                         Node nodeb)
         throws IllegalArgumentException;
 }

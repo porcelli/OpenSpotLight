@@ -59,13 +59,13 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class RoutineParameter implements SimpleNodeType, Serializable {
     private static final long         serialVersionUID = -4738878595542581888L;
 
-    private String                    name;
-    private ColumnType                type;
-    private NullableSqlType           nullable;
     private int                       columnSize;
     private int                       decimalSize;
-    private transient RoutineArtifact routine;
+    private String                    name;
+    private NullableSqlType           nullable;
     private RoutineParameterType      parameterType;
+    private transient RoutineArtifact routine;
+    private ColumnType                type;
 
     public int getColumnSize() {
         return columnSize;

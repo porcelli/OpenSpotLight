@@ -74,6 +74,13 @@ import org.openspotlight.common.exception.SLException;
 public class Serialization {
 
     /**
+     * Should not be instantiated
+     */
+    private Serialization() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Reads an object from a base64 string.
      * 
      * @param <E>
@@ -201,13 +208,6 @@ public class Serialization {
         } catch (final Exception e) {
             logAndThrowNew(e, SLException.class);
         }
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Serialization() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

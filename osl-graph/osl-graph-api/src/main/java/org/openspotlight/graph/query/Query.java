@@ -39,11 +39,11 @@ public interface Query {
      */
     public static enum SortMode {
 
-        /** The SORTED mode. */
-        SORTED,
-
         /** The NOT sorted mode. */
-        NOT_SORTED
+        NOT_SORTED,
+
+        /** The SORTED mode. */
+        SORTED
     }
 
     /**

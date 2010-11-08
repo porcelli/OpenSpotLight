@@ -89,15 +89,15 @@ public interface QueryCache {
             throws SLException;
 
     /**
+     * Flush cache.
+     */
+    public void flush();
+
+    /**
      * Gets the cache content. Returns null if not found.
      * 
      * @param queryId the query id
      * @return the cache
      */
     public abstract QueryResult getCache(final String queryId);
-
-    /**
-     * Flush cache.
-     */
-    public void flush();
 }

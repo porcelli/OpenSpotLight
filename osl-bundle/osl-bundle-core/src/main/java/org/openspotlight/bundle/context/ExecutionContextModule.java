@@ -10,12 +10,12 @@ import com.google.inject.TypeLiteral;
 
 public class ExecutionContextModule extends AbstractModule {
 
+    private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
+
     public ExecutionContextModule(
                                   final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry) {
         this.loaderRegistry = loaderRegistry;
     }
-
-    private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
 
     @Override
     protected void configure() {

@@ -37,11 +37,11 @@ public abstract class SLQLVariable implements Serializable {
 
     private static final long serialVersionUID = 3345904857635022041L;
 
-    /** The variable name. */
-    protected String          name             = null;
-
     /** The display message. */
     protected String          displayMessage   = null;
+
+    /** The variable name. */
+    protected String          name             = null;
 
     /** The value. */
     protected Serializable    value            = null;
@@ -111,6 +111,13 @@ public abstract class SLQLVariable implements Serializable {
     }
 
     /**
+     * Returns the variable type.
+     * 
+     * @return parameter type
+     */
+    public abstract SLQLVariableType getType();
+
+    /**
      * Gets the value.
      * 
      * @return the value
@@ -161,11 +168,4 @@ public abstract class SLQLVariable implements Serializable {
             Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
         }
     }
-
-    /**
-     * Returns the variable type.
-     * 
-     * @return parameter type
-     */
-    public abstract SLQLVariableType getType();
 }

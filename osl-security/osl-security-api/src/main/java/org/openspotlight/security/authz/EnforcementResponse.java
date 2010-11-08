@@ -56,6 +56,9 @@ package org.openspotlight.security.authz;
  */
 public enum EnforcementResponse {
 
+    /** The DENIED. The enforcement is denied. */
+    DENIED,
+
     /** The GRANTED. The enforcement request is granted. */
     GRANTED,
 
@@ -63,8 +66,5 @@ public enum EnforcementResponse {
     INDETERMINATE,
 
     /** The NOT_APPLICABLE. The enforcement check is not applicable. */
-    NOT_APPLICABLE,
-
-    /** The DENIED. The enforcement is denied. */
-    DENIED
+    NOT_APPLICABLE
 }

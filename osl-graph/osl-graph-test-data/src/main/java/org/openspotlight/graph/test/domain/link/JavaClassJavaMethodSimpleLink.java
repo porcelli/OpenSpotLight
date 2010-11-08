@@ -61,28 +61,28 @@ import org.openspotlight.graph.annotation.Description;
 @Description("Java Class to Java Method Link")
 public abstract class JavaClassJavaMethodSimpleLink extends Link {
 
-    private String linkName;
     private Date   creationTime;
+    private String linkName;
     private String selecao;
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
 
     public String getLinkName() {
         return linkName;
     }
 
-    public void setLinkName(final String linkName) {
-        this.linkName = linkName;
-    }
-
-    public Date getCreationTime() {
-        return creationTime;
+    public String getSelecao() {
+        return selecao;
     }
 
     public void setCreationTime(final Date creationTime) {
         this.creationTime = creationTime;
     }
 
-    public String getSelecao() {
-        return selecao;
+    public void setLinkName(final String linkName) {
+        this.linkName = linkName;
     }
 
     public void setSelecao(final String selecao) {

@@ -87,17 +87,14 @@ import org.openspotlight.storage.domain.key.NodeKey;
  */
 public final class LazyProperty<T> implements Serializable {
 
-    private final Class<T> type;
-
-    private String         sha1;
-    private StorageNode    node;
-
     /**
      * Factory class.
      * 
      * @author feu
      */
     public static final class Factory {
+
+        private Factory() {}
 
         /**
          * It creates an empty {@link LazyProperty}. All parameter are mandatory.
@@ -112,8 +109,6 @@ public final class LazyProperty<T> implements Serializable {
             return new LazyProperty<T>(parent, (Class<T>) type);
         }
 
-        private Factory() {}
-
     }
 
     /**
@@ -124,17 +119,12 @@ public final class LazyProperty<T> implements Serializable {
      */
     public final class Metadata implements Serializable {
 
-        public void setSavedNode(final StorageNode node) {
-            LazyProperty.this.node = node;
-        }
+        /**
+         *
+         */
+        private static final long serialVersionUID = -31577246921422934L;
 
-        public Class<T> getPropertyType() {
-            return type;
-        }
-
-        public String getSha1() {
-            return sha1;
-        }
+        private Metadata() {}
 
         private String createSha1(final T content) {
             if (content == null) { return null; }
@@ -156,22 +146,6 @@ public final class LazyProperty<T> implements Serializable {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
-
-        /**
-         * This method should not be used outside {@link org.openspotlight.persist.support.SimplePersistCapable}.
-         * 
-         * @param sha1
-         */
-        public void internalSetSha1(final String sha1) {
-            LazyProperty.this.sha1 = sha1;
-        }
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = -31577246921422934L;
-
-        private Metadata() {}
 
         /**
          * Return the cached value. If there's no cached value, the session will be used to load a new one. The session isn't
@@ -253,6 +227,14 @@ public final class LazyProperty<T> implements Serializable {
             return propertyName;
         }
 
+        public Class<T> getPropertyType() {
+            return type;
+        }
+
+        public String getSha1() {
+            return sha1;
+        }
+
         /**
          * Return the transient value if there's any one setted
          * 
@@ -266,6 +248,15 @@ public final class LazyProperty<T> implements Serializable {
                 lock.unlock();
 
             }
+        }
+
+        /**
+         * This method should not be used outside {@link org.openspotlight.persist.support.SimplePersistCapable}.
+         * 
+         * @param sha1
+         */
+        public void internalSetSha1(final String sha1) {
+            LazyProperty.this.sha1 = sha1;
         }
 
         public boolean isBlank() {
@@ -325,25 +316,35 @@ public final class LazyProperty<T> implements Serializable {
             LazyProperty.this.propertyName = propertyName;
         }
 
+        public void setSavedNode(final StorageNode node) {
+            LazyProperty.this.node = node;
+        }
+
     }
-
-    private NodeKey                    parentKey;
-
-    private String                     propertyName;
 
     /**
      *
      */
     private static final long          serialVersionUID = 7214615570747274715L;
 
-    private final Metadata             metadata         = new Metadata();
-
-    private final SimpleNodeType       parent;
     private transient WeakReference<T> cached           = null;
-    private T                          transientValue   = null;
+
     private final ReentrantLock        lock             = new ReentrantLock();
 
+    private final Metadata             metadata         = new Metadata();
+
     private boolean                    needsSave        = false;
+
+    private StorageNode                node;
+
+    private final SimpleNodeType       parent;
+
+    private NodeKey                    parentKey;
+    private String                     propertyName;
+    private String                     sha1;
+    private T                          transientValue   = null;
+
+    private final Class<T>             type;
 
     private LazyProperty(
                           final SimpleNodeType parent, final Class<T> type) {

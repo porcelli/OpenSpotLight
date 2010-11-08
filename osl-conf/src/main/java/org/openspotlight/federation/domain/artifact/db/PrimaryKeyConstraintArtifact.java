@@ -63,12 +63,12 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 	 * 
 	 */
     private static final long serialVersionUID = 3232090373069518849L;
-    private String            constraintName;
     private String            catalogName;
-    private String            schemaName;
-
-    private String            tableName;
     private String            columnName;
+    private String            constraintName;
+
+    private String            schemaName;
+    private String            tableName;
 
     @Override
     public boolean contentEquals(final Artifact other) {

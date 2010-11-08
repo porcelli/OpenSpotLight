@@ -71,22 +71,6 @@ import org.openspotlight.common.util.TimeOutFactory.TaskFinalizer;
 public final class TimeOutFactory {
 
     /**
-     * This interface will be used when the monitored object reaches the time out.
-     * 
-     * @param <T> object type
-     * @author feu
-     */
-    public static interface TaskFinalizer<T> {
-
-        /**
-         * Finalize task.
-         * 
-         * @param target the target
-         */
-        public void finalizeTask(T target);
-    }
-
-    /**
      * This Java Proxy {@link InvocationHandler} will start a background thread to monitor if the wrapped object reaches the time
      * out or not. And this invocation handler will update the {@link #lastInvocation} attribute each time it is invoked.
      * 
@@ -121,11 +105,11 @@ public final class TimeOutFactory {
 
         }
 
-        /** The invalid. */
-        final AtomicBoolean    invalid        = new AtomicBoolean(false);
-
         /** The interval in milliseconds. */
         final long             intervalInMilliseconds;
+
+        /** The invalid. */
+        final AtomicBoolean    invalid        = new AtomicBoolean(false);
 
         /** The last invocation. */
         final AtomicLong       lastInvocation = new AtomicLong();
@@ -173,6 +157,22 @@ public final class TimeOutFactory {
             }
         }
 
+    }
+
+    /**
+     * This interface will be used when the monitored object reaches the time out.
+     * 
+     * @param <T> object type
+     * @author feu
+     */
+    public static interface TaskFinalizer<T> {
+
+        /**
+         * Finalize task.
+         * 
+         * @param target the target
+         */
+        public void finalizeTask(T target);
     }
 
     /**

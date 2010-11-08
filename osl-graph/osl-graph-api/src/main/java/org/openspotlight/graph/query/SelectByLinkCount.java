@@ -28,19 +28,51 @@ package org.openspotlight.graph.query;
 public interface SelectByLinkCount extends Select {
 
     /**
-     * Type.
+     * The Interface End.
      * 
-     * @param typeName the type name
-     * @return the type
+     * @author Vitor Hugo Chagas
      */
-    public Type type(String typeName);
+    public static interface End extends SelectFacade {
 
-    /**
-     * End.
-     * 
-     * @return the end
-     */
-    public End end();
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit(Integer size);
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit(Integer size,
+                          Integer offset);
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public OrderByStatement orderBy();
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by link count
+         */
+        public WhereByLinkCount where();
+    }
 
     /**
      * The Interface Type.
@@ -72,49 +104,17 @@ public interface SelectByLinkCount extends Select {
     }
 
     /**
-     * The Interface End.
+     * End.
      * 
-     * @author Vitor Hugo Chagas
+     * @return the end
      */
-    public static interface End extends SelectFacade {
+    public End end();
 
-        /**
-         * Where.
-         * 
-         * @return the sL where by link count
-         */
-        public WhereByLinkCount where();
-
-        /**
-         * Order by.
-         * 
-         * @return the sL order by statement
-         */
-        public OrderByStatement orderBy();
-
-        /**
-         * Keep result.
-         * 
-         * @return the end
-         */
-        public End keepResult();
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @return the end
-         */
-        public End limit(Integer size);
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @param offset the offset
-         * @return the end
-         */
-        public End limit(Integer size,
-                          Integer offset);
-    }
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type(String typeName);
 }

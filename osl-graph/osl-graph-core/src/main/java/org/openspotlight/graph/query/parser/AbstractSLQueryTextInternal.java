@@ -78,23 +78,23 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     /** The Constant serialVersionUID. */
     private static final long           serialVersionUID = 5945900887330334999L;
 
-    /** The variables. */
-    protected Map<String, SLQLVariable> variables        = null;
-
-    /** The string constants. */
-    protected Map<Integer, String>      stringConstants  = null;
-
-    /** The target query. */
-    protected QueryTextInternal         targetQuery      = null;
-
     /** The id. */
     protected String                    id               = null;
 
     /** The output model name. */
     protected String                    outputModelName  = null;
 
+    /** The string constants. */
+    protected Map<Integer, String>      stringConstants  = null;
+
     /** The target. */
     protected QueryTextInternal         target           = null;
+
+    /** The target query. */
+    protected QueryTextInternal         targetQuery      = null;
+
+    /** The variables. */
+    protected Map<String, SLQLVariable> variables        = null;
 
     /**
      * Instantiates a new abstract sl query text internal.
@@ -127,19 +127,6 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public abstract QueryResult execute(final GraphReader session,
-                                           final Map<String, ?> variableValues,
-                                           final String[] inputNodesIDs,
-                                           SortMode sortMode,
-                                           boolean showSLQL,
-                                           Integer limit,
-                                           Integer offset)
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
-
-    /**
      * Returns the variables content. If variable not found, returns false.
      * 
      * @param variableName the variable name
@@ -163,14 +150,6 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    /**
      * Returns the variables content. If variable not found, returns -1.
      * 
      * @param variableName the variable name
@@ -180,25 +159,6 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
         if (variables.containsKey(variableName)) { return ((SLQLVariableInteger) variables.get(variableName))
             .getValue(); }
         return -1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getOutputModelName() {
-        return outputModelName;
-    }
-
-    /**
-     * Returns the variables content. If variable not found, returns empty string.
-     * 
-     * @param variableName the variable name
-     * @return the string value
-     */
-    protected String getStringValue(final String variableName) {
-        if (variables.containsKey(variableName)) { return ((SLQLVariableString) variables.get(variableName)).getValue(); }
-        return "";
     }
 
     /**
@@ -213,44 +173,14 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the variables content. If variable not found, returns empty string.
+     * 
+     * @param variableName the variable name
+     * @return the string value
      */
-    @Override
-    public QueryTextInternal getTarget() {
-        return target;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<SLQLVariable> getVariables() {
-        if (variables == null) { return null; }
-        return new ArrayList<SLQLVariable>(variables.values());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasOutputModel() {
-        return outputModelName != null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasTarget() {
-        return target != null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasVariables() {
-        return variables != null;
+    protected String getStringValue(final String variableName) {
+        if (variables.containsKey(variableName)) { return ((SLQLVariableString) variables.get(variableName)).getValue(); }
+        return "";
     }
 
     /**
@@ -292,5 +222,75 @@ public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public abstract QueryResult execute(final GraphReader session,
+                                           final Map<String, ?> variableValues,
+                                           final String[] inputNodesIDs,
+                                           SortMode sortMode,
+                                           boolean showSLQL,
+                                           Integer limit,
+                                           Integer offset)
+        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getOutputModelName() {
+        return outputModelName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public QueryTextInternal getTarget() {
+        return target;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<SLQLVariable> getVariables() {
+        if (variables == null) { return null; }
+        return new ArrayList<SLQLVariable>(variables.values());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasOutputModel() {
+        return outputModelName != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasTarget() {
+        return target != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasVariables() {
+        return variables != null;
     }
 }

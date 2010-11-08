@@ -92,23 +92,23 @@ public interface DetailedLogger {
      */
     public static enum LogEventType {
 
-        /** The TRACE. */
-        TRACE,
-
         /** The DEBUG. */
         DEBUG,
-
-        /** The INFO. */
-        INFO,
-
-        /** The WARN. */
-        WARN,
 
         /** The ERROR. */
         ERROR,
 
         /** The FATAL. */
-        FATAL
+        FATAL,
+
+        /** The INFO. */
+        INFO,
+
+        /** The TRACE. */
+        TRACE,
+
+        /** The WARN. */
+        WARN
     }
 
     /**

@@ -119,22 +119,6 @@ public class SerializationUtil {
     }
 
     /**
-     * Clone.
-     * 
-     * @param x the x
-     * @return the t
-     */
-    public static <T> T clone(final T x) {
-        try {
-            return cloneX(x);
-        } catch (final IOException e) {
-            throw new IllegalArgumentException(e);
-        } catch (final ClassNotFoundException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    /**
      * Clone x.
      * 
      * @param x the x
@@ -170,6 +154,22 @@ public class SerializationUtil {
                     inputStream.close();
                 } catch (final IOException e) {}
             }
+        }
+    }
+
+    /**
+     * Clone.
+     * 
+     * @param x the x
+     * @return the t
+     */
+    public static <T> T clone(final T x) {
+        try {
+            return cloneX(x);
+        } catch (final IOException e) {
+            throw new IllegalArgumentException(e);
+        } catch (final ClassNotFoundException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

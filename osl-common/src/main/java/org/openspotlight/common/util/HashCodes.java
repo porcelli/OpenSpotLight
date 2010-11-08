@@ -91,6 +91,13 @@ import java.util.Map;
 public class HashCodes {
 
     /**
+     * Should not be instantiated
+     */
+    private HashCodes() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
      * <pre>
@@ -414,13 +421,6 @@ public class HashCodes {
      */
     public static int hashOf(final short s) {
         return s;
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private HashCodes() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

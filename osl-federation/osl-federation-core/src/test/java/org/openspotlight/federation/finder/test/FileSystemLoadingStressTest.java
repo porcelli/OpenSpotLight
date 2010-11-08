@@ -86,15 +86,11 @@ import com.google.inject.internal.ImmutableList;
 
 public class FileSystemLoadingStressTest {
 
-    private static final Logger   logger = LoggerFactory
-                                             .getLogger(FileSystemLoadingStressTest.class);
-    private static ArtifactSource artifactSource;
-
     private static class RepositoryData {
-        public final GlobalSettings settings;
-        public final Repository     repository;
-        public final Group          group;
         public final ArtifactSource artifactSource;
+        public final Group          group;
+        public final Repository     repository;
+        public final GlobalSettings settings;
 
         public RepositoryData(final GlobalSettings settings,
                               final Repository repository, final Group group,
@@ -106,14 +102,13 @@ public class FileSystemLoadingStressTest {
         }
     }
 
-    private static RepositoryData            data;
-    private static PersistentArtifactManager persistentManager;
+    private static ArtifactSource            artifactSource;
 
-    @AfterClass
-    public static void closeResources()
-        throws Exception {
-        // contextFactory.closeResources();
-    }
+    private static RepositoryData            data;
+
+    private static final Logger              logger = LoggerFactory
+                                                        .getLogger(FileSystemLoadingStressTest.class);
+    private static PersistentArtifactManager persistentManager;
 
     private static RepositoryData createRepositoryData() {
         final GlobalSettings settings = new GlobalSettings();
@@ -147,6 +142,12 @@ public class FileSystemLoadingStressTest {
         return new RepositoryData(settings, repository, group, artifactSource);
     }
 
+    @AfterClass
+    public static void closeResources()
+        throws Exception {
+        // contextFactory.closeResources();
+    }
+
     @BeforeClass
     public static void setupResources()
         throws Exception {
@@ -163,13 +164,27 @@ public class FileSystemLoadingStressTest {
                 .getInstance(PersistentArtifactManager.class);
     }
 
-    @After
-    public void closeTestResources() {
-
+    private List<String> getFileContentAsStringList(
+                                                    final ArtifactSource artifactSource, final String originalName)
+            throws Exception {
+        final BufferedReader reader = new BufferedReader(new FileReader(concatPaths(
+                artifactSource.getInitialLookup(), originalName)));
+        final ImmutableList.Builder<String> builder = ImmutableList.builder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            builder.add(line);
+        }
+        reader.close();
+        return builder.build();
     }
 
     private void reloadArtifacts() {
         throw new UnsupportedOperationException();
+    }
+
+    @After
+    public void closeTestResources() {
+
     }
 
     @Test
@@ -203,20 +218,6 @@ public class FileSystemLoadingStressTest {
         logger.debug("finished to load item contents from persistent storage");
         assertThat(loadedSize > 50, is(true));
 
-    }
-
-    private List<String> getFileContentAsStringList(
-                                                    final ArtifactSource artifactSource, final String originalName)
-            throws Exception {
-        final BufferedReader reader = new BufferedReader(new FileReader(concatPaths(
-                artifactSource.getInitialLookup(), originalName)));
-        final ImmutableList.Builder<String> builder = ImmutableList.builder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            builder.add(line);
-        }
-        reader.close();
-        return builder.build();
     }
 
 }

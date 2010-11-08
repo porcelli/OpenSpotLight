@@ -203,6 +203,16 @@ public final class DatabaseMetadataScript {
     private boolean                                        tryAgainIfNoResult;
 
     /**
+     * Changes the behavior of this object to be immutable. After this method call all setters should throw an
+     * {@link UnsupportedOperationException} when called.
+     */
+    void setImmutable() {
+        if (!immutable) {
+            immutable = true;
+        }
+    }
+
+    /**
      * Gets the column alias map.
      * 
      * @return the column alias map
@@ -363,16 +373,6 @@ public final class DatabaseMetadataScript {
     public void setDataSelect(final String dataSelect) {
         if (immutable) { throw new UnsupportedOperationException(); }
         this.dataSelect = dataSelect;
-    }
-
-    /**
-     * Changes the behavior of this object to be immutable. After this method call all setters should throw an
-     * {@link UnsupportedOperationException} when called.
-     */
-    void setImmutable() {
-        if (!immutable) {
-            immutable = true;
-        }
     }
 
     /**

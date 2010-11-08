@@ -63,21 +63,21 @@ public class AbstractFactoryException extends SLException {
      * Instantiates a new abstract factory exception.
      * 
      * @param message the message
-     * @param cause the cause
      */
     public AbstractFactoryException(
-                                     final String message, final Throwable cause) {
-        super(message, cause);
+                                     final String message) {
+        super(message);
     }
 
     /**
      * Instantiates a new abstract factory exception.
      * 
      * @param message the message
+     * @param cause the cause
      */
     public AbstractFactoryException(
-                                     final String message) {
-        super(message);
+                                     final String message, final Throwable cause) {
+        super(message, cause);
     }
 
     /**

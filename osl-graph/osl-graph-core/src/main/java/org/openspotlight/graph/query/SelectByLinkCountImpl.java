@@ -63,67 +63,147 @@ import org.openspotlight.graph.query.info.WhereByLinkCountInfo;
  */
 public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGetter {
 
-    /** The select info. */
-    private final SelectByLinkCountInfo selectInfo;
-
-    /** The types. */
-    private final List<Type>            types;
-
-    /** The select end. */
-    private final End                   selectEnd;
-
     /**
-     * Instantiates a new sL select by link count impl.
+     * The Class EndImpl.
      * 
-     * @param selectFacade the select facade
+     * @author Vitor Hugo Chagas
      */
-    public SelectByLinkCountImpl(
-                                    final SelectFacade selectFacade) {
-        selectInfo = new SelectByLinkCountInfo();
-        types = new ArrayList<Type>();
-        selectEnd = new EndImpl(selectFacade, selectInfo);
-    }
+    public static class EndImpl implements End {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type type(final String typeName) {
-        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
-        final Type type = new TypeImpl(this, typeInfo);
-        types.add(type);
-        return type;
-    }
+        /** The order by. */
+        private OrderByStatement            orderBy;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public End end() {
-        verifyIfLastItemTerminatedWithComma();
-        return selectEnd;
-    }
+        /** The select facade. */
+        private final SelectFacade          selectFacade;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SelectInfo getSelectInfo() {
-        return selectInfo;
-    }
+        /** The select info. */
+        private final SelectByLinkCountInfo selectInfo;
 
-    @Override
-    public String toString() {
-        return selectInfo.toString();
-    }
+        /** The where. */
+        private WhereByLinkCount            where;
 
-    /**
-     * Verify if last item terminated with comma.
-     */
-    private void verifyIfLastItemTerminatedWithComma() {
-        int commaCount = 0;
-        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
-            commaCount += typeInfo.isComma() ? 1 : 0;
+        /**
+         * Instantiates a new end impl.
+         * 
+         * @param selectFacade the select facade
+         * @param selectInfo the select info
+         */
+        EndImpl(
+                 final SelectFacade selectFacade, final SelectByLinkCountInfo selectInfo) {
+            this.selectFacade = selectFacade;
+            this.selectInfo = selectInfo;
+            // this.orderBy = new SLOrderByStatementImpl();
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
+         */
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes() {
+            selectInfo.setXTimes(0);
+            return this;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes (int)
+         */
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes(final int x) {
+            selectInfo.setXTimes(x);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End keepResult() {
+            selectInfo.setKeepResult(true);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End limit(final Integer limit) {
+            selectInfo.setLimit(limit);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
+            selectInfo.setLimit(limit);
+            selectInfo.setOffset(offset);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public OrderByStatement orderBy() {
+            return orderBy;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectStatement select() {
+            return selectFacade.select();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectByLinkCount selectByLinkCount() {
+            return selectFacade.selectByLinkCount();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectByLinkType selectByLinkType() {
+            return selectFacade.selectByLinkType();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectByNodeType selectByNodeType() {
+            return selectFacade.selectByNodeType();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public WhereByLinkCount where() {
+            if (where == null) {
+                final WhereByLinkCountInfo whereStatementInfo = new WhereByLinkCountInfo(selectInfo);
+                selectInfo.setWhereStatementInfo(whereStatementInfo);
+                where = new WhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
+            }
+            return where;
         }
     }
 
@@ -180,147 +260,67 @@ public class SelectByLinkCountImpl implements SelectByLinkCount, SelectInfoGette
 
     }
 
+    /** The select end. */
+    private final End                   selectEnd;
+
+    /** The select info. */
+    private final SelectByLinkCountInfo selectInfo;
+
+    /** The types. */
+    private final List<Type>            types;
+
     /**
-     * The Class EndImpl.
+     * Instantiates a new sL select by link count impl.
      * 
-     * @author Vitor Hugo Chagas
+     * @param selectFacade the select facade
      */
-    public static class EndImpl implements End {
+    public SelectByLinkCountImpl(
+                                    final SelectFacade selectFacade) {
+        selectInfo = new SelectByLinkCountInfo();
+        types = new ArrayList<Type>();
+        selectEnd = new EndImpl(selectFacade, selectInfo);
+    }
 
-        /** The select facade. */
-        private final SelectFacade          selectFacade;
-
-        /** The select info. */
-        private final SelectByLinkCountInfo selectInfo;
-
-        /** The where. */
-        private WhereByLinkCount            where;
-
-        /** The order by. */
-        private OrderByStatement            orderBy;
-
-        /**
-         * Instantiates a new end impl.
-         * 
-         * @param selectFacade the select facade
-         * @param selectInfo the select info
-         */
-        EndImpl(
-                 final SelectFacade selectFacade, final SelectByLinkCountInfo selectInfo) {
-            this.selectFacade = selectFacade;
-            this.selectInfo = selectInfo;
-            // this.orderBy = new SLOrderByStatementImpl();
+    /**
+     * Verify if last item terminated with comma.
+     */
+    private void verifyIfLastItemTerminatedWithComma() {
+        int commaCount = 0;
+        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
+            commaCount += typeInfo.isComma() ? 1 : 0;
         }
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public WhereByLinkCount where() {
-            if (where == null) {
-                final WhereByLinkCountInfo whereStatementInfo = new WhereByLinkCountInfo(selectInfo);
-                selectInfo.setWhereStatementInfo(whereStatementInfo);
-                where = new WhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
-            }
-            return where;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public End end() {
+        verifyIfLastItemTerminatedWithComma();
+        return selectEnd;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public OrderByStatement orderBy() {
-            return orderBy;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectInfo getSelectInfo() {
+        return selectInfo;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End keepResult() {
-            selectInfo.setKeepResult(true);
-            return this;
-        }
+    @Override
+    public String toString() {
+        return selectInfo.toString();
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End limit(final Integer limit) {
-            selectInfo.setLimit(limit);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End limit(final Integer limit,
-                          final Integer offset) {
-            selectInfo.setLimit(limit);
-            selectInfo.setOffset(offset);
-            return this;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
-         */
-        /**
-         * Execute x times.
-         * 
-         * @return the end
-         */
-        public End executeXTimes() {
-            selectInfo.setXTimes(0);
-            return this;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes (int)
-         */
-        /**
-         * Execute x times.
-         * 
-         * @param x the x
-         * @return the end
-         */
-        public End executeXTimes(final int x) {
-            selectInfo.setXTimes(x);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByLinkType selectByLinkType() {
-            return selectFacade.selectByLinkType();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByNodeType selectByNodeType() {
-            return selectFacade.selectByNodeType();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByLinkCount selectByLinkCount() {
-            return selectFacade.selectByLinkCount();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectStatement select() {
-            return selectFacade.select();
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type type(final String typeName) {
+        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        final Type type = new TypeImpl(this, typeInfo);
+        types.add(type);
+        return type;
     }
 }

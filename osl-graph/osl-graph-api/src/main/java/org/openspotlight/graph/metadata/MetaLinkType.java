@@ -37,6 +37,10 @@ import org.openspotlight.graph.annotation.Property;
 public abstract class MetaLinkType extends Node {
 
     @Property
+    @Description("Allows Auto Bidirectional")
+    public abstract boolean allowsAutoBidirectional();
+
+    @Property
     @Description("Description")
     public abstract String getDescription();
 
@@ -45,19 +49,15 @@ public abstract class MetaLinkType extends Node {
     public abstract int getInitialWeight();
 
     @Property
-    @Description("Allows Auto Bidirectional")
-    public abstract boolean allowsAutoBidirectional();
-
-    @Property
-    @Description("isMetaType")
-    public abstract boolean isMetaType();
-
-    @Property
     @Description("Languages")
     public abstract String getLanguages();
 
     @Property
     @Description("Type Group")
     public abstract String getTypeGroup();
+
+    @Property
+    @Description("isMetaType")
+    public abstract boolean isMetaType();
 
 }

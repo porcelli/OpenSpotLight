@@ -56,11 +56,11 @@ package org.openspotlight.security.idm.auth;
  */
 public enum UserStatus {
 
-    /** The OK. When user exists and enabled. */
-    OK,
-
     /** The DISABLE. When user exists but its disabled. */
     DISABLE,
+
+    /** The OK. When user exists and enabled. */
+    OK,
 
     /** The UNEXISTING. When user does not exists. */
     UNEXISTING;

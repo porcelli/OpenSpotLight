@@ -69,6 +69,16 @@ public class ClearSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("clear")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(final ConsoleReader reader,
                          final PrintWriter out,
                          final ConsoleState state) {
@@ -87,16 +97,16 @@ public class ClearSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
-        return "clear";
+    public String getAutoCompleteCommand() {
+        return getCommand();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getAutoCompleteCommand() {
-        return getCommand();
+    public String getCommand() {
+        return "clear";
     }
 
     /**
@@ -128,16 +138,6 @@ public class ClearSystemCommand implements SystemCommand {
      */
     @Override
     public boolean hasFileCompletion() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("clear")) { return true; }
         return false;
     }
 

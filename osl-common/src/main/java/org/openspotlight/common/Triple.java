@@ -62,6 +62,7 @@ import org.openspotlight.common.util.HashCodes;
  * @param <K3>
  */
 public class Triple<K1, K2, K3> {
+    private volatile int hashCode;
     /**
      * First item.
      */
@@ -70,12 +71,11 @@ public class Triple<K1, K2, K3> {
      * Second item.
      */
     private final K2     k2;
+
     /**
      * third item.
      */
     private final K3     k3;
-
-    private volatile int hashCode;
 
     /**
      * Creates a new pair using the two keys provided.
@@ -89,6 +89,10 @@ public class Triple<K1, K2, K3> {
         this.k1 = k1;
         this.k2 = k2;
         this.k3 = k3;
+    }
+
+    public static <K1, K2, K3> Triple<K1, K2, K3> newTriple(final K1 k1, final K2 k2, final K3 k3) {
+        return new Triple<K1, K2, K3>(k1, k2, k3);
     }
 
     @Override
@@ -129,10 +133,6 @@ public class Triple<K1, K2, K3> {
         }
         return result;
 
-    }
-
-    public static <K1, K2, K3> Triple<K1, K2, K3> newTriple(final K1 k1, final K2 k2, final K3 k3) {
-        return new Triple<K1, K2, K3>(k1, k2, k3);
     }
 
 }

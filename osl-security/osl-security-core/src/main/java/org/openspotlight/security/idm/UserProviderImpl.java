@@ -54,12 +54,12 @@ package org.openspotlight.security.idm;
  */
 public class UserProviderImpl implements UserProvider {
 
+    private final AuthenticatedUser currentUser;
+
     public UserProviderImpl(
                              final AuthenticatedUser currentUser) {
         this.currentUser = currentUser;
     }
-
-    private final AuthenticatedUser currentUser;
 
     @Override
     public AuthenticatedUser getCurrentUser() {

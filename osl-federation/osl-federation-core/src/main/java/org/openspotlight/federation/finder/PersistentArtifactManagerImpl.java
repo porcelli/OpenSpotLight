@@ -64,6 +64,19 @@ import org.openspotlight.storage.domain.StorageNode;
 public class PersistentArtifactManagerImpl extends
         AbstractPersistentArtifactManager {
 
+    private static final int                                                                         IDX_ARTIFACT_NAME               = 0,
+    IDX_MAPPED = 1;
+
+    private static final String[]                                                                    PROPERTY_NAME_ARTIFACT_PATH     =
+                                                                                                                                         {
+                                                                                                                                         "artifactCompleteName",
+        "mappedTo"                                                                                                                       };
+
+    private static final String[]                                                                    PROPERTY_NAME_OLD_ARTIFACT_PATH =
+                                                                                                                                         {
+                                                                                                                                         "originalName",
+        "mappedFrom"                                                                                                                     };
+
     private final String                                                                             repositoryName;
 
     private final SimplePersistCapable<org.openspotlight.storage.domain.StorageNode, StorageSession> simplePersist;
@@ -75,38 +88,8 @@ public class PersistentArtifactManagerImpl extends
         repositoryName = repository.getName();
     }
 
-    @Override
-    protected <A extends Artifact> void internalAddTransient(final A artifact)
-            throws Exception {
-        artifact.setRepositoryName(repositoryName);
-        simplePersist.convertBeanToNode(artifact);
-    }
-
-    @Override
-    protected void internalCloseResources()
-        throws Exception {
-
-    }
-
-    @Override
-    protected <A extends Artifact> A internalFindByOriginalName(
-                                                                final ArtifactSource source, final Class<A> type,
-                                                                final String originName)
-            throws Exception {
-        return internalFind(type, createOriginName(source, originName),
-                PROPERTY_NAME_OLD_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
-    }
-
     private String createOriginName(final ArtifactSource source, final String originName) {
         return concatPaths(source.getInitialLookup(), originName);
-    }
-
-    @Override
-    protected <A extends Artifact> A internalFindByPath(final Class<A> type,
-                                                        final String path)
-        throws Exception {
-        return internalFind(type, path,
-                PROPERTY_NAME_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
     }
 
     private <A> A internalFind(final Class<A> type, final String path, final String propertyName)
@@ -115,54 +98,6 @@ public class PersistentArtifactManagerImpl extends
                 new String[] {propertyName}, new Object[] {path});
 
     }
-
-    @Override
-    protected <A extends Artifact> boolean internalIsTypeSupported(final Class<A> type)
-            throws Exception {
-        return true;
-    }
-
-    @Override
-    protected <A extends Artifact> void internalMarkAsRemoved(final A artifact)
-            throws Exception {
-        final StorageNode node = simplePersist.convertBeanToNode(artifact);
-        simplePersist.getCurrentSession().removeNode(node);
-    }
-
-    @Override
-    protected <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(
-                                                                                  final ArtifactSource source,
-                                                                                  final Class<A> type,
-                                                                                  final String initialPath)
-            throws Exception {
-        final Iterable<String> result = privateRetrieveNames(type, initialPath,
-                PROPERTY_NAME_OLD_ARTIFACT_PATH);
-        return result;
-
-    }
-
-    @Override
-    protected void internalSaveTransientData()
-        throws Exception {
-        simplePersist.getCurrentSession().flushTransient();
-    }
-
-    @Override
-    protected <A extends Artifact> Iterable<String> internalRetrieveNames(
-                                                                          final Class<A> type, final String initialPath)
-        throws Exception {
-        return privateRetrieveNames(type, initialPath,
-                PROPERTY_NAME_ARTIFACT_PATH);
-
-    }
-
-    private static final String[] PROPERTY_NAME_ARTIFACT_PATH     = {
-                                                                  "artifactCompleteName", "mappedTo"};
-
-    private static final String[] PROPERTY_NAME_OLD_ARTIFACT_PATH = {
-                                                                  "originalName", "mappedFrom"};
-
-    private static final int      IDX_ARTIFACT_NAME               = 0, IDX_MAPPED = 1;
 
     private <A> Iterable<String> privateRetrieveNames(final Class<A> type,
                                                       final String initialPath, final String[] propertyNameAndPath)
@@ -202,18 +137,88 @@ public class PersistentArtifactManagerImpl extends
     }
 
     @Override
+    protected <A extends Artifact> void internalAddTransient(final A artifact)
+            throws Exception {
+        artifact.setRepositoryName(repositoryName);
+        simplePersist.convertBeanToNode(artifact);
+    }
+
+    @Override
+    protected void internalCloseResources()
+        throws Exception {
+
+    }
+
+    @Override
+    protected <A extends Artifact> A internalFindByOriginalName(
+                                                                final ArtifactSource source, final Class<A> type,
+                                                                final String originName)
+            throws Exception {
+        return internalFind(type, createOriginName(source, originName),
+                PROPERTY_NAME_OLD_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
+    }
+
+    @Override
+    protected <A extends Artifact> A internalFindByPath(final Class<A> type,
+                                                        final String path)
+        throws Exception {
+        return internalFind(type, path,
+                PROPERTY_NAME_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
+    }
+
+    @Override
+    protected <A extends Artifact> boolean internalIsTypeSupported(final Class<A> type)
+            throws Exception {
+        return true;
+    }
+
+    @Override
+    protected <A extends Artifact> void internalMarkAsRemoved(final A artifact)
+            throws Exception {
+        final StorageNode node = simplePersist.convertBeanToNode(artifact);
+        simplePersist.getCurrentSession().removeNode(node);
+    }
+
+    @Override
+    protected <A extends Artifact> Iterable<String> internalRetrieveNames(
+                                                                          final Class<A> type, final String initialPath)
+        throws Exception {
+        return privateRetrieveNames(type, initialPath,
+                PROPERTY_NAME_ARTIFACT_PATH);
+
+    }
+
+    @Override
+    protected <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(
+                                                                                  final ArtifactSource source,
+                                                                                  final Class<A> type,
+                                                                                  final String initialPath)
+            throws Exception {
+        final Iterable<String> result = privateRetrieveNames(type, initialPath,
+                PROPERTY_NAME_OLD_ARTIFACT_PATH);
+        return result;
+
+    }
+
+    @Override
+    protected void internalSaveTransientData()
+        throws Exception {
+        simplePersist.getCurrentSession().flushTransient();
+    }
+
+    @Override
     protected boolean isMultithreaded() {
         return true;
     }
 
     @Override
-    public StorageSession getStorageSession() {
-        return simplePersist.getCurrentSession();
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
+        return simplePersist;
     }
 
     @Override
-    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
-        return simplePersist;
+    public StorageSession getStorageSession() {
+        return simplePersist.getCurrentSession();
     }
 
 }

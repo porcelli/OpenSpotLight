@@ -87,8 +87,6 @@ public enum ArtifactLoaderManager {
 
     INSTANCE;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     /**
      * It groups the name and type just to perform the artifact cleanup (mark as excluded) after the load task creation.
      * 
@@ -96,8 +94,8 @@ public enum ArtifactLoaderManager {
      */
     private static class ArtifactTypeCleanupResources {
 
-        public final Class<? extends Artifact> type;
         public final Set<String>               names;
+        public final Class<? extends Artifact> type;
 
         public ArtifactTypeCleanupResources(final Class<? extends Artifact> type,
                                             final Set<String> names) {
@@ -112,11 +110,11 @@ public enum ArtifactLoaderManager {
      * @author feu
      */
     private static class ArtifactTypeResources {
-        public final String                       name;
-        public final OriginArtifactLoader         loader;
-        public final Class<? extends Artifact>    type;
         public final ArtifactSourceMapping        acceptedMapping;
         public final ArtifactTypeCleanupResources cleanupResources;
+        public final OriginArtifactLoader         loader;
+        public final String                       name;
+        public final Class<? extends Artifact>    type;
 
         public ArtifactTypeResources(final String name, final OriginArtifactLoader loader,
                                      final Class<? extends Artifact> type,
@@ -131,56 +129,6 @@ public enum ArtifactLoaderManager {
     }
 
     /**
-     * Static class responsible to set the new change type as excluded.
-     * 
-     * @author feu
-     */
-    private static class SetChangeTypeAsExcludedTask implements Callable<Void> {
-
-        public SetChangeTypeAsExcludedTask(final String name,
-                                           final ArtifactTypeCleanupResources resources,
-                                           final PersistentArtifactManagerProvider provider,
-                                           final ArtifactSource source) {
-            super();
-            this.name = name;
-            this.resources = resources;
-            this.provider = provider;
-            this.source = source;
-        }
-
-        private final String                            name;
-
-        private final ArtifactTypeCleanupResources      resources;
-
-        private final PersistentArtifactManagerProvider provider;
-
-        private final ArtifactSource                    source;
-
-        @Override
-        public Void call()
-            throws Exception {
-            try {
-                final PersistentArtifactManager manager = provider.get();
-                Artifact loaded = manager.getInternalMethods()
-                        .findByOriginalName(source, resources.type, name);
-                if (loaded == null) {
-                    loaded = manager.findByPath(resources.type, name);
-                }
-                if (loaded != null) {
-                    loaded.setChangeType(ChangeType.EXCLUDED);
-                    manager.addTransient(loaded);
-                    manager.saveTransientData();
-                }
-                return null;
-            } catch (final Exception e) {
-                Exceptions.catchAndLog(e);
-                return null;
-            }
-        }
-
-    }
-
-    /**
      * Static class responsible to find the change type of each artifact, to reload or load its contents if this is necessary, and
      * also to map its new name, and preserve the old one as another property.
      * 
@@ -188,6 +136,8 @@ public enum ArtifactLoaderManager {
      */
     private static class LoadAndMapTask implements Callable<Void> {
         final PersistentArtifactManagerProvider provider;
+        final ArtifactTypeResources             r;
+
         final ArtifactSource                    source;
 
         public LoadAndMapTask(final PersistentArtifactManagerProvider provider,
@@ -197,8 +147,6 @@ public enum ArtifactLoaderManager {
             this.source = source;
             this.r = r;
         }
-
-        final ArtifactTypeResources r;
 
         @Override
         public Void call()
@@ -249,47 +197,88 @@ public enum ArtifactLoaderManager {
     }
 
     /**
-     * It will reload all needed artifacts on a multithreaded environment, if this is possible. The {@link OriginArtifactLoader
-     * loaders} passed as argument must have default constructors, since it was projected to receive the necessary state classes
-     * on load methods. It should work on a multi threaded environment. It should be very easy to do, since there's no need to
-     * store any state on this class.
+     * Static class responsible to set the new change type as excluded.
      * 
-     * @param source
+     * @author feu
      */
-    public void refreshResources(final ArtifactSource source,
-                                 final PersistentArtifactManagerProvider provider,
-                                 final Iterable<Class<? extends OriginArtifactLoader>> registry) {
-        try {
-            final Pair<Set<ArtifactTypeResources>, Set<ArtifactTypeCleanupResources>> result =
-                loadBaseData(source, provider, registry);
+    private static class SetChangeTypeAsExcludedTask implements Callable<Void> {
 
-            final List<Callable<Void>> tasks = new LinkedList<Callable<Void>>();
-            for (final ArtifactTypeResources r: result.getK1()) {
-                r.cleanupResources.names.remove(r.name);
-                tasks.add(new LoadAndMapTask(provider, source, r));
-            }
-            for (final ArtifactTypeCleanupResources cleanup: result.getK2()) {
-                for (final String toRemove: cleanup.names) {
-                    tasks.add(new SetChangeTypeAsExcludedTask(toRemove,
-                            cleanup, provider, source));
-                }
-            }
+        private final String                            name;
 
-            if (provider.useOnePerThread()) {
-                for (final Callable<Void> c: tasks) {
-                    c.call();
-                }
-            } else {
-                final List<Future<Void>> results = ExecutorInstance.INSTANCE
-                        .invokeAll(tasks);
-                for (final Future<Void> f: results) {
-                    f.get();
-                }
-            }
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        private final PersistentArtifactManagerProvider provider;
+
+        private final ArtifactTypeCleanupResources      resources;
+
+        private final ArtifactSource                    source;
+
+        public SetChangeTypeAsExcludedTask(final String name,
+                                           final ArtifactTypeCleanupResources resources,
+                                           final PersistentArtifactManagerProvider provider,
+                                           final ArtifactSource source) {
+            super();
+            this.name = name;
+            this.resources = resources;
+            this.provider = provider;
+            this.source = source;
         }
 
+        @Override
+        public Void call()
+            throws Exception {
+            try {
+                final PersistentArtifactManager manager = provider.get();
+                Artifact loaded = manager.getInternalMethods()
+                        .findByOriginalName(source, resources.type, name);
+                if (loaded == null) {
+                    loaded = manager.findByPath(resources.type, name);
+                }
+                if (loaded != null) {
+                    loaded.setChangeType(ChangeType.EXCLUDED);
+                    manager.addTransient(loaded);
+                    manager.saveTransientData();
+                }
+                return null;
+            } catch (final Exception e) {
+                Exceptions.catchAndLog(e);
+                return null;
+            }
+        }
+
+    }
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Map the old name to a new name
+     * 
+     * @param r
+     * @param newOne
+     */
+    static void mapNewName(final ArtifactTypeResources r, final Artifact newOne) {
+        String currentPathString = newOne.getParent().getCompletePath();
+        if (!currentPathString.startsWith("/")) {
+            currentPathString = "/" + currentPathString;
+        }
+        String toRemove = r.acceptedMapping.getFrom();
+        if (!toRemove.startsWith("/")) {
+            toRemove = "/" + toRemove;
+        }
+        if (currentPathString.startsWith(toRemove)) {
+            currentPathString = Strings.removeBegginingFrom(toRemove,
+                    currentPathString);
+        }
+        String newPathString = null;
+        if (!currentPathString.startsWith(r.acceptedMapping.getTo())) {
+            newPathString = r.acceptedMapping.getTo() + currentPathString;
+        } else {
+            newPathString = currentPathString;
+        }
+        newOne.setMappedFrom(r.acceptedMapping.getFrom());
+        newOne.setMappedTo(r.acceptedMapping.getTo());
+        final PathElement newPath = PathElement
+                .createFromPathString(newPathString);
+        newOne.setParent(newPath);
+        newOne.getArtifactCompleteName();
     }
 
     /**
@@ -391,36 +380,47 @@ public enum ArtifactLoaderManager {
     }
 
     /**
-     * Map the old name to a new name
+     * It will reload all needed artifacts on a multithreaded environment, if this is possible. The {@link OriginArtifactLoader
+     * loaders} passed as argument must have default constructors, since it was projected to receive the necessary state classes
+     * on load methods. It should work on a multi threaded environment. It should be very easy to do, since there's no need to
+     * store any state on this class.
      * 
-     * @param r
-     * @param newOne
+     * @param source
      */
-    static void mapNewName(final ArtifactTypeResources r, final Artifact newOne) {
-        String currentPathString = newOne.getParent().getCompletePath();
-        if (!currentPathString.startsWith("/")) {
-            currentPathString = "/" + currentPathString;
+    public void refreshResources(final ArtifactSource source,
+                                 final PersistentArtifactManagerProvider provider,
+                                 final Iterable<Class<? extends OriginArtifactLoader>> registry) {
+        try {
+            final Pair<Set<ArtifactTypeResources>, Set<ArtifactTypeCleanupResources>> result =
+                loadBaseData(source, provider, registry);
+
+            final List<Callable<Void>> tasks = new LinkedList<Callable<Void>>();
+            for (final ArtifactTypeResources r: result.getK1()) {
+                r.cleanupResources.names.remove(r.name);
+                tasks.add(new LoadAndMapTask(provider, source, r));
+            }
+            for (final ArtifactTypeCleanupResources cleanup: result.getK2()) {
+                for (final String toRemove: cleanup.names) {
+                    tasks.add(new SetChangeTypeAsExcludedTask(toRemove,
+                            cleanup, provider, source));
+                }
+            }
+
+            if (provider.useOnePerThread()) {
+                for (final Callable<Void> c: tasks) {
+                    c.call();
+                }
+            } else {
+                final List<Future<Void>> results = ExecutorInstance.INSTANCE
+                        .invokeAll(tasks);
+                for (final Future<Void> f: results) {
+                    f.get();
+                }
+            }
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
-        String toRemove = r.acceptedMapping.getFrom();
-        if (!toRemove.startsWith("/")) {
-            toRemove = "/" + toRemove;
-        }
-        if (currentPathString.startsWith(toRemove)) {
-            currentPathString = Strings.removeBegginingFrom(toRemove,
-                    currentPathString);
-        }
-        String newPathString = null;
-        if (!currentPathString.startsWith(r.acceptedMapping.getTo())) {
-            newPathString = r.acceptedMapping.getTo() + currentPathString;
-        } else {
-            newPathString = currentPathString;
-        }
-        newOne.setMappedFrom(r.acceptedMapping.getFrom());
-        newOne.setMappedTo(r.acceptedMapping.getTo());
-        final PathElement newPath = PathElement
-                .createFromPathString(newPathString);
-        newOne.setParent(newPath);
-        newOne.getArtifactCompleteName();
+
     }
 
 }

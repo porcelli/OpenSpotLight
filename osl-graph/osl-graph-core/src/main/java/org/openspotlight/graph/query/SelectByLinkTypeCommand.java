@@ -59,11 +59,11 @@ import org.openspotlight.graph.query.info.WhereStatementInfo;
 
 public class SelectByLinkTypeCommand extends SelectAbstractCommand {
 
-    /** The select info. */
-    private final SelectStatementInfo selectInfo;
-
     /** The command do. */
     private final SelectCommandDO     commandDO;
+
+    /** The select info. */
+    private final SelectStatementInfo selectInfo;
 
     /**
      * Instantiates a new sL select by link type execute command.
@@ -75,6 +75,99 @@ public class SelectByLinkTypeCommand extends SelectAbstractCommand {
                                final SelectStatementInfo selectInfo, final SelectCommandDO commandDO) {
         this.selectInfo = selectInfo;
         this.commandDO = commandDO;
+    }
+
+    /**
+     * Filter by where statement.
+     * 
+     * @param statement the statement
+     * @param linkTypeStatementInfo the link type statement info
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private void filterByWhereStatement(final Statement statement,
+                                         final SLLinkTypeStatementInfo linkTypeStatementInfo) {
+
+        //        List<SLLinkTypeConditionInfo> conditionInfoList = linkTypeStatementInfo.getConditionInfoList();
+        //        for (SLLinkTypeConditionInfo conditionInfo : conditionInfoList) {
+        //
+        //            Statement conditionStatement;
+        //            if (conditionInfo.getConditionalOperator() == null) {
+        //                conditionStatement = statement.openBracket();
+        //            } else {
+        //                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(),
+        //                                                        conditionInfo.isConditionalNotOperator()).openBracket();
+        //            }
+        //
+        //            if (conditionInfo.getInnerStatementInfo() == null) {
+        //
+        //                WhereLinkTypeInfo linkTypeInfo = conditionInfo.getLinkTypeInfo();
+        //                String linkTypeName = linkTypeInfo.getName();
+        //                String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
+        //
+        //                String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
+        //                conditionStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(
+        //                                                                                                              linkTypeName.hashCode());
+        //
+        //                Statement propStatement = conditionStatement.operator(AND).openBracket();
+        //                propStatement.condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(),
+        //                                                                             conditionInfo.isRelationalNotOperator()).rightOperand(
+        //                                                                                                                                   conditionInfo.getValue());
+        //                int collatorStrength = commandDO.getCollatorStrength();
+        //                if (conditionInfo.getValue() instanceof String && collatorStrength != Collator.IDENTICAL) {
+        //                    propertyName = SLCollatorSupport.getCollatorKeyPropName(conditionInfo.getPropertyName(),
+        //                                                                            commandDO.getCollatorStrength());
+        //                    String value = SLCollatorSupport.getCollatorKey(commandDO.getCollatorStrength(),
+        //                                                                    conditionInfo.getValue().toString());
+        //                    propStatement.operator(OR).condition().leftOperand(propertyName).operator(
+        //                                                                                              conditionInfo.getRelationalOperator(),
+        //                                                                                              conditionInfo.isRelationalNotOperator()).rightOperand(
+        //                                                                                                                                                    value);
+        //                }
+        //                propStatement.closeBracket();
+        //            } else {
+        //                filterByWhereStatement(conditionStatement, conditionInfo.getInnerStatementInfo());
+        //            }
+        //            conditionStatement.closeBracket();
+        //        }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Gets the by link info.
+     * 
+     * @param byLinkInfoList the by link info list
+     * @param linkTypeHash the link type hash
+     * @return the by link info
+     */
+    private SelectByLinkInfo getByLinkInfo(final List<SelectByLinkInfo> byLinkInfoList,
+                                              final int linkTypeHash) {
+        SelectByLinkInfo byLinkInfo = null;
+        for (final SelectByLinkInfo current: byLinkInfoList) {
+            if (current.getName().hashCode() == linkTypeHash) {
+                byLinkInfo = current;
+                break;
+            }
+        }
+        return byLinkInfo;
+    }
+
+    /**
+     * Gets the link type statement info.
+     * 
+     * @param linkTypeName the link type name
+     * @return the link type statement info
+     */
+    private SLLinkTypeStatementInfo getLinkTypeStatementInfo(final String linkTypeName) {
+        SLLinkTypeStatementInfo linkTypeStatementInfo = null;
+        final WhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+        if (whereInfo != null) {
+            for (final WhereLinkTypeInfo linkTypeInfo: whereInfo.getWhereLinkTypeInfoList()) {
+                if (linkTypeInfo.getName().equals(linkTypeName)) {
+                    linkTypeStatementInfo = linkTypeInfo.getLinkTypeStatementInfo();
+                }
+            }
+        }
+        return linkTypeStatementInfo;
     }
 
     /*
@@ -217,98 +310,5 @@ public class SelectByLinkTypeCommand extends SelectAbstractCommand {
         //        } catch (SLException e) {
         //            throw new QueryException("Error on attempt to execute " + this.getClass().getName() + " command.");
         //        }
-    }
-
-    /**
-     * Gets the by link info.
-     * 
-     * @param byLinkInfoList the by link info list
-     * @param linkTypeHash the link type hash
-     * @return the by link info
-     */
-    private SelectByLinkInfo getByLinkInfo(final List<SelectByLinkInfo> byLinkInfoList,
-                                              final int linkTypeHash) {
-        SelectByLinkInfo byLinkInfo = null;
-        for (final SelectByLinkInfo current: byLinkInfoList) {
-            if (current.getName().hashCode() == linkTypeHash) {
-                byLinkInfo = current;
-                break;
-            }
-        }
-        return byLinkInfo;
-    }
-
-    /**
-     * Gets the link type statement info.
-     * 
-     * @param linkTypeName the link type name
-     * @return the link type statement info
-     */
-    private SLLinkTypeStatementInfo getLinkTypeStatementInfo(final String linkTypeName) {
-        SLLinkTypeStatementInfo linkTypeStatementInfo = null;
-        final WhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
-        if (whereInfo != null) {
-            for (final WhereLinkTypeInfo linkTypeInfo: whereInfo.getWhereLinkTypeInfoList()) {
-                if (linkTypeInfo.getName().equals(linkTypeName)) {
-                    linkTypeStatementInfo = linkTypeInfo.getLinkTypeStatementInfo();
-                }
-            }
-        }
-        return linkTypeStatementInfo;
-    }
-
-    /**
-     * Filter by where statement.
-     * 
-     * @param statement the statement
-     * @param linkTypeStatementInfo the link type statement info
-     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-     */
-    private void filterByWhereStatement(final Statement statement,
-                                         final SLLinkTypeStatementInfo linkTypeStatementInfo) {
-
-        //        List<SLLinkTypeConditionInfo> conditionInfoList = linkTypeStatementInfo.getConditionInfoList();
-        //        for (SLLinkTypeConditionInfo conditionInfo : conditionInfoList) {
-        //
-        //            Statement conditionStatement;
-        //            if (conditionInfo.getConditionalOperator() == null) {
-        //                conditionStatement = statement.openBracket();
-        //            } else {
-        //                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(),
-        //                                                        conditionInfo.isConditionalNotOperator()).openBracket();
-        //            }
-        //
-        //            if (conditionInfo.getInnerStatementInfo() == null) {
-        //
-        //                WhereLinkTypeInfo linkTypeInfo = conditionInfo.getLinkTypeInfo();
-        //                String linkTypeName = linkTypeInfo.getName();
-        //                String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-        //
-        //                String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
-        //                conditionStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(
-        //                                                                                                              linkTypeName.hashCode());
-        //
-        //                Statement propStatement = conditionStatement.operator(AND).openBracket();
-        //                propStatement.condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(),
-        //                                                                             conditionInfo.isRelationalNotOperator()).rightOperand(
-        //                                                                                                                                   conditionInfo.getValue());
-        //                int collatorStrength = commandDO.getCollatorStrength();
-        //                if (conditionInfo.getValue() instanceof String && collatorStrength != Collator.IDENTICAL) {
-        //                    propertyName = SLCollatorSupport.getCollatorKeyPropName(conditionInfo.getPropertyName(),
-        //                                                                            commandDO.getCollatorStrength());
-        //                    String value = SLCollatorSupport.getCollatorKey(commandDO.getCollatorStrength(),
-        //                                                                    conditionInfo.getValue().toString());
-        //                    propStatement.operator(OR).condition().leftOperand(propertyName).operator(
-        //                                                                                              conditionInfo.getRelationalOperator(),
-        //                                                                                              conditionInfo.isRelationalNotOperator()).rightOperand(
-        //                                                                                                                                                    value);
-        //                }
-        //                propStatement.closeBracket();
-        //            } else {
-        //                filterByWhereStatement(conditionStatement, conditionInfo.getInnerStatementInfo());
-        //            }
-        //            conditionStatement.closeBracket();
-        //        }
-        throw new UnsupportedOperationException();
     }
 }

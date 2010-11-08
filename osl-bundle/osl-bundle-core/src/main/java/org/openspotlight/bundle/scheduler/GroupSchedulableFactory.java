@@ -63,9 +63,9 @@ public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
 
     private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
-        private final Logger     logger            = LoggerFactory.getLogger(getClass());
-
         private final Set<Group> groupsWithBundles = new LinkedHashSet<Group>();
+
+        private final Logger     logger            = LoggerFactory.getLogger(getClass());
 
         public Set<Group> getGroupsWithBundles() {
             return groupsWithBundles;
@@ -93,17 +93,17 @@ public class GroupSchedulableFactory implements SchedulableTaskFactory<Group> {
     public SchedulerTask[] createTasks(final Group schedulable, final ExecutionContextFactory factory) {
         return TaskSupport.wrapTask(new SchedulerTask() {
             @Override
-            public String getUniqueJobId() {
-                return schedulable.toUniqueJobString();
-            }
-
-            @Override
             public Void call()
                 throws Exception {
                 final GroupVisitor visitor = new GroupVisitor();
                 SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable, visitor, TransientProperty.class);
                 final Set<Group> groupsToExecute = visitor.getGroupsWithBundles();
                 throw new UnsupportedOperationException();//Needs to re-implement bundle processing
+            }
+
+            @Override
+            public String getUniqueJobId() {
+                return schedulable.toUniqueJobString();
             }
         }); //To change body of implemented methods use File | Settings | File Templates.
     }

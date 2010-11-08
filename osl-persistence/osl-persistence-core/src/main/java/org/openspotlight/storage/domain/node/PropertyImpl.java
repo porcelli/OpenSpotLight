@@ -71,10 +71,135 @@ import org.openspotlight.storage.domain.PropertyContainer;
  */
 public class PropertyImpl implements Property {
 
-    public static PropertyImpl createSimple(final String name,
-                                               final PropertyContainer parent) {
-        final PropertyImpl property = new PropertyImpl(name, parent, false, false);
-        return property;
+    private class PropertyValue {
+
+        private boolean                dirty;
+
+        private boolean                loaded;
+
+        private byte[]                 realValue;
+
+        private Reference<InputStream> weakValueAsStream;
+
+        private Reference<String>      weakValueAsString;
+
+        private byte[] asBytes(final InputStream is) {
+            if (is == null) { return null; }
+            try {
+                if (is.markSupported()) {
+                    is.reset();
+                }
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                IOUtils.copy(is, os);
+                return os.toByteArray();
+            } catch (final Exception e) {
+                throw logAndReturnNew(e, SLRuntimeException.class);
+            }
+        }
+
+        private byte[] asBytes(final String s) {
+            return s != null ? s.getBytes() : null;
+        }
+
+        private InputStream asStream(final byte[] b) {
+            return b != null ? new ByteArrayInputStream(b) : null;
+        }
+
+        private String asString(final byte[] b) {
+            return b != null ? new String(b) : null;
+        }
+
+        private <T> Reference<T> asWeakRef(final T t) {
+            return t != null ? new SoftReference<T>(t) : null;
+        }
+
+        private <T> T getWeakValue(final Reference<T> ref) {
+            return ref != null ? ref.get() : null;
+        }
+
+        private void nullEverything() {
+            weakValueAsString = null;
+            weakValueAsStream = null;
+            realValue = null;
+        }
+
+        public byte[] getValueAsBytes() {
+            return realValue;
+        }
+
+        public InputStream getValueAsStream() {
+            InputStream value = getWeakValue(weakValueAsStream);
+            if (value == null) {
+                value = asStream(realValue);
+                weakValueAsStream = asWeakRef(value);
+            }
+            if (value != null && value.markSupported()) {
+                try {
+                    value.reset();
+                } catch (final Exception e) {
+                    throw logAndReturnNew(e, SLRuntimeException.class);
+                }
+            }
+            return value;
+        }
+
+        public String getValueAsString() {
+            String value = getWeakValue(weakValueAsString);
+            if (value == null) {
+                value = asString(realValue);
+                weakValueAsString = asWeakRef(value);
+            }
+            return value;
+        }
+
+        public boolean isDirty() {
+            return dirty;
+        }
+
+        public boolean isLoaded() {
+            return loaded;
+        }
+
+        public void setDirty(final boolean dirty) {
+            this.dirty = dirty;
+        }
+
+        public void setLoaded(final boolean loaded) {
+            this.loaded = loaded;
+        }
+
+        public void setValue(final byte[] value) {
+            nullEverything();
+            realValue = value;
+        }
+
+        public void setValue(final InputStream value) {
+            nullEverything();
+            realValue = asBytes(value);
+        }
+
+        public void setValue(final String value) {
+            nullEverything();
+            realValue = asBytes(value);
+            weakValueAsString = asWeakRef(value);
+        }
+    }
+
+    private final boolean           indexed;
+
+    private final boolean           key;
+
+    private final String            name;
+
+    private final PropertyContainer parent;
+
+    private final PropertyValue     propertyValue = new PropertyValue();
+
+    private PropertyImpl(final String name, final PropertyContainer parent, final boolean indexed, final boolean key) {
+        this.name = name;
+        this.parent = parent;
+        this.indexed = indexed;
+        this.key = key;
     }
 
     public static PropertyImpl createIndexed(final String name,
@@ -89,76 +214,10 @@ public class PropertyImpl implements Property {
         return property;
     }
 
-    private PropertyImpl(final String name, final PropertyContainer parent, final boolean indexed, final boolean key) {
-        this.name = name;
-        this.parent = parent;
-        this.indexed = indexed;
-        this.key = key;
-    }
-
-    private final String name;
-
-    @Override
-    public PropertyContainer getParent() {
-        return parent;
-    }
-
-    private final PropertyValue     propertyValue = new PropertyValue();
-
-    private final PropertyContainer parent;
-
-    @Override
-    public boolean isKey() {
-        return key;
-    }
-
-    @Override
-    public boolean isIndexed() {
-        return indexed;
-    }
-
-    private final boolean indexed;
-
-    private final boolean key;
-
-    private void verifyBeforeSet(final String propertyName) {
-        if (key) { throw new IllegalStateException(); }
-    }
-
-    @Override
-    public void setStringValue(final StorageSession session,
-                                final String value)
-        throws IllegalArgumentException, IllegalStateException {
-        checkNotNull("session", session);
-
-        verifyBeforeSet(name);
-        propertyValue.setDirty(true);
-        propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
-    }
-
-    @Override
-    public void setBytesValue(final StorageSession session,
-                               final byte[] value)
-        throws IllegalArgumentException, IllegalStateException {
-        checkNotNull("session", session);
-
-        verifyBeforeSet(name);
-        propertyValue.setDirty(true);
-        propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
-    }
-
-    @Override
-    public void setStreamValue(final StorageSession session,
-                                final InputStream value)
-        throws IllegalArgumentException, IllegalStateException {
-        checkNotNull("session", session);
-
-        verifyBeforeSet(name);
-        propertyValue.setDirty(true);
-        propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+    public static PropertyImpl createSimple(final String name,
+                                               final PropertyContainer parent) {
+        final PropertyImpl property = new PropertyImpl(name, parent, false, false);
+        return property;
     }
 
     private void refreshPropertyIfNecessary(final StorageSession session) {
@@ -170,12 +229,38 @@ public class PropertyImpl implements Property {
 
     }
 
+    private void verifyBeforeSet(final String propertyName) {
+        if (key) { throw new IllegalStateException(); }
+    }
+
     @Override
-    public String getValueAsString(final StorageSession session)
+    public PropertyContainer getParent() {
+        return parent;
+    }
+
+    @Override
+    public String getPropertyName() {
+        return name;
+    }
+
+    public byte[] getTransientValueAsBytes(final StorageSession session)
         throws IllegalArgumentException {
         checkNotNull("session", session);
 
-        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsBytes();
+    }
+
+    public InputStream getTransientValueAsStream(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        return propertyValue.getValueAsStream();
+    }
+
+    public String getTransientValueAsString(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
         return propertyValue.getValueAsString();
     }
 
@@ -198,38 +283,22 @@ public class PropertyImpl implements Property {
     }
 
     @Override
-    public String getPropertyName() {
-        return name;
-    }
-
-    public void setStringValueOnLoad(final StorageSession session,
-                                      final String value)
+    public String getValueAsString(final StorageSession session)
         throws IllegalArgumentException {
         checkNotNull("session", session);
 
-        propertyValue.setValue(value);
-        propertyValue.setDirty(false);
-        propertyValue.setLoaded(true);
-
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsString();
     }
 
-    public void setBytesValueOnLoad(final StorageSession session,
-                                     final byte[] value)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        propertyValue.setValue(value);
-        propertyValue.setDirty(false);
-        propertyValue.setLoaded(true);
+    @Override
+    public boolean isIndexed() {
+        return indexed;
     }
 
-    public void setStreamValueOnLoad(final StorageSession session,
-                                      final InputStream value) {
-        checkNotNull("session", session);
-
-        propertyValue.setValue(value);
-        propertyValue.setDirty(false);
-        propertyValue.setLoaded(true);
+    @Override
+    public boolean isKey() {
+        return key;
     }
 
     public void removeTransientValueIfExpensive() {
@@ -243,137 +312,70 @@ public class PropertyImpl implements Property {
         }
     }
 
-    public String getTransientValueAsString(final StorageSession session)
+    @Override
+    public void setBytesValue(final StorageSession session,
+                               final byte[] value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet(name);
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
+
+    public void setBytesValueOnLoad(final StorageSession session,
+                                     final byte[] value)
         throws IllegalArgumentException {
         checkNotNull("session", session);
 
-        return propertyValue.getValueAsString();
+        propertyValue.setValue(value);
+        propertyValue.setDirty(false);
+        propertyValue.setLoaded(true);
     }
 
-    public byte[] getTransientValueAsBytes(final StorageSession session)
+    @Override
+    public void setStreamValue(final StorageSession session,
+                                final InputStream value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet(name);
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
+
+    public void setStreamValueOnLoad(final StorageSession session,
+                                      final InputStream value) {
+        checkNotNull("session", session);
+
+        propertyValue.setValue(value);
+        propertyValue.setDirty(false);
+        propertyValue.setLoaded(true);
+    }
+
+    @Override
+    public void setStringValue(final StorageSession session,
+                                final String value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet(name);
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
+
+    public void setStringValueOnLoad(final StorageSession session,
+                                      final String value)
         throws IllegalArgumentException {
         checkNotNull("session", session);
 
-        return propertyValue.getValueAsBytes();
-    }
+        propertyValue.setValue(value);
+        propertyValue.setDirty(false);
+        propertyValue.setLoaded(true);
 
-    public InputStream getTransientValueAsStream(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        return propertyValue.getValueAsStream();
-    }
-
-    private class PropertyValue {
-
-        private boolean dirty;
-
-        private boolean loaded;
-
-        public boolean isLoaded() {
-            return loaded;
-        }
-
-        public void setLoaded(final boolean loaded) {
-            this.loaded = loaded;
-        }
-
-        public boolean isDirty() {
-            return dirty;
-        }
-
-        public void setDirty(final boolean dirty) {
-            this.dirty = dirty;
-        }
-
-        private byte[] asBytes(final String s) {
-            return s != null ? s.getBytes() : null;
-        }
-
-        private <T> T getWeakValue(final Reference<T> ref) {
-            return ref != null ? ref.get() : null;
-        }
-
-        private String asString(final byte[] b) {
-            return b != null ? new String(b) : null;
-        }
-
-        private InputStream asStream(final byte[] b) {
-            return b != null ? new ByteArrayInputStream(b) : null;
-        }
-
-        private <T> Reference<T> asWeakRef(final T t) {
-            return t != null ? new SoftReference<T>(t) : null;
-        }
-
-        private byte[] asBytes(final InputStream is) {
-            if (is == null) { return null; }
-            try {
-                if (is.markSupported()) {
-                    is.reset();
-                }
-                final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                IOUtils.copy(is, os);
-                return os.toByteArray();
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, SLRuntimeException.class);
-            }
-        }
-
-        private Reference<String>      weakValueAsString;
-        private Reference<InputStream> weakValueAsStream;
-        private byte[]                 realValue;
-
-        private void nullEverything() {
-            weakValueAsString = null;
-            weakValueAsStream = null;
-            realValue = null;
-        }
-
-        public void setValue(final String value) {
-            nullEverything();
-            realValue = asBytes(value);
-            weakValueAsString = asWeakRef(value);
-        }
-
-        public void setValue(final InputStream value) {
-            nullEverything();
-            realValue = asBytes(value);
-        }
-
-        public void setValue(final byte[] value) {
-            nullEverything();
-            realValue = value;
-        }
-
-        public String getValueAsString() {
-            String value = getWeakValue(weakValueAsString);
-            if (value == null) {
-                value = asString(realValue);
-                weakValueAsString = asWeakRef(value);
-            }
-            return value;
-        }
-
-        public InputStream getValueAsStream() {
-            InputStream value = getWeakValue(weakValueAsStream);
-            if (value == null) {
-                value = asStream(realValue);
-                weakValueAsStream = asWeakRef(value);
-            }
-            if (value != null && value.markSupported()) {
-                try {
-                    value.reset();
-                } catch (final Exception e) {
-                    throw logAndReturnNew(e, SLRuntimeException.class);
-                }
-            }
-            return value;
-        }
-
-        public byte[] getValueAsBytes() {
-            return realValue;
-        }
     }
 
 }

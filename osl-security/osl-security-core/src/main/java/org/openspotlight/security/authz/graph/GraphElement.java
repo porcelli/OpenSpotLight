@@ -56,30 +56,30 @@ package org.openspotlight.security.authz.graph;
  */
 public enum GraphElement {
 
-    /** The GRAPH. */
-    GRAPH,
-
-    /** The REPOSITORY. */
-    REPOSITORY,
-
-    /** The SESSION. */
-    SESSION,
-
     /** The CONTEXT. */
     CONTEXT,
 
-    /** The NODE. */
-    NODE,
+    /** The GRAPH. */
+    GRAPH,
 
     /** The LINE_REFERENCE. */
     LINE_REFERENCE,
-
-    /** The NODE_PROPERTY. */
-    NODE_PROPERTY,
 
     /** The LINK. */
     LINK,
 
     /** The LINK_PROPERTY. */
-    LINK_PROPERTY;
+    LINK_PROPERTY,
+
+    /** The NODE. */
+    NODE,
+
+    /** The NODE_PROPERTY. */
+    NODE_PROPERTY,
+
+    /** The REPOSITORY. */
+    REPOSITORY,
+
+    /** The SESSION. */
+    SESSION;
 }

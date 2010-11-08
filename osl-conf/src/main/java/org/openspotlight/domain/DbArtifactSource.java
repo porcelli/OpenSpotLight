@@ -52,17 +52,17 @@ import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 public class DbArtifactSource extends ArtifactSource {
     private static final long serialVersionUID = -430683831296857466L;
-    private String            serverName;
     private String            databaseName;
     private String            driverClass;
-
-    private String            user;
+    private int               maxConnections;
 
     private String            password;
 
+    private String            serverName;
+
     private DatabaseType      type;
 
-    private int               maxConnections;
+    private String            user;
 
     public String getDatabaseName() {
         return databaseName;

@@ -72,6 +72,13 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 public class Compare {
 
     /**
+     * Should not be instantiated
+     */
+    private Compare() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Comparable method to be used inside Comparable classes to compare each parameter and return the first non zero result. If
      * the objects are instances of Comparable, it will use the compareTo method. On the other side, it will use the
      * toString().compareTo() method. This can make a class comparable just calling this method with all the attributes of the
@@ -137,12 +144,5 @@ public class Compare {
         } else {
             return npeSafeCompare(thisObject.toString(), thatObject.toString());
         }
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Compare() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

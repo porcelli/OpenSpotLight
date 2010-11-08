@@ -58,21 +58,21 @@ public enum SyntaxInformationType {
     /** Comment or multi line comment. */
     COMMENT,
 
-    /** Reserved keyword. */
-    RESERVED,
-
-    /** Number literal. */
-    NUMBER_LITERAL,
-
-    /** String literal. */
-    STRING_LITERAL,
+    /** Hidden information on source code, such as form information on VB code. */
+    HIDDEN,
 
     /** Variable identifier. */
     IDENTIFIER,
 
-    /** Symbol, such as +, -, /, ... */
-    SYMBOL,
+    /** Number literal. */
+    NUMBER_LITERAL,
 
-    /** Hidden information on source code, such as form information on VB code. */
-    HIDDEN
+    /** Reserved keyword. */
+    RESERVED,
+
+    /** String literal. */
+    STRING_LITERAL,
+
+    /** Symbol, such as +, -, /, ... */
+    SYMBOL
 }

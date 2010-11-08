@@ -67,11 +67,11 @@ import com.google.inject.Singleton;
 @Singleton
 public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLogger> {
 
-    private final SimplePersistFactory     simplePersistFactory;
+    private final Partition                partition = RegularPartitions.LOG;
 
     private final Provider<StorageSession> sessionProvider;
 
-    private final Partition                partition = RegularPartitions.LOG;
+    private final SimplePersistFactory     simplePersistFactory;
 
     @Inject
     public DetailedLoggerProvider(
@@ -81,15 +81,15 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
     }
 
     @Override
-    public void closeResources() {
-
-    }
-
-    @Override
     protected DetailedLogger createInstance() {
         final SimplePersistCapable<StorageNode, StorageSession> simplePersist =
             simplePersistFactory.createSimplePersist(partition);
         return new DetailedLoggerImpl(simplePersist);
+    }
+
+    @Override
+    public void closeResources() {
+
     }
 
 }

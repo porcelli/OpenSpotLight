@@ -71,10 +71,10 @@ public class GossipExecutor extends ThreadPoolExecutor {
         /** The listeners. */
         private final CopyOnWriteArrayList<ThreadListener> listeners = new CopyOnWriteArrayList<ThreadListener>();
 
+        private final String                               poolName;
+
         /** The wrapped. */
         private final ThreadFactory                        wrapped;
-
-        private final String                               poolName;
 
         /**
          * Instantiates a new delegate thread factory.
@@ -170,26 +170,11 @@ public class GossipExecutor extends ThreadPoolExecutor {
         public void afterCreatingThread(Thread t);
     }
 
-    /**
-     * New fixed thread pool.
-     * 
-     * @param nThreads the n threads
-     * @return the cautious executor
-     */
-    public static GossipExecutor newFixedThreadPool(final int nThreads,
-                                                     final String poolName) {
-
-        final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
-                                                     new LinkedBlockingQueue<Runnable>(), poolName);
-        return ex;
-
-    }
+    /** The delegate thread factory. */
+    private final DelegateThreadFactory              delegateThreadFactory;
 
     /** The listeners. */
     private final CopyOnWriteArrayList<TaskListener> listeners = new CopyOnWriteArrayList<TaskListener>();
-
-    /** The delegate thread factory. */
-    private final DelegateThreadFactory              delegateThreadFactory;
 
     /**
      * Instantiates a new cautious executor.
@@ -210,21 +195,18 @@ public class GossipExecutor extends ThreadPoolExecutor {
     }
 
     /**
-     * Adds the task listener.
+     * New fixed thread pool.
      * 
-     * @param l the l
+     * @param nThreads the n threads
+     * @return the cautious executor
      */
-    public void addTaskListener(final TaskListener l) {
-        listeners.add(l);
-    }
+    public static GossipExecutor newFixedThreadPool(final int nThreads,
+                                                     final String poolName) {
 
-    /**
-     * Adds the thread listener.
-     * 
-     * @param l the l
-     */
-    public void addThreadListener(final ThreadListener l) {
-        delegateThreadFactory.addThreadListener(l);
+        final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
+                                                     new LinkedBlockingQueue<Runnable>(), poolName);
+        return ex;
+
     }
 
     /*
@@ -250,6 +232,24 @@ public class GossipExecutor extends ThreadPoolExecutor {
         for (final TaskListener l: listeners) {
             l.beforeExecutingTask(t, r);
         }
+    }
+
+    /**
+     * Adds the task listener.
+     * 
+     * @param l the l
+     */
+    public void addTaskListener(final TaskListener l) {
+        listeners.add(l);
+    }
+
+    /**
+     * Adds the thread listener.
+     * 
+     * @param l the l
+     */
+    public void addThreadListener(final ThreadListener l) {
+        delegateThreadFactory.addThreadListener(l);
     }
 
     /**

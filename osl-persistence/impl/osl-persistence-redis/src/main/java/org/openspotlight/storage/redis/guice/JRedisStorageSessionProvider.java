@@ -62,7 +62,11 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
-    private final PartitionFactory partitionFactory;
+    private final JRedisFactory            factory;
+
+    private final StorageSession.FlushMode flushMode;
+
+    private final PartitionFactory         partitionFactory;
 
     @Inject
     public JRedisStorageSessionProvider(final StorageSession.FlushMode flushMode, final JRedisFactory factory,
@@ -71,9 +75,6 @@ public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageSes
         this.factory = factory;
         this.partitionFactory = partitionFactory;
     }
-
-    private final StorageSession.FlushMode flushMode;
-    private final JRedisFactory            factory;
 
     @Override
     protected StorageSession createInstance() {

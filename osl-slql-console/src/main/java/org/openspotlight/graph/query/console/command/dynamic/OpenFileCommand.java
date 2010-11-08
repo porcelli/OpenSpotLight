@@ -70,6 +70,16 @@ public class OpenFileCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("get ")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(final ConsoleReader reader,
                          final PrintWriter out,
                          final ConsoleState state) {
@@ -108,7 +118,7 @@ public class OpenFileCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
+    public String getAutoCompleteCommand() {
         return "get";
     }
 
@@ -116,7 +126,7 @@ public class OpenFileCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getAutoCompleteCommand() {
+    public String getCommand() {
         return "get";
     }
 
@@ -150,15 +160,5 @@ public class OpenFileCommand implements DynamicCommand {
     @Override
     public boolean hasFileCompletion() {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("get ")) { return true; }
-        return false;
     }
 }

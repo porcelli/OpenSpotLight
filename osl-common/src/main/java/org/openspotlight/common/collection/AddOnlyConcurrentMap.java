@@ -67,17 +67,21 @@ import org.openspotlight.common.util.Assertions;
  */
 public class AddOnlyConcurrentMap<K, V> implements ConcurrentMap<K, V> {
 
-    public static <K, V> AddOnlyConcurrentMap<K, V> newMap() {
-
-        return new AddOnlyConcurrentMap<K, V>(new ConcurrentHashMap<K, V>());
-    }
-
     private final ConcurrentMap<K, V> wrapped;
 
     public AddOnlyConcurrentMap(
                                  final ConcurrentMap<K, V> wrapped) {
         Assertions.checkNotNull("wrapped", wrapped);
         this.wrapped = wrapped;
+    }
+
+    public static <K, V> AddOnlyConcurrentMap<K, V> newMap() {
+
+        return new AddOnlyConcurrentMap<K, V>(new ConcurrentHashMap<K, V>());
+    }
+
+    private void validateKey(final K key) {
+        if (containsKey(key)) { throw new IllegalStateException("this key was already associated with another value"); }
     }
 
     @Override
@@ -174,10 +178,6 @@ public class AddOnlyConcurrentMap<K, V> implements ConcurrentMap<K, V> {
     @Override
     public int size() {
         return wrapped.size();
-    }
-
-    private void validateKey(final K key) {
-        if (containsKey(key)) { throw new IllegalStateException("this key was already associated with another value"); }
     }
 
     @Override

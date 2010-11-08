@@ -78,11 +78,11 @@ public class CoreServlet extends HttpServlet {
      */
     private static class CommandLoader {
 
-        /** The properties. */
-        private final Properties              properties;
-
         /** The command cache. */
         private final Map<String, WebCommand> commandCache = new TreeMap<String, WebCommand>();
+
+        /** The properties. */
+        private final Properties              properties;
 
         /**
          * Instantiates a new command loader.

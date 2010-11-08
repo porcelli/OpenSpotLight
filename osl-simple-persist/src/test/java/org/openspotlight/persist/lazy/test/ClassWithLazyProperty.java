@@ -54,13 +54,13 @@ import org.openspotlight.persist.internal.LazyProperty;
 
 public class ClassWithLazyProperty implements SimpleNodeType {
 
-    private String                                       test;
-
     private final LazyProperty<SerializablePojoProperty> bigPojoProperty =
                                                                              LazyProperty.Factory
                                                                                  .create(
                                                                                                        SerializablePojoProperty.class,
                                                                                                        this);
+
+    private String                                       test;
 
     public LazyProperty<SerializablePojoProperty> getBigPojoProperty() {
         return bigPojoProperty;

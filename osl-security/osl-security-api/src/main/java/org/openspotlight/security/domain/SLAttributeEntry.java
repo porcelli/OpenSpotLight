@@ -61,11 +61,11 @@ public class SLAttributeEntry implements SimpleNodeType, Serializable {
 
     private static final long serialVersionUID = 2070513319138325001L;
 
-    private SLIdentityObject  parent;
+    private Set<String>       entries;
 
     private String            name;
 
-    private Set<String>       entries;
+    private SLIdentityObject  parent;
 
     public SLTransientIdentityObjectAttribute asIdentityAttribute() {
         final SLTransientIdentityObjectAttribute result = new SLTransientIdentityObjectAttribute();

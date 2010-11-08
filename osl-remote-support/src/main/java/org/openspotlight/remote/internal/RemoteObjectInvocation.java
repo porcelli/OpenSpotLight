@@ -71,26 +71,26 @@ public class RemoteObjectInvocation<T> implements Serializable {
      */
     private static final long        serialVersionUID = -4821171830502625526L;
 
-    /** The user token. */
-    private final UserToken          userToken;
-
-    /** The return type. */
-    private final Class<?>           returnType;
-
-    /** The parameter types. */
-    private final Class<?>[]         parameterTypes;
-
-    /** The parameters. */
-    private final Object[]           parameters;
+    /** The hashcode. */
+    private final int                hashcode;
 
     /** The method name. */
     private final String             methodName;
 
+    /** The parameters. */
+    private final Object[]           parameters;
+
+    /** The parameter types. */
+    private final Class<?>[]         parameterTypes;
+
     /** The remote reference. */
     private final RemoteReference<T> remoteReference;
 
-    /** The hashcode. */
-    private final int                hashcode;
+    /** The return type. */
+    private final Class<?>           returnType;
+
+    /** The user token. */
+    private final UserToken          userToken;
 
     /**
      * Instantiates a new remote object invocation.

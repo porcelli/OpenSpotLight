@@ -80,13 +80,11 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class SLIdentityStoreImplTest {
-    private static Injector autoFlushInjector;
-
     private static class SLIdStoreTestContext implements IdentityStoreTestContext {
 
-        private SLIdentityStoreImpl        store;
-
         private SLIdentityStoreSessionImpl session;
+
+        private SLIdentityStoreImpl        store;
 
         @Override
         public void begin()
@@ -156,6 +154,8 @@ public class SLIdentityStoreImplTest {
         }
 
     }
+
+    private static Injector               autoFlushInjector;
 
     private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(new SLIdStoreTestContext());
 

@@ -55,25 +55,25 @@ import org.openspotlight.storage.domain.key.NodeKey;
 
 public interface StorageNode extends StorageDataMarker, NodeFactory, PropertyContainer {
 
-    public void forceReload();
-
-    String getType();
-
-    NodeKey getKey();
-
     Iterable<StorageNode> getChildren(Partition partition,
                                       StorageSession session);
 
     Iterable<StorageNode> getChildrenByType(Partition partition,
                                             StorageSession session, String type);
 
-    Iterable<StorageNode> getChildrenForcingReload(Partition partition,
-                                                   StorageSession session);
-
     Iterable<StorageNode> getChildrenByTypeForcingReload(Partition partition,
                                                          StorageSession session, String type);
 
+    Iterable<StorageNode> getChildrenForcingReload(Partition partition,
+                                                   StorageSession session);
+
+    NodeKey getKey();
+
     StorageNode getParent(StorageSession session);
 
+    String getType();
+
     void removeNode(StorageSession session);
+
+    public void forceReload();
 }

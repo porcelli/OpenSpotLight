@@ -72,21 +72,21 @@ public class SerializationUtilException extends SLRuntimeException {
     /**
      * Instantiates a new serialization util exception.
      * 
-     * @param cause the cause
-     */
-    public SerializationUtilException(
-                                       final Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * Instantiates a new serialization util exception.
-     * 
      * @param message the message
      * @param cause the cause
      */
     public SerializationUtilException(
                                        final String message, final Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Instantiates a new serialization util exception.
+     * 
+     * @param cause the cause
+     */
+    public SerializationUtilException(
+                                       final Throwable cause) {
+        super(cause);
     }
 }

@@ -88,6 +88,23 @@ import org.openspotlight.graph.query.SLQLVariable;
  */
 public class QueryTextInternalBuilder {
 
+    private class CaseInsensitiveStringStream extends ANTLRStringStream {
+        public CaseInsensitiveStringStream(
+                                            final String input) {
+            super(input);
+        }
+
+        @Override
+        public int LA(final int i) {
+            final int result = super.LA(i);
+            if (result == 0) { return 0; // undefined
+            }
+            if (result == CharStream.EOF) { return CharStream.EOF; }
+            return Character.toLowerCase(result);
+        }
+
+    }
+
     /**
      * The Enum SLQLVariableDataType.
      * 
@@ -95,48 +112,26 @@ public class QueryTextInternalBuilder {
      */
     private enum SLQLVariableDataType {
 
-        /** The INTEGER data type. */
-        INTEGER,
+        /** The BOOLEAN data type. */
+        BOOLEAN,
 
         /** The DECIMAL data type. */
         DECIMAL,
 
-        /** The STRING data type. */
-        STRING,
+        /** The INTEGER data type. */
+        INTEGER,
 
-        /** The BOOLEAN data type. */
-        BOOLEAN
+        /** The STRING data type. */
+        STRING
     }
 
     private CtClass[] CONSTRUCTOR_ARGS;
     private CtClass[] CONSTRUCTOR_THROWS;
     private CtClass[] EXECUTE_ARGS;
-    private CtClass[] EXECUTE_THROWS;
 
     private CtClass   EXECUTE_RETURN_TYPE;
 
-    /**
-     * Builds the SLQueryTextInternal based on input
-     * 
-     * @param slqlText the slql text
-     * @return the sL query text internal
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     */
-    public QueryTextInternal build(final String slqlText)
-        throws SLInvalidQuerySyntaxException {
-        final QueryTextInternalInfo queryInfo = buildQueryInfo(slqlText);
-
-        QueryTextInternal target = null;
-        if (queryInfo.hasTarget()) {
-            target = buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo.getDefineTargetContent(),
-                                      queryInfo.getStringsConstant());
-        }
-
-        final Set<SLQLVariable> variables = buildVariableCollection(queryInfo);
-
-        return buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), queryInfo.getStringsConstant(), target,
-                          queryInfo.getContent());
-    }
+    private CtClass[] EXECUTE_THROWS;
 
     /**
      * Builds the query.
@@ -175,23 +170,6 @@ public class QueryTextInternalBuilder {
         } catch (final Exception e) {
             throw new InvalidQuerySyntaxException(e);
         }
-    }
-
-    private class CaseInsensitiveStringStream extends ANTLRStringStream {
-        public CaseInsensitiveStringStream(
-                                            final String input) {
-            super(input);
-        }
-
-        @Override
-        public int LA(final int i) {
-            final int result = super.LA(i);
-            if (result == 0) { return 0; // undefined
-            }
-            if (result == CharStream.EOF) { return CharStream.EOF; }
-            return Character.toLowerCase(result);
-        }
-
     }
 
     /**
@@ -418,5 +396,28 @@ public class QueryTextInternalBuilder {
             result.add(variable);
         }
         return result;
+    }
+
+    /**
+     * Builds the SLQueryTextInternal based on input
+     * 
+     * @param slqlText the slql text
+     * @return the sL query text internal
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
+    public QueryTextInternal build(final String slqlText)
+        throws SLInvalidQuerySyntaxException {
+        final QueryTextInternalInfo queryInfo = buildQueryInfo(slqlText);
+
+        QueryTextInternal target = null;
+        if (queryInfo.hasTarget()) {
+            target = buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo.getDefineTargetContent(),
+                                      queryInfo.getStringsConstant());
+        }
+
+        final Set<SLQLVariable> variables = buildVariableCollection(queryInfo);
+
+        return buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), queryInfo.getStringsConstant(), target,
+                          queryInfo.getContent());
     }
 }

@@ -79,37 +79,10 @@ import org.openspotlight.common.exception.SLRuntimeException;
 public class Files {
 
     /**
-     * Delete multiple files.
-     * 
-     * @param path the path
-     * @throws SLException the SL exception
+     * Should not be instantiated.
      */
-    public static void delete(final File path)
-        throws SLException {
-        checkNotNull("path", path); //$NON-NLS-1$
-        if (!path.exists()) { return; }
-        try {
-            if (path.isFile()) {
-                deleteFile(path);
-            } else {
-                deleteDir(path);
-            }
-        } catch (final Exception e) {
-            logAndThrowNew(e, SLException.class);
-        }
-    }
-
-    /**
-     * Delete multiple files.
-     * 
-     * @param path the path
-     * @throws SLException the SL exception
-     */
-    public static void delete(final String path)
-        throws SLException {
-        checkNotEmpty("path", path); //$NON-NLS-1$
-        delete(new File(path));
-
+    private Files() {
+        throw new IllegalStateException(Messages.getString("invalidConstructor")); //$NON-NLS-1$
     }
 
     /**
@@ -145,36 +118,6 @@ public class Files {
     }
 
     /**
-     * Returns the normalized path (in a unix like way).
-     * 
-     * @param f the f
-     * @return a normalized file name
-     */
-    public static String getNormalizedFileName(final String basePath,
-                                                final File f) {
-        try {
-            final String fileName = f.getPath().replaceAll("\\\\", "/");
-            return Strings.removeBegginingFrom(basePath, fileName);
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    /**
-     * Returns the normalized path (in a unix like way).
-     * 
-     * @param f the f
-     * @return a normalized file name
-     */
-    public static String getNormalizedFileName(final File f) {
-        try {
-            return f.getCanonicalPath().replaceAll("\\\\", "/"); //$NON-NLS-1$//$NON-NLS-2$
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    /**
      * Execute the file listing using recursion to fill the file name set.
      * 
      * @param setOfFiles the set of files
@@ -200,6 +143,70 @@ public class Files {
             }
         }
 
+    }
+
+    /**
+     * Delete multiple files.
+     * 
+     * @param path the path
+     * @throws SLException the SL exception
+     */
+    public static void delete(final File path)
+        throws SLException {
+        checkNotNull("path", path); //$NON-NLS-1$
+        if (!path.exists()) { return; }
+        try {
+            if (path.isFile()) {
+                deleteFile(path);
+            } else {
+                deleteDir(path);
+            }
+        } catch (final Exception e) {
+            logAndThrowNew(e, SLException.class);
+        }
+    }
+
+    /**
+     * Delete multiple files.
+     * 
+     * @param path the path
+     * @throws SLException the SL exception
+     */
+    public static void delete(final String path)
+        throws SLException {
+        checkNotEmpty("path", path); //$NON-NLS-1$
+        delete(new File(path));
+
+    }
+
+    /**
+     * Returns the normalized path (in a unix like way).
+     * 
+     * @param f the f
+     * @return a normalized file name
+     */
+    public static String getNormalizedFileName(final File f) {
+        try {
+            return f.getCanonicalPath().replaceAll("\\\\", "/"); //$NON-NLS-1$//$NON-NLS-2$
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    /**
+     * Returns the normalized path (in a unix like way).
+     * 
+     * @param f the f
+     * @return a normalized file name
+     */
+    public static String getNormalizedFileName(final String basePath,
+                                                final File f) {
+        try {
+            final String fileName = f.getPath().replaceAll("\\\\", "/");
+            return Strings.removeBegginingFrom(basePath, fileName);
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+        }
     }
 
     /**
@@ -286,13 +293,6 @@ public class Files {
             } catch (final IOException e) {}
         }
         return lines;
-    }
-
-    /**
-     * Should not be instantiated.
-     */
-    private Files() {
-        throw new IllegalStateException(Messages.getString("invalidConstructor")); //$NON-NLS-1$
     }
 
 }

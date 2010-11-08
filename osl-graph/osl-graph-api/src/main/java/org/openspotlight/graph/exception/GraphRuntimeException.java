@@ -35,21 +35,21 @@ public abstract class GraphRuntimeException extends SLRuntimeException {
      * Constructs a new graph related exception.
      * 
      * @param message the message
-     * @param cause the cause
      */
     public GraphRuntimeException(
-                                    final String message, final Throwable cause) {
-        super(message, cause);
+                                    final String message) {
+        super(message);
     }
 
     /**
      * Constructs a new graph related exception.
      * 
      * @param message the message
+     * @param cause the cause
      */
     public GraphRuntimeException(
-                                    final String message) {
-        super(message);
+                                    final String message, final Throwable cause) {
+        super(message, cause);
     }
 
     /**

@@ -85,15 +85,15 @@ import com.google.inject.Injector;
  */
 public class SimplePersistSupportTest {
 
-    SimplePersistCapable<StorageNode, StorageSession> simplePersist;
     private StorageSession                            session;
+    final Injector                                    autoFlushInjector;
+
+    SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     public SimplePersistSupportTest() {
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                                                                          ExampleRedisConfig.EXAMPLE.getMappedServerConfig()));
     }
-
-    final Injector autoFlushInjector;
 
     /**
      * Setup session.
@@ -410,6 +410,74 @@ public class SimplePersistSupportTest {
     }
 
     @Test
+    public void shouldConvertJcrNodeToBeanWithParent()
+        throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj obj1 = new LevelOneObj();
+        final LevelTwoObj obj2 = new LevelTwoObj();
+        final LevelThreeObj obj3 = new LevelThreeObj();
+        final ListItemObj li1 = new ListItemObj();
+        li1.setName("1");
+        li1.setValue(1);
+        final ListItemObj li2 = new ListItemObj();
+        li2.setName("2");
+        li2.setValue(2);
+        final ListItemObj li3 = new ListItemObj();
+        li3.setName("3");
+        li3.setValue(3);
+        obj3.getObjList().add(li1);
+        obj3.getObjList().add(li2);
+        obj3.getObjList().add(li3);
+        final MapValueObj mapVal1 = new MapValueObj();
+        mapVal1.setName("1");
+        final MapValueObj mapVal2 = new MapValueObj();
+        mapVal2.setName("2");
+        final MapValueObj mapVal3 = new MapValueObj();
+        mapVal3.setName("3");
+        obj1.setRootObj(root);
+        obj2.setLevelOneObj(obj1);
+        obj3.setLevelTwoObj(obj2);
+        obj3.setBooleanList(new ArrayList<Boolean>());
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.FALSE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.setNumberMap(new HashMap<Double, Integer>());
+        obj3.getNumberMap().put(1.0, 3);
+        obj3.getNumberMap().put(2.0, 2);
+        obj3.getNumberMap().put(3.0, 1);
+
+        obj2.setProperty("propVal");
+        final PropertyObj propertyObj = new PropertyObj();
+        propertyObj.setName("name");
+        propertyObj.setValue(2);
+        obj2.setPropertyObj(propertyObj);
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+
+        final StorageNode node = simplePersist.convertBeanToNode(parentNode, obj3);
+
+        final LevelThreeObj convertedFromJcr = simplePersist.convertNodeToBean(node);
+        assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
+        assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
+        assertThat(obj3.getLevelTwoObj().getKey(), Is.is(convertedFromJcr.getLevelTwoObj().getKey()));
+        assertThat(obj3.getLevelTwoObj().getPropertyObj().getName(),
+                   Is.is(convertedFromJcr.getLevelTwoObj().getPropertyObj().getName()));
+        assertThat(obj3.getLevelTwoObj().getLevelOneObj().getProperty(),
+                   Is.is(convertedFromJcr.getLevelTwoObj().getLevelOneObj().getProperty()));
+        assertThat(convertedFromJcr.getBooleanList(), Is.is(Arrays.asList(true, false, true, true)));
+        assertThat(convertedFromJcr.getNumberMap().get(1.0), Is.is(3));
+        assertThat(convertedFromJcr.getNumberMap().get(2.0), Is.is(2));
+        assertThat(convertedFromJcr.getNumberMap().get(3.0), Is.is(1));
+
+        assertThat(convertedFromJcr.getObjList().size(), Is.is(3));
+
+        assertThat(convertedFromJcr.getObjList().get(0).getName(), Is.is("1"));
+        assertThat(convertedFromJcr.getObjList().get(1).getName(), Is.is("2"));
+        assertThat(convertedFromJcr.getObjList().get(2).getName(), Is.is("3"));
+
+    }
+
+    @Test
     public void shouldFindCollectionItems()
         throws Exception {
         final RootObj root = new RootObj();
@@ -430,6 +498,37 @@ public class SimplePersistSupportTest {
         assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is.is(obj1.getValue()));
         assertThat(anotherLevelThree.getObjList().get(0).getName(), Is.is(obj1.getName()));
         final Iterable<ListItemObj> result = simplePersist.findByProperties(ListItemObj.class, new String[] {"name"},
+                                                                            new Object[] {"obj 1"});
+        final ListItemObj item = result.iterator().next();
+        assertThat(item.getName(), Is.is("obj 1"));
+        assertThat(item.getValue(), Is.is(5));
+
+    }
+
+    @Test
+    public void shouldFindCollectionItemsWithParent()
+        throws Exception {
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+
+        final RootObj root = new RootObj();
+        final LevelOneObj levelOne = new LevelOneObj();
+        levelOne.setRootObj(root);
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        levelTwo.setLevelOneObj(levelOne);
+        final LevelThreeObj levelThree = new LevelThreeObj();
+        levelThree.setLevelTwoObj(levelTwo);
+        levelThree.setObjList(new ArrayList<ListItemObj>());
+        final ListItemObj obj1 = new ListItemObj();
+        obj1.setName("obj 1");
+        obj1.setValue(5);
+        levelThree.getObjList().add(obj1);
+        final StorageNode asJcr = simplePersist.convertBeanToNode(parentNode, levelThree);
+        final LevelThreeObj anotherLevelThree = simplePersist.convertNodeToBean(asJcr);
+
+        assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
+        assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is.is(obj1.getValue()));
+        assertThat(anotherLevelThree.getObjList().get(0).getName(), Is.is(obj1.getName()));
+        final Iterable<ListItemObj> result = simplePersist.findByProperties(parentNode, ListItemObj.class, new String[] {"name"},
                                                                             new Object[] {"obj 1"});
         final ListItemObj item = result.iterator().next();
         assertThat(item.getName(), Is.is("obj 1"));
@@ -497,6 +596,80 @@ public class SimplePersistSupportTest {
                                                                              org.openspotlight.common.util.Arrays.of("key"),
                                                                              org.openspotlight.common.util.Arrays.of("2"));
         final Iterable<LevelTwoObj> result3 = simplePersist.findByProperties(LevelTwoObj.class,
+                                                                             org.openspotlight.common.util.Arrays.of("key"),
+                                                                             org.openspotlight.common.util.Arrays.of("3"));
+        final LevelTwoObj result1Item = result1.iterator().next();
+        assertThat(result1Item.getKey(), Is.is("1"));
+        assertThat(result2.iterator().next().getKey(), Is.is("2"));
+        assertThat(result3.iterator().next().getKey(), Is.is("3"));
+        assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), IsNull.notNullValue());
+        assertThat(result2.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
+        assertThat(result3.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
+
+    }
+
+    @Test
+    public void shouldFindJcrNodeByItsKeyWithParent()
+        throws Exception {
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+
+        final RootObj root = new RootObj();
+        final LevelOneObj obj1 = new LevelOneObj();
+        final LevelTwoObj obj2 = new LevelTwoObj();
+        final LevelThreeObj obj3 = new LevelThreeObj();
+        final ListItemObj li1 = new ListItemObj();
+        li1.setName("1");
+        final ListItemObj li2 = new ListItemObj();
+        li2.setName("2");
+        final ListItemObj li3 = new ListItemObj();
+        li3.setName("3");
+        obj3.getObjList().add(li1);
+        obj3.getObjList().add(li2);
+        obj3.getObjList().add(li3);
+        final MapValueObj mapVal1 = new MapValueObj();
+        mapVal1.setName("1");
+        final MapValueObj mapVal2 = new MapValueObj();
+        mapVal2.setName("2");
+        final MapValueObj mapVal3 = new MapValueObj();
+        mapVal3.setName("3");
+        obj1.setRootObj(root);
+        obj2.setLevelOneObj(obj1);
+        obj3.setLevelTwoObj(obj2);
+        obj3.setBooleanList(new ArrayList<Boolean>());
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.FALSE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.setNumberMap(new HashMap<Double, Integer>());
+        obj3.getNumberMap().put(1.0, 3);
+        obj3.getNumberMap().put(2.0, 2);
+        obj3.getNumberMap().put(3.0, 1);
+
+        obj2.setProperty("propVal");
+        final PropertyObj propertyObj = new PropertyObj();
+        propertyObj.setName("name");
+        propertyObj.setValue(2);
+        obj2.setPropertyObj(propertyObj);
+        obj2.setKey("1");
+
+        final LevelTwoObj obj2_1 = new LevelTwoObj();
+        obj2_1.setKey("2");
+        final LevelTwoObj obj2_2 = new LevelTwoObj();
+        obj2_2.setKey("3");
+
+        simplePersist.convertBeanToNode(parentNode, obj2);
+        simplePersist.convertBeanToNode(parentNode,
+
+        obj2_1);
+        simplePersist.convertBeanToNode(parentNode, obj2_2);
+
+        final Iterable<LevelTwoObj> result1 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
+                                                                             org.openspotlight.common.util.Arrays.of("key"),
+                                                                             org.openspotlight.common.util.Arrays.of("1"));
+        final Iterable<LevelTwoObj> result2 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
+                                                                             org.openspotlight.common.util.Arrays.of("key"),
+                                                                             org.openspotlight.common.util.Arrays.of("2"));
+        final Iterable<LevelTwoObj> result3 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
                                                                              org.openspotlight.common.util.Arrays.of("key"),
                                                                              org.openspotlight.common.util.Arrays.of("3"));
         final LevelTwoObj result1Item = result1.iterator().next();
@@ -586,6 +759,83 @@ public class SimplePersistSupportTest {
     }
 
     @Test
+    public void shouldFindJcrNodeByItsPropertiesWithParent()
+        throws Exception {
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+        final RootObj root = new RootObj();
+        final LevelOneObj obj1 = new LevelOneObj();
+        final LevelTwoObj obj2 = new LevelTwoObj();
+        final LevelThreeObj obj3 = new LevelThreeObj();
+        final ListItemObj li1 = new ListItemObj();
+        li1.setName("1");
+        final ListItemObj li2 = new ListItemObj();
+        li2.setName("2");
+        final ListItemObj li3 = new ListItemObj();
+        li3.setName("3");
+        obj3.getObjList().add(li1);
+        obj3.getObjList().add(li2);
+        obj3.getObjList().add(li3);
+        final MapValueObj mapVal1 = new MapValueObj();
+        mapVal1.setName("1");
+        final MapValueObj mapVal2 = new MapValueObj();
+        mapVal2.setName("2");
+        final MapValueObj mapVal3 = new MapValueObj();
+        mapVal3.setName("3");
+        obj1.setRootObj(root);
+        obj2.setLevelOneObj(obj1);
+        obj3.setLevelTwoObj(obj2);
+        obj3.setBooleanList(new ArrayList<Boolean>());
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.FALSE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.setNumberMap(new HashMap<Double, Integer>());
+        obj3.getNumberMap().put(1.0, 3);
+        obj3.getNumberMap().put(2.0, 2);
+        obj3.getNumberMap().put(3.0, 1);
+
+        obj2.setProperty("propVal");
+        final PropertyObj propertyObj = new PropertyObj();
+        propertyObj.setName("name");
+        propertyObj.setValue(2);
+        obj2.setPropertyObj(propertyObj);
+        obj2.setKey("1");
+
+        final LevelTwoObj obj2_1 = new LevelTwoObj();
+        obj2_1.setKey("2");
+        final LevelTwoObj obj2_2 = new LevelTwoObj();
+        obj2_2.setKey("3");
+
+        simplePersist.convertBeanToNode(parentNode,
+
+        obj2);
+        simplePersist.convertBeanToNode(parentNode,
+
+        obj2_1);
+        simplePersist.convertBeanToNode(parentNode,
+
+        obj2_2);
+
+        final Iterable<LevelTwoObj> result1 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
+                                                                             org.openspotlight.common.util.Arrays.of("key"),
+                                                                             org.openspotlight.common.util.Arrays.of("1"));
+        final Iterable<LevelTwoObj> result2 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
+                                                                             org.openspotlight.common.util.Arrays.of("key"),
+                                                                             org.openspotlight.common.util.Arrays.of("2"));
+        final Iterable<LevelTwoObj> result3 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
+                                                                             org.openspotlight.common.util.Arrays.of("key"),
+                                                                             org.openspotlight.common.util.Arrays.of("3"));
+        final LevelTwoObj item = result1.iterator().next();
+        assertThat(item.getKey(), Is.is("1"));
+        assertThat(result2.iterator().next().getKey(), Is.is("2"));
+        assertThat(result3.iterator().next().getKey(), Is.is("3"));
+        assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), IsNull.notNullValue());
+        assertThat(result2.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
+        assertThat(result3.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
+
+    }
+
+    @Test
     public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKey()
         throws Exception {
         final ComposedKeyObject object1 = new ComposedKeyObject();
@@ -602,6 +852,33 @@ public class SimplePersistSupportTest {
         simplePersist.convertBeanToNode(object2);
         simplePersist.convertBeanToNode(object3);
         final Iterable<ComposedKeyObject> foundNodes = simplePersist.findByProperties(ComposedKeyObject.class,
+                                                                                      new String[] {"key1"},
+                                                                                      new Object[] {"same key"});
+        final Iterator<ComposedKeyObject> it = foundNodes.iterator();
+        assertThat(it.next(), is(notNullValue()));
+        assertThat(it.next(), is(notNullValue()));
+        assertThat(it.hasNext(), is(false));
+    }
+
+    @Test
+    public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKeyWithParent()
+        throws Exception {
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+
+        final ComposedKeyObject object1 = new ComposedKeyObject();
+        object1.setKey1("same key");
+        object1.setKey2(1);
+        final ComposedKeyObject object2 = new ComposedKeyObject();
+        object2.setKey1("same key");
+        object2.setKey2(2);
+        final ComposedKeyObject object3 = new ComposedKeyObject();
+        object3.setKey1("another key");
+        object3.setKey2(1);
+
+        simplePersist.convertBeanToNode(parentNode, object1);
+        simplePersist.convertBeanToNode(parentNode, object2);
+        simplePersist.convertBeanToNode(object3);
+        final Iterable<ComposedKeyObject> foundNodes = simplePersist.findByProperties(parentNode, ComposedKeyObject.class,
                                                                                       new String[] {"key1"},
                                                                                       new Object[] {"same key"});
         final Iterator<ComposedKeyObject> it = foundNodes.iterator();
@@ -628,6 +905,25 @@ public class SimplePersistSupportTest {
     }
 
     @Test
+    public void shouldFindObjectsByNullParameterWithParent()
+        throws Exception {
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+
+        final LevelOneObj obj1 = new LevelOneObj();
+        obj1.setProperty("prop");
+        final LevelOneObj obj2 = new LevelOneObj();
+        obj2.setProperty(null);
+
+        simplePersist.convertBeanToNode(parentNode, obj1);
+        simplePersist.convertBeanToNode(parentNode, obj2);
+        final Iterable<LevelOneObj> result = simplePersist.findByProperties(parentNode, LevelOneObj.class,
+                                                                            new String[] {"property"}, new Object[] {null});
+        final Iterator<LevelOneObj> it = result.iterator();
+        assertThat(it.next(), is(notNullValue()));
+        assertThat(it.hasNext(), is(false));
+    }
+
+    @Test
     public void shouldFindPropertyItems()
         throws Exception {
 
@@ -639,6 +935,31 @@ public class SimplePersistSupportTest {
         simplePersist.convertBeanToNode(levelTwo);
 
         final Iterable<PropertyObj> result = simplePersist.findByProperties(PropertyObj.class, new String[] {"name"},
+                                                                            new Object[] {"obj 1"});
+        final Iterator<PropertyObj> it = result.iterator();
+        final PropertyObj item = it.next();
+        assertThat(item.getName(), Is.is("obj 1"));
+        assertThat(item.getValue(), Is.is(5));
+        assertThat(it.hasNext(), Is.is(false));
+
+    }
+
+    @Test
+    public void shouldFindPropertyItemsWithParent()
+        throws Exception {
+        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        final PropertyObj propertyObj = new PropertyObj();
+        propertyObj.setName("obj 1");
+        propertyObj.setValue(5);
+        levelTwo.setPropertyObj(propertyObj);
+        final StorageNode newnode = simplePersist.convertBeanToNode(parentNode, levelTwo);
+        System.err.println(">>> " + newnode.getKey().getKeyAsString());
+        System.err.println(">>> " + newnode.getParent(session));
+        System.err.println(">>> " + newnode.getParent(session).getParent(session));
+
+        final Iterable<PropertyObj> result = simplePersist.findByProperties(parentNode, PropertyObj.class, new String[] {"name"},
                                                                             new Object[] {"obj 1"});
         final Iterator<PropertyObj> it = result.iterator();
         final PropertyObj item = it.next();
@@ -735,327 +1056,6 @@ public class SimplePersistSupportTest {
         final StorageNode newNode3 = simplePersist.convertBeanToNode(object3);
         assertThat(newNode1.getKey(), Is.is(IsNot.not(newNode2.getKey())));
         assertThat(newNode1.getKey(), Is.is(newNode3.getKey()));
-    }
-
-    @Test
-    public void shouldConvertJcrNodeToBeanWithParent()
-        throws Exception {
-        final RootObj root = new RootObj();
-        final LevelOneObj obj1 = new LevelOneObj();
-        final LevelTwoObj obj2 = new LevelTwoObj();
-        final LevelThreeObj obj3 = new LevelThreeObj();
-        final ListItemObj li1 = new ListItemObj();
-        li1.setName("1");
-        li1.setValue(1);
-        final ListItemObj li2 = new ListItemObj();
-        li2.setName("2");
-        li2.setValue(2);
-        final ListItemObj li3 = new ListItemObj();
-        li3.setName("3");
-        li3.setValue(3);
-        obj3.getObjList().add(li1);
-        obj3.getObjList().add(li2);
-        obj3.getObjList().add(li3);
-        final MapValueObj mapVal1 = new MapValueObj();
-        mapVal1.setName("1");
-        final MapValueObj mapVal2 = new MapValueObj();
-        mapVal2.setName("2");
-        final MapValueObj mapVal3 = new MapValueObj();
-        mapVal3.setName("3");
-        obj1.setRootObj(root);
-        obj2.setLevelOneObj(obj1);
-        obj3.setLevelTwoObj(obj2);
-        obj3.setBooleanList(new ArrayList<Boolean>());
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.getBooleanList().add(Boolean.FALSE);
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.setNumberMap(new HashMap<Double, Integer>());
-        obj3.getNumberMap().put(1.0, 3);
-        obj3.getNumberMap().put(2.0, 2);
-        obj3.getNumberMap().put(3.0, 1);
-
-        obj2.setProperty("propVal");
-        final PropertyObj propertyObj = new PropertyObj();
-        propertyObj.setName("name");
-        propertyObj.setValue(2);
-        obj2.setPropertyObj(propertyObj);
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-
-        final StorageNode node = simplePersist.convertBeanToNode(parentNode, obj3);
-
-        final LevelThreeObj convertedFromJcr = simplePersist.convertNodeToBean(node);
-        assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
-        assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
-        assertThat(obj3.getLevelTwoObj().getKey(), Is.is(convertedFromJcr.getLevelTwoObj().getKey()));
-        assertThat(obj3.getLevelTwoObj().getPropertyObj().getName(),
-                   Is.is(convertedFromJcr.getLevelTwoObj().getPropertyObj().getName()));
-        assertThat(obj3.getLevelTwoObj().getLevelOneObj().getProperty(),
-                   Is.is(convertedFromJcr.getLevelTwoObj().getLevelOneObj().getProperty()));
-        assertThat(convertedFromJcr.getBooleanList(), Is.is(Arrays.asList(true, false, true, true)));
-        assertThat(convertedFromJcr.getNumberMap().get(1.0), Is.is(3));
-        assertThat(convertedFromJcr.getNumberMap().get(2.0), Is.is(2));
-        assertThat(convertedFromJcr.getNumberMap().get(3.0), Is.is(1));
-
-        assertThat(convertedFromJcr.getObjList().size(), Is.is(3));
-
-        assertThat(convertedFromJcr.getObjList().get(0).getName(), Is.is("1"));
-        assertThat(convertedFromJcr.getObjList().get(1).getName(), Is.is("2"));
-        assertThat(convertedFromJcr.getObjList().get(2).getName(), Is.is("3"));
-
-    }
-
-    @Test
-    public void shouldFindCollectionItemsWithParent()
-        throws Exception {
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-
-        final RootObj root = new RootObj();
-        final LevelOneObj levelOne = new LevelOneObj();
-        levelOne.setRootObj(root);
-        final LevelTwoObj levelTwo = new LevelTwoObj();
-        levelTwo.setLevelOneObj(levelOne);
-        final LevelThreeObj levelThree = new LevelThreeObj();
-        levelThree.setLevelTwoObj(levelTwo);
-        levelThree.setObjList(new ArrayList<ListItemObj>());
-        final ListItemObj obj1 = new ListItemObj();
-        obj1.setName("obj 1");
-        obj1.setValue(5);
-        levelThree.getObjList().add(obj1);
-        final StorageNode asJcr = simplePersist.convertBeanToNode(parentNode, levelThree);
-        final LevelThreeObj anotherLevelThree = simplePersist.convertNodeToBean(asJcr);
-
-        assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
-        assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is.is(obj1.getValue()));
-        assertThat(anotherLevelThree.getObjList().get(0).getName(), Is.is(obj1.getName()));
-        final Iterable<ListItemObj> result = simplePersist.findByProperties(parentNode, ListItemObj.class, new String[] {"name"},
-                                                                            new Object[] {"obj 1"});
-        final ListItemObj item = result.iterator().next();
-        assertThat(item.getName(), Is.is("obj 1"));
-        assertThat(item.getValue(), Is.is(5));
-
-    }
-
-    @Test
-    public void shouldFindJcrNodeByItsKeyWithParent()
-        throws Exception {
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-
-        final RootObj root = new RootObj();
-        final LevelOneObj obj1 = new LevelOneObj();
-        final LevelTwoObj obj2 = new LevelTwoObj();
-        final LevelThreeObj obj3 = new LevelThreeObj();
-        final ListItemObj li1 = new ListItemObj();
-        li1.setName("1");
-        final ListItemObj li2 = new ListItemObj();
-        li2.setName("2");
-        final ListItemObj li3 = new ListItemObj();
-        li3.setName("3");
-        obj3.getObjList().add(li1);
-        obj3.getObjList().add(li2);
-        obj3.getObjList().add(li3);
-        final MapValueObj mapVal1 = new MapValueObj();
-        mapVal1.setName("1");
-        final MapValueObj mapVal2 = new MapValueObj();
-        mapVal2.setName("2");
-        final MapValueObj mapVal3 = new MapValueObj();
-        mapVal3.setName("3");
-        obj1.setRootObj(root);
-        obj2.setLevelOneObj(obj1);
-        obj3.setLevelTwoObj(obj2);
-        obj3.setBooleanList(new ArrayList<Boolean>());
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.getBooleanList().add(Boolean.FALSE);
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.setNumberMap(new HashMap<Double, Integer>());
-        obj3.getNumberMap().put(1.0, 3);
-        obj3.getNumberMap().put(2.0, 2);
-        obj3.getNumberMap().put(3.0, 1);
-
-        obj2.setProperty("propVal");
-        final PropertyObj propertyObj = new PropertyObj();
-        propertyObj.setName("name");
-        propertyObj.setValue(2);
-        obj2.setPropertyObj(propertyObj);
-        obj2.setKey("1");
-
-        final LevelTwoObj obj2_1 = new LevelTwoObj();
-        obj2_1.setKey("2");
-        final LevelTwoObj obj2_2 = new LevelTwoObj();
-        obj2_2.setKey("3");
-
-        simplePersist.convertBeanToNode(parentNode, obj2);
-        simplePersist.convertBeanToNode(parentNode,
-
-        obj2_1);
-        simplePersist.convertBeanToNode(parentNode, obj2_2);
-
-        final Iterable<LevelTwoObj> result1 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
-                                                                             org.openspotlight.common.util.Arrays.of("key"),
-                                                                             org.openspotlight.common.util.Arrays.of("1"));
-        final Iterable<LevelTwoObj> result2 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
-                                                                             org.openspotlight.common.util.Arrays.of("key"),
-                                                                             org.openspotlight.common.util.Arrays.of("2"));
-        final Iterable<LevelTwoObj> result3 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
-                                                                             org.openspotlight.common.util.Arrays.of("key"),
-                                                                             org.openspotlight.common.util.Arrays.of("3"));
-        final LevelTwoObj result1Item = result1.iterator().next();
-        assertThat(result1Item.getKey(), Is.is("1"));
-        assertThat(result2.iterator().next().getKey(), Is.is("2"));
-        assertThat(result3.iterator().next().getKey(), Is.is("3"));
-        assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), IsNull.notNullValue());
-        assertThat(result2.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
-        assertThat(result3.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
-
-    }
-
-    @Test
-    public void shouldFindJcrNodeByItsPropertiesWithParent()
-        throws Exception {
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-        final RootObj root = new RootObj();
-        final LevelOneObj obj1 = new LevelOneObj();
-        final LevelTwoObj obj2 = new LevelTwoObj();
-        final LevelThreeObj obj3 = new LevelThreeObj();
-        final ListItemObj li1 = new ListItemObj();
-        li1.setName("1");
-        final ListItemObj li2 = new ListItemObj();
-        li2.setName("2");
-        final ListItemObj li3 = new ListItemObj();
-        li3.setName("3");
-        obj3.getObjList().add(li1);
-        obj3.getObjList().add(li2);
-        obj3.getObjList().add(li3);
-        final MapValueObj mapVal1 = new MapValueObj();
-        mapVal1.setName("1");
-        final MapValueObj mapVal2 = new MapValueObj();
-        mapVal2.setName("2");
-        final MapValueObj mapVal3 = new MapValueObj();
-        mapVal3.setName("3");
-        obj1.setRootObj(root);
-        obj2.setLevelOneObj(obj1);
-        obj3.setLevelTwoObj(obj2);
-        obj3.setBooleanList(new ArrayList<Boolean>());
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.getBooleanList().add(Boolean.FALSE);
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.getBooleanList().add(Boolean.TRUE);
-        obj3.setNumberMap(new HashMap<Double, Integer>());
-        obj3.getNumberMap().put(1.0, 3);
-        obj3.getNumberMap().put(2.0, 2);
-        obj3.getNumberMap().put(3.0, 1);
-
-        obj2.setProperty("propVal");
-        final PropertyObj propertyObj = new PropertyObj();
-        propertyObj.setName("name");
-        propertyObj.setValue(2);
-        obj2.setPropertyObj(propertyObj);
-        obj2.setKey("1");
-
-        final LevelTwoObj obj2_1 = new LevelTwoObj();
-        obj2_1.setKey("2");
-        final LevelTwoObj obj2_2 = new LevelTwoObj();
-        obj2_2.setKey("3");
-
-        simplePersist.convertBeanToNode(parentNode,
-
-        obj2);
-        simplePersist.convertBeanToNode(parentNode,
-
-        obj2_1);
-        simplePersist.convertBeanToNode(parentNode,
-
-        obj2_2);
-
-        final Iterable<LevelTwoObj> result1 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
-                                                                             org.openspotlight.common.util.Arrays.of("key"),
-                                                                             org.openspotlight.common.util.Arrays.of("1"));
-        final Iterable<LevelTwoObj> result2 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
-                                                                             org.openspotlight.common.util.Arrays.of("key"),
-                                                                             org.openspotlight.common.util.Arrays.of("2"));
-        final Iterable<LevelTwoObj> result3 = simplePersist.findByProperties(parentNode, LevelTwoObj.class,
-                                                                             org.openspotlight.common.util.Arrays.of("key"),
-                                                                             org.openspotlight.common.util.Arrays.of("3"));
-        final LevelTwoObj item = result1.iterator().next();
-        assertThat(item.getKey(), Is.is("1"));
-        assertThat(result2.iterator().next().getKey(), Is.is("2"));
-        assertThat(result3.iterator().next().getKey(), Is.is("3"));
-        assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), IsNull.notNullValue());
-        assertThat(result2.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
-        assertThat(result3.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
-
-    }
-
-    @Test
-    public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKeyWithParent()
-        throws Exception {
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-
-        final ComposedKeyObject object1 = new ComposedKeyObject();
-        object1.setKey1("same key");
-        object1.setKey2(1);
-        final ComposedKeyObject object2 = new ComposedKeyObject();
-        object2.setKey1("same key");
-        object2.setKey2(2);
-        final ComposedKeyObject object3 = new ComposedKeyObject();
-        object3.setKey1("another key");
-        object3.setKey2(1);
-
-        simplePersist.convertBeanToNode(parentNode, object1);
-        simplePersist.convertBeanToNode(parentNode, object2);
-        simplePersist.convertBeanToNode(object3);
-        final Iterable<ComposedKeyObject> foundNodes = simplePersist.findByProperties(parentNode, ComposedKeyObject.class,
-                                                                                      new String[] {"key1"},
-                                                                                      new Object[] {"same key"});
-        final Iterator<ComposedKeyObject> it = foundNodes.iterator();
-        assertThat(it.next(), is(notNullValue()));
-        assertThat(it.next(), is(notNullValue()));
-        assertThat(it.hasNext(), is(false));
-    }
-
-    @Test
-    public void shouldFindObjectsByNullParameterWithParent()
-        throws Exception {
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-
-        final LevelOneObj obj1 = new LevelOneObj();
-        obj1.setProperty("prop");
-        final LevelOneObj obj2 = new LevelOneObj();
-        obj2.setProperty(null);
-
-        simplePersist.convertBeanToNode(parentNode, obj1);
-        simplePersist.convertBeanToNode(parentNode, obj2);
-        final Iterable<LevelOneObj> result = simplePersist.findByProperties(parentNode, LevelOneObj.class,
-                                                                            new String[] {"property"}, new Object[] {null});
-        final Iterator<LevelOneObj> it = result.iterator();
-        assertThat(it.next(), is(notNullValue()));
-        assertThat(it.hasNext(), is(false));
-    }
-
-    @Test
-    public void shouldFindPropertyItemsWithParent()
-        throws Exception {
-        final StorageNode parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
-
-        final LevelTwoObj levelTwo = new LevelTwoObj();
-        final PropertyObj propertyObj = new PropertyObj();
-        propertyObj.setName("obj 1");
-        propertyObj.setValue(5);
-        levelTwo.setPropertyObj(propertyObj);
-        final StorageNode newnode = simplePersist.convertBeanToNode(parentNode, levelTwo);
-        System.err.println(">>> " + newnode.getKey().getKeyAsString());
-        System.err.println(">>> " + newnode.getParent(session));
-        System.err.println(">>> " + newnode.getParent(session).getParent(session));
-
-        final Iterable<PropertyObj> result = simplePersist.findByProperties(parentNode, PropertyObj.class, new String[] {"name"},
-                                                                            new Object[] {"obj 1"});
-        final Iterator<PropertyObj> it = result.iterator();
-        final PropertyObj item = it.next();
-        assertThat(item.getName(), Is.is("obj 1"));
-        assertThat(item.getValue(), Is.is(5));
-        assertThat(it.hasNext(), Is.is(false));
-
     }
 
 }

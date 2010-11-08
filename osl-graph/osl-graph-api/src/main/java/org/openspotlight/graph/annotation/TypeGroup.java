@@ -36,8 +36,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface TypeGroup {
-    TypeGroupValue value();
-
     /**
      * Highe-level categories available.
      * 
@@ -54,12 +52,14 @@ public @interface TypeGroup {
          */
         EXECUTION,
         /**
-         * Any information related to resources like configuration files.
-         */
-        RESOURCE,
-        /**
          * Any information related to hardware assets like computers, servers, switches, etc.
          */
-        HARDWARE
+        HARDWARE,
+        /**
+         * Any information related to resources like configuration files.
+         */
+        RESOURCE
     }
+
+    TypeGroupValue value();
 }

@@ -63,11 +63,11 @@ public class WhereStatementInfo {
     /** The select statement info. */
     private SelectStatementInfo     selectStatementInfo;
 
-    /** The where type info list. */
-    private List<WhereTypeInfo>     whereTypeInfoList     = new ArrayList<WhereTypeInfo>();
-
     /** The where link type info list. */
     private List<WhereLinkTypeInfo> whereLinkTypeInfoList = new ArrayList<WhereLinkTypeInfo>();
+
+    /** The where type info list. */
+    private List<WhereTypeInfo>     whereTypeInfoList     = new ArrayList<WhereTypeInfo>();
 
     /**
      * Instantiates a new sL where statement info.
@@ -80,21 +80,12 @@ public class WhereStatementInfo {
     }
 
     /**
-     * Gets the where type info list.
+     * Gets the select statement info.
      * 
-     * @return the where type info list
+     * @return the select statement info
      */
-    public List<WhereTypeInfo> getWhereTypeInfoList() {
-        return whereTypeInfoList;
-    }
-
-    /**
-     * Sets the where type info list.
-     * 
-     * @param whereTypeInfoList the new where type info list
-     */
-    public void setWhereTypeInfoList(final List<WhereTypeInfo> whereTypeInfoList) {
-        this.whereTypeInfoList = whereTypeInfoList;
+    public SelectStatementInfo getSelectStatementInfo() {
+        return selectStatementInfo;
     }
 
     /**
@@ -107,21 +98,12 @@ public class WhereStatementInfo {
     }
 
     /**
-     * Sets the where link type info list.
+     * Gets the where type info list.
      * 
-     * @param whereLinkTypeInfoList the new where link type info list
+     * @return the where type info list
      */
-    public void setWhereLinkTypeInfoList(final List<WhereLinkTypeInfo> whereLinkTypeInfoList) {
-        this.whereLinkTypeInfoList = whereLinkTypeInfoList;
-    }
-
-    /**
-     * Gets the select statement info.
-     * 
-     * @return the select statement info
-     */
-    public SelectStatementInfo getSelectStatementInfo() {
-        return selectStatementInfo;
+    public List<WhereTypeInfo> getWhereTypeInfoList() {
+        return whereTypeInfoList;
     }
 
     /**
@@ -131,6 +113,24 @@ public class WhereStatementInfo {
      */
     public void setSelectStatement(final SelectStatementInfo selectStatementInfo) {
         this.selectStatementInfo = selectStatementInfo;
+    }
+
+    /**
+     * Sets the where link type info list.
+     * 
+     * @param whereLinkTypeInfoList the new where link type info list
+     */
+    public void setWhereLinkTypeInfoList(final List<WhereLinkTypeInfo> whereLinkTypeInfoList) {
+        this.whereLinkTypeInfoList = whereLinkTypeInfoList;
+    }
+
+    /**
+     * Sets the where type info list.
+     * 
+     * @param whereTypeInfoList the new where type info list
+     */
+    public void setWhereTypeInfoList(final List<WhereTypeInfo> whereTypeInfoList) {
+        this.whereTypeInfoList = whereTypeInfoList;
     }
 
     /*

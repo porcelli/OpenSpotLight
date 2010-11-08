@@ -64,6 +64,20 @@ import org.openspotlight.common.util.SLCollections;
  */
 public class SLCollectionsTest {
     @Test
+    public void shouldIterateOnOneIterables()
+        throws Exception {
+
+        final List<Iterable<String>> allLists = newArrayList();
+        allLists.add(newArrayList("A", "B", "C"));
+        int count = 0;
+        for (final String s: SLCollections.<String>iterableOfAll(allLists)) {
+            count++;
+        }
+        assertThat(count, is(3));
+
+    }
+
+    @Test
     public void shouldIterateOnVariousIterables()
         throws Exception {
 
@@ -76,20 +90,6 @@ public class SLCollectionsTest {
             count++;
         }
         assertThat(count, is(6));
-
-    }
-
-    @Test
-    public void shouldIterateOnOneIterables()
-        throws Exception {
-
-        final List<Iterable<String>> allLists = newArrayList();
-        allLists.add(newArrayList("A", "B", "C"));
-        int count = 0;
-        for (final String s: SLCollections.<String>iterableOfAll(allLists)) {
-            count++;
-        }
-        assertThat(count, is(3));
 
     }
 }

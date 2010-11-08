@@ -69,56 +69,36 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
  * @author feuteston
  */
 public final class StringKeysSupport {
-    private static final String SEP          = "__";
-    private static final String NODE_KEY_SEP = ":";
     private static final String LINK_KEY_SEP = "::";
+    private static final String NODE_KEY_SEP = ":";
+    private static final String SEP          = "__";
 
     /**
-     * Syntax sugar that returns the partition (using {@link PartitionFactory}) that is encoded inside node key.
-     * 
-     * @param nodeKey the node key
-     * @param factory the parition factory
-     * @return the partition
+     * Should not be instantiated
      */
-    public static Partition getPartition(final String nodeKey,
-                                         final PartitionFactory factory) {
-        return factory.getPartitionByName(getPartitionName(nodeKey));
+    private StringKeysSupport() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
     /**
-     * Returns the partition name that is encoded into node key.
+     * Builds a string that represents the composite key encoding inside it all information inside the input {@link CompositeKey}.
      * 
-     * @param nodeKey the node key
-     * @return the partition name
+     * @param compositeKey the composite key
+     * @return encoded string that represents the composite key
      */
-    public static String getPartitionName(final String nodeKey) {
-        return nodeKey.split(SEP)[0];
-    }
-
-    /**
-     * Returns the node type that is encoded into node key.
-     * 
-     * @param nodeKey the node key
-     * @return the node type
-     */
-    public static String getNodeType(final String nodeKey) {
-        return nodeKey.split(SEP)[1];
-    }
-
-    /**
-     * Builds a node key that encodes all {@link NodeKey} data inside it.
-     * 
-     * @param nodeKey the node key
-     * @return encoded string that represents the node key
-     */
-    public static String buildNodeKeyAsString(final NodeKey nodeKey) {
-        return new StringBuilder()
-            .append(nodeKey.getPartition().getPartitionName())
-            .append(SEP)
-            .append(nodeKey.getCompositeKey().getNodeType())
-            .append(SEP)
-            .append(getSha1SignatureEncodedAsBase64(buildNodeKeyAsStringBasedOnParentAndCompositeKey(nodeKey)))
-            .toString();
+    private static String buildCompositeKeyAsString(final CompositeKey compositeKey) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(compositeKey.getNodeType());
+        final List<SimpleKey> ordered = new ArrayList<SimpleKey>(compositeKey.getKeys());
+        Collections.sort(ordered);
+        for (final SimpleKey entry: ordered) {
+            sb.append(NODE_KEY_SEP)
+                .append(entry.getKeyName())
+                .append(NODE_KEY_SEP)
+                .append(NODE_KEY_SEP)
+                .append(entry.getValue());
+        }
+        return sb.toString();
     }
 
     /**
@@ -143,27 +123,6 @@ public final class StringKeysSupport {
      */
     public static String buildCompositeKeyAsHash(final CompositeKey compositeKey) {
         return getSha1SignatureEncodedAsBase64(buildCompositeKeyAsString(compositeKey));
-    }
-
-    /**
-     * Builds a string that represents the composite key encoding inside it all information inside the input {@link CompositeKey}.
-     * 
-     * @param compositeKey the composite key
-     * @return encoded string that represents the composite key
-     */
-    private static String buildCompositeKeyAsString(final CompositeKey compositeKey) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(compositeKey.getNodeType());
-        final List<SimpleKey> ordered = new ArrayList<SimpleKey>(compositeKey.getKeys());
-        Collections.sort(ordered);
-        for (final SimpleKey entry: ordered) {
-            sb.append(NODE_KEY_SEP)
-                .append(entry.getKeyName())
-                .append(NODE_KEY_SEP)
-                .append(NODE_KEY_SEP)
-                .append(entry.getValue());
-        }
-        return sb.toString();
     }
 
     /**
@@ -198,23 +157,19 @@ public final class StringKeysSupport {
     }
 
     /**
-     * Returns the origin node key that is encoded inside link key.
+     * Builds a node key that encodes all {@link NodeKey} data inside it.
      * 
-     * @param linkKey a link key
-     * @return the origin node key
+     * @param nodeKey the node key
+     * @return encoded string that represents the node key
      */
-    public static String getOriginKeyAsStringFromLinkKey(final String linkKey) {
-        return linkKey.split("[:][:]")[0];
-    }
-
-    /**
-     * Returns the target node key that is encoded inside link key.
-     * 
-     * @param linkKey a link key
-     * @return the target node key
-     */
-    public static String getTargeyKeyAsStringFromLinkKey(final String linkKey) {
-        return linkKey.split("[:][:]")[1];
+    public static String buildNodeKeyAsString(final NodeKey nodeKey) {
+        return new StringBuilder()
+            .append(nodeKey.getPartition().getPartitionName())
+            .append(SEP)
+            .append(nodeKey.getCompositeKey().getNodeType())
+            .append(SEP)
+            .append(getSha1SignatureEncodedAsBase64(buildNodeKeyAsStringBasedOnParentAndCompositeKey(nodeKey)))
+            .toString();
     }
 
     /**
@@ -228,9 +183,54 @@ public final class StringKeysSupport {
     }
 
     /**
-     * Should not be instantiated
+     * Returns the node type that is encoded into node key.
+     * 
+     * @param nodeKey the node key
+     * @return the node type
      */
-    private StringKeysSupport() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    public static String getNodeType(final String nodeKey) {
+        return nodeKey.split(SEP)[1];
+    }
+
+    /**
+     * Returns the origin node key that is encoded inside link key.
+     * 
+     * @param linkKey a link key
+     * @return the origin node key
+     */
+    public static String getOriginKeyAsStringFromLinkKey(final String linkKey) {
+        return linkKey.split("[:][:]")[0];
+    }
+
+    /**
+     * Syntax sugar that returns the partition (using {@link PartitionFactory}) that is encoded inside node key.
+     * 
+     * @param nodeKey the node key
+     * @param factory the parition factory
+     * @return the partition
+     */
+    public static Partition getPartition(final String nodeKey,
+                                         final PartitionFactory factory) {
+        return factory.getPartitionByName(getPartitionName(nodeKey));
+    }
+
+    /**
+     * Returns the partition name that is encoded into node key.
+     * 
+     * @param nodeKey the node key
+     * @return the partition name
+     */
+    public static String getPartitionName(final String nodeKey) {
+        return nodeKey.split(SEP)[0];
+    }
+
+    /**
+     * Returns the target node key that is encoded inside link key.
+     * 
+     * @param linkKey a link key
+     * @return the target node key
+     */
+    public static String getTargeyKeyAsStringFromLinkKey(final String linkKey) {
+        return linkKey.split("[:][:]")[1];
     }
 }

@@ -62,13 +62,35 @@ import org.openspotlight.storage.domain.key.NodeKey;
  */
 public interface StorageSession extends Disposable {
 
-    PartitionMethods withPartition(Partition partition);
+    static enum FlushMode {
+        AUTO,
+        EXPLICIT
+    }
+
+    interface NodeKeyBuilder {
+
+        NodeKey andCreate();
+
+        NodeKeyBuilder withParent(Partition partition,
+                                       String nodeType);
+
+        NodeKeyBuilder withParent(String parentId);
+
+        NodeKeyBuilder withSimpleKey(String keyName,
+                                      String value);
+    }
 
     interface PartitionMethods extends NodeFactory {
 
-        Iterable<String> getAllNodeTypes();
+        CriteriaBuilder createCriteria();
 
         NodeKeyBuilder createKey(String nodeType);
+
+        NodeKey createNewSimpleKey(String... nodePaths);
+
+        StorageNode createNewSimpleNode(String... nodePaths);
+
+        NodeBuilder createWithType(String nodeType);
 
         Iterable<StorageNode> findByCriteria(Criteria criteria);
 
@@ -76,63 +98,41 @@ public interface StorageSession extends Disposable {
 
         StorageNode findUniqueByCriteria(Criteria criteria);
 
-        CriteriaBuilder createCriteria();
-
-        NodeBuilder createWithType(String nodeType);
-
-        NodeKey createNewSimpleKey(String... nodePaths);
-
-        StorageNode createNewSimpleNode(String... nodePaths);
+        Iterable<String> getAllNodeTypes();
     }
-
-    StorageNode findNodeByStringKey(String key);
-
-    void removeNode(StorageNode StorageNode);
-
-    static enum FlushMode {
-        AUTO,
-        EXPLICIT
-    }
-
-    FlushMode getFlushMode();
-
-    interface NodeKeyBuilder {
-
-        NodeKeyBuilder withSimpleKey(String keyName,
-                                      String value);
-
-        NodeKeyBuilder withParent(Partition partition,
-                                       String nodeType);
-
-        NodeKeyBuilder withParent(String parentId);
-
-        NodeKey andCreate();
-    }
-
-    void discardTransient();
-
-    void flushTransient();
 
     StorageLink addLink(StorageNode origin,
                          StorageNode destiny,
                          String name);
 
-    void removeLink(StorageNode origin,
-                     StorageNode destiny,
-                     String name);
-
-    void removeLink(StorageLink link);
+    void discardTransient();
 
     Iterable<StorageLink> findLinks(StorageNode origin);
 
     Iterable<StorageLink> findLinks(StorageNode origin,
+                                     StorageNode destiny);
+
+    Iterable<StorageLink> findLinks(StorageNode origin,
                                      String type);
+
+    StorageNode findNodeByStringKey(String key);
+
+    void flushTransient();
+
+    FlushMode getFlushMode();
 
     StorageLink getLink(StorageNode origin,
                          StorageNode destiny,
                          String type);
 
-    Iterable<StorageLink> findLinks(StorageNode origin,
-                                     StorageNode destiny);
+    void removeLink(StorageLink link);
+
+    void removeLink(StorageNode origin,
+                     StorageNode destiny,
+                     String name);
+
+    void removeNode(StorageNode StorageNode);
+
+    PartitionMethods withPartition(Partition partition);
 
 }

@@ -62,14 +62,33 @@ public class TestShowQueryCommand extends AbstractCommandTest {
         command = new ShowQueryCommand();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAcceptNull() {
-        assertThat(command.accept(null), is(false));
+    @Test
+    public void testAcceptInValidParameter() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("xxshow query ");
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptInValidParameter2() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("add show query");
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptInValidParameter3() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("show query something");
+
+        assertThat(command.accept(state), is(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExecuteNull() {
-        command.execute(null, null, null);
+    public void testAcceptNull() {
+        assertThat(command.accept(null), is(false));
     }
 
     @Test
@@ -96,28 +115,9 @@ public class TestShowQueryCommand extends AbstractCommandTest {
         assertThat(command.accept(state), is(true));
     }
 
-    @Test
-    public void testAcceptInValidParameter() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("xxshow query ");
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptInValidParameter2() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("add show query");
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptInValidParameter3() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("show query something");
-
-        assertThat(command.accept(state), is(false));
+    @Test(expected = IllegalArgumentException.class)
+    public void testExecuteNull() {
+        command.execute(null, null, null);
     }
 
     @Test

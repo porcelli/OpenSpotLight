@@ -59,28 +59,28 @@ import org.openspotlight.graph.Link;
  */
 public abstract class JavaClassJavaMethodSimpleLinkPrivate extends Link {
 
-    private String linkName;
     private Date   creationTime;
+    private String linkName;
     private String selecao;
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
 
     public String getLinkName() {
         return linkName;
     }
 
-    public void setLinkName(final String linkName) {
-        this.linkName = linkName;
-    }
-
-    public Date getCreationTime() {
-        return creationTime;
+    public String getSelecao() {
+        return selecao;
     }
 
     public void setCreationTime(final Date creationTime) {
         this.creationTime = creationTime;
     }
 
-    public String getSelecao() {
-        return selecao;
+    public void setLinkName(final String linkName) {
+        this.linkName = linkName;
     }
 
     public void setSelecao(final String selecao) {

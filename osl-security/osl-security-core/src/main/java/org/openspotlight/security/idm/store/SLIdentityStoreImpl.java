@@ -106,10 +106,56 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
     private StorageNode                                       rootNode;
 
-    private FeaturesMetaData                                  supportedFeatures;
     private SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+    private FeaturesMetaData                                  supportedFeatures;
 
     public SLIdentityStoreImpl() {}
+
+    private Set<IdentityObjectRelationship> internalResolveRelationships(final IdentityStoreInvocationContext invocationCxt,
+                                                                          final IdentityObject fromIdentity,
+                                                                          final IdentityObject toIdentity,
+                                                                          final IdentityObjectRelationshipType relationshipType,
+                                                                          final String name)
+        throws IdentityException {
+
+        final List<String> parameterNames = new ArrayList<String>();
+        final List<Object> parameterValues = new ArrayList<Object>();
+        if (name != null) {
+            parameterNames.add("name");
+            parameterValues.add(name);
+        }
+        if (relationshipType != null) {
+            parameterNames.add("typeAsString");
+            parameterValues.add(relationshipType.getName());
+        }
+        if (fromIdentity != null) {
+            parameterNames.add("fromIdentityObjectId");
+            parameterValues.add(fromIdentity.getId());
+        }
+        if (toIdentity != null) {
+            parameterNames.add("toIdentityObjectId");
+            parameterValues.add(toIdentity.getId());
+        }
+
+        final Iterable<SLIdentityObjectRelationship> foundNodes =
+            simplePersist
+                .findByProperties(
+                                                                                                 SLIdentityObjectRelationship.class,
+                                                                                                 parameterNames
+                                                                                                     .toArray(new String[0]),
+                                                                                                 parameterValues.toArray());
+
+        final Set<IdentityObjectRelationship> result = new HashSet<IdentityObjectRelationship>();
+
+        for (final SLIdentityObjectRelationship relationship: foundNodes) {
+            final IdentityObject newFrom = this.findIdentityObject(invocationCxt, relationship.getFromIdentityObjectId());
+            relationship.setFromIdentityObject(newFrom);
+            final IdentityObject newTo = this.findIdentityObject(invocationCxt, relationship.getToIdentityObjectId());
+            relationship.setToIdentityObject(newTo);
+            result.add(relationship);
+        }
+        return result;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -431,52 +477,6 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
     @Override
     public FeaturesMetaData getSupportedFeatures() {
         return supportedFeatures;
-    }
-
-    private Set<IdentityObjectRelationship> internalResolveRelationships(final IdentityStoreInvocationContext invocationCxt,
-                                                                          final IdentityObject fromIdentity,
-                                                                          final IdentityObject toIdentity,
-                                                                          final IdentityObjectRelationshipType relationshipType,
-                                                                          final String name)
-        throws IdentityException {
-
-        final List<String> parameterNames = new ArrayList<String>();
-        final List<Object> parameterValues = new ArrayList<Object>();
-        if (name != null) {
-            parameterNames.add("name");
-            parameterValues.add(name);
-        }
-        if (relationshipType != null) {
-            parameterNames.add("typeAsString");
-            parameterValues.add(relationshipType.getName());
-        }
-        if (fromIdentity != null) {
-            parameterNames.add("fromIdentityObjectId");
-            parameterValues.add(fromIdentity.getId());
-        }
-        if (toIdentity != null) {
-            parameterNames.add("toIdentityObjectId");
-            parameterValues.add(toIdentity.getId());
-        }
-
-        final Iterable<SLIdentityObjectRelationship> foundNodes =
-            simplePersist
-                .findByProperties(
-                                                                                                 SLIdentityObjectRelationship.class,
-                                                                                                 parameterNames
-                                                                                                     .toArray(new String[0]),
-                                                                                                 parameterValues.toArray());
-
-        final Set<IdentityObjectRelationship> result = new HashSet<IdentityObjectRelationship>();
-
-        for (final SLIdentityObjectRelationship relationship: foundNodes) {
-            final IdentityObject newFrom = this.findIdentityObject(invocationCxt, relationship.getFromIdentityObjectId());
-            relationship.setFromIdentityObject(newFrom);
-            final IdentityObject newTo = this.findIdentityObject(invocationCxt, relationship.getToIdentityObjectId());
-            relationship.setToIdentityObject(newTo);
-            result.add(relationship);
-        }
-        return result;
     }
 
     @Override

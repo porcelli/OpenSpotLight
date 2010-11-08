@@ -63,14 +63,14 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public class SelectByNodeTypeCommand extends SelectAbstractCommand {
 
-    /** The select info. */
-    private final SelectStatementInfo      selectInfo;
-
     /** The command do. */
     private final SelectCommandDO          commandDO;
 
     /** The node wrapper list map. */
     private Map<String, List<StorageNode>> nodeWrapperListMap;
+
+    /** The select info. */
+    private final SelectStatementInfo      selectInfo;
 
     /**
      * Instantiates a new sL select by node type command.
@@ -82,93 +82,6 @@ public class SelectByNodeTypeCommand extends SelectAbstractCommand {
                                final SelectStatementInfo selectInfo, final SelectCommandDO commandDO) {
         this.selectInfo = selectInfo;
         this.commandDO = commandDO;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
-     */
-    @Override
-    public void execute() {
-        throw new UnsupportedOperationException();
-        //    	try {
-        //            if (commandDO.getPreviousNodeWrappers() != null) {
-        //                nodeWrapperListMap = QuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
-        //            }
-        //
-        //            List<SelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
-        //            String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-        //            WhereStatementInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
-        //
-        //            Set<String> typesNotFiltered = new HashSet<String>();
-        //            for (SelectTypeInfo typeInfo : typeInfoList) {
-        //                typesNotFiltered.add(typeInfo.getName());
-        //            }
-        //
-        //            XPathStatementBuilder statementBuilder = new XPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
-        //                                                                                   + "/contexts//*");
-        //            Statement rootStatement = statementBuilder.getRootStatement();
-        //
-        //            if (whereStatementInfo != null) {
-        //                List<org.openspotlight.graph.query.info.WhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
-        //                if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
-        //                    List<WhereTypeInfo> list = whereStatementInfo.getWhereTypeInfoList();
-        //                    int addedConditions = 0;
-        //                    for (int i = 0; i < list.size(); i++) {
-        //                        WhereTypeInfo typeInfo = list.get(i);
-        //                        typesNotFiltered.remove(typeInfo.getName());
-        //                        if (nodeWrapperListMap == null
-        //                            || (nodeWrapperListMap != null && nodeWrapperListMap.containsKey(typeInfo.getName()))) {
-        //                            Statement typeStatement;
-        //                            if (addedConditions > 0) typeStatement = rootStatement.operator(OR).openBracket();
-        //                            else typeStatement = rootStatement.openBracket();
-        //                            Statement typeFilterStatement = typeStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(
-        //                                                                                                                                             typeInfo.getName()).operator(
-        //                                                                                                                                                                          AND).openBracket();
-        //                            filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
-        //                            typeFilterStatement.closeBracket();
-        //                            typeStatement.closeBracket();
-        //                            addedConditions++;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //
-        //            if (commandDO.getPreviousNodeWrappers() == null) {
-        //                for (String typeName : typesNotFiltered) {
-        //                    Condition condition;
-        //                    if (rootStatement.getConditionCount() == 0) {
-        //                        condition = rootStatement.condition();
-        //                    } else {
-        //                        condition = rootStatement.operator(OR).condition();
-        //                    }
-        //                    condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typeName);
-        //                }
-        //            }
-        //
-        //            statementBuilder.setOrderBy(typePropName);
-        //            Set<StorageNode> pNodeWrappers = new HashSet<StorageNode>();
-        //            commandDO.setNodeWrappers(pNodeWrappers);
-        //
-        //            if (statementBuilder.getRootStatement().getConditionCount() > 0) {
-        //                SLPersistentTreeSession treeSession = commandDO.getTreeSession();
-        //                String xpath = statementBuilder.getXPath();
-        //                SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
-        //                SLPersistentQueryResult result = query.execute();
-        //                pNodeWrappers.addAll(QuerySupport.wrapNodes(result.getNodes()));
-        //            }
-        //
-        //            if (commandDO.getPreviousNodeWrappers() != null) {
-        //                for (String typeName : typesNotFiltered) {
-        //                    List<StorageNode> typeNodeWrappers = nodeWrapperListMap.get(typeName);
-        //                    if (typeNodeWrappers != null) {
-        //                        pNodeWrappers.addAll(typeNodeWrappers);
-        //                    }
-        //                }
-        //            }
-        //        } catch (SLException e) {
-        //            throw new SLGraphSessionException("Error on attempt to execute " + this.getClass().getName() + " command.");
-        //        }
     }
 
     /**
@@ -257,6 +170,93 @@ public class SelectByNodeTypeCommand extends SelectAbstractCommand {
         //            }
         //
         //            conditionStatement.closeBracket();
+        //        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
+     */
+    @Override
+    public void execute() {
+        throw new UnsupportedOperationException();
+        //    	try {
+        //            if (commandDO.getPreviousNodeWrappers() != null) {
+        //                nodeWrapperListMap = QuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
+        //            }
+        //
+        //            List<SelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
+        //            String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
+        //            WhereStatementInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
+        //
+        //            Set<String> typesNotFiltered = new HashSet<String>();
+        //            for (SelectTypeInfo typeInfo : typeInfoList) {
+        //                typesNotFiltered.add(typeInfo.getName());
+        //            }
+        //
+        //            XPathStatementBuilder statementBuilder = new XPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+        //                                                                                   + "/contexts//*");
+        //            Statement rootStatement = statementBuilder.getRootStatement();
+        //
+        //            if (whereStatementInfo != null) {
+        //                List<org.openspotlight.graph.query.info.WhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
+        //                if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
+        //                    List<WhereTypeInfo> list = whereStatementInfo.getWhereTypeInfoList();
+        //                    int addedConditions = 0;
+        //                    for (int i = 0; i < list.size(); i++) {
+        //                        WhereTypeInfo typeInfo = list.get(i);
+        //                        typesNotFiltered.remove(typeInfo.getName());
+        //                        if (nodeWrapperListMap == null
+        //                            || (nodeWrapperListMap != null && nodeWrapperListMap.containsKey(typeInfo.getName()))) {
+        //                            Statement typeStatement;
+        //                            if (addedConditions > 0) typeStatement = rootStatement.operator(OR).openBracket();
+        //                            else typeStatement = rootStatement.openBracket();
+        //                            Statement typeFilterStatement = typeStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(
+        //                                                                                                                                             typeInfo.getName()).operator(
+        //                                                                                                                                                                          AND).openBracket();
+        //                            filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
+        //                            typeFilterStatement.closeBracket();
+        //                            typeStatement.closeBracket();
+        //                            addedConditions++;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //
+        //            if (commandDO.getPreviousNodeWrappers() == null) {
+        //                for (String typeName : typesNotFiltered) {
+        //                    Condition condition;
+        //                    if (rootStatement.getConditionCount() == 0) {
+        //                        condition = rootStatement.condition();
+        //                    } else {
+        //                        condition = rootStatement.operator(OR).condition();
+        //                    }
+        //                    condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typeName);
+        //                }
+        //            }
+        //
+        //            statementBuilder.setOrderBy(typePropName);
+        //            Set<StorageNode> pNodeWrappers = new HashSet<StorageNode>();
+        //            commandDO.setNodeWrappers(pNodeWrappers);
+        //
+        //            if (statementBuilder.getRootStatement().getConditionCount() > 0) {
+        //                SLPersistentTreeSession treeSession = commandDO.getTreeSession();
+        //                String xpath = statementBuilder.getXPath();
+        //                SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
+        //                SLPersistentQueryResult result = query.execute();
+        //                pNodeWrappers.addAll(QuerySupport.wrapNodes(result.getNodes()));
+        //            }
+        //
+        //            if (commandDO.getPreviousNodeWrappers() != null) {
+        //                for (String typeName : typesNotFiltered) {
+        //                    List<StorageNode> typeNodeWrappers = nodeWrapperListMap.get(typeName);
+        //                    if (typeNodeWrappers != null) {
+        //                        pNodeWrappers.addAll(typeNodeWrappers);
+        //                    }
+        //                }
+        //            }
+        //        } catch (SLException e) {
+        //            throw new SLGraphSessionException("Error on attempt to execute " + this.getClass().getName() + " command.");
         //        }
     }
 

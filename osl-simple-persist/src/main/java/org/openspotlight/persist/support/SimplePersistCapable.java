@@ -63,13 +63,27 @@ import org.openspotlight.storage.StorageSession;
  */
 public interface SimplePersistCapable<N, S> extends Disposable {
 
-    StorageSession getCurrentSession();
+    interface InternalMethods {
+        public Object beforeUnConvert(SimpleNodeType bean,
+                                       Serializable value,
+                                       Method readMethod);
+
+        public String getNodeName(Class<?> nodeType);
+    }
 
     Partition getCurrentPartition();
+
+    StorageSession getCurrentSession();
 
     StorageSession.PartitionMethods getPartitionMethods();
 
     public <T> Iterable<N> convertBeansToNodes(final Iterable<T> beans);
+
+    public <T> Iterable<N> convertBeansToNodes(N parentNode,
+                                                final Iterable<T> beans);
+
+    public <T> N convertBeanToNode(N parentNode,
+                                    final T bean);
 
     public <T> N convertBeanToNode(final T bean)
         throws Exception;
@@ -79,14 +93,19 @@ public interface SimplePersistCapable<N, S> extends Disposable {
     public <T> T convertNodeToBean(final N nodes)
         throws Exception;
 
-    public <T> Iterable<T> findByProperties(Class<T> beanType,
-                                             String[] propertyNames,
-                                             Object[] propertyValues);
-
     public <T> Iterable<T> findAll(Class<T> beanType);
 
     public <T> Iterable<T> findAll(N parentNode,
                                     Class<T> beanType);
+
+    public <T> Iterable<T> findByProperties(Class<T> beanType,
+                                             String[] propertyNames,
+                                             Object[] propertyValues);
+
+    public <T> Iterable<T> findByProperties(N parentNode,
+                                             Class<T> beanType,
+                                             String[] propertyNames,
+                                             Object[] propertyValues);
 
     public <T> T findUnique(Class<T> beanType);
 
@@ -97,29 +116,10 @@ public interface SimplePersistCapable<N, S> extends Disposable {
                                          String[] propertyNames,
                                          Object[] propertyValues);
 
-    public <T> Iterable<N> convertBeansToNodes(N parentNode,
-                                                final Iterable<T> beans);
-
-    public <T> N convertBeanToNode(N parentNode,
-                                    final T bean);
-
-    public <T> Iterable<T> findByProperties(N parentNode,
-                                             Class<T> beanType,
-                                             String[] propertyNames,
-                                             Object[] propertyValues);
-
     public <T> T findUniqueByProperties(N parentNode,
                                          Class<T> beanType,
                                          String[] propertyNames,
                                          Object[] propertyValues);
-
-    interface InternalMethods {
-        public Object beforeUnConvert(SimpleNodeType bean,
-                                       Serializable value,
-                                       Method readMethod);
-
-        public String getNodeName(Class<?> nodeType);
-    }
 
     public InternalMethods getInternalMethods();
 

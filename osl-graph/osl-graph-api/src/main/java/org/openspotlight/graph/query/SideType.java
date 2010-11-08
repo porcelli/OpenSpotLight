@@ -30,11 +30,11 @@ public enum SideType {
     /** The A_ side. */
     A_SIDE("A"),
 
-    /** The B_ side. */
-    B_SIDE("B"),
-
     /** The AN y_ side. */
     ANY_SIDE("Any"),
+
+    /** The B_ side. */
+    B_SIDE("B"),
 
     /** The BOT h_ sides. */
     BOTH_SIDES("Both");

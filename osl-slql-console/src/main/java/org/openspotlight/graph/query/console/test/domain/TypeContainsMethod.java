@@ -57,6 +57,8 @@ import org.openspotlight.graph.Link;
  */
 public abstract class TypeContainsMethod extends Link {
 
+    private Integer tag;
+
     public Integer getTag() {
         return tag;
     }
@@ -64,6 +66,4 @@ public abstract class TypeContainsMethod extends Link {
     public void setTag(final Integer tag) {
         this.tag = tag;
     }
-
-    private Integer tag;
 }

@@ -62,20 +62,20 @@ import org.openspotlight.storage.domain.StorageNode;
 
 public interface ExecutionContext extends Disposable, GraphSessionFactory {
 
-    public PersistentArtifactManager getPersistentArtifactManager();
-
     public MutableConfigurationManager getDefaultConfigurationManager();
+
+    public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry();
 
     public String getPassword();
 
-    public AuthenticatedUser getUser();
-
-    public String getUserName();
+    public PersistentArtifactManager getPersistentArtifactManager();
 
     public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(Partition partition);
 
     public SimplePersistFactory getSimplePersistFactory();
 
-    public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry();
+    public AuthenticatedUser getUser();
+
+    public String getUserName();
 
 }

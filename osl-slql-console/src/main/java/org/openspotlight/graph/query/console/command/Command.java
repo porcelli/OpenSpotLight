@@ -68,12 +68,20 @@ public interface Command {
      */
     public enum FileCompletionMode {
 
-        /** The STARTS_WITH mode. */
-        STARTS_WITH,
-
         /** The CONTAINS mode. */
-        CONTAINS
+        CONTAINS,
+
+        /** The STARTS_WITH mode. */
+        STARTS_WITH
     }
+
+    /**
+     * Accept.
+     * 
+     * @param state the state
+     * @return true, if successful
+     */
+    public boolean accept(ConsoleState state);
 
     /**
      * Execute.
@@ -87,13 +95,6 @@ public interface Command {
                          ConsoleState state);
 
     /**
-     * Gets the console command.
-     * 
-     * @return the console command
-     */
-    public String getCommand();
-
-    /**
      * Gets the auto complete command.
      * 
      * @return the auto complete command
@@ -101,18 +102,18 @@ public interface Command {
     public String getAutoCompleteCommand();
 
     /**
+     * Gets the console command.
+     * 
+     * @return the console command
+     */
+    public String getCommand();
+
+    /**
      * Gets the description. This will be printed at help statement.
      * 
      * @return the description
      */
     public String getDescription();
-
-    /**
-     * Checks if Command supports file completion.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasFileCompletion();
 
     /**
      * Gets the file completion command.
@@ -129,11 +130,10 @@ public interface Command {
     public FileCompletionMode getFileCompletionMode();
 
     /**
-     * Accept.
+     * Checks if Command supports file completion.
      * 
-     * @param state the state
      * @return true, if successful
      */
-    public boolean accept(ConsoleState state);
+    public boolean hasFileCompletion();
 
 }

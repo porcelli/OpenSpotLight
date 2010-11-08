@@ -64,7 +64,12 @@ import com.mongodb.Mongo;
  */
 @Singleton
 public class MongoStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
-    private final int maxCacheSize;
+    private final StorageSession.FlushMode flushMode;
+
+    private final int                      maxCacheSize;
+
+    private final Mongo                    mongo;
+    private final PartitionFactory         partitionFactory;
 
     @Inject
     public MongoStorageSessionProvider(final StorageSession.FlushMode flushMode, final Mongo mongo,
@@ -74,11 +79,6 @@ public class MongoStorageSessionProvider extends ThreadLocalProvider<StorageSess
         this.partitionFactory = partitionFactory;
         this.maxCacheSize = maxCacheSize;
     }
-
-    private final Mongo                    mongo;
-    private final StorageSession.FlushMode flushMode;
-
-    private final PartitionFactory         partitionFactory;
 
     @Override
     protected StorageSession createInstance() {

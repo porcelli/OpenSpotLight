@@ -73,16 +73,16 @@ public class SimplePersistFactoryImpl implements SimplePersistFactory {
     }
 
     @Override
-    public SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(
-                                                                                 final Partition partition) {
-        return new SimplePersistImpl(sessionProvider.get(), partition);
-    }
-
-    @Override
     public void closeResources() {
         if (sessionProvider instanceof Disposable) {
             ((Disposable) sessionProvider).closeResources();
         }
 
+    }
+
+    @Override
+    public SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(
+                                                                                 final Partition partition) {
+        return new SimplePersistImpl(sessionProvider.get(), partition);
     }
 }

@@ -61,6 +61,12 @@ import com.google.inject.Provider;
 
 public class GraphSessionFactoryImpl implements GraphSessionFactory {
 
+    private final PartitionFactory         factory;
+
+    private final List<Disposable>         resourcesToClose = new ArrayList<Disposable>();
+
+    private final Provider<StorageSession> sessionProvider;
+
     @Inject
     public GraphSessionFactoryImpl(
                                    final Provider<StorageSession> sessionProvider,
@@ -68,30 +74,6 @@ public class GraphSessionFactoryImpl implements GraphSessionFactory {
         this.sessionProvider = sessionProvider;
         this.factory = factory;
     }
-
-    private final PartitionFactory         factory;
-
-    private final Provider<StorageSession> sessionProvider;
-
-    @Override
-    public FullGraphSession openFull() {
-        return rememberToClose(new FullGraphSessionImpl(sessionProvider, null,
-                factory));
-    }
-
-    @Override
-    public FullGraphSession openFull(final String artifactId) {
-        return rememberToClose(new FullGraphSessionImpl(sessionProvider,
-                artifactId, factory));
-    }
-
-    @Override
-    public SimpleGraphSession openSimple() {
-        return rememberToClose(new SimpleGraphSessionImpl(sessionProvider,
-                factory));
-    }
-
-    private final List<Disposable> resourcesToClose = new ArrayList<Disposable>();
 
     private <T extends Disposable> T rememberToClose(final T t) {
         synchronized (resourcesToClose) {
@@ -110,6 +92,24 @@ public class GraphSessionFactoryImpl implements GraphSessionFactory {
         for (final Disposable d: copy) {
             d.closeResources();
         }
+    }
+
+    @Override
+    public FullGraphSession openFull() {
+        return rememberToClose(new FullGraphSessionImpl(sessionProvider, null,
+                factory));
+    }
+
+    @Override
+    public FullGraphSession openFull(final String artifactId) {
+        return rememberToClose(new FullGraphSessionImpl(sessionProvider,
+                artifactId, factory));
+    }
+
+    @Override
+    public SimpleGraphSession openSimple() {
+        return rememberToClose(new SimpleGraphSessionImpl(sessionProvider,
+                factory));
     }
 
 }

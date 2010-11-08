@@ -69,7 +69,21 @@ import org.openspotlight.persist.annotation.TransientProperty;
 
 public class SLPasswordEntry implements SimpleNodeType, Serializable {
 
-    private static final long serialVersionUID = -989160074137053633L;
+    private static final long               serialVersionUID     = -989160074137053633L;
+
+    private List<Byte>                      autoboxedBinaryValue = new ArrayList<Byte>();
+
+    private Class<? extends Credential>     credentialClass;
+
+    private Class<? extends CredentialType> credentialTypeClass;
+
+    private String                          credentialTypeName;
+
+    private String                          passwordValue;
+
+    private String                          userId;
+
+    private String                          userName;
 
     @SuppressWarnings("unchecked")
     public static SLPasswordEntry create(final IdentityObject identityObject,
@@ -99,20 +113,6 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
         }
         return entry;
     }
-
-    private String                          credentialTypeName;
-
-    private Class<? extends CredentialType> credentialTypeClass;
-
-    private Class<? extends Credential>     credentialClass;
-
-    private String                          userId;
-
-    private String                          userName;
-
-    private List<Byte>                      autoboxedBinaryValue = new ArrayList<Byte>();
-
-    private String                          passwordValue;
 
     public Credential asCredential() {
         if (PasswordCredential.class.equals(credentialClass)) {

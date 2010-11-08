@@ -19,6 +19,13 @@ import org.openspotlight.federation.domain.artifact.Artifact;
  */
 public class AfterFederationTaskTest extends AbstractBundleTest {
 
+    @Override
+    public Repository createRepository() {
+        return Repository.newRepositoryNamed("repository")
+                .withGroup("group").withArtifactSource("source", "src", "/")
+                .withBundles("bundle", ExampleAfterFederationTask.class).andCreate();
+    }
+
     @Test
     public void shouldProcessFederatedSources()
         throws Exception {
@@ -27,12 +34,5 @@ public class AfterFederationTaskTest extends AbstractBundleTest {
         assertThat(it.next().getK1(), is(ExampleArtifactTask.class));
         //FIXME pegar do claspath usando a mesma forma que foi feita no SLQL
         fail();// needs more assertions
-    }
-
-    @Override
-    public Repository createRepository() {
-        return Repository.newRepositoryNamed("repository")
-                .withGroup("group").withArtifactSource("source", "src", "/")
-                .withBundles("bundle", ExampleAfterFederationTask.class).andCreate();
     }
 }

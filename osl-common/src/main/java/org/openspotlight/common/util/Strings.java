@@ -65,17 +65,11 @@ import java.util.Iterator;
  */
 public class Strings {
 
-    public static boolean containsNonPrintable(final String s) {
-        for (final char c: s.toCharArray()) {
-            if (!isPrintableChar(c)) { return true; }
-        }
-        return false;
-    }
-
-    public static boolean isPrintableChar(final char c) {
-        final Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
-        return (!Character.isISOControl(c)) && c != KeyEvent.CHAR_UNDEFINED && block != null
-               && block != Character.UnicodeBlock.SPECIALS;
+    /**
+     * Should not be instantiated.
+     */
+    private Strings() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
     public static <T> String bigCollectionsToString(final Collection<T> col) {
@@ -127,6 +121,13 @@ public class Strings {
         return sb.toString();
     }
 
+    public static boolean containsNonPrintable(final String s) {
+        for (final char c: s.toCharArray()) {
+            if (!isPrintableChar(c)) { return true; }
+        }
+        return false;
+    }
+
     /**
      * Converts the first character to lower case.
      * 
@@ -157,6 +158,12 @@ public class Strings {
 
     public static boolean isEmpty(final String s) {
         return s == null || s.trim().length() == 0;
+    }
+
+    public static boolean isPrintableChar(final char c) {
+        final Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+        return (!Character.isISOControl(c)) && c != KeyEvent.CHAR_UNDEFINED && block != null
+               && block != Character.UnicodeBlock.SPECIALS;
     }
 
     /**
@@ -228,12 +235,5 @@ public class Strings {
         } else {
             return toBeCorrected;
         }
-    }
-
-    /**
-     * Should not be instantiated.
-     */
-    private Strings() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

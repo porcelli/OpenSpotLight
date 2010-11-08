@@ -63,19 +63,11 @@ import com.google.inject.Singleton;
 
 @Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
+    private final SLIdentityStoreSessionContext                     context = new SLIdentityStoreSessionContext(this);
+
+    private final StorageNode                                       rootNode;
+
     private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
-
-    public StorageNode getRootNode() {
-        return rootNode;
-    }
-
-    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
-        return simplePersist;
-    }
-
-    private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(this);
-
-    private final StorageNode                   rootNode;
 
     @Inject
     public SLIdentityStoreSessionImpl(
@@ -109,10 +101,18 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
     @Override
     public void commitTransaction() {}
 
+    public StorageNode getRootNode() {
+        return rootNode;
+    }
+
     @Override
     public Object getSessionContext()
         throws IdentityException {
         return context;
+    }
+
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
+        return simplePersist;
     }
 
     @Override

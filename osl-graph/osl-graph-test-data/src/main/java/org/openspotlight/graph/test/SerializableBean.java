@@ -56,9 +56,9 @@ public class SerializableBean implements Serializable {
 
     private static final long serialVersionUID = -2289174312505299304L;
 
-    public String             testString;
-
     public byte[]             testBuffer;
+
+    public String             testString;
 
     @Override
     public boolean equals(final Object o) {

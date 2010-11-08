@@ -87,12 +87,10 @@ import com.google.inject.Singleton;
 @Singleton
 public class DefaultScheduler implements Scheduler {
 
-    private static final String DEFAULT_GROUP = "DEFAULT_GROUP";
-
     public static class OslInternalImmediateCommand extends OslInternalSchedulerCommand {
 
-        private final String                                                                     identifier;
         private final ExecutionContextFactory                                                    factory;
+        private final String                                                                     identifier;
 
         private final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap;
 
@@ -118,22 +116,22 @@ public class DefaultScheduler implements Scheduler {
 
     public static class OslInternalSchedulerCommand {
 
-        private final String                                                                     jobName;
-
         private final String                                                                     cronInformation;
-
-        private final AtomicReference<GlobalSettings>                                            settings;
 
         private final ExecutionContextFactory                                                    executionContextFactory;
 
-        private final Schedulable                                                                schedulable;
+        private final ExecutionContextFactory                                                    factory;
 
-        private final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap;
+        private final String                                                                     jobName;
+
         private final Logger                                                                     logger =
                                                                                                             LoggerFactory
                                                                                                                 .getLogger(getClass());
 
-        private final ExecutionContextFactory                                                    factory;
+        private final Schedulable                                                                schedulable;
+        private final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap;
+
+        private final AtomicReference<GlobalSettings>                                            settings;
 
         public OslInternalSchedulerCommand(
                                            final Schedulable schedulable,
@@ -185,6 +183,57 @@ public class DefaultScheduler implements Scheduler {
 
     }
 
+    public static class SchedulableVisitor implements SimpleNodeTypeVisitor<Schedulable> {
+
+        private final List<Schedulable> beans = new LinkedList<Schedulable>();
+
+        public List<Schedulable> getBeans() {
+            return beans;
+        }
+
+        @Override
+        public void visitBean(final Schedulable bean) {
+            beans.add(bean);
+
+        }
+
+    }
+
+    private static final String                                                              DEFAULT_GROUP        =
+                                                                                                                      "DEFAULT_GROUP";
+
+    private static DefaultScheduler                                                          defaultInstance      = null;
+
+    public static final String                                                               IMMEDIATE            = "immediate";
+
+    private final ExecutionContextFactory                                                    executionContextFactory;
+
+    private final ConcurrentHashMap<String, OslInternalSchedulerCommand>                     oslCronCommands      =
+                                                                                                                      new ConcurrentHashMap<String, OslInternalSchedulerCommand>();
+
+    private final ConcurrentHashMap<String, OslInternalSchedulerCommand>                     oslImmediateCommands =
+                                                                                                                      new ConcurrentHashMap<String, OslInternalSchedulerCommand>();
+
+    private final org.quartz.Scheduler                                                       quartzScheduler;
+
+    private final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap;
+    private final AtomicReference<GlobalSettings>                                            settings             =
+                                                                                                                      new AtomicReference<GlobalSettings>();
+
+    @Inject
+    public DefaultScheduler(final ExecutionContextFactory executionContextFactory,
+                            @SchedulableCommandMap final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap) {
+        this.executionContextFactory = executionContextFactory;
+        this.schedulableMap = schedulableMap;
+        try {
+            System.setProperty("org.quartz.threadPool.threadCount", "1");
+            quartzScheduler = new StdSchedulerFactory().getScheduler();
+        } catch (final SchedulerException e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+        defaultInstance = this;
+    }
+
     private static SchedulableTaskFactory
         getFactoryFromClass(final Class<? extends Schedulable> targetSchedulableType,
                             final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap)
@@ -204,79 +253,8 @@ public class DefaultScheduler implements Scheduler {
         return commandType != null ? commandType.newInstance() : null;
     }
 
-    public static class SchedulableVisitor implements SimpleNodeTypeVisitor<Schedulable> {
-
-        private final List<Schedulable> beans = new LinkedList<Schedulable>();
-
-        public List<Schedulable> getBeans() {
-            return beans;
-        }
-
-        @Override
-        public void visitBean(final Schedulable bean) {
-            beans.add(bean);
-
-        }
-
-    }
-
-    private final ConcurrentHashMap<String, OslInternalSchedulerCommand>                     oslCronCommands      =
-                                                                                                                      new ConcurrentHashMap<String, OslInternalSchedulerCommand>();
-
-    private final ConcurrentHashMap<String, OslInternalSchedulerCommand>                     oslImmediateCommands =
-                                                                                                                      new ConcurrentHashMap<String, OslInternalSchedulerCommand>();
-
-    private final org.quartz.Scheduler                                                       quartzScheduler;
-
-    private final AtomicReference<GlobalSettings>                                            settings             =
-                                                                                                                      new AtomicReference<GlobalSettings>();
-
-    public static final String                                                               IMMEDIATE            = "immediate";
-
-    private final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap;
-    private final ExecutionContextFactory                                                    executionContextFactory;
-
-    @Inject
-    public DefaultScheduler(final ExecutionContextFactory executionContextFactory,
-                            @SchedulableCommandMap final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap) {
-        this.executionContextFactory = executionContextFactory;
-        this.schedulableMap = schedulableMap;
-        try {
-            System.setProperty("org.quartz.threadPool.threadCount", "1");
-            quartzScheduler = new StdSchedulerFactory().getScheduler();
-        } catch (final SchedulerException e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-        defaultInstance = this;
-    }
-
-    @Override
-    public <T extends Schedulable> void fireSchedulable(final String username,
-                                                        final String password,
-                                                        final T... schedulables) {
-        final Set<String> ids = internalFireCommand(username, password, schedulables);
-        final long sleep = settings.get().getDefaultSleepingIntervalInMilliseconds();
-        while (isExecutingAnyOfImmediateCommands(ids)) {
-            try {
-                Thread.sleep(sleep);
-            } catch (final InterruptedException e) {}
-        }
-    }
-
-    @Override
-    public <T extends Schedulable> void fireSchedulableInBackground(final String username,
-                                                                    final String password,
-                                                                    final T... schedulables) {
-        internalFireCommand(username, password, schedulables);
-
-    }
-
-    OslInternalSchedulerCommand getCommandByName(final String name) {
-        OslInternalSchedulerCommand command = oslCronCommands.get(name);
-        if (command == null) {
-            command = oslImmediateCommands.get(name);
-        }
-        return command;
+    public static DefaultScheduler getDefaultInstance() {
+        return defaultInstance;
     }
 
     private Map<String, OslInternalSchedulerCommand> groupJobsByCronInformation(final GlobalSettings settings,
@@ -334,6 +312,35 @@ public class DefaultScheduler implements Scheduler {
             if (executingKeys.contains(id)) { return true; }
         }
         return false;
+    }
+
+    OslInternalSchedulerCommand getCommandByName(final String name) {
+        OslInternalSchedulerCommand command = oslCronCommands.get(name);
+        if (command == null) {
+            command = oslImmediateCommands.get(name);
+        }
+        return command;
+    }
+
+    @Override
+    public <T extends Schedulable> void fireSchedulable(final String username,
+                                                        final String password,
+                                                        final T... schedulables) {
+        final Set<String> ids = internalFireCommand(username, password, schedulables);
+        final long sleep = settings.get().getDefaultSleepingIntervalInMilliseconds();
+        while (isExecutingAnyOfImmediateCommands(ids)) {
+            try {
+                Thread.sleep(sleep);
+            } catch (final InterruptedException e) {}
+        }
+    }
+
+    @Override
+    public <T extends Schedulable> void fireSchedulableInBackground(final String username,
+                                                                    final String password,
+                                                                    final T... schedulables) {
+        internalFireCommand(username, password, schedulables);
+
     }
 
     @Override
@@ -397,11 +404,5 @@ public class DefaultScheduler implements Scheduler {
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
-    }
-
-    private static DefaultScheduler defaultInstance = null;
-
-    public static DefaultScheduler getDefaultInstance() {
-        return defaultInstance;
     }
 }

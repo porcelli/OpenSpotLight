@@ -31,9 +31,9 @@ public class InvalidQuerySyntaxException extends GraphRuntimeException {
 
     private static final long serialVersionUID = 400L;
 
+    private int               column;
     private String            errorCode        = null;
     private int               lineNumber;
-    private int               column;
     private int               offset;
 
     /**
@@ -42,22 +42,6 @@ public class InvalidQuerySyntaxException extends GraphRuntimeException {
     public InvalidQuerySyntaxException(
                                           final String message) {
         super(message);
-    }
-
-    /**
-     * @see java.lang.Exception#Exception(String message, Throwable cause)
-     */
-    public InvalidQuerySyntaxException(
-                                          final String message, final Throwable cause) {
-        super(message);
-    }
-
-    /**
-     * @see java.lang.Exception#Exception(Throwable cause)
-     */
-    public InvalidQuerySyntaxException(
-                                          final Throwable cause) {
-        super(cause);
     }
 
     /**
@@ -81,10 +65,27 @@ public class InvalidQuerySyntaxException extends GraphRuntimeException {
         this.offset = offset;
     }
 
-    @Override
-    public String getMessage() {
-        if (null == errorCode) { return super.getMessage(); }
-        return "[" + errorCode + "] " + super.getMessage();
+    /**
+     * @see java.lang.Exception#Exception(String message, Throwable cause)
+     */
+    public InvalidQuerySyntaxException(
+                                          final String message, final Throwable cause) {
+        super(message);
+    }
+
+    /**
+     * @see java.lang.Exception#Exception(Throwable cause)
+     */
+    public InvalidQuerySyntaxException(
+                                          final Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * getter for column position
+     */
+    public int getColumn() {
+        return column;
     }
 
     /**
@@ -101,11 +102,10 @@ public class InvalidQuerySyntaxException extends GraphRuntimeException {
         return lineNumber;
     }
 
-    /**
-     * getter for column position
-     */
-    public int getColumn() {
-        return column;
+    @Override
+    public String getMessage() {
+        if (null == errorCode) { return super.getMessage(); }
+        return "[" + errorCode + "] " + super.getMessage();
     }
 
     /**

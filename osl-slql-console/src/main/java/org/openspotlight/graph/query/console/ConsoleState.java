@@ -62,28 +62,28 @@ import org.openspotlight.graph.query.console.command.Command;
  */
 public class ConsoleState {
 
-    /** The session. */
-    private GraphReader   graphReader          = null;
-
-    /** The StringBuilder that holds the buffer. */
-    private StringBuilder sb                   = new StringBuilder();
+    /** The active command. */
+    private Command       activeCommand        = null;
 
     /**
      * The additional properties that should be displayed during query output result.
      */
     private Set<String>   additionalProperties = new HashSet<String>();
 
-    /** The active command. */
-    private Command       activeCommand        = null;
-
-    /** The quit application. */
-    private boolean       quitApplication      = false;
+    /** The session. */
+    private GraphReader   graphReader          = null;
 
     /** The input. */
     private String        input                = "";
 
     /** The last query. */
     private String        lastQuery            = "";
+
+    /** The quit application. */
+    private boolean       quitApplication      = false;
+
+    /** The StringBuilder that holds the buffer. */
+    private StringBuilder sb                   = new StringBuilder();
 
     /**
      * Instantiates a new console state.
@@ -95,12 +95,14 @@ public class ConsoleState {
     }
 
     /**
-     * Gets the buffer.
+     * Adds the additional property that should be displayed during query output result.
      * 
-     * @return the buffer
+     * @param additionalProperty the additional property
      */
-    public String getBuffer() {
-        return sb.toString();
+    public void addAdditionalProperty(final String additionalProperty) {
+        if (additionalProperty.trim().length() > 0) {
+            additionalProperties.add(additionalProperty);
+        }
     }
 
     /**
@@ -139,34 +141,21 @@ public class ConsoleState {
     }
 
     /**
-     * Sets the active command.
+     * Gets the additional properties that should be displayed during query output result.
      * 
-     * @param activeCommand the new active command
+     * @return the additional properties
      */
-    public void setActiveCommand(final Command activeCommand) {
-        this.activeCommand = activeCommand;
+    public Collection<String> getAdditionalProperties() {
+        return additionalProperties;
     }
 
     /**
-     * Gets the last query.
+     * Gets the buffer.
      * 
-     * @return the last query
+     * @return the buffer
      */
-    public String getLastQuery() {
-        return lastQuery;
-    }
-
-    /**
-     * Sets the last query.
-     * 
-     * @param lastQuery the new last query
-     */
-    public void setLastQuery(final String lastQuery) {
-        if (lastQuery == null) {
-            this.lastQuery = "";
-        } else {
-            this.lastQuery = lastQuery;
-        }
+    public String getBuffer() {
+        return sb.toString();
     }
 
     /**
@@ -179,34 +168,12 @@ public class ConsoleState {
     }
 
     /**
-     * Sets the input.
+     * Gets the last query.
      * 
-     * @param input the new input
+     * @return the last query
      */
-    public void setInput(final String input) {
-        if (input == null) {
-            this.input = "";
-        } else {
-            this.input = input;
-        }
-    }
-
-    /**
-     * Quit application.
-     * 
-     * @return true, if application should quit
-     */
-    public boolean quitApplication() {
-        return quitApplication;
-    }
-
-    /**
-     * Sets the quit application.
-     * 
-     * @param quitApplication the new quit application
-     */
-    public void setQuitApplication(final boolean quitApplication) {
-        this.quitApplication = quitApplication;
+    public String getLastQuery() {
+        return lastQuery;
     }
 
     /**
@@ -219,23 +186,12 @@ public class ConsoleState {
     }
 
     /**
-     * Gets the additional properties that should be displayed during query output result.
+     * Quit application.
      * 
-     * @return the additional properties
+     * @return true, if application should quit
      */
-    public Collection<String> getAdditionalProperties() {
-        return additionalProperties;
-    }
-
-    /**
-     * Adds the additional property that should be displayed during query output result.
-     * 
-     * @param additionalProperty the additional property
-     */
-    public void addAdditionalProperty(final String additionalProperty) {
-        if (additionalProperty.trim().length() > 0) {
-            additionalProperties.add(additionalProperty);
-        }
+    public boolean quitApplication() {
+        return quitApplication;
     }
 
     /**
@@ -255,6 +211,50 @@ public class ConsoleState {
      */
     public void resetAdditionalProperties() {
         additionalProperties = new HashSet<String>();
+    }
+
+    /**
+     * Sets the active command.
+     * 
+     * @param activeCommand the new active command
+     */
+    public void setActiveCommand(final Command activeCommand) {
+        this.activeCommand = activeCommand;
+    }
+
+    /**
+     * Sets the input.
+     * 
+     * @param input the new input
+     */
+    public void setInput(final String input) {
+        if (input == null) {
+            this.input = "";
+        } else {
+            this.input = input;
+        }
+    }
+
+    /**
+     * Sets the last query.
+     * 
+     * @param lastQuery the new last query
+     */
+    public void setLastQuery(final String lastQuery) {
+        if (lastQuery == null) {
+            this.lastQuery = "";
+        } else {
+            this.lastQuery = lastQuery;
+        }
+    }
+
+    /**
+     * Sets the quit application.
+     * 
+     * @param quitApplication the new quit application
+     */
+    public void setQuitApplication(final boolean quitApplication) {
+        this.quitApplication = quitApplication;
     }
 
 }

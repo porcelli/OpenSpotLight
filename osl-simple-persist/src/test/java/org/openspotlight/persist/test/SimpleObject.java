@@ -56,6 +56,11 @@ public class SimpleObject implements SimpleNodeType, Comparable<SimpleObject> {
 
     private int id;
 
+    @Override
+    public int compareTo(final SimpleObject o) {
+        return id < o.id ? -1 : (id == o.id ? 0 : 1);
+    }
+
     @KeyProperty
     public int getId() {
         return id;
@@ -63,10 +68,5 @@ public class SimpleObject implements SimpleNodeType, Comparable<SimpleObject> {
 
     public void setId(final int id) {
         this.id = id;
-    }
-
-    @Override
-    public int compareTo(final SimpleObject o) {
-        return id < o.id ? -1 : (id == o.id ? 0 : 1);
     }
 }

@@ -79,14 +79,20 @@ import dynamo.runner.RunningParameters;
 public class TemplateTask extends Task {
 
     /**
+     * The log.
+     */
+    private final Logger      log           = LoggerFactory.getLogger(this.getClass());
+
+    /**
      * The output directory.
      */
     private String            outputDirectory;
 
     /**
-     * The log.
+     * The script file location.
      */
-    private final Logger      log           = LoggerFactory.getLogger(this.getClass());
+    @SuppressWarnings("unused")
+    private String            scriptFileLocation;
 
     /**
      * The template files.
@@ -102,12 +108,6 @@ public class TemplateTask extends Task {
      * The xml files.
      */
     private final Set<String> xmlFiles      = new HashSet<String>();
-
-    /**
-     * The script file location.
-     */
-    @SuppressWarnings("unused")
-    private String            scriptFileLocation;
 
     /**
      * Adds the template files.

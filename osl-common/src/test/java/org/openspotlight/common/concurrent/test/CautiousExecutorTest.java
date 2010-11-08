@@ -61,15 +61,6 @@ import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
 
 public class CautiousExecutorTest {
 
-    public static class CustomRunnable implements Runnable {
-
-        @Override
-        public void run() {
-
-        }
-
-    }
-
     private static class CustomTaskListener implements TaskListener {
 
         final AtomicInteger integer = new AtomicInteger();
@@ -101,11 +92,20 @@ public class CautiousExecutorTest {
             integer.incrementAndGet();
 
         }
+    }
+
+    public static class CustomRunnable implements Runnable {
+
+        @Override
+        public void run() {
+
+        }
+
     };
 
-    private final CustomThreadListener threadListener = new CustomThreadListener();
-    private final CustomTaskListener   taskListener   = new CustomTaskListener();
     private GossipExecutor             executor;
+    private final CustomTaskListener   taskListener   = new CustomTaskListener();
+    private final CustomThreadListener threadListener = new CustomThreadListener();
 
     @Test
     public void setup()

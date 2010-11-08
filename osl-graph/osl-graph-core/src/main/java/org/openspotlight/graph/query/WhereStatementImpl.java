@@ -58,80 +58,17 @@ import org.openspotlight.graph.query.info.WhereTypeInfo;
 import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
 
+interface OuterEachGetter<E> {
+
+    public E getOuterEach();
+}
+
 /**
  * The Class SLWhereStatementImpl.
  * 
  * @author Vitor Hugo Chagas
  */
 public class WhereStatementImpl implements WhereStatement {
-
-    /** The end. */
-    private final End                end;
-
-    /** The where statement info. */
-    private final WhereStatementInfo whereStatementInfo;
-
-    /**
-     * Instantiates a new sL where statement impl.
-     * 
-     * @param selectFacade the select facade
-     * @param orderBy the order by
-     * @param whereStatementInfo the where statement info
-     */
-    public WhereStatementImpl(
-                                 final SelectFacade selectFacade, final OrderByStatement orderBy,
-                              final WhereStatementInfo whereStatementInfo) {
-        this(new EndImpl(selectFacade, whereStatementInfo, orderBy), whereStatementInfo);
-    }
-
-    /**
-     * Instantiates a new sL where statement impl.
-     * 
-     * @param end the end
-     * @param whereStatementInfo the where statement info
-     */
-    public WhereStatementImpl(
-                                 final End end, final WhereStatementInfo whereStatementInfo) {
-        this.end = end;
-        this.whereStatementInfo = whereStatementInfo;
-    }
-
-    /**
-     * Gets the where statement info.
-     * 
-     * @return the where statement info
-     */
-    public WhereStatementInfo getWhereStatementInfo() {
-        return whereStatementInfo;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type type(final String typeName) {
-        final WhereTypeInfo typeInfo = new WhereTypeInfo(typeName);
-        whereStatementInfo.getWhereTypeInfoList().add(typeInfo);
-        return new TypeImpl(this, typeInfo);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public LinkType linkType(final String typeName) {
-        final WhereLinkTypeInfo linkTypeInfo = new WhereLinkTypeInfo(typeName);
-        whereStatementInfo.getWhereLinkTypeInfoList().add(linkTypeInfo);
-        return new LinkTypeImpl(this, linkTypeInfo);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public End whereEnd() {
-        return end;
-    }
 
     /**
      * The Class EndImpl.
@@ -141,14 +78,14 @@ public class WhereStatementImpl implements WhereStatement {
 
     public static class EndImpl implements End {
 
-        /** The where statement info. */
-        private final WhereStatementInfo whereStatementInfo;
-
         /** The order by statement. */
         private OrderByStatement         orderByStatement;
 
         /** The select facade. */
         private final SelectFacade       selectFacade;
+
+        /** The where statement info. */
+        private final WhereStatementInfo whereStatementInfo;
 
         /**
          * Instantiates a new end impl.
@@ -169,14 +106,27 @@ public class WhereStatementImpl implements WhereStatement {
          * {@inheritDoc}
          */
         @Override
-        public OrderByStatement orderBy() {
-            if (orderByStatement == null) {
-                final SelectStatementInfo selectInfo = whereStatementInfo.getSelectStatementInfo();
-                final OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
-                selectInfo.setOrderByStatementInfo(orderByStatementInfo);
-                orderByStatement = new OrderByStatementImpl(selectFacade, orderByStatementInfo);
-            }
-            return orderByStatement;
+        public End collator(final int strength) {
+            whereStatementInfo.getSelectStatementInfo().setCollatorStrength(strength);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End executeXTimes() {
+            whereStatementInfo.getSelectStatementInfo().setXTimes(0);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End executeXTimes(final int x) {
+            whereStatementInfo.getSelectStatementInfo().setXTimes(x);
+            return this;
         }
 
         /**
@@ -212,27 +162,30 @@ public class WhereStatementImpl implements WhereStatement {
          * {@inheritDoc}
          */
         @Override
-        public End executeXTimes() {
-            whereStatementInfo.getSelectStatementInfo().setXTimes(0);
-            return this;
+        public OrderByStatement orderBy() {
+            if (orderByStatement == null) {
+                final SelectStatementInfo selectInfo = whereStatementInfo.getSelectStatementInfo();
+                final OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
+                selectInfo.setOrderByStatementInfo(orderByStatementInfo);
+                orderByStatement = new OrderByStatementImpl(selectFacade, orderByStatementInfo);
+            }
+            return orderByStatement;
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public End executeXTimes(final int x) {
-            whereStatementInfo.getSelectStatementInfo().setXTimes(x);
-            return this;
+        public SelectStatement select() {
+            return selectFacade.select();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public End collator(final int strength) {
-            whereStatementInfo.getSelectStatementInfo().setCollatorStrength(strength);
-            return this;
+        public SelectByLinkCount selectByLinkCount() {
+            return selectFacade.selectByLinkCount();
         }
 
         /**
@@ -250,717 +203,21 @@ public class WhereStatementImpl implements WhereStatement {
         public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByLinkCount selectByLinkCount() {
-            return selectFacade.selectByLinkCount();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectStatement select() {
-            return selectFacade.select();
-        }
     }
 
     /**
-     * The Class TypeImpl.
+     * The Class LinkTypeImpl.
      * 
      * @author Vitor Hugo Chagas
      */
-    public static class TypeImpl implements Type {
-
-        /** The where statement. */
-        private final WhereStatement whereStatement;
-
-        /** The type info. */
-        private final WhereTypeInfo  typeInfo;
-
-        /**
-         * Instantiates a new type impl.
-         * 
-         * @param whereStatement the where statement
-         * @param typeInfo the type info
-         */
-        public TypeImpl(
-                         final WhereStatement whereStatement, final WhereTypeInfo typeInfo) {
-            this.whereStatement = whereStatement;
-            this.typeInfo = typeInfo;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SubTypes subTypes() {
-            typeInfo.setSubTypes(true);
-            return new SubTypesImpl(whereStatement, typeInfo);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Each each() {
-            final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
-            typeInfo.setTypeStatementInfo(whereStatementInfo);
-            final SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
-            return new EachImpl(whereStatement, conditionInfo);
-        }
-
-        /**
-         * The Class SubTypesImpl.
-         * 
-         * @author Vitor Hugo Chagas
-         */
-        public static class SubTypesImpl implements SubTypes {
-
-            /** The where statement. */
-            private final WhereStatement whereStatement;
-
-            /** The type info. */
-            private final WhereTypeInfo  typeInfo;
-
-            /**
-             * Instantiates a new sub types impl.
-             * 
-             * @param whereStatement the where statement
-             * @param typeInfo the type info
-             */
-            public SubTypesImpl(
-                                 final WhereStatement whereStatement, final WhereTypeInfo typeInfo) {
-                this.whereStatement = whereStatement;
-                this.typeInfo = typeInfo;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Each each() {
-                final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
-                typeInfo.setTypeStatementInfo(whereStatementInfo);
-                final SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
-                return new EachImpl(whereStatement, conditionInfo);
-            }
-        }
+    public static class LinkTypeImpl implements LinkType {
 
         /**
          * The Class EachImpl.
          * 
          * @author Vitor Hugo Chagas
          */
-        public static class EachImpl implements Each, OuterEachGetter<Each> {
-
-            /** The where statement. */
-            private final WhereStatement      whereStatement;
-
-            /** The condition info. */
-            private final SLTypeConditionInfo conditionInfo;
-
-            /** The outer each. */
-            private final Each                outerEach;
-
-            /**
-             * Instantiates a new each impl.
-             * 
-             * @param whereStatement the where statement
-             * @param conditionInfo the condition info
-             */
-            public EachImpl(
-                             final WhereStatement whereStatement, final SLTypeConditionInfo conditionInfo) {
-                this(whereStatement, conditionInfo, null);
-            }
-
-            /**
-             * Instantiates a new each impl.
-             * 
-             * @param whereStatement the where statement
-             * @param conditionInfo the condition info
-             * @param outerEach the outer each
-             */
-            public EachImpl(
-                             final WhereStatement whereStatement, final SLTypeConditionInfo conditionInfo, final Each outerEach) {
-                this.whereStatement = whereStatement;
-                this.conditionInfo = conditionInfo;
-                this.outerEach = outerEach;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Each getOuterEach() {
-                return outerEach;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Property property(final String name) {
-                conditionInfo.setPropertyName(name);
-                return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Link link(final String name) {
-                conditionInfo.setLinkTypeName(name);
-                return new LinkImpl(whereStatement, this, outerEach, conditionInfo);
-            }
-
-            /**
-             * The Class LinkImpl.
-             * 
-             * @author Vitor Hugo Chagas
-             */
-            public static class LinkImpl implements Link {
-
-                /** The where statement. */
-                private final WhereStatement      whereStatement;
-
-                /** The each. */
-                private final Each                each;
-
-                /** The outer each. */
-                private final Each                outerEach;
-
-                /** The condition info. */
-                private final SLTypeConditionInfo conditionInfo;
-
-                /**
-                 * Instantiates a new link impl.
-                 * 
-                 * @param whereStatement the where statement
-                 * @param each the each
-                 * @param outerEach the outer each
-                 * @param conditionInfo the condition info
-                 */
-                public LinkImpl(
-                                 final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                final SLTypeConditionInfo conditionInfo) {
-                    this.whereStatement = whereStatement;
-                    this.each = each;
-                    this.outerEach = outerEach;
-                    this.conditionInfo = conditionInfo;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Side a() {
-                    conditionInfo.setSide(SideType.A_SIDE);
-                    return new SideImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Side b() {
-                    conditionInfo.setSide(SideType.B_SIDE);
-                    return new SideImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * The Class SideImpl.
-                 * 
-                 * @author Vitor Hugo Chagas
-                 */
-                public static class SideImpl implements Side {
-
-                    /** The where statement. */
-                    private final WhereStatement      whereStatement;
-
-                    /** The each. */
-                    private final Each                each;
-
-                    /** The outer each. */
-                    private final Each                outerEach;
-
-                    /** The condition info. */
-                    private final SLTypeConditionInfo conditionInfo;
-
-                    /**
-                     * Instantiates a new side impl.
-                     * 
-                     * @param whereStatement the where statement
-                     * @param each the each
-                     * @param outerEach the outer each
-                     * @param conditionInfo the condition info
-                     */
-                    public SideImpl(
-                                     final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                    final SLTypeConditionInfo conditionInfo) {
-                        this.whereStatement = whereStatement;
-                        this.each = each;
-                        this.outerEach = outerEach;
-                        this.conditionInfo = conditionInfo;
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Count count() {
-                        return new CountImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * The Class CountImpl.
-                     * 
-                     * @author Vitor Hugo Chagas
-                     */
-                    public static class CountImpl implements Count {
-
-                        /** The each. */
-                        private final Each                each;
-
-                        /** The outer each. */
-                        private final Each                outerEach;
-
-                        /** The where statement. */
-                        private final WhereStatement      whereStatement;
-
-                        /** The condition info. */
-                        private final SLTypeConditionInfo conditionInfo;
-
-                        /**
-                         * Instantiates a new count impl.
-                         * 
-                         * @param whereStatement the where statement
-                         * @param each the each
-                         * @param outerEach the outer each
-                         * @param conditionInfo the condition info
-                         */
-                        public CountImpl(
-                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                          final SLTypeConditionInfo conditionInfo) {
-                            this.each = each;
-                            this.whereStatement = whereStatement;
-                            this.conditionInfo = conditionInfo;
-                            this.outerEach = outerEach;
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public Count not() {
-                            conditionInfo.setRelationalNotOperator(true);
-                            return this;
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public Operator lesserThan() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public Operator greaterThan() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public Operator equalsTo() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public Operator lesserOrEqualThan() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public Operator greaterOrEqualThan() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /*
-                         * (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#contains()
-                         */
-                        /**
-                         * Contains.
-                         * 
-                         * @return the operator
-                         */
-                        public Operator contains() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /*
-                         * (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#startsWith()
-                         */
-                        /**
-                         * Starts with.
-                         * 
-                         * @return the operator
-                         */
-                        public Operator startsWith() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /*
-                         * (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#endsWith()
-                         */
-                        /**
-                         * Ends with.
-                         * 
-                         * @return the operator
-                         */
-                        public Operator endsWith() {
-                            conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
-                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                        }
-
-                        /**
-                         * The Class OperatorImpl.
-                         * 
-                         * @author Vitor Hugo Chagas
-                         */
-                        public static class OperatorImpl implements Operator {
-
-                            /** The each. */
-                            private final Each                each;
-
-                            /** The outer each. */
-                            private final Each                outerEach;
-
-                            /** The where statement. */
-                            private final WhereStatement      whereStatement;
-
-                            /** The condition info. */
-                            private final SLTypeConditionInfo conditionInfo;
-
-                            /**
-                             * Instantiates a new operator impl.
-                             * 
-                             * @param whereStatement the where statement
-                             * @param each the each
-                             * @param outerEach the outer each
-                             * @param conditionInfo the condition info
-                             */
-                            public OperatorImpl(
-                                                 final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                                 final SLTypeConditionInfo conditionInfo) {
-                                this.each = each;
-                                this.outerEach = outerEach;
-                                this.whereStatement = whereStatement;
-                                this.conditionInfo = conditionInfo;
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public Value value(final Integer value) {
-                                conditionInfo.setValue(value);
-                                return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                            }
-
-                            /**
-                             * The Class ValueImpl.
-                             * 
-                             * @author Vitor Hugo Chagas
-                             */
-                            public static class ValueImpl implements Value {
-
-                                /** The each. */
-                                private final Each                each;
-
-                                /** The outer each. */
-                                private final Each                outerEach;
-
-                                /** The where statement. */
-                                private final WhereStatement      whereStatement;
-
-                                /** The condition info. */
-                                private final SLTypeConditionInfo conditionInfo;
-
-                                /**
-                                 * Instantiates a new value impl.
-                                 * 
-                                 * @param whereStatement the where statement
-                                 * @param each the each
-                                 * @param outerEach the outer each
-                                 * @param conditionInfo the condition info
-                                 */
-                                public ValueImpl(
-                                                  final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                                  final SLTypeConditionInfo conditionInfo) {
-                                    this.each = each;
-                                    this.outerEach = outerEach;
-                                    this.whereStatement = whereStatement;
-                                    this.conditionInfo = conditionInfo;
-                                }
-
-                                /**
-                                 * {@inheritDoc}
-                                 */
-                                @Override
-                                public WhereStatement typeEnd() {
-                                    conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
-                                    return whereStatement;
-                                }
-
-                                /**
-                                 * {@inheritDoc}
-                                 */
-                                @Override
-                                public RelationalOperator or() {
-                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                    final SLTypeConditionInfo newConditionInfo =
-                                        outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
-                                    return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
-                                }
-
-                                /**
-                                 * {@inheritDoc}
-                                 */
-                                @Override
-                                public RelationalOperator and() {
-                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                    final SLTypeConditionInfo newConditionInfo =
-                                        outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
-                                    return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
-                                }
-
-                                /**
-                                 * {@inheritDoc}
-                                 */
-                                @Override
-                                public CloseBracket closeBracket() {
-                                    final SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
-                                    statementInfo.setClosed(true);
-                                    return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
-                                }
-
-                                /**
-                                 * The Class RelationalOperatorImpl.
-                                 * 
-                                 * @author Vitor Hugo Chagas
-                                 */
-                                public static class RelationalOperatorImpl implements RelationalOperator {
-
-                                    /** The each. */
-                                    private final Each                each;
-
-                                    /** The where statement. */
-                                    private final WhereStatement      whereStatement;
-
-                                    /** The condition info. */
-                                    private final SLTypeConditionInfo conditionInfo;
-
-                                    /**
-                                     * Instantiates a new relational operator impl.
-                                     * 
-                                     * @param whereStatement the where statement
-                                     * @param each the each
-                                     * @param conditionInfo the condition info
-                                     */
-                                    public RelationalOperatorImpl(
-                                                                   final WhereStatement whereStatement, final Each each,
-                                                                   final SLTypeConditionInfo conditionInfo) {
-                                        this.each = each;
-                                        this.whereStatement = whereStatement;
-                                        this.conditionInfo = conditionInfo;
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public RelationalOperator not() {
-                                        conditionInfo.setConditionalNotOperator(true);
-                                        return this;
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public WhereStatement comma() {
-                                        return whereStatement;
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public Each each() {
-                                        return each;
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public OpenBracket openBracket() {
-                                        final SLTypeStatementInfo newStatementInfo =
-                                            new SLTypeStatementInfo(
-                                                                                                       conditionInfo
-                                                                                                           .getTypeInfo(),
-                                                                                                       conditionInfo
-                                                                                                           .getOuterStatementInfo());
-                                        conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                        final SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                        final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
-                                        return new OpenBracketImpl(each);
-                                    }
-
-                                    /**
-                                     * The Class OpenBracketImpl.
-                                     * 
-                                     * @author Vitor Hugo Chagas
-                                     */
-                                    public static class OpenBracketImpl implements OpenBracket {
-
-                                        /** The each. */
-                                        private final Each each;
-
-                                        /**
-                                         * Instantiates a new open bracket impl.
-                                         * 
-                                         * @param each the each
-                                         */
-                                        public OpenBracketImpl(
-                                                                final Each each) {
-                                            this.each = each;
-                                        }
-
-                                        /**
-                                         * {@inheritDoc}
-                                         */
-                                        @Override
-                                        public Each each() {
-                                            return each;
-                                        }
-                                    }
-                                }
-
-                                /**
-                                 * The Class CloseBracketImpl.
-                                 * 
-                                 * @author Vitor Hugo Chagas
-                                 */
-                                public static class CloseBracketImpl implements CloseBracket {
-
-                                    /** The where statement. */
-                                    private final WhereStatement      whereStatement;
-
-                                    /** The outer each. */
-                                    private final Each                outerEach;
-
-                                    /** The condition info. */
-                                    private final SLTypeConditionInfo conditionInfo;
-
-                                    /**
-                                     * Instantiates a new close bracket impl.
-                                     * 
-                                     * @param whereStatement the where statement
-                                     * @param outerEach the outer each
-                                     * @param conditionInfo the condition info
-                                     */
-                                    public CloseBracketImpl(
-                                                             final WhereStatement whereStatement, final Each outerEach,
-                                                             final SLTypeConditionInfo conditionInfo) {
-                                        this.whereStatement = whereStatement;
-                                        this.outerEach = outerEach;
-                                        this.conditionInfo = conditionInfo;
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    @SuppressWarnings("unchecked")
-                                    public CloseBracket closeBracket() {
-                                        final int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
-                                        final SLTypeConditionInfo outerConditionInfo =
-                                            conditionInfo
-                                                .getOuterStatementInfo()
-                                                .getConditionInfoList()
-                                                .get(
-                                                                                                                                                  size - 1);
-                                        final SLTypeStatementInfo outerStatementInfo =
-                                            outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
-                                        outerStatementInfo.setClosed(true);
-                                        final OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
-                                        return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public RelationalOperator or() {
-                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                        outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
-                                        return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public RelationalOperator and() {
-                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                        outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
-                                        return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
-                                    }
-
-                                    /**
-                                     * {@inheritDoc}
-                                     */
-                                    @Override
-                                    public WhereStatement typeEnd() {
-                                        conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
-                                        return whereStatement;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        public static class EachImpl implements Each {
 
             /**
              * The Class PropertyImpl.
@@ -969,205 +226,12 @@ public class WhereStatementImpl implements WhereStatement {
              */
             public static class PropertyImpl implements Property {
 
-                /** The each. */
-                private final Each                each;
-
-                /** The outer each. */
-                private final Each                outerEach;
-
-                /** The where statement. */
-                private final WhereStatement      whereStatement;
-
-                /** The condition info. */
-                private final SLTypeConditionInfo conditionInfo;
-
-                /**
-                 * Instantiates a new property impl.
-                 * 
-                 * @param whereStatement the where statement
-                 * @param each the each
-                 * @param outerEach the outer each
-                 * @param conditionInfo the condition info
-                 */
-                public PropertyImpl(
-                                     final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                    final SLTypeConditionInfo conditionInfo) {
-                    this.each = each;
-                    this.whereStatement = whereStatement;
-                    this.conditionInfo = conditionInfo;
-                    this.outerEach = outerEach;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Property not() {
-                    conditionInfo.setRelationalNotOperator(true);
-                    return this;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator lesserThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator greaterThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator equalsTo() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator lesserOrEqualThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator greaterOrEqualThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator contains() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator startsWith() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator endsWith() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
                 /**
                  * The Class OperatorImpl.
                  * 
                  * @author Vitor Hugo Chagas
                  */
                 public static class OperatorImpl implements Operator {
-
-                    /** The each. */
-                    private final Each                each;
-
-                    /** The outer each. */
-                    private final Each                outerEach;
-
-                    /** The where statement. */
-                    private final WhereStatement      whereStatement;
-
-                    /** The condition info. */
-                    private final SLTypeConditionInfo conditionInfo;
-
-                    /**
-                     * Instantiates a new operator impl.
-                     * 
-                     * @param whereStatement the where statement
-                     * @param each the each
-                     * @param outerEach the outer each
-                     * @param conditionInfo the condition info
-                     */
-                    public OperatorImpl(
-                                         final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                         final SLTypeConditionInfo conditionInfo) {
-                        this.each = each;
-                        this.outerEach = outerEach;
-                        this.whereStatement = whereStatement;
-                        this.conditionInfo = conditionInfo;
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final String value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Integer value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Long value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Float value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Double value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Boolean value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
 
                     /**
                      * The Class ValueImpl.
@@ -1176,76 +240,76 @@ public class WhereStatementImpl implements WhereStatement {
                      */
                     public static class ValueImpl implements Value {
 
-                        /** The each. */
-                        private final Each                each;
-
-                        /** The outer each. */
-                        private final Each                outerEach;
-
-                        /** The where statement. */
-                        private final WhereStatement      whereStatement;
-
-                        /** The condition info. */
-                        private final SLTypeConditionInfo conditionInfo;
-
                         /**
-                         * Instantiates a new value impl.
+                         * The Class CloseBracketImpl.
                          * 
-                         * @param whereStatement the where statement
-                         * @param each the each
-                         * @param outerEach the outer each
-                         * @param conditionInfo the condition info
+                         * @author Vitor Hugo Chagas
                          */
-                        public ValueImpl(
-                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                          final SLTypeConditionInfo conditionInfo) {
-                            this.each = each;
-                            this.outerEach = outerEach;
-                            this.whereStatement = whereStatement;
-                            this.conditionInfo = conditionInfo;
-                        }
+                        public static class CloseBracketImpl implements CloseBracket {
 
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public WhereStatement typeEnd() {
-                            conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
-                            return whereStatement;
-                        }
+                            /** The condition info. */
+                            private final SLLinkTypeConditionInfo conditionInfo;
 
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public RelationalOperator or() {
-                            final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            final SLTypeConditionInfo newConditionInfo =
-                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
-                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
-                        }
+                            /** The outer each. */
+                            private final Each                    outerEach;
 
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public RelationalOperator and() {
-                            final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            final SLTypeConditionInfo newConditionInfo =
+                            /** The where statement. */
+                            private final WhereStatement          whereStatement;
+
+                            /**
+                             * Instantiates a new close bracket impl.
+                             * 
+                             * @param whereStatement the where statement
+                             * @param outerEach the outer each
+                             * @param conditionInfo the condition info
+                             */
+                            public CloseBracketImpl(
+                                                     final WhereStatement whereStatement, final Each outerEach,
+                                                     final SLLinkTypeConditionInfo conditionInfo) {
+                                this.whereStatement = whereStatement;
+                                this.outerEach = outerEach;
+                                this.conditionInfo = conditionInfo;
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public RelationalOperator and() {
+                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
                                 outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
-                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
-                        }
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
+                            }
 
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public CloseBracket closeBracket() {
-                            final SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
-                            statementInfo.setClosed(true);
-                            return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public CloseBracket closeBracket() {
+                                conditionInfo.getOuterStatementInfo().setClosed(true);
+                                return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public WhereStatement linkTypeEnd() {
+                                conditionInfo.getLinkTypeInfo().getLinkTypeStatementInfo().setClosed(true);
+                                return whereStatement;
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public RelationalOperator or() {
+                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
+                            }
                         }
 
                         /**
@@ -1254,71 +318,6 @@ public class WhereStatementImpl implements WhereStatement {
                          * @author Vitor Hugo Chagas
                          */
                         public static class RelationalOperatorImpl implements RelationalOperator {
-
-                            /** The each. */
-                            private final Each                each;
-
-                            /** The where statement. */
-                            private final WhereStatement      whereStatement;
-
-                            /** The condition info. */
-                            private final SLTypeConditionInfo conditionInfo;
-
-                            /**
-                             * Instantiates a new relational operator impl.
-                             * 
-                             * @param whereStatement the where statement
-                             * @param each the each
-                             * @param conditionInfo the condition info
-                             */
-                            public RelationalOperatorImpl(
-                                                           final WhereStatement whereStatement, final Each each,
-                                                           final SLTypeConditionInfo conditionInfo) {
-                                this.each = each;
-                                this.whereStatement = whereStatement;
-                                this.conditionInfo = conditionInfo;
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public RelationalOperator not() {
-                                conditionInfo.setConditionalNotOperator(true);
-                                return this;
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public WhereStatement comma() {
-                                return whereStatement;
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public Each each() {
-                                return each;
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public OpenBracket openBracket() {
-                                final SLTypeStatementInfo newStatementInfo =
-                                    new SLTypeStatementInfo(
-                                                                                               conditionInfo.getTypeInfo(),
-                                                                                               conditionInfo
-                                                                                                   .getOuterStatementInfo());
-                                conditionInfo.setInnerStatementInfo(newStatementInfo);
-                                final SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
-                                final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
-                                return new OpenBracketImpl(each);
-                            }
 
                             /**
                              * The Class OpenBracketImpl.
@@ -1348,488 +347,15 @@ public class WhereStatementImpl implements WhereStatement {
                                     return each;
                                 }
                             }
-                        }
-
-                        /**
-                         * The Class CloseBracketImpl.
-                         * 
-                         * @author Vitor Hugo Chagas
-                         */
-                        public static class CloseBracketImpl implements CloseBracket {
-
-                            /** The where statement. */
-                            private final WhereStatement      whereStatement;
-
-                            /** The outer each. */
-                            private final Each                outerEach;
 
                             /** The condition info. */
-                            private final SLTypeConditionInfo conditionInfo;
-
-                            /**
-                             * Instantiates a new close bracket impl.
-                             * 
-                             * @param whereStatement the where statement
-                             * @param outerEach the outer each
-                             * @param conditionInfo the condition info
-                             */
-                            public CloseBracketImpl(
-                                                     final WhereStatement whereStatement, final Each outerEach,
-                                                     final SLTypeConditionInfo conditionInfo) {
-                                this.whereStatement = whereStatement;
-                                this.outerEach = outerEach;
-                                this.conditionInfo = conditionInfo;
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            @SuppressWarnings("unchecked")
-                            public CloseBracket closeBracket() {
-                                final int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
-                                final SLTypeConditionInfo outerConditionInfo =
-                                    conditionInfo
-                                        .getOuterStatementInfo()
-                                        .getConditionInfoList()
-                                        .get(
-                                                                                                                                          size - 1);
-                                final SLTypeStatementInfo outerStatementInfo =
-                                    outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
-                                outerStatementInfo.setClosed(true);
-                                final OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
-                                return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public RelationalOperator or() {
-                                final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
-                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public RelationalOperator and() {
-                                final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
-                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public WhereStatement typeEnd() {
-                                conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
-                                return whereStatement;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * The Class LinkTypeImpl.
-     * 
-     * @author Vitor Hugo Chagas
-     */
-    public static class LinkTypeImpl implements LinkType {
-
-        /** The where statement. */
-        private final WhereStatement    whereStatement;
-
-        /** The type info. */
-        private final WhereLinkTypeInfo typeInfo;
-
-        /**
-         * Instantiates a new link type impl.
-         * 
-         * @param whereStatement the where statement
-         * @param typeInfo the type info
-         */
-        public LinkTypeImpl(
-                             final WhereStatement whereStatement, final WhereLinkTypeInfo typeInfo) {
-            this.whereStatement = whereStatement;
-            this.typeInfo = typeInfo;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Each each() {
-            final SLLinkTypeStatementInfo whereStatementInfo = new SLLinkTypeStatementInfo(typeInfo);
-            typeInfo.setLinkTypeStatementInfo(whereStatementInfo);
-            final SLLinkTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
-            return new EachImpl(whereStatement, conditionInfo);
-        }
-
-        /**
-         * The Class EachImpl.
-         * 
-         * @author Vitor Hugo Chagas
-         */
-        public static class EachImpl implements Each {
-
-            /** The where statement. */
-            private final WhereStatement          whereStatement;
-
-            /** The condition info. */
-            private final SLLinkTypeConditionInfo conditionInfo;
-
-            /** The outer each. */
-            private final Each                    outerEach;
-
-            /**
-             * Instantiates a new each impl.
-             * 
-             * @param whereStatement the where statement
-             * @param conditionInfo the condition info
-             */
-            public EachImpl(
-                             final WhereStatement whereStatement, final SLLinkTypeConditionInfo conditionInfo) {
-                this(whereStatement, conditionInfo, null);
-            }
-
-            /**
-             * Instantiates a new each impl.
-             * 
-             * @param whereStatement the where statement
-             * @param conditionInfo the condition info
-             * @param outerEach the outer each
-             */
-            public EachImpl(
-                             final WhereStatement whereStatement,
-                             final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo,
-                             final Each outerEach) {
-                this.whereStatement = whereStatement;
-                this.conditionInfo = conditionInfo;
-                this.outerEach = outerEach;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Property property(final String name) {
-                conditionInfo.setPropertyName(name);
-                return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
-            }
-
-            /**
-             * The Class PropertyImpl.
-             * 
-             * @author Vitor Hugo Chagas
-             */
-            public static class PropertyImpl implements Property {
-
-                /** The each. */
-                private final Each                                                                                                 each;
-
-                /** The outer each. */
-                private final Each                                                                                                 outerEach;
-
-                /** The where statement. */
-                private final WhereStatement                                                                                       whereStatement;
-
-                /** The condition info. */
-                private final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
-
-                /**
-                 * Instantiates a new property impl.
-                 * 
-                 * @param whereStatement the where statement
-                 * @param each the each
-                 * @param outerEach the outer each
-                 * @param conditionInfo the condition info
-                 */
-                public PropertyImpl(
-                                     final WhereStatement whereStatement,
-                                     final Each each,
-                                     final Each outerEach,
-                                     final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo) {
-                    this.each = each;
-                    this.whereStatement = whereStatement;
-                    this.conditionInfo = conditionInfo;
-                    this.outerEach = outerEach;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Property not() {
-                    conditionInfo.setRelationalNotOperator(true);
-                    return this;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator lesserThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator greaterThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator equalsTo() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator lesserOrEqualThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator greaterOrEqualThan() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator contains() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator startsWith() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public Operator endsWith() {
-                    conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
-                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-                }
-
-                /**
-                 * The Class OperatorImpl.
-                 * 
-                 * @author Vitor Hugo Chagas
-                 */
-                public static class OperatorImpl implements Operator {
-
-                    /** The each. */
-                    private final Each                                                                                                 each;
-
-                    /** The outer each. */
-                    private final Each                                                                                                 outerEach;
-
-                    /** The where statement. */
-                    private final WhereStatement                                                                                       whereStatement;
-
-                    /** The condition info. */
-                    private final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
-
-                    /**
-                     * Instantiates a new operator impl.
-                     * 
-                     * @param whereStatement the where statement
-                     * @param each the each
-                     * @param outerEach the outer each
-                     * @param conditionInfo the condition info
-                     */
-                    public OperatorImpl(
-                                         final WhereStatement whereStatement,
-                                         final Each each,
-                                         final Each outerEach,
-                                         final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo) {
-                        this.each = each;
-                        this.outerEach = outerEach;
-                        this.whereStatement = whereStatement;
-                        this.conditionInfo = conditionInfo;
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final String value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Integer value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Long value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Float value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Double value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     */
-                    @Override
-                    public Value value(final Boolean value) {
-                        conditionInfo.setValue(value);
-                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
-                    }
-
-                    /**
-                     * The Class ValueImpl.
-                     * 
-                     * @author Vitor Hugo Chagas
-                     */
-                    public static class ValueImpl implements Value {
-
-                        /** The each. */
-                        private final Each                    each;
-
-                        /** The outer each. */
-                        private final Each                    outerEach;
-
-                        /** The where statement. */
-                        private final WhereStatement          whereStatement;
-
-                        /** The condition info. */
-                        private final SLLinkTypeConditionInfo conditionInfo;
-
-                        /**
-                         * Instantiates a new value impl.
-                         * 
-                         * @param whereStatement the where statement
-                         * @param each the each
-                         * @param outerEach the outer each
-                         * @param conditionInfo the condition info
-                         */
-                        public ValueImpl(
-                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
-                                          final SLLinkTypeConditionInfo conditionInfo) {
-                            this.each = each;
-                            this.outerEach = outerEach;
-                            this.whereStatement = whereStatement;
-                            this.conditionInfo = conditionInfo;
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public WhereStatement linkTypeEnd() {
-                            conditionInfo.getLinkTypeInfo().getLinkTypeStatementInfo().setClosed(true);
-                            return whereStatement;
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public RelationalOperator or() {
-                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            final SLLinkTypeConditionInfo newConditionInfo =
-                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
-                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public RelationalOperator and() {
-                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                            final SLLinkTypeConditionInfo newConditionInfo =
-                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
-                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
-                        }
-
-                        /**
-                         * {@inheritDoc}
-                         */
-                        @Override
-                        public CloseBracket closeBracket() {
-                            conditionInfo.getOuterStatementInfo().setClosed(true);
-                            return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
-                        }
-
-                        /**
-                         * The Class RelationalOperatorImpl.
-                         * 
-                         * @author Vitor Hugo Chagas
-                         */
-                        public static class RelationalOperatorImpl implements RelationalOperator {
+                            private final SLLinkTypeConditionInfo conditionInfo;
 
                             /** The each. */
                             private final Each                    each;
 
                             /** The where statement. */
                             private final WhereStatement          whereStatement;
-
-                            /** The condition info. */
-                            private final SLLinkTypeConditionInfo conditionInfo;
 
                             /**
                              * Instantiates a new relational operator impl.
@@ -1876,6 +402,1024 @@ public class WhereStatementImpl implements WhereStatement {
                                 final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
                                 return new OpenBracketImpl(each);
                             }
+                        }
+
+                        /** The condition info. */
+                        private final SLLinkTypeConditionInfo conditionInfo;
+
+                        /** The each. */
+                        private final Each                    each;
+
+                        /** The outer each. */
+                        private final Each                    outerEach;
+
+                        /** The where statement. */
+                        private final WhereStatement          whereStatement;
+
+                        /**
+                         * Instantiates a new value impl.
+                         * 
+                         * @param whereStatement the where statement
+                         * @param each the each
+                         * @param outerEach the outer each
+                         * @param conditionInfo the condition info
+                         */
+                        public ValueImpl(
+                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                          final SLLinkTypeConditionInfo conditionInfo) {
+                            this.each = each;
+                            this.outerEach = outerEach;
+                            this.whereStatement = whereStatement;
+                            this.conditionInfo = conditionInfo;
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public RelationalOperator and() {
+                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLLinkTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
+                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public CloseBracket closeBracket() {
+                            conditionInfo.getOuterStatementInfo().setClosed(true);
+                            return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public WhereStatement linkTypeEnd() {
+                            conditionInfo.getLinkTypeInfo().getLinkTypeStatementInfo().setClosed(true);
+                            return whereStatement;
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public RelationalOperator or() {
+                            final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLLinkTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
+                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
+                        }
+                    }
+
+                    /** The condition info. */
+                    private final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
+
+                    /** The each. */
+                    private final Each                                                                                                 each;
+
+                    /** The outer each. */
+                    private final Each                                                                                                 outerEach;
+
+                    /** The where statement. */
+                    private final WhereStatement                                                                                       whereStatement;
+
+                    /**
+                     * Instantiates a new operator impl.
+                     * 
+                     * @param whereStatement the where statement
+                     * @param each the each
+                     * @param outerEach the outer each
+                     * @param conditionInfo the condition info
+                     */
+                    public OperatorImpl(
+                                         final WhereStatement whereStatement,
+                                         final Each each,
+                                         final Each outerEach,
+                                         final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo) {
+                        this.each = each;
+                        this.outerEach = outerEach;
+                        this.whereStatement = whereStatement;
+                        this.conditionInfo = conditionInfo;
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Boolean value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Double value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Float value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Integer value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Long value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final String value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+                }
+
+                /** The condition info. */
+                private final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo;
+
+                /** The each. */
+                private final Each                                                                                                 each;
+
+                /** The outer each. */
+                private final Each                                                                                                 outerEach;
+
+                /** The where statement. */
+                private final WhereStatement                                                                                       whereStatement;
+
+                /**
+                 * Instantiates a new property impl.
+                 * 
+                 * @param whereStatement the where statement
+                 * @param each the each
+                 * @param outerEach the outer each
+                 * @param conditionInfo the condition info
+                 */
+                public PropertyImpl(
+                                     final WhereStatement whereStatement,
+                                     final Each each,
+                                     final Each outerEach,
+                                     final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo) {
+                    this.each = each;
+                    this.whereStatement = whereStatement;
+                    this.conditionInfo = conditionInfo;
+                    this.outerEach = outerEach;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator contains() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator endsWith() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator equalsTo() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator greaterOrEqualThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator greaterThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator lesserOrEqualThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator lesserThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Property not() {
+                    conditionInfo.setRelationalNotOperator(true);
+                    return this;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator startsWith() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+            }
+
+            /** The condition info. */
+            private final SLLinkTypeConditionInfo conditionInfo;
+
+            /** The outer each. */
+            private final Each                    outerEach;
+
+            /** The where statement. */
+            private final WhereStatement          whereStatement;
+
+            /**
+             * Instantiates a new each impl.
+             * 
+             * @param whereStatement the where statement
+             * @param conditionInfo the condition info
+             * @param outerEach the outer each
+             */
+            public EachImpl(
+                             final WhereStatement whereStatement,
+                             final org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo conditionInfo,
+                             final Each outerEach) {
+                this.whereStatement = whereStatement;
+                this.conditionInfo = conditionInfo;
+                this.outerEach = outerEach;
+            }
+
+            /**
+             * Instantiates a new each impl.
+             * 
+             * @param whereStatement the where statement
+             * @param conditionInfo the condition info
+             */
+            public EachImpl(
+                             final WhereStatement whereStatement, final SLLinkTypeConditionInfo conditionInfo) {
+                this(whereStatement, conditionInfo, null);
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Property property(final String name) {
+                conditionInfo.setPropertyName(name);
+                return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
+            }
+        }
+
+        /** The type info. */
+        private final WhereLinkTypeInfo typeInfo;
+
+        /** The where statement. */
+        private final WhereStatement    whereStatement;
+
+        /**
+         * Instantiates a new link type impl.
+         * 
+         * @param whereStatement the where statement
+         * @param typeInfo the type info
+         */
+        public LinkTypeImpl(
+                             final WhereStatement whereStatement, final WhereLinkTypeInfo typeInfo) {
+            this.whereStatement = whereStatement;
+            this.typeInfo = typeInfo;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Each each() {
+            final SLLinkTypeStatementInfo whereStatementInfo = new SLLinkTypeStatementInfo(typeInfo);
+            typeInfo.setLinkTypeStatementInfo(whereStatementInfo);
+            final SLLinkTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
+            return new EachImpl(whereStatement, conditionInfo);
+        }
+    }
+
+    /**
+     * The Class TypeImpl.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class TypeImpl implements Type {
+
+        /**
+         * The Class EachImpl.
+         * 
+         * @author Vitor Hugo Chagas
+         */
+        public static class EachImpl implements Each, OuterEachGetter<Each> {
+
+            /**
+             * The Class LinkImpl.
+             * 
+             * @author Vitor Hugo Chagas
+             */
+            public static class LinkImpl implements Link {
+
+                /**
+                 * The Class SideImpl.
+                 * 
+                 * @author Vitor Hugo Chagas
+                 */
+                public static class SideImpl implements Side {
+
+                    /**
+                     * The Class CountImpl.
+                     * 
+                     * @author Vitor Hugo Chagas
+                     */
+                    public static class CountImpl implements Count {
+
+                        /**
+                         * The Class OperatorImpl.
+                         * 
+                         * @author Vitor Hugo Chagas
+                         */
+                        public static class OperatorImpl implements Operator {
+
+                            /**
+                             * The Class ValueImpl.
+                             * 
+                             * @author Vitor Hugo Chagas
+                             */
+                            public static class ValueImpl implements Value {
+
+                                /**
+                                 * The Class CloseBracketImpl.
+                                 * 
+                                 * @author Vitor Hugo Chagas
+                                 */
+                                public static class CloseBracketImpl implements CloseBracket {
+
+                                    /** The condition info. */
+                                    private final SLTypeConditionInfo conditionInfo;
+
+                                    /** The outer each. */
+                                    private final Each                outerEach;
+
+                                    /** The where statement. */
+                                    private final WhereStatement      whereStatement;
+
+                                    /**
+                                     * Instantiates a new close bracket impl.
+                                     * 
+                                     * @param whereStatement the where statement
+                                     * @param outerEach the outer each
+                                     * @param conditionInfo the condition info
+                                     */
+                                    public CloseBracketImpl(
+                                                             final WhereStatement whereStatement, final Each outerEach,
+                                                             final SLTypeConditionInfo conditionInfo) {
+                                        this.whereStatement = whereStatement;
+                                        this.outerEach = outerEach;
+                                        this.conditionInfo = conditionInfo;
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public RelationalOperator and() {
+                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                        return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    @SuppressWarnings("unchecked")
+                                    public CloseBracket closeBracket() {
+                                        final int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
+                                        final SLTypeConditionInfo outerConditionInfo =
+                                            conditionInfo
+                                                .getOuterStatementInfo()
+                                                .getConditionInfoList()
+                                                .get(
+                                                                                                                                                  size - 1);
+                                        final SLTypeStatementInfo outerStatementInfo =
+                                            outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
+                                        outerStatementInfo.setClosed(true);
+                                        final OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
+                                        return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public RelationalOperator or() {
+                                        final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                                        final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                        return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public WhereStatement typeEnd() {
+                                        conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
+                                        return whereStatement;
+                                    }
+                                }
+
+                                /**
+                                 * The Class RelationalOperatorImpl.
+                                 * 
+                                 * @author Vitor Hugo Chagas
+                                 */
+                                public static class RelationalOperatorImpl implements RelationalOperator {
+
+                                    /**
+                                     * The Class OpenBracketImpl.
+                                     * 
+                                     * @author Vitor Hugo Chagas
+                                     */
+                                    public static class OpenBracketImpl implements OpenBracket {
+
+                                        /** The each. */
+                                        private final Each each;
+
+                                        /**
+                                         * Instantiates a new open bracket impl.
+                                         * 
+                                         * @param each the each
+                                         */
+                                        public OpenBracketImpl(
+                                                                final Each each) {
+                                            this.each = each;
+                                        }
+
+                                        /**
+                                         * {@inheritDoc}
+                                         */
+                                        @Override
+                                        public Each each() {
+                                            return each;
+                                        }
+                                    }
+
+                                    /** The condition info. */
+                                    private final SLTypeConditionInfo conditionInfo;
+
+                                    /** The each. */
+                                    private final Each                each;
+
+                                    /** The where statement. */
+                                    private final WhereStatement      whereStatement;
+
+                                    /**
+                                     * Instantiates a new relational operator impl.
+                                     * 
+                                     * @param whereStatement the where statement
+                                     * @param each the each
+                                     * @param conditionInfo the condition info
+                                     */
+                                    public RelationalOperatorImpl(
+                                                                   final WhereStatement whereStatement, final Each each,
+                                                                   final SLTypeConditionInfo conditionInfo) {
+                                        this.each = each;
+                                        this.whereStatement = whereStatement;
+                                        this.conditionInfo = conditionInfo;
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public WhereStatement comma() {
+                                        return whereStatement;
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public Each each() {
+                                        return each;
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public RelationalOperator not() {
+                                        conditionInfo.setConditionalNotOperator(true);
+                                        return this;
+                                    }
+
+                                    /**
+                                     * {@inheritDoc}
+                                     */
+                                    @Override
+                                    public OpenBracket openBracket() {
+                                        final SLTypeStatementInfo newStatementInfo =
+                                            new SLTypeStatementInfo(
+                                                                                                       conditionInfo
+                                                                                                           .getTypeInfo(),
+                                                                                                       conditionInfo
+                                                                                                           .getOuterStatementInfo());
+                                        conditionInfo.setInnerStatementInfo(newStatementInfo);
+                                        final SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                        final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                        return new OpenBracketImpl(each);
+                                    }
+                                }
+
+                                /** The condition info. */
+                                private final SLTypeConditionInfo conditionInfo;
+
+                                /** The each. */
+                                private final Each                each;
+
+                                /** The outer each. */
+                                private final Each                outerEach;
+
+                                /** The where statement. */
+                                private final WhereStatement      whereStatement;
+
+                                /**
+                                 * Instantiates a new value impl.
+                                 * 
+                                 * @param whereStatement the where statement
+                                 * @param each the each
+                                 * @param outerEach the outer each
+                                 * @param conditionInfo the condition info
+                                 */
+                                public ValueImpl(
+                                                  final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                                  final SLTypeConditionInfo conditionInfo) {
+                                    this.each = each;
+                                    this.outerEach = outerEach;
+                                    this.whereStatement = whereStatement;
+                                    this.conditionInfo = conditionInfo;
+                                }
+
+                                /**
+                                 * {@inheritDoc}
+                                 */
+                                @Override
+                                public RelationalOperator and() {
+                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLTypeConditionInfo newConditionInfo =
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
+                                    return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
+                                }
+
+                                /**
+                                 * {@inheritDoc}
+                                 */
+                                @Override
+                                public CloseBracket closeBracket() {
+                                    final SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
+                                    statementInfo.setClosed(true);
+                                    return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
+                                }
+
+                                /**
+                                 * {@inheritDoc}
+                                 */
+                                @Override
+                                public RelationalOperator or() {
+                                    final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                    final SLTypeConditionInfo newConditionInfo =
+                                        outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                                    final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
+                                    return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
+                                }
+
+                                /**
+                                 * {@inheritDoc}
+                                 */
+                                @Override
+                                public WhereStatement typeEnd() {
+                                    conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
+                                    return whereStatement;
+                                }
+                            }
+
+                            /** The condition info. */
+                            private final SLTypeConditionInfo conditionInfo;
+
+                            /** The each. */
+                            private final Each                each;
+
+                            /** The outer each. */
+                            private final Each                outerEach;
+
+                            /** The where statement. */
+                            private final WhereStatement      whereStatement;
+
+                            /**
+                             * Instantiates a new operator impl.
+                             * 
+                             * @param whereStatement the where statement
+                             * @param each the each
+                             * @param outerEach the outer each
+                             * @param conditionInfo the condition info
+                             */
+                            public OperatorImpl(
+                                                 final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                                 final SLTypeConditionInfo conditionInfo) {
+                                this.each = each;
+                                this.outerEach = outerEach;
+                                this.whereStatement = whereStatement;
+                                this.conditionInfo = conditionInfo;
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public Value value(final Integer value) {
+                                conditionInfo.setValue(value);
+                                return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                            }
+                        }
+
+                        /** The condition info. */
+                        private final SLTypeConditionInfo conditionInfo;
+
+                        /** The each. */
+                        private final Each                each;
+
+                        /** The outer each. */
+                        private final Each                outerEach;
+
+                        /** The where statement. */
+                        private final WhereStatement      whereStatement;
+
+                        /**
+                         * Instantiates a new count impl.
+                         * 
+                         * @param whereStatement the where statement
+                         * @param each the each
+                         * @param outerEach the outer each
+                         * @param conditionInfo the condition info
+                         */
+                        public CountImpl(
+                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                          final SLTypeConditionInfo conditionInfo) {
+                            this.each = each;
+                            this.whereStatement = whereStatement;
+                            this.conditionInfo = conditionInfo;
+                            this.outerEach = outerEach;
+                        }
+
+                        /*
+                         * (non-Javadoc)
+                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#contains()
+                         */
+                        /**
+                         * Contains.
+                         * 
+                         * @return the operator
+                         */
+                        public Operator contains() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /*
+                         * (non-Javadoc)
+                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#endsWith()
+                         */
+                        /**
+                         * Ends with.
+                         * 
+                         * @return the operator
+                         */
+                        public Operator endsWith() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public Operator equalsTo() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public Operator greaterOrEqualThan() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public Operator greaterThan() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public Operator lesserOrEqualThan() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public Operator lesserThan() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public Count not() {
+                            conditionInfo.setRelationalNotOperator(true);
+                            return this;
+                        }
+
+                        /*
+                         * (non-Javadoc)
+                         * @see org.openspotlight.graph.query.SLWhereStatement.Type .Each.Property#startsWith()
+                         */
+                        /**
+                         * Starts with.
+                         * 
+                         * @return the operator
+                         */
+                        public Operator startsWith() {
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
+                            return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                        }
+                    }
+
+                    /** The condition info. */
+                    private final SLTypeConditionInfo conditionInfo;
+
+                    /** The each. */
+                    private final Each                each;
+
+                    /** The outer each. */
+                    private final Each                outerEach;
+
+                    /** The where statement. */
+                    private final WhereStatement      whereStatement;
+
+                    /**
+                     * Instantiates a new side impl.
+                     * 
+                     * @param whereStatement the where statement
+                     * @param each the each
+                     * @param outerEach the outer each
+                     * @param conditionInfo the condition info
+                     */
+                    public SideImpl(
+                                     final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                    final SLTypeConditionInfo conditionInfo) {
+                        this.whereStatement = whereStatement;
+                        this.each = each;
+                        this.outerEach = outerEach;
+                        this.conditionInfo = conditionInfo;
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Count count() {
+                        return new CountImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+                }
+
+                /** The condition info. */
+                private final SLTypeConditionInfo conditionInfo;
+
+                /** The each. */
+                private final Each                each;
+
+                /** The outer each. */
+                private final Each                outerEach;
+
+                /** The where statement. */
+                private final WhereStatement      whereStatement;
+
+                /**
+                 * Instantiates a new link impl.
+                 * 
+                 * @param whereStatement the where statement
+                 * @param each the each
+                 * @param outerEach the outer each
+                 * @param conditionInfo the condition info
+                 */
+                public LinkImpl(
+                                 final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                final SLTypeConditionInfo conditionInfo) {
+                    this.whereStatement = whereStatement;
+                    this.each = each;
+                    this.outerEach = outerEach;
+                    this.conditionInfo = conditionInfo;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Side a() {
+                    conditionInfo.setSide(SideType.A_SIDE);
+                    return new SideImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Side b() {
+                    conditionInfo.setSide(SideType.B_SIDE);
+                    return new SideImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+            }
+
+            /**
+             * The Class PropertyImpl.
+             * 
+             * @author Vitor Hugo Chagas
+             */
+            public static class PropertyImpl implements Property {
+
+                /**
+                 * The Class OperatorImpl.
+                 * 
+                 * @author Vitor Hugo Chagas
+                 */
+                public static class OperatorImpl implements Operator {
+
+                    /**
+                     * The Class ValueImpl.
+                     * 
+                     * @author Vitor Hugo Chagas
+                     */
+                    public static class ValueImpl implements Value {
+
+                        /**
+                         * The Class CloseBracketImpl.
+                         * 
+                         * @author Vitor Hugo Chagas
+                         */
+                        public static class CloseBracketImpl implements CloseBracket {
+
+                            /** The condition info. */
+                            private final SLTypeConditionInfo conditionInfo;
+
+                            /** The outer each. */
+                            private final Each                outerEach;
+
+                            /** The where statement. */
+                            private final WhereStatement      whereStatement;
+
+                            /**
+                             * Instantiates a new close bracket impl.
+                             * 
+                             * @param whereStatement the where statement
+                             * @param outerEach the outer each
+                             * @param conditionInfo the condition info
+                             */
+                            public CloseBracketImpl(
+                                                     final WhereStatement whereStatement, final Each outerEach,
+                                                     final SLTypeConditionInfo conditionInfo) {
+                                this.whereStatement = whereStatement;
+                                this.outerEach = outerEach;
+                                this.conditionInfo = conditionInfo;
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public RelationalOperator and() {
+                                final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            @SuppressWarnings("unchecked")
+                            public CloseBracket closeBracket() {
+                                final int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
+                                final SLTypeConditionInfo outerConditionInfo =
+                                    conditionInfo
+                                        .getOuterStatementInfo()
+                                        .getConditionInfoList()
+                                        .get(
+                                                                                                                                          size - 1);
+                                final SLTypeStatementInfo outerStatementInfo =
+                                    outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
+                                outerStatementInfo.setClosed(true);
+                                final OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
+                                return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public RelationalOperator or() {
+                                final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
+                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public WhereStatement typeEnd() {
+                                conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
+                                return whereStatement;
+                            }
+                        }
+
+                        /**
+                         * The Class RelationalOperatorImpl.
+                         * 
+                         * @author Vitor Hugo Chagas
+                         */
+                        public static class RelationalOperatorImpl implements RelationalOperator {
 
                             /**
                              * The Class OpenBracketImpl.
@@ -1905,36 +1449,28 @@ public class WhereStatementImpl implements WhereStatement {
                                     return each;
                                 }
                             }
-                        }
-
-                        /**
-                         * The Class CloseBracketImpl.
-                         * 
-                         * @author Vitor Hugo Chagas
-                         */
-                        public static class CloseBracketImpl implements CloseBracket {
-
-                            /** The where statement. */
-                            private final WhereStatement          whereStatement;
-
-                            /** The outer each. */
-                            private final Each                    outerEach;
 
                             /** The condition info. */
-                            private final SLLinkTypeConditionInfo conditionInfo;
+                            private final SLTypeConditionInfo conditionInfo;
+
+                            /** The each. */
+                            private final Each                each;
+
+                            /** The where statement. */
+                            private final WhereStatement      whereStatement;
 
                             /**
-                             * Instantiates a new close bracket impl.
+                             * Instantiates a new relational operator impl.
                              * 
                              * @param whereStatement the where statement
-                             * @param outerEach the outer each
+                             * @param each the each
                              * @param conditionInfo the condition info
                              */
-                            public CloseBracketImpl(
-                                                     final WhereStatement whereStatement, final Each outerEach,
-                                                     final SLLinkTypeConditionInfo conditionInfo) {
+                            public RelationalOperatorImpl(
+                                                           final WhereStatement whereStatement, final Each each,
+                                                           final SLTypeConditionInfo conditionInfo) {
+                                this.each = each;
                                 this.whereStatement = whereStatement;
-                                this.outerEach = outerEach;
                                 this.conditionInfo = conditionInfo;
                             }
 
@@ -1942,51 +1478,515 @@ public class WhereStatementImpl implements WhereStatement {
                              * {@inheritDoc}
                              */
                             @Override
-                            public CloseBracket closeBracket() {
-                                conditionInfo.getOuterStatementInfo().setClosed(true);
-                                return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public RelationalOperator or() {
-                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
-                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
-                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public RelationalOperator and() {
-                                final SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
-                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
-                                final Each each = new EachImpl(whereStatement, conditionInfo, outerEach);
-                                return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
-                            }
-
-                            /**
-                             * {@inheritDoc}
-                             */
-                            @Override
-                            public WhereStatement linkTypeEnd() {
-                                conditionInfo.getLinkTypeInfo().getLinkTypeStatementInfo().setClosed(true);
+                            public WhereStatement comma() {
                                 return whereStatement;
                             }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public Each each() {
+                                return each;
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public RelationalOperator not() {
+                                conditionInfo.setConditionalNotOperator(true);
+                                return this;
+                            }
+
+                            /**
+                             * {@inheritDoc}
+                             */
+                            @Override
+                            public OpenBracket openBracket() {
+                                final SLTypeStatementInfo newStatementInfo =
+                                    new SLTypeStatementInfo(
+                                                                                               conditionInfo.getTypeInfo(),
+                                                                                               conditionInfo
+                                                                                                   .getOuterStatementInfo());
+                                conditionInfo.setInnerStatementInfo(newStatementInfo);
+                                final SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
+                                final Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
+                                return new OpenBracketImpl(each);
+                            }
+                        }
+
+                        /** The condition info. */
+                        private final SLTypeConditionInfo conditionInfo;
+
+                        /** The each. */
+                        private final Each                each;
+
+                        /** The outer each. */
+                        private final Each                outerEach;
+
+                        /** The where statement. */
+                        private final WhereStatement      whereStatement;
+
+                        /**
+                         * Instantiates a new value impl.
+                         * 
+                         * @param whereStatement the where statement
+                         * @param each the each
+                         * @param outerEach the outer each
+                         * @param conditionInfo the condition info
+                         */
+                        public ValueImpl(
+                                          final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                          final SLTypeConditionInfo conditionInfo) {
+                            this.each = each;
+                            this.outerEach = outerEach;
+                            this.whereStatement = whereStatement;
+                            this.conditionInfo = conditionInfo;
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public RelationalOperator and() {
+                            final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.AND);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
+                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public CloseBracket closeBracket() {
+                            final SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
+                            statementInfo.setClosed(true);
+                            return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public RelationalOperator or() {
+                            final SLTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
+                            final SLTypeConditionInfo newConditionInfo =
+                                outerStatementInfo.addCondition(ConditionalOperatorType.OR);
+                            final Each newEach = new EachImpl(whereStatement, newConditionInfo, each);
+                            return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
+                        }
+
+                        /**
+                         * {@inheritDoc}
+                         */
+                        @Override
+                        public WhereStatement typeEnd() {
+                            conditionInfo.getTypeInfo().getTypeStatementInfo().setClosed(true);
+                            return whereStatement;
                         }
                     }
+
+                    /** The condition info. */
+                    private final SLTypeConditionInfo conditionInfo;
+
+                    /** The each. */
+                    private final Each                each;
+
+                    /** The outer each. */
+                    private final Each                outerEach;
+
+                    /** The where statement. */
+                    private final WhereStatement      whereStatement;
+
+                    /**
+                     * Instantiates a new operator impl.
+                     * 
+                     * @param whereStatement the where statement
+                     * @param each the each
+                     * @param outerEach the outer each
+                     * @param conditionInfo the condition info
+                     */
+                    public OperatorImpl(
+                                         final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                         final SLTypeConditionInfo conditionInfo) {
+                        this.each = each;
+                        this.outerEach = outerEach;
+                        this.whereStatement = whereStatement;
+                        this.conditionInfo = conditionInfo;
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Boolean value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Double value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Float value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Integer value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final Long value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+
+                    /**
+                     * {@inheritDoc}
+                     */
+                    @Override
+                    public Value value(final String value) {
+                        conditionInfo.setValue(value);
+                        return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
+                    }
+                }
+
+                /** The condition info. */
+                private final SLTypeConditionInfo conditionInfo;
+
+                /** The each. */
+                private final Each                each;
+
+                /** The outer each. */
+                private final Each                outerEach;
+
+                /** The where statement. */
+                private final WhereStatement      whereStatement;
+
+                /**
+                 * Instantiates a new property impl.
+                 * 
+                 * @param whereStatement the where statement
+                 * @param each the each
+                 * @param outerEach the outer each
+                 * @param conditionInfo the condition info
+                 */
+                public PropertyImpl(
+                                     final WhereStatement whereStatement, final Each each, final Each outerEach,
+                                    final SLTypeConditionInfo conditionInfo) {
+                    this.each = each;
+                    this.whereStatement = whereStatement;
+                    this.conditionInfo = conditionInfo;
+                    this.outerEach = outerEach;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator contains() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator endsWith() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator equalsTo() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator greaterOrEqualThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator greaterThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator lesserOrEqualThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator lesserThan() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Property not() {
+                    conditionInfo.setRelationalNotOperator(true);
+                    return this;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Operator startsWith() {
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
+                    return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
             }
+
+            /** The condition info. */
+            private final SLTypeConditionInfo conditionInfo;
+
+            /** The outer each. */
+            private final Each                outerEach;
+
+            /** The where statement. */
+            private final WhereStatement      whereStatement;
+
+            /**
+             * Instantiates a new each impl.
+             * 
+             * @param whereStatement the where statement
+             * @param conditionInfo the condition info
+             */
+            public EachImpl(
+                             final WhereStatement whereStatement, final SLTypeConditionInfo conditionInfo) {
+                this(whereStatement, conditionInfo, null);
+            }
+
+            /**
+             * Instantiates a new each impl.
+             * 
+             * @param whereStatement the where statement
+             * @param conditionInfo the condition info
+             * @param outerEach the outer each
+             */
+            public EachImpl(
+                             final WhereStatement whereStatement, final SLTypeConditionInfo conditionInfo, final Each outerEach) {
+                this.whereStatement = whereStatement;
+                this.conditionInfo = conditionInfo;
+                this.outerEach = outerEach;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Each getOuterEach() {
+                return outerEach;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Link link(final String name) {
+                conditionInfo.setLinkTypeName(name);
+                return new LinkImpl(whereStatement, this, outerEach, conditionInfo);
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Property property(final String name) {
+                conditionInfo.setPropertyName(name);
+                return new PropertyImpl(whereStatement, this, outerEach, conditionInfo);
+            }
+        }
+
+        /**
+         * The Class SubTypesImpl.
+         * 
+         * @author Vitor Hugo Chagas
+         */
+        public static class SubTypesImpl implements SubTypes {
+
+            /** The type info. */
+            private final WhereTypeInfo  typeInfo;
+
+            /** The where statement. */
+            private final WhereStatement whereStatement;
+
+            /**
+             * Instantiates a new sub types impl.
+             * 
+             * @param whereStatement the where statement
+             * @param typeInfo the type info
+             */
+            public SubTypesImpl(
+                                 final WhereStatement whereStatement, final WhereTypeInfo typeInfo) {
+                this.whereStatement = whereStatement;
+                this.typeInfo = typeInfo;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public Each each() {
+                final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
+                typeInfo.setTypeStatementInfo(whereStatementInfo);
+                final SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
+                return new EachImpl(whereStatement, conditionInfo);
+            }
+        }
+
+        /** The type info. */
+        private final WhereTypeInfo  typeInfo;
+
+        /** The where statement. */
+        private final WhereStatement whereStatement;
+
+        /**
+         * Instantiates a new type impl.
+         * 
+         * @param whereStatement the where statement
+         * @param typeInfo the type info
+         */
+        public TypeImpl(
+                         final WhereStatement whereStatement, final WhereTypeInfo typeInfo) {
+            this.whereStatement = whereStatement;
+            this.typeInfo = typeInfo;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Each each() {
+            final SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
+            typeInfo.setTypeStatementInfo(whereStatementInfo);
+            final SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
+            return new EachImpl(whereStatement, conditionInfo);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SubTypes subTypes() {
+            typeInfo.setSubTypes(true);
+            return new SubTypesImpl(whereStatement, typeInfo);
         }
     }
 
-}
+    /** The end. */
+    private final End                end;
 
-interface OuterEachGetter<E> {
+    /** The where statement info. */
+    private final WhereStatementInfo whereStatementInfo;
 
-    public E getOuterEach();
+    /**
+     * Instantiates a new sL where statement impl.
+     * 
+     * @param end the end
+     * @param whereStatementInfo the where statement info
+     */
+    public WhereStatementImpl(
+                                 final End end, final WhereStatementInfo whereStatementInfo) {
+        this.end = end;
+        this.whereStatementInfo = whereStatementInfo;
+    }
+
+    /**
+     * Instantiates a new sL where statement impl.
+     * 
+     * @param selectFacade the select facade
+     * @param orderBy the order by
+     * @param whereStatementInfo the where statement info
+     */
+    public WhereStatementImpl(
+                                 final SelectFacade selectFacade, final OrderByStatement orderBy,
+                              final WhereStatementInfo whereStatementInfo) {
+        this(new EndImpl(selectFacade, whereStatementInfo, orderBy), whereStatementInfo);
+    }
+
+    /**
+     * Gets the where statement info.
+     * 
+     * @return the where statement info
+     */
+    public WhereStatementInfo getWhereStatementInfo() {
+        return whereStatementInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LinkType linkType(final String typeName) {
+        final WhereLinkTypeInfo linkTypeInfo = new WhereLinkTypeInfo(typeName);
+        whereStatementInfo.getWhereLinkTypeInfoList().add(linkTypeInfo);
+        return new LinkTypeImpl(this, linkTypeInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type type(final String typeName) {
+        final WhereTypeInfo typeInfo = new WhereTypeInfo(typeName);
+        whereStatementInfo.getWhereTypeInfoList().add(typeInfo);
+        return new TypeImpl(this, typeInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public End whereEnd() {
+        return end;
+    }
+
 }

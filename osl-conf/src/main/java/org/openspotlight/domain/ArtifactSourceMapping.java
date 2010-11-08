@@ -71,25 +71,25 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
     private static final long                     serialVersionUID = -242895748094958633L;
 
-    /** The to. */
-    private String                                to;
+    /** The excludeds. */
+    private Set<String>                           excludeds        = new HashSet<String>();
 
     /** The relative. */
     private String                                from;
 
-    /** The source. */
-    private transient ArtifactSource              source;
-
-    /** The excludeds. */
-    private Set<String>                           excludeds        = new HashSet<String>();
+    /** The hash code. */
+    private volatile transient int                hashCode;
 
     /** The includeds. */
     private Set<String>                           includeds        = new HashSet<String>();
 
+    /** The source. */
+    private transient ArtifactSource              source;
+
     private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
 
-    /** The hash code. */
-    private volatile transient int                hashCode;
+    /** The to. */
+    private String                                to;
 
     /*
      * (non-Javadoc)
@@ -139,6 +139,10 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
     @ParentProperty
     public synchronized ArtifactSource getSource() {
         return source;
+    }
+
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
     }
 
     /**
@@ -200,6 +204,10 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
         this.source = source;
     }
 
+    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
+        this.tasks = tasks;
+    }
+
     /**
      * Sets the to.
      * 
@@ -207,14 +215,6 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      */
     public synchronized void setTo(final String to) {
         this.to = to;
-    }
-
-    public List<Class<? extends Callable<Void>>> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
-        this.tasks = tasks;
     }
 
 }

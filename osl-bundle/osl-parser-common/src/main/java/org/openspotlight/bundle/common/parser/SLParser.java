@@ -75,17 +75,17 @@ public abstract class SLParser extends Parser {
      * {@inheritDoc}
      */
     @Override
-    public void reportError(final RecognitionException paramRecognitionException) {
-        getLogger().warn(paramRecognitionException.toString());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void emitErrorMessage(final String msg) {
         getLogger().warn(msg);
     }
 
     public abstract Logger getLogger();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reportError(final RecognitionException paramRecognitionException) {
+        getLogger().warn(paramRecognitionException.toString());
+    }
 }

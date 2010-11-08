@@ -64,79 +64,6 @@ import org.openspotlight.graph.query.info.WhereByNodeTypeInfo;
  */
 public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter {
 
-    /** The select info. */
-    private final SelectByNodeTypeInfo selectInfo;
-
-    /** The types. */
-    private final List<Type>           types;
-
-    /** The select end. */
-    private final End                  selectEnd;
-
-    /**
-     * Instantiates a new sL select by node type impl.
-     * 
-     * @param selectFacade the select facade
-     */
-    public SelectByNodeTypeImpl(
-                                   final SelectFacade selectFacade) {
-        selectInfo = new SelectByNodeTypeInfo();
-        types = new ArrayList<Type>();
-        selectEnd = new EndImpl(selectFacade, selectInfo);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AllTypes allTypes() {
-        final AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
-        return new AllTypesImpl(this, allTypesInfo);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type type(final String typeName) {
-        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
-        final Type type = new TypeImpl(this, typeInfo);
-        types.add(type);
-        return type;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public End end() {
-        verifyIfLastItemTerminatedWithComma();
-        return selectEnd;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SelectInfo getSelectInfo() {
-        return selectInfo;
-    }
-
-    @Override
-    public String toString() {
-        return selectInfo.toString();
-    }
-
-    /**
-     * Verify if last item terminated with comma.
-     */
-    private void verifyIfLastItemTerminatedWithComma() {
-        int commaCount = 0;
-        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
-            commaCount += typeInfo.isComma() ? 1 : 0;
-        }
-    }
-
     /**
      * The Class AllTypesImpl.
      * 
@@ -144,11 +71,11 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
      */
     public static class AllTypesImpl implements AllTypes {
 
-        /** The select by node type. */
-        private final SelectByNodeType selectByNodeType;
-
         /** The all types info. */
         private final AllTypesInfo     allTypesInfo;
+
+        /** The select by node type. */
+        private final SelectByNodeType selectByNodeType;
 
         /**
          * Instantiates a new all types impl.
@@ -177,6 +104,139 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
         @Override
         public End selectEnd() {
             return selectByNodeType.end();
+        }
+    }
+
+    /**
+     * The Class EndImpl.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class EndImpl implements End {
+
+        /** The order by. */
+        private OrderByStatement           orderBy;
+
+        /** The select facade. */
+        private final SelectFacade         selectFacade;
+
+        /** The select info. */
+        private final SelectByNodeTypeInfo selectInfo;
+
+        /** The where. */
+        private WhereByNodeType            where;
+
+        /**
+         * Instantiates a new end impl.
+         * 
+         * @param selectFacade the select facade
+         * @param selectInfo the select info
+         */
+        EndImpl(
+                 final SelectFacade selectFacade, final SelectByNodeTypeInfo selectInfo) {
+            this.selectFacade = selectFacade;
+            this.selectInfo = selectInfo;
+            // this.orderBy = new SLOrderByStatementImpl();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End executeXTimes() {
+            selectInfo.setXTimes(0);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End executeXTimes(final int x) {
+            selectInfo.setXTimes(x);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End keepResult() {
+            selectInfo.setKeepResult(true);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End limit(final Integer limit) {
+            selectInfo.setLimit(limit);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public End limit(final Integer limit,
+                          final Integer offset) {
+            selectInfo.setLimit(limit);
+            selectInfo.setOffset(offset);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public OrderByStatement orderBy() {
+            return orderBy;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectStatement select() {
+            return selectFacade.select();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectByLinkCount selectByLinkCount() {
+            return selectFacade.selectByLinkCount();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectByLinkType selectByLinkType() {
+            return selectFacade.selectByLinkType();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SelectByNodeType selectByNodeType() {
+            return selectFacade.selectByNodeType();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public WhereByNodeType where() {
+            if (where == null) {
+                final WhereByNodeTypeInfo whereStatementInfo = new WhereByNodeTypeInfo(selectInfo);
+                selectInfo.setWhereStatementInfo(whereStatementInfo);
+                where = new WhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
+            }
+            return where;
         }
     }
 
@@ -233,137 +293,77 @@ public class SelectByNodeTypeImpl implements SelectByNodeType, SelectInfoGetter 
 
     }
 
+    /** The select end. */
+    private final End                  selectEnd;
+
+    /** The select info. */
+    private final SelectByNodeTypeInfo selectInfo;
+
+    /** The types. */
+    private final List<Type>           types;
+
     /**
-     * The Class EndImpl.
+     * Instantiates a new sL select by node type impl.
      * 
-     * @author Vitor Hugo Chagas
+     * @param selectFacade the select facade
      */
-    public static class EndImpl implements End {
+    public SelectByNodeTypeImpl(
+                                   final SelectFacade selectFacade) {
+        selectInfo = new SelectByNodeTypeInfo();
+        types = new ArrayList<Type>();
+        selectEnd = new EndImpl(selectFacade, selectInfo);
+    }
 
-        /** The select facade. */
-        private final SelectFacade         selectFacade;
-
-        /** The select info. */
-        private final SelectByNodeTypeInfo selectInfo;
-
-        /** The where. */
-        private WhereByNodeType            where;
-
-        /** The order by. */
-        private OrderByStatement           orderBy;
-
-        /**
-         * Instantiates a new end impl.
-         * 
-         * @param selectFacade the select facade
-         * @param selectInfo the select info
-         */
-        EndImpl(
-                 final SelectFacade selectFacade, final SelectByNodeTypeInfo selectInfo) {
-            this.selectFacade = selectFacade;
-            this.selectInfo = selectInfo;
-            // this.orderBy = new SLOrderByStatementImpl();
+    /**
+     * Verify if last item terminated with comma.
+     */
+    private void verifyIfLastItemTerminatedWithComma() {
+        int commaCount = 0;
+        for (final SLSelectTypeInfo typeInfo: selectInfo.getTypeInfoList()) {
+            commaCount += typeInfo.isComma() ? 1 : 0;
         }
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public WhereByNodeType where() {
-            if (where == null) {
-                final WhereByNodeTypeInfo whereStatementInfo = new WhereByNodeTypeInfo(selectInfo);
-                selectInfo.setWhereStatementInfo(whereStatementInfo);
-                where = new WhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
-            }
-            return where;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AllTypes allTypes() {
+        final AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
+        return new AllTypesImpl(this, allTypesInfo);
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public OrderByStatement orderBy() {
-            return orderBy;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public End end() {
+        verifyIfLastItemTerminatedWithComma();
+        return selectEnd;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End keepResult() {
-            selectInfo.setKeepResult(true);
-            return this;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectInfo getSelectInfo() {
+        return selectInfo;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End limit(final Integer limit) {
-            selectInfo.setLimit(limit);
-            return this;
-        }
+    @Override
+    public String toString() {
+        return selectInfo.toString();
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End limit(final Integer limit,
-                          final Integer offset) {
-            selectInfo.setLimit(limit);
-            selectInfo.setOffset(offset);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End executeXTimes() {
-            selectInfo.setXTimes(0);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public End executeXTimes(final int x) {
-            selectInfo.setXTimes(x);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByLinkType selectByLinkType() {
-            return selectFacade.selectByLinkType();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByNodeType selectByNodeType() {
-            return selectFacade.selectByNodeType();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectByLinkCount selectByLinkCount() {
-            return selectFacade.selectByLinkCount();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public SelectStatement select() {
-            return selectFacade.select();
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type type(final String typeName) {
+        final SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        final Type type = new TypeImpl(this, typeInfo);
+        types.add(type);
+        return type;
     }
 
 }

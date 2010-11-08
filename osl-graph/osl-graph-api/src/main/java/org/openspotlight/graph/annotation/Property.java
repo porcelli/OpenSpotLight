@@ -35,8 +35,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Property {
-    PropertyChangeBehavior value() default PropertyChangeBehavior.NOT_ALLOW_USER;
-
     /**
      * Defines the change behavior of node and link types properties.
      * 
@@ -53,4 +51,6 @@ public @interface Property {
          */
         NOT_ALLOW_USER
     }
+
+    PropertyChangeBehavior value() default PropertyChangeBehavior.NOT_ALLOW_USER;
 }

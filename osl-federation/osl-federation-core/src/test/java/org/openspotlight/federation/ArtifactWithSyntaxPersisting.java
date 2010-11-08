@@ -75,11 +75,9 @@ import com.google.inject.Injector;
 
 public class ArtifactWithSyntaxPersisting {
 
-    public static void main(final String... args)
-        throws Exception {
-        final ArtifactWithSyntaxPersisting test = new ArtifactWithSyntaxPersisting();
-        test.shouldPersistLotsOfStuff();
-    }
+    private List<String> content     = null;
+
+    int                  maxPath     = 16;
 
     Random               r           = new Random();
 
@@ -90,17 +88,10 @@ public class ArtifactWithSyntaxPersisting {
 
     String[]             samplePaths = {"dir1", "dir2", "dirthreebigger", "anotherPath"};
 
-    int                  maxPath     = 16;
-
-    private List<String> content     = null;
-
-    Set<StringArtifact> createLotsOfStuff() {
-        final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
-        for (int i = 0; i < 100; i++) {
-            final StringArtifact sa = createNewDummyArtifact();
-            stuffList.add(sa);
-        }
-        return stuffList;
+    public static void main(final String... args)
+        throws Exception {
+        final ArtifactWithSyntaxPersisting test = new ArtifactWithSyntaxPersisting();
+        test.shouldPersistLotsOfStuff();
     }
 
     private StringArtifact createNewDummyArtifact() {
@@ -135,6 +126,15 @@ public class ArtifactWithSyntaxPersisting {
             content = list;
         }
         return content;
+    }
+
+    Set<StringArtifact> createLotsOfStuff() {
+        final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
+        for (int i = 0; i < 100; i++) {
+            final StringArtifact sa = createNewDummyArtifact();
+            stuffList.add(sa);
+        }
+        return stuffList;
     }
 
     @Test

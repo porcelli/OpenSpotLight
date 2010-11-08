@@ -110,6 +110,16 @@ public class HelpSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("help")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(final ConsoleReader reader,
                          final PrintWriter out,
                          final ConsoleState state) {
@@ -129,16 +139,16 @@ public class HelpSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
-        return "help";
+    public String getAutoCompleteCommand() {
+        return getCommand();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getAutoCompleteCommand() {
-        return getCommand();
+    public String getCommand() {
+        return "help";
     }
 
     /**
@@ -170,16 +180,6 @@ public class HelpSystemCommand implements SystemCommand {
      */
     @Override
     public boolean hasFileCompletion() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("help")) { return true; }
         return false;
     }
 }

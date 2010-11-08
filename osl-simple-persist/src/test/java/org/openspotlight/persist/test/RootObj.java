@@ -62,9 +62,9 @@ public class RootObj implements SimpleNodeType, Serializable {
 	 */
     private static final long                       serialVersionUID = 6600988707146639211L;
 
-    private String                                  uuid;
-
     private ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType;
+
+    private String                                  uuid;
 
     @Override
     public boolean equals(final Object o) {

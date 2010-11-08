@@ -103,8 +103,8 @@ public class RemoteReference<T> implements Serializable {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1738168629624338103L;
 
-    /** The remote type. */
-    private final Class<T>    remoteType;
+    /** The hashcode. */
+    private final int         hashcode;
 
     /** The interfaces. */
     private final Class<?>[]  interfaces;
@@ -112,11 +112,11 @@ public class RemoteReference<T> implements Serializable {
     /** The remote reference id. */
     private final String      remoteReferenceId;
 
+    /** The remote type. */
+    private final Class<T>    remoteType;
+
     /** The user token. */
     private final UserToken   userToken;
-
-    /** The hashcode. */
-    private final int         hashcode;
 
     /**
      * Instantiates a new remote reference.

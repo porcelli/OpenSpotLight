@@ -72,36 +72,12 @@ import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData
 public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     private static final String DEFAULT_REPOSITORY_NAME = "default";
 
+    private ConsoleState        state                   = null;
+
     @BeforeClass
     public static void setupServer()
         throws Exception {
         ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
-    }
-
-    private ConsoleState state = null;
-
-    /***
-     * We love you Windows... Thanks for all the enjoyable moments we spend together...
-     */
-    @Before
-    public void deleteFile() {
-        final File f = new File("out.txt");
-        while (f.exists()) {
-            f.delete();
-            try {
-                Thread.sleep(250);
-            } catch (final InterruptedException e) {
-                // ignore
-            }
-        }
-    }
-
-    @After
-    public void deleteTestFile() {
-        //        if (this.state.getSession() != null) {
-        //            this.state.getSession().close();
-        //        }
-        new File("out.txt").delete();
     }
 
     private String getFileContent(final File in) {
@@ -125,6 +101,30 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
             state = new ConsoleState(null);
             command = new ExecuteLastQueryCommand();
         }
+    }
+
+    /***
+     * We love you Windows... Thanks for all the enjoyable moments we spend together...
+     */
+    @Before
+    public void deleteFile() {
+        final File f = new File("out.txt");
+        while (f.exists()) {
+            f.delete();
+            try {
+                Thread.sleep(250);
+            } catch (final InterruptedException e) {
+                // ignore
+            }
+        }
+    }
+
+    @After
+    public void deleteTestFile() {
+        //        if (this.state.getSession() != null) {
+        //            this.state.getSession().close();
+        //        }
+        new File("out.txt").delete();
     }
 
     @Test

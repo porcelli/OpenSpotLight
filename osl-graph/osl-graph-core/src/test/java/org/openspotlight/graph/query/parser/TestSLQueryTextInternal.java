@@ -88,6 +88,21 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
      */
     public TestSLQueryTextInternal() {}
 
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected GraphReader graphReader() {
+        throw new UnsupportedOperationException();
+    }
+
     @Test
     public void testCheckDefineMessage()
         throws Throwable {
@@ -5349,21 +5364,6 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             }
         }.execute();
 
-    }
-
-    @Override
-    protected Callable<Void> createStartUpHandler() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Callable<Void> createShutdownHandler() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected GraphReader graphReader() {
-        throw new UnsupportedOperationException();
     }
 
 }

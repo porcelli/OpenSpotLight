@@ -75,6 +75,40 @@ public class Sha1 {
     private static final Digester DIGESTER = new Digester("SHA-1"); //$NON-NLS-1$
 
     /**
+     * Should not be instantiated
+     */
+    private Sha1() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
+     * Convert input to hexadecimal format.
+     * 
+     * @param bytes input
+     * @return an hexadecimal string
+     */
+    private static String toHexa(final byte[] bytes) {
+        final StringBuilder s = new StringBuilder();
+        for (final byte b: bytes) {
+            final int parteAlta = (b >> 4 & 0xf) << 4;
+            final int parteBaixa = b & 0xf;
+            if (parteAlta == 0) {
+                s.append('0');
+            }
+            s.append(Integer.toHexString(parteAlta | parteBaixa));
+        }
+        return s.toString();
+    }
+
+    public static BigInteger getNumericSha1Signature(final byte[] content) {
+        return new BigInteger(getSha1Signature(content));
+    }
+
+    public static BigInteger getNumericSha1Signature(final String content) {
+        return new BigInteger(getSha1Signature(content));
+    }
+
+    /**
      * Returns a sha-1 signature for that content.
      * 
      * @param content
@@ -87,14 +121,6 @@ public class Sha1 {
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
         }
-    }
-
-    public static BigInteger getNumericSha1Signature(final byte[] content) {
-        return new BigInteger(getSha1Signature(content));
-    }
-
-    public static BigInteger getNumericSha1Signature(final String content) {
-        return new BigInteger(getSha1Signature(content));
     }
 
     /**
@@ -198,32 +224,6 @@ public class Sha1 {
      */
     public static String getSha1SignatureEncodedAsHexa(final String content) {
         return getSha1SignatureEncodedAsHexa(content.getBytes());
-    }
-
-    /**
-     * Convert input to hexadecimal format.
-     * 
-     * @param bytes input
-     * @return an hexadecimal string
-     */
-    private static String toHexa(final byte[] bytes) {
-        final StringBuilder s = new StringBuilder();
-        for (final byte b: bytes) {
-            final int parteAlta = (b >> 4 & 0xf) << 4;
-            final int parteBaixa = b & 0xf;
-            if (parteAlta == 0) {
-                s.append('0');
-            }
-            s.append(Integer.toHexString(parteAlta | parteBaixa));
-        }
-        return s.toString();
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Sha1() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

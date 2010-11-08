@@ -65,6 +65,12 @@ import com.google.inject.Provider;
 
 public class SimpleGraphSessionImpl implements SimpleGraphSession {
 
+    private final PartitionFactory                factory;
+
+    private final Map<GraphLocation, GraphReader> readerCache = new HashMap<GraphLocation, GraphReader>();
+    private final GraphTransientWriter            transientWriter;
+    protected final Provider<StorageSession>      sessionProvider;
+
     public SimpleGraphSessionImpl(
                                   final Provider<StorageSession> sessionProvider,
                                   final PartitionFactory factory) {
@@ -73,9 +79,12 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
         this.factory = factory;
     }
 
-    private final PartitionFactory           factory;
-    private final GraphTransientWriter       transientWriter;
-    protected final Provider<StorageSession> sessionProvider;
+    @Override
+    public void closeResources() {
+        if (sessionProvider instanceof Disposable) {
+            ((Disposable) sessionProvider).closeResources();
+        }
+    }
 
     @Override
     public void flushChangedProperties(final Node node) {
@@ -85,6 +94,16 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
                         from(GraphLocation.SERVER).getContext(node), node,
                         false);
         session.flushTransient();
+    }
+
+    @Override
+    public GraphReader from(final GraphLocation location) {
+        GraphReader reader = readerCache.get(location);
+        if (reader == null) {
+            reader = new GraphReaderImpl(sessionProvider, location, factory);
+            readerCache.put(location, reader);
+        }
+        return reader;
     }
 
     @Override
@@ -100,25 +119,6 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
     @Override
     public GraphTransientWriter toTransient() {
         return transientWriter;
-    }
-
-    private final Map<GraphLocation, GraphReader> readerCache = new HashMap<GraphLocation, GraphReader>();
-
-    @Override
-    public GraphReader from(final GraphLocation location) {
-        GraphReader reader = readerCache.get(location);
-        if (reader == null) {
-            reader = new GraphReaderImpl(sessionProvider, location, factory);
-            readerCache.put(location, reader);
-        }
-        return reader;
-    }
-
-    @Override
-    public void closeResources() {
-        if (sessionProvider instanceof Disposable) {
-            ((Disposable) sessionProvider).closeResources();
-        }
     }
 
 }

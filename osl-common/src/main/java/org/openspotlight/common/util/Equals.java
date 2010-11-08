@@ -65,6 +65,13 @@ import org.openspotlight.common.exception.SLRuntimeException;
  */
 public class Equals {
 
+    /**
+     * Should not be instantiated.
+     */
+    private Equals() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
     public static boolean eachEquality(final boolean of,
                                         final boolean andOf) {
         return of == andOf;
@@ -228,13 +235,6 @@ public class Equals {
     public static boolean eachEquality(final short of,
                                         final short andOf) {
         return of == andOf;
-    }
-
-    /**
-     * Should not be instantiated.
-     */
-    private Equals() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

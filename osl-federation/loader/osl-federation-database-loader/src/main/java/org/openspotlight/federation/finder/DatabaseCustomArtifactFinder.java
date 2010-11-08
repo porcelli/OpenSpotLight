@@ -87,69 +87,7 @@ import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
 public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder {
 
-    @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(final Class<A> type,
-                                                                              final ArtifactSource source,
-                                                                              final String initialPath)
-        throws Exception {
-        String pathToMatch;
-        if (Strings.isEmpty(initialPath)) {
-            pathToMatch = "*";
-        } else {
-            if (!initialPath.endsWith("*")) {
-                pathToMatch = initialPath + "*";
-            } else {
-                pathToMatch = initialPath;
-            }
-            if (!initialPath.startsWith("*")) {
-                pathToMatch = "*" + initialPath;
-            } else {
-                pathToMatch = initialPath;
-            }
-            if (!pathToMatch.endsWith("**")) {
-                pathToMatch = pathToMatch + "*";
-            }
-            if (!pathToMatch.startsWith("**")) {
-                pathToMatch = "*" + pathToMatch;
-            }
-        }
-        final Set<String> artifactNames = new HashSet<String>();
-        final DbArtifactSource dbBundle = (DbArtifactSource) source;
-        final Map<String, DatabaseCustomArtifact> result = getResultFrom(dbBundle);
-        for (final Map.Entry<String, DatabaseCustomArtifact> entry: result.entrySet()) {
-            if (isMatchingWithoutCaseSentitiveness(entry.getKey(), pathToMatch)) {
-                artifactNames.add(entry.getKey());
-            }
-
-        }
-        return artifactNames;
-    }
-
-    public static enum Constraints {
-        FOREIGN_KEY,
-        PRIMARY_KEY
-    }
-
     protected static class DatabaseCustomArtifactInternalLoader {
-
-        public Map<String, DatabaseCustomArtifact> loadDatabaseMetadata(final DatabaseMetaData metadata)
-            throws ConfigurationException {
-            try {
-                final Map<String, DatabaseCustomArtifact> tableMetadata = loadTableMetadata(metadata);
-                final Map<String, RoutineArtifact> routineMetadata = loadRoutineMetadata(metadata);
-                final Map<String, DatabaseCustomArtifact> result =
-                    new HashMap<String, DatabaseCustomArtifact>(
-                                                                                                               tableMetadata
-                                                                                                                   .size()
-                                                                                                                   + routineMetadata
-                                                                                                                       .size());
-                result.putAll(tableMetadata);
-                result.putAll(routineMetadata);
-                return result;
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
 
         @SuppressWarnings("boxing")
         private Map<String, RoutineArtifact> loadRoutineMetadata(final DatabaseMetaData metadata)
@@ -328,16 +266,45 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
             return tableMetadata;
         }
 
+        public Map<String, DatabaseCustomArtifact> loadDatabaseMetadata(final DatabaseMetaData metadata)
+            throws ConfigurationException {
+            try {
+                final Map<String, DatabaseCustomArtifact> tableMetadata = loadTableMetadata(metadata);
+                final Map<String, RoutineArtifact> routineMetadata = loadRoutineMetadata(metadata);
+                final Map<String, DatabaseCustomArtifact> result =
+                    new HashMap<String, DatabaseCustomArtifact>(
+                                                                                                               tableMetadata
+                                                                                                                   .size()
+                                                                                                                   + routineMetadata
+                                                                                                                       .size());
+                result.putAll(tableMetadata);
+                result.putAll(routineMetadata);
+                return result;
+            } catch (final Exception e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            }
+        }
+
     }
 
-    private final ConcurrentHashMap<ArtifactSource, Map<String, DatabaseCustomArtifact>> resultCache =
-                                                                                                         new ConcurrentHashMap<ArtifactSource, Map<String, DatabaseCustomArtifact>>();
-
-    @Override
-    protected synchronized void internalCloseResources() {
-        super.closeResources();
-        resultCache.clear();
+    public static enum Constraints {
+        FOREIGN_KEY,
+        PRIMARY_KEY
     }
+
+    @SuppressWarnings("unchecked")
+    private final Set<Class<? extends Artifact>>                                         availableTypes =
+                                                                                                            SLCollections
+                                                                                                                .<Class<? extends Artifact>>setOf(
+                                                                                                                    ForeignKeyConstraintArtifact.class,
+                                                                                                                    PrimaryKeyConstraintArtifact.class,
+                                                                                                                    TableArtifact.class,
+                                                                                                                    ViewArtifact.class,
+                                                                                                                    ConstraintArtifact.class,
+                                                                                                                    DatabaseCustomArtifact.class);
+
+    private final ConcurrentHashMap<ArtifactSource, Map<String, DatabaseCustomArtifact>> resultCache    =
+                                                                                                            new ConcurrentHashMap<ArtifactSource, Map<String, DatabaseCustomArtifact>>();
 
     private synchronized Map<String, DatabaseCustomArtifact> getResultFrom(final DbArtifactSource source)
         throws Exception {
@@ -365,6 +332,19 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
     }
 
     @Override
+    protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
+                                                           final Class<A> type)
+        throws Exception {
+        return source instanceof DbArtifactSource && availableTypes.contains(type);
+    }
+
+    @Override
+    protected synchronized void internalCloseResources() {
+        super.closeResources();
+        resultCache.clear();
+    }
+
+    @Override
     protected <A extends Artifact> A internalFindByPath(final Class<A> type,
                                                          final ArtifactSource source,
                                                          final String path, final String encoding)
@@ -382,28 +362,48 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
         return availableTypes;
     }
 
-    @SuppressWarnings("unchecked")
-    private final Set<Class<? extends Artifact>> availableTypes =
-                                                                    SLCollections
-                                                                        .<Class<? extends Artifact>>setOf(
-                                                                                                                 ForeignKeyConstraintArtifact.class,
-                                                                                                                 PrimaryKeyConstraintArtifact.class,
-                                                                                                                 TableArtifact.class,
-                                                                                                                 ViewArtifact.class,
-                                                                                                                 ConstraintArtifact.class,
-                                                                                                                 DatabaseCustomArtifact.class);
-
-    @Override
-    protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
-                                                           final Class<A> type)
-        throws Exception {
-        return source instanceof DbArtifactSource && availableTypes.contains(type);
-    }
-
     @Override
     protected boolean internalIsTypeSupported(final Class<? extends Artifact> type)
         throws Exception {
         return DatabaseCustomArtifact.class.isAssignableFrom(type);
+    }
+
+    @Override
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(final Class<A> type,
+                                                                              final ArtifactSource source,
+                                                                              final String initialPath)
+        throws Exception {
+        String pathToMatch;
+        if (Strings.isEmpty(initialPath)) {
+            pathToMatch = "*";
+        } else {
+            if (!initialPath.endsWith("*")) {
+                pathToMatch = initialPath + "*";
+            } else {
+                pathToMatch = initialPath;
+            }
+            if (!initialPath.startsWith("*")) {
+                pathToMatch = "*" + initialPath;
+            } else {
+                pathToMatch = initialPath;
+            }
+            if (!pathToMatch.endsWith("**")) {
+                pathToMatch = pathToMatch + "*";
+            }
+            if (!pathToMatch.startsWith("**")) {
+                pathToMatch = "*" + pathToMatch;
+            }
+        }
+        final Set<String> artifactNames = new HashSet<String>();
+        final DbArtifactSource dbBundle = (DbArtifactSource) source;
+        final Map<String, DatabaseCustomArtifact> result = getResultFrom(dbBundle);
+        for (final Map.Entry<String, DatabaseCustomArtifact> entry: result.entrySet()) {
+            if (isMatchingWithoutCaseSentitiveness(entry.getKey(), pathToMatch)) {
+                artifactNames.add(entry.getKey());
+            }
+
+        }
+        return artifactNames;
     }
 
 }

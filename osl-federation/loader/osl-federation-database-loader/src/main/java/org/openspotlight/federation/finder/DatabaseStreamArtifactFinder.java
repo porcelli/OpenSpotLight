@@ -74,6 +74,23 @@ import org.openspotlight.federation.finder.db.ScriptType;
 
 public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder {
 
+    @SuppressWarnings("unchecked")
+    private final Set<Class<? extends Artifact>> availableTypes = SLCollections
+                                                                    .<Class<? extends Artifact>>setOf(StringArtifact.class);
+
+    private List<String> asStringList(final byte[] content, final String encoding)
+        throws IOException {
+        final List<String> lines = newLinkedList();
+        final BufferedReader reader =
+            new BufferedReader(new StringReader(encoding != null ? new String(content, encoding) : new String(content)));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+
+        return lines;
+    }
+
     @Override
     protected <A extends Artifact> boolean internalAccept(final ArtifactSource source,
                                                            final Class<A> type)
@@ -153,23 +170,6 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
             return a;
         }
     }
-
-    private List<String> asStringList(final byte[] content, final String encoding)
-        throws IOException {
-        final List<String> lines = newLinkedList();
-        final BufferedReader reader =
-            new BufferedReader(new StringReader(encoding != null ? new String(content, encoding) : new String(content)));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            lines.add(line);
-        }
-
-        return lines;
-    }
-
-    @SuppressWarnings("unchecked")
-    private final Set<Class<? extends Artifact>> availableTypes = SLCollections
-                                                                    .<Class<? extends Artifact>>setOf(StringArtifact.class);
 
     @Override
     protected Set<Class<? extends Artifact>> internalGetAvailableTypes()

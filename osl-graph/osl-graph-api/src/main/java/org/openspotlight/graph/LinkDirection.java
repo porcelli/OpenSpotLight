@@ -29,15 +29,15 @@ package org.openspotlight.graph;
  */
 public enum LinkDirection {
     /**
-     * An unidirectional defines a link between a source and a target node and can be represented as: source -> target
+     * Used to retrieve any type of link (unidirectional or bidirectional).
      */
-    UNIDIRECTIONAL,
+    ANY,
     /**
      * A bidirectional defines a links between two nodes that can be represented as: node1 <-> node2
      */
     BIDIRECTIONAL,
     /**
-     * Used to retrieve any type of link (unidirectional or bidirectional).
+     * An unidirectional defines a link between a source and a target node and can be represented as: source -> target
      */
-    ANY
+    UNIDIRECTIONAL
 }

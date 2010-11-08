@@ -66,30 +66,6 @@ public class ClassPathResource {
     /**
      * Loads a resource from the current classpath.
      * 
-     * @param artifactName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath(final String artifactName)
-        throws SLException {
-        checkNotEmpty("location", artifactName); //$NON-NLS-1$
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(artifactName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader().getResourceAsStream(artifactName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(artifactName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
-
-    /**
-     * Loads a resource from the current classpath.
-     * 
      * @param clasz class that defines the correct place to search for resource
      * @param resourceName resource name
      * @return a input stream from classpath
@@ -106,6 +82,30 @@ public class ClassPathResource {
             }
             if (stream == null) {
                 stream = ClassPathResource.class.getResourceAsStream(resourceName);
+            }
+            return stream;
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLException.class);
+        }
+    }
+
+    /**
+     * Loads a resource from the current classpath.
+     * 
+     * @param artifactName
+     * @return a input stream from classpath
+     * @throws SLException
+     */
+    public static InputStream getResourceFromClassPath(final String artifactName)
+        throws SLException {
+        checkNotEmpty("location", artifactName); //$NON-NLS-1$
+        try {
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(artifactName);
+            if (stream == null) {
+                stream = ClassLoader.getSystemClassLoader().getResourceAsStream(artifactName);
+            }
+            if (stream == null) {
+                stream = ClassPathResource.class.getResourceAsStream(artifactName);
             }
             return stream;
         } catch (final Exception e) {

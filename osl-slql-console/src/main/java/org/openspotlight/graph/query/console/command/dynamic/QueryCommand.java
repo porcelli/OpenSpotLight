@@ -77,48 +77,19 @@ public class QueryCommand implements DynamicCommand {
     private static int COLUMN_SIZE = 36;
 
     /**
-     * {@inheritDoc}
+     * Validate statement.
+     * 
+     * @param state the state
+     * @param word the word
+     * @return true, if successful
      */
-    @Override
-    public void execute(final ConsoleReader reader, final PrintWriter out,
-                        final ConsoleState state) {
-        Assertions.checkNotNull("reader", reader);
-        Assertions.checkNotNull("out", out);
-        Assertions.checkNotNull("state", state);
-        if (!accept(state)) { return; }
-        if (state.getInput().endsWith(";") || state.getInput().contains("; > ")) {
-            if (state.getActiveCommand() != null) {
-                state.appendBuffer(state.getInput());
-                state.setInput(state.getBuffer());
-            }
-            String lastQuery = "";
-            String outputFileName = null;
-            if (state.getInput().contains("; > ")) {
-                final int index = state.getInput().lastIndexOf("; > ");
-                lastQuery = state.getInput().substring(0, index + 1);
-                outputFileName = state.getInput().substring(index + 4);
-            } else {
-                lastQuery = state.getInput();
-            }
-            // execute query here
-            executeQuery(reader, out, state, lastQuery, outputFileName);
-            state.setLastQuery(lastQuery);
-            state.clearBuffer();
-            state.setActiveCommand(null);
-        } else if (state.getInput().contains(";")
-                || state.getInput().contains("; >")) {
-            out.println("invalid statement");
-            out.flush();
-            state.clearBuffer();
-            state.setActiveCommand(null);
-        } else {
-            if (state.getActiveCommand() == null) {
-                state.clearBuffer();
-                state.setActiveCommand(this);
-            }
-            state.appendLineBuffer(state.getInput());
-        }
-        state.setInput(null);
+    private boolean validateStatement(final ConsoleState state, final String word) {
+        if (state.getInput().trim().length() > word.length()
+                && state.getInput().trim().startsWith(word + " ")) {
+            return true;
+        } else if (state.getInput().trim().length() == word.length()
+                && state.getInput().trim().equals(word)) { return true; }
+        return false;
     }
 
     /**
@@ -232,8 +203,69 @@ public class QueryCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
-        return "select";
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() != null
+                && state.getActiveCommand() instanceof QueryCommand) {
+            return true;
+        } else if (validateStatement(state, "select")
+                || validateStatement(state, "use")
+                || validateStatement(state, "define")) {
+            if (state.getInput().trim().contains(";")) {
+                if (state.getInput().trim().contains("; > ")) { return true; }
+                if (state.getInput().trim().endsWith(";")) { return true; }
+                return false;
+            }
+            return true;
+        } else if (state.getInput().trim().contains("; > ")) {
+            return true;
+        } else if (state.getInput().trim().endsWith(";")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void execute(final ConsoleReader reader, final PrintWriter out,
+                        final ConsoleState state) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
+        if (!accept(state)) { return; }
+        if (state.getInput().endsWith(";") || state.getInput().contains("; > ")) {
+            if (state.getActiveCommand() != null) {
+                state.appendBuffer(state.getInput());
+                state.setInput(state.getBuffer());
+            }
+            String lastQuery = "";
+            String outputFileName = null;
+            if (state.getInput().contains("; > ")) {
+                final int index = state.getInput().lastIndexOf("; > ");
+                lastQuery = state.getInput().substring(0, index + 1);
+                outputFileName = state.getInput().substring(index + 4);
+            } else {
+                lastQuery = state.getInput();
+            }
+            // execute query here
+            executeQuery(reader, out, state, lastQuery, outputFileName);
+            state.setLastQuery(lastQuery);
+            state.clearBuffer();
+            state.setActiveCommand(null);
+        } else if (state.getInput().contains(";")
+                || state.getInput().contains("; >")) {
+            out.println("invalid statement");
+            out.flush();
+            state.clearBuffer();
+            state.setActiveCommand(null);
+        } else {
+            if (state.getActiveCommand() == null) {
+                state.clearBuffer();
+                state.setActiveCommand(this);
+            }
+            state.appendLineBuffer(state.getInput());
+        }
+        state.setInput(null);
     }
 
     /**
@@ -241,6 +273,14 @@ public class QueryCommand implements DynamicCommand {
      */
     @Override
     public String getAutoCompleteCommand() {
+        return "select";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCommand() {
         return "select";
     }
 
@@ -274,45 +314,5 @@ public class QueryCommand implements DynamicCommand {
     @Override
     public boolean hasFileCompletion() {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() != null
-                && state.getActiveCommand() instanceof QueryCommand) {
-            return true;
-        } else if (validateStatement(state, "select")
-                || validateStatement(state, "use")
-                || validateStatement(state, "define")) {
-            if (state.getInput().trim().contains(";")) {
-                if (state.getInput().trim().contains("; > ")) { return true; }
-                if (state.getInput().trim().endsWith(";")) { return true; }
-                return false;
-            }
-            return true;
-        } else if (state.getInput().trim().contains("; > ")) {
-            return true;
-        } else if (state.getInput().trim().endsWith(";")) { return true; }
-        return false;
-    }
-
-    /**
-     * Validate statement.
-     * 
-     * @param state the state
-     * @param word the word
-     * @return true, if successful
-     */
-    private boolean validateStatement(final ConsoleState state, final String word) {
-        if (state.getInput().trim().length() > word.length()
-                && state.getInput().trim().startsWith(word + " ")) {
-            return true;
-        } else if (state.getInput().trim().length() == word.length()
-                && state.getInput().trim().equals(word)) { return true; }
-        return false;
     }
 }

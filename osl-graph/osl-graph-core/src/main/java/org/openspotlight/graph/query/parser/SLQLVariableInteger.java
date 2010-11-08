@@ -102,6 +102,14 @@ public class SLQLVariableInteger extends SLQLVariable {
      * {@inheritDoc}
      */
     @Override
+    public SLQLVariableType getType() {
+        return SLQLVariableType.INTEGER;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getValue() {
         return (Integer) value;
     }
@@ -137,13 +145,5 @@ public class SLQLVariableInteger extends SLQLVariable {
         if (value.getClass().getName().equals(int.class.getName())) { return true; }
         if (value instanceof Integer) { return true; }
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SLQLVariableType getType() {
-        return SLQLVariableType.INTEGER;
     }
 }

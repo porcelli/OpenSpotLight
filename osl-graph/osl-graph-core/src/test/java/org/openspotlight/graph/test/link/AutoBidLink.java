@@ -56,15 +56,11 @@ import org.openspotlight.graph.annotation.LinkAutoBidirectional;
 @InitialWeight(4)
 @LinkAutoBidirectional()
 public abstract class AutoBidLink extends Link {
-    private String  extendsName;
     private boolean extendsFlag;
+    private String  extendsName;
 
     public String getExtendsName() {
         return extendsName;
-    }
-
-    public void setExtendsName(final String extendsName) {
-        this.extendsName = extendsName;
     }
 
     public boolean isExtendsFlag() {
@@ -73,5 +69,9 @@ public abstract class AutoBidLink extends Link {
 
     public void setExtendsFlag(final boolean extendsFlag) {
         this.extendsFlag = extendsFlag;
+    }
+
+    public void setExtendsName(final String extendsName) {
+        this.extendsName = extendsName;
     }
 }

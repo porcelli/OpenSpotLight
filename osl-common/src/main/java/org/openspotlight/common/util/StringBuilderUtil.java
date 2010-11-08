@@ -59,22 +59,16 @@ import java.util.List;
 public class StringBuilderUtil {
 
     /**
-     * Append values if value is not null.
+     * Append values.
      * 
      * @param buffer the buffer
-     * @param value the value
      * @param values the values
-     * @return true, if successful
+     * @return the string builder
      */
-    public static StringBuilder appendIfNotNull(final StringBuilder buffer,
-                                                 final Object value,
-                                                 final Object... values) {
-        if (value != null) {
-            for (final Object current: values) {
-                if (current != null) {
-                    buffer.append(current);
-                }
-            }
+    public static StringBuilder append(final StringBuilder buffer,
+                                        final List<?> values) {
+        for (final Object value: values) {
+            buffer.append(value);
         }
         return buffer;
     }
@@ -110,16 +104,22 @@ public class StringBuilderUtil {
     }
 
     /**
-     * Append values.
+     * Append values if value is not null.
      * 
      * @param buffer the buffer
+     * @param value the value
      * @param values the values
-     * @return the string builder
+     * @return true, if successful
      */
-    public static StringBuilder append(final StringBuilder buffer,
-                                        final List<?> values) {
-        for (final Object value: values) {
-            buffer.append(value);
+    public static StringBuilder appendIfNotNull(final StringBuilder buffer,
+                                                 final Object value,
+                                                 final Object... values) {
+        if (value != null) {
+            for (final Object current: values) {
+                if (current != null) {
+                    buffer.append(current);
+                }
+            }
         }
         return buffer;
     }

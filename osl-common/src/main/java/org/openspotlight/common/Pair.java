@@ -59,9 +59,47 @@ package org.openspotlight.common;
 public class Pair<K1, K2> {
 
     public static enum PairEqualsMode {
+        BOTH,
         K1,
-        K2,
-        BOTH
+        K2
+    }
+
+    private final PairEqualsMode equalsMode;
+
+    /**
+     * First item.
+     */
+    private final K1             k1;
+
+    /**
+     * Second item.
+     */
+    private final K2             k2;
+
+    /**
+     * Creates a new pair using the two keys provided.
+     * 
+     * @param k1
+     * @param k2
+     */
+    public Pair(
+                 final K1 k1, final K2 k2) {
+        this.k1 = k1;
+        this.k2 = k2;
+        this.equalsMode = PairEqualsMode.BOTH;
+    }
+
+    /**
+     * Creates a new pair using the two keys provided.
+     * 
+     * @param k1
+     * @param k2
+     */
+    public Pair(
+                 final K1 k1, final K2 k2, final PairEqualsMode equalsMode) {
+        this.k1 = k1;
+        this.k2 = k2;
+        this.equalsMode = equalsMode;
     }
 
     /**
@@ -93,17 +131,6 @@ public class Pair<K1, K2> {
         return new Pair<K1, K2>(k1, k2, equalsMode);
     }
 
-    /**
-     * First item.
-     */
-    private final K1             k1;
-    /**
-     * Second item.
-     */
-    private final K2             k2;
-
-    private final PairEqualsMode equalsMode;
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
@@ -121,44 +148,6 @@ public class Pair<K1, K2> {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = 0;
-        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K1.equals(equalsMode)) {
-            result = k1 != null ? k1.hashCode() : 0;
-        }
-        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K2.equals(equalsMode)) {
-            result = 31 * result + (k2 != null ? k2.hashCode() : 0);
-        }
-        return result;
-    }
-
-    /**
-     * Creates a new pair using the two keys provided.
-     * 
-     * @param k1
-     * @param k2
-     */
-    public Pair(
-                 final K1 k1, final K2 k2, final PairEqualsMode equalsMode) {
-        this.k1 = k1;
-        this.k2 = k2;
-        this.equalsMode = equalsMode;
-    }
-
-    /**
-     * Creates a new pair using the two keys provided.
-     * 
-     * @param k1
-     * @param k2
-     */
-    public Pair(
-                 final K1 k1, final K2 k2) {
-        this.k1 = k1;
-        this.k2 = k2;
-        this.equalsMode = PairEqualsMode.BOTH;
-    }
-
     /**
      * @return the first key
      */
@@ -171,6 +160,18 @@ public class Pair<K1, K2> {
      */
     public K2 getK2() {
         return this.k2;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K1.equals(equalsMode)) {
+            result = k1 != null ? k1.hashCode() : 0;
+        }
+        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K2.equals(equalsMode)) {
+            result = 31 * result + (k2 != null ? k2.hashCode() : 0);
+        }
+        return result;
     }
 
 }

@@ -62,11 +62,11 @@ public class OrderByStatementInfo implements Serializable {
     /** The Constant serialVersionUID. */
     private static final long     serialVersionUID    = 1L;
 
-    /** The select statement info. */
-    private SelectStatementInfo   selectStatementInfo;
-
     /** The order by type info list. */
     private List<OrderByTypeInfo> orderByTypeInfoList = new ArrayList<OrderByTypeInfo>();
+
+    /** The select statement info. */
+    private SelectStatementInfo   selectStatementInfo;
 
     /**
      * Instantiates a new sL order by statement info.
@@ -75,24 +75,6 @@ public class OrderByStatementInfo implements Serializable {
      */
     public OrderByStatementInfo(
                                    final SelectStatementInfo selectStatementInfo) {
-        this.selectStatementInfo = selectStatementInfo;
-    }
-
-    /**
-     * Gets the select statement info.
-     * 
-     * @return the select statement info
-     */
-    public SelectStatementInfo getSelectStatementInfo() {
-        return selectStatementInfo;
-    }
-
-    /**
-     * Sets the select statement info.
-     * 
-     * @param selectStatementInfo the new select statement info
-     */
-    public void setSelectStatementInfo(final SelectStatementInfo selectStatementInfo) {
         this.selectStatementInfo = selectStatementInfo;
     }
 
@@ -106,12 +88,30 @@ public class OrderByStatementInfo implements Serializable {
     }
 
     /**
+     * Gets the select statement info.
+     * 
+     * @return the select statement info
+     */
+    public SelectStatementInfo getSelectStatementInfo() {
+        return selectStatementInfo;
+    }
+
+    /**
      * Sets the order by type info list.
      * 
      * @param orderByTypeInfoList the new order by type info list
      */
     public void setOrderByTypeInfoList(final List<OrderByTypeInfo> orderByTypeInfoList) {
         this.orderByTypeInfoList = orderByTypeInfoList;
+    }
+
+    /**
+     * Sets the select statement info.
+     * 
+     * @param selectStatementInfo the new select statement info
+     */
+    public void setSelectStatementInfo(final SelectStatementInfo selectStatementInfo) {
+        this.selectStatementInfo = selectStatementInfo;
     }
 
     /**

@@ -82,11 +82,11 @@ public class SimplePersistVisitorSupportTest {
 
     private static class NodeObject implements SimpleNodeType {
 
+        private List<NodeObject> children = new ArrayList<NodeObject>();
+
         private String           name;
 
         private NodeObject       parent;
-
-        private List<NodeObject> children = new ArrayList<NodeObject>();
 
         public List<NodeObject> getChildren() {
             return children;
@@ -118,13 +118,13 @@ public class SimplePersistVisitorSupportTest {
 
     private static class SimpleObject1 implements SimpleNodeType {
 
-        private boolean             flag;
-
-        private String              name;
+        private List<SimpleObject2> anotherChildren = new ArrayList<SimpleObject2>();
 
         private List<SimpleObject2> children        = new ArrayList<SimpleObject2>();
 
-        private List<SimpleObject2> anotherChildren = new ArrayList<SimpleObject2>();
+        private boolean             flag;
+
+        private String              name;
 
         public List<SimpleObject2> getAnotherChildren() {
             return anotherChildren;
@@ -165,11 +165,11 @@ public class SimplePersistVisitorSupportTest {
 
         private boolean                    flag;
 
+        private Map<String, SimpleObject3> map = new HashMap<String, SimpleObject3>();
+
         private String                     name;
 
         private SimpleObject1              parent;
-
-        private Map<String, SimpleObject3> map = new HashMap<String, SimpleObject3>();
 
         public Map<String, SimpleObject3> getMap() {
             return map;
@@ -209,13 +209,13 @@ public class SimplePersistVisitorSupportTest {
 
     private static class SimpleObject3 implements SimpleNodeType {
 
+        private SimpleObject4 child;
+
         private boolean       flag;
 
         private String        name;
 
         private SimpleObject2 parent;
-
-        private SimpleObject4 child;
 
         public SimpleObject4 getChild() {
             return child;
@@ -255,12 +255,12 @@ public class SimplePersistVisitorSupportTest {
 
     private static class SimpleObject4 implements SimpleNodeType {
 
-        private boolean       flag;
-
-        private String        name;
         private SimpleObject4 autoRelationShip;
-        private SimpleObject4 parentObj4;
+
+        private boolean       flag;
+        private String        name;
         private SimpleObject3 parent;
+        private SimpleObject4 parentObj4;
 
         public SimpleObject4 getAutoRelationShip() {
             return autoRelationShip;

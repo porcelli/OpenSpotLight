@@ -62,18 +62,18 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelThreeObj implements SimpleNodeType {
-    private String               uuid;
+    private List<Boolean>        booleanList = new ArrayList<Boolean>();
 
     private String               key;
 
-    private String               property;
+    private Map<Double, Integer> numberMap   = new HashMap<Double, Integer>();
+    private List<ListItemObj>    objList     = new ArrayList<ListItemObj>();
+
     private LevelTwoObj          parentObj;
 
-    private Map<Double, Integer> numberMap   = new HashMap<Double, Integer>();
+    private String               property;
 
-    private List<Boolean>        booleanList = new ArrayList<Boolean>();
-
-    private List<ListItemObj>    objList     = new ArrayList<ListItemObj>();
+    private String               uuid;
 
     @Override
     public boolean equals(final Object o) {

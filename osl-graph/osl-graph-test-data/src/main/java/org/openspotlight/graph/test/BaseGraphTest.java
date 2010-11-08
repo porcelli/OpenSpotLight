@@ -108,172 +108,9 @@ public abstract class BaseGraphTest {
      */
     private Link           linkBoth;
 
-    protected void clearSession() {}
+    private GraphReader    reader;
 
-    /**
-     * After test.
-     */
-    @After
-    public void afterTest() {
-        clearSession();
-    }
-
-    private GraphWriter session;
-
-    private GraphReader reader;
-
-    /**
-     * Adds the add multiple link empty case.
-     */
-    @Test
-    public void addAddMultipleLinkEmptyCase() {
-        // empty --> add AB --> add AB
-        setUpEmptyLinkScenario();
-
-        final Link linkAB = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode);
-
-        // empty --> add BA --> add BA
-        setUpEmptyLinkScenario();
-
-        final Link linkBA = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
-                javaClassNode);
-
-        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
-                javaMethodNode, javaClassNode);
-
-        // empty --> add BOTH --> add BOTH
-        setUpEmptyLinkScenario();
-
-        final Link linkBoth = session.addBidirectionalLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode, true);
-    }
-
-    /**
-     * Adds the add multiple link existent ba case.
-     */
-    @Test
-    public void addAddMultipleLinkExistentBACase() {
-        // existent BA --> add BA --> add NEW BA
-        setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkAB = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode);
-        Assert.assertNotSame(linkAB, linkBA);
-
-        // existent BA --> add AB --> add AB
-        setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkBA = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
-                javaClassNode);
-
-        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
-                javaMethodNode, javaClassNode);
-        Assert.assertNotSame(linkBA, this.linkBA);
-
-        // existent BA --> add BOTH --> add BOTH
-        setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkBoth = session.addBidirectionalLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode, true);
-        Assert.assertNotSame(linkBoth, this.linkBA);
-    }
-
-    /**
-     * Adds the add multiple link existent ab case.
-     */
-    @Test
-    public void addAddMultipleLinkExistentABCase() {
-        // existent AB --> add AB --> add NEW AB
-        setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkAB = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode);
-        Assert.assertNotSame(linkAB, this.linkAB);
-
-        // existent AB --> add BA --> add BA
-        setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkBA = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
-                javaClassNode);
-
-        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
-                javaMethodNode, javaClassNode);
-        Assert.assertNotSame(linkBA, this.linkAB);
-
-        // existent AB --> add BOTH --> add BOTH
-        setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkBoth = session.addBidirectionalLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode, true);
-        Assert.assertNotSame(linkBoth, this.linkAB);
-    }
-
-    /**
-     * Adds the add multiple link existent both case.
-     */
-    @Test
-    public void addAddMultipleLinkExistentBothCase() {
-        // existent BOTH --> add AB --> add AB
-        setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkAB = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode);
-        Assert.assertNotSame(linkAB, linkBoth);
-
-        // existent BOTH --> add BA --> add BA
-        setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkBA = session.addLink(
-                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
-                javaClassNode);
-
-        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
-                javaMethodNode, javaClassNode);
-        Assert.assertNotSame(linkBA, linkBoth);
-
-        // existent BOTH --> add BOTH --> add NEW BOTH
-        setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
-
-        final Link linkBoth = session.addBidirectionalLink(
-                JavaClassJavaMethodMultipleLink.class, javaClassNode,
-                javaMethodNode);
-
-        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
-                javaClassNode, javaMethodNode, true);
-        Assert.assertNotSame(linkBoth, this.linkBoth);
-    }
+    private GraphWriter    session;
 
     /**
      * Assert links.
@@ -338,6 +175,11 @@ public abstract class BaseGraphTest {
         Assert.assertEquals(nodeSet, expectedNodeSet);
     }
 
+    private <T extends Link> void assertSimpleLink(final Link link,
+                                                   final Class<T> linkClass, final Node source, final Node target) {
+        this.<T>assertSimpleLink(link, linkClass, source, target);
+    }
+
     /**
      * Assert simple link.
      * 
@@ -360,11 +202,6 @@ public abstract class BaseGraphTest {
         Assert.assertEquals(link.getOtherSide(source), target);
         Assert.assertEquals(link.getOtherSide(target), source);
         Assert.assertEquals(link.isBidirectional(), bidirecional);
-    }
-
-    private <T extends Link> void assertSimpleLink(final Link link,
-                                                   final Class<T> linkClass, final Node source, final Node target) {
-        this.<T>assertSimpleLink(link, linkClass, source, target);
     }
 
     /**
@@ -462,6 +299,169 @@ public abstract class BaseGraphTest {
         // empty --> add BOTH --> add BOTH
         linkBoth = session.addBidirectionalLink(linkClass, javaClassNode,
                 javaMethodNode);
+    }
+
+    protected void clearSession() {}
+
+    /**
+     * Adds the add multiple link empty case.
+     */
+    @Test
+    public void addAddMultipleLinkEmptyCase() {
+        // empty --> add AB --> add AB
+        setUpEmptyLinkScenario();
+
+        final Link linkAB = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode);
+
+        // empty --> add BA --> add BA
+        setUpEmptyLinkScenario();
+
+        final Link linkBA = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
+                javaClassNode);
+
+        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
+                javaMethodNode, javaClassNode);
+
+        // empty --> add BOTH --> add BOTH
+        setUpEmptyLinkScenario();
+
+        final Link linkBoth = session.addBidirectionalLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode, true);
+    }
+
+    /**
+     * Adds the add multiple link existent ab case.
+     */
+    @Test
+    public void addAddMultipleLinkExistentABCase() {
+        // existent AB --> add AB --> add NEW AB
+        setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkAB = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode);
+        Assert.assertNotSame(linkAB, this.linkAB);
+
+        // existent AB --> add BA --> add BA
+        setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkBA = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
+                javaClassNode);
+
+        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
+                javaMethodNode, javaClassNode);
+        Assert.assertNotSame(linkBA, this.linkAB);
+
+        // existent AB --> add BOTH --> add BOTH
+        setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkBoth = session.addBidirectionalLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode, true);
+        Assert.assertNotSame(linkBoth, this.linkAB);
+    }
+
+    /**
+     * Adds the add multiple link existent ba case.
+     */
+    @Test
+    public void addAddMultipleLinkExistentBACase() {
+        // existent BA --> add BA --> add NEW BA
+        setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkAB = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode);
+        Assert.assertNotSame(linkAB, linkBA);
+
+        // existent BA --> add AB --> add AB
+        setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkBA = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
+                javaClassNode);
+
+        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
+                javaMethodNode, javaClassNode);
+        Assert.assertNotSame(linkBA, this.linkBA);
+
+        // existent BA --> add BOTH --> add BOTH
+        setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkBoth = session.addBidirectionalLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode, true);
+        Assert.assertNotSame(linkBoth, this.linkBA);
+    }
+
+    /**
+     * Adds the add multiple link existent both case.
+     */
+    @Test
+    public void addAddMultipleLinkExistentBothCase() {
+        // existent BOTH --> add AB --> add AB
+        setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkAB = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode);
+        Assert.assertNotSame(linkAB, linkBoth);
+
+        // existent BOTH --> add BA --> add BA
+        setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkBA = session.addLink(
+                JavaClassJavaMethodMultipleLink.class, javaMethodNode,
+                javaClassNode);
+
+        assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class,
+                javaMethodNode, javaClassNode);
+        Assert.assertNotSame(linkBA, linkBoth);
+
+        // existent BOTH --> add BOTH --> add NEW BOTH
+        setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
+
+        final Link linkBoth = session.addBidirectionalLink(
+                JavaClassJavaMethodMultipleLink.class, javaClassNode,
+                javaMethodNode);
+
+        assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class,
+                javaClassNode, javaMethodNode, true);
+        Assert.assertNotSame(linkBoth, this.linkBoth);
+    }
+
+    /**
+     * After test.
+     */
+    @After
+    public void afterTest() {
+        clearSession();
     }
 
     /**
@@ -825,6 +825,24 @@ public abstract class BaseGraphTest {
                     || current.getName().equals("node2"));
             Assert.assertTrue(current.equals(node1) || current.equals(node2));
         }
+    }
+
+    /**
+     * Test typed on different contexts.
+     */
+    @Test
+    public void testContextAndNodeCaption()
+        throws Exception {
+        // add new node ...
+        final Context myNewContext = reader.getContext("MyNewContext");
+
+        Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
+        Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
+        session.setContextCaption(myNewContext, "newContextCaption");
+        session.flush();
+        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
+        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
+
     }
 
     /**
@@ -1659,23 +1677,5 @@ public abstract class BaseGraphTest {
 
         Assert.assertFalse(javaClassNode1.getId()
                 .equals(javaClassNode2.getId()));
-    }
-
-    /**
-     * Test typed on different contexts.
-     */
-    @Test
-    public void testContextAndNodeCaption()
-        throws Exception {
-        // add new node ...
-        final Context myNewContext = reader.getContext("MyNewContext");
-
-        Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
-        Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
-        session.setContextCaption(myNewContext, "newContextCaption");
-        session.flush();
-        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
-        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
-
     }
 }

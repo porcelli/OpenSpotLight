@@ -68,6 +68,16 @@ public class VersionSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("version")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(final ConsoleReader reader,
                          final PrintWriter out,
                          final ConsoleState state) {
@@ -85,16 +95,16 @@ public class VersionSystemCommand implements SystemCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
-        return "version";
+    public String getAutoCompleteCommand() {
+        return getCommand();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getAutoCompleteCommand() {
-        return getCommand();
+    public String getCommand() {
+        return "version";
     }
 
     /**
@@ -126,16 +136,6 @@ public class VersionSystemCommand implements SystemCommand {
      */
     @Override
     public boolean hasFileCompletion() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("version")) { return true; }
         return false;
     }
 }

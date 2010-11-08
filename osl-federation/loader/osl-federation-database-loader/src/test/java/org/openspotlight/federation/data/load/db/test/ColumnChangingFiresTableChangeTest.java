@@ -85,6 +85,14 @@ import com.google.inject.Injector;
 @SuppressWarnings("all")
 public class ColumnChangingFiresTableChangeTest {
 
+    private void refreshResources(final GlobalSettings globalSettings,
+                                  final DbArtifactSource dbBundle,
+                                  final PersistentArtifactManagerProvider provider) {
+        // globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
+        throw new UnsupportedOperationException();
+
+    }
+
     @Before
     public void cleanDatabaseFiles()
         throws Exception {
@@ -155,14 +163,6 @@ public class ColumnChangingFiresTableChangeTest {
             }
         }
         assertThat(found, is(true));
-    }
-
-    private void refreshResources(final GlobalSettings globalSettings,
-                                  final DbArtifactSource dbBundle,
-                                  final PersistentArtifactManagerProvider provider) {
-        // globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
-        throw new UnsupportedOperationException();
-
     }
 
 }

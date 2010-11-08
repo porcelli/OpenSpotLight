@@ -57,14 +57,14 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelTwoObj implements SimpleNodeType {
-    private String      uuid;
-
     private String      key;
 
-    private String      property;
     private LevelOneObj parentObj;
 
+    private String      property;
     private PropertyObj propertyObj;
+
+    private String      uuid;
 
     @Override
     public boolean equals(final Object o) {

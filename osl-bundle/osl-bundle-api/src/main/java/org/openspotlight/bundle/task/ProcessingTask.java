@@ -59,14 +59,17 @@ import com.google.common.collect.ImmutableMap;
 public abstract class ProcessingTask extends BaseTask implements
         ConfigurableTask {
 
-    private final ExecutionContextProvider     provider;
-    private final ImmutableMap<String, String> properties;
     private ExecutionContext                   context;
+    private final ImmutableMap<String, String> properties;
+    private final ExecutionContextProvider     provider;
 
     protected ProcessingTask(final ExecutionContextProvider provider, final Map<String, String> properties) {
         this.provider = provider;
         this.properties = ImmutableMap.copyOf(properties);
     }
+
+    protected abstract void execute()
+        throws Exception;
 
     @Override
     public Void call()
@@ -96,8 +99,5 @@ public abstract class ProcessingTask extends BaseTask implements
     public String getPropertyValue(final String name) {
         return properties.get(name);
     }
-
-    protected abstract void execute()
-        throws Exception;
 
 }

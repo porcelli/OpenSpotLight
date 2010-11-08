@@ -72,32 +72,10 @@ import com.thoughtworks.xstream.XStream;
 @Singleton
 public class XmlConfigurationManagerFactory implements ConfigurationManagerFactory {
 
-    private final String xmlFileLocation;
-
-    @Inject
-    public XmlConfigurationManagerFactory(@XmlConfigFileLocation final String xmlFileLocation) {
-        this.xmlFileLocation = xmlFileLocation;
-    }
-
-    @Override
-    public ImmutableConfigurationManager createImmutable() {
-        return loadMutableFromFile(xmlFileLocation);
-    }
-
-    @Override
-    public MutableConfigurationManager createMutable() {
-        return loadMutableFromFile(xmlFileLocation);
-    }
-
     /**
      * The Class ImmutableXmlConfigurationManager.
      */
     private static class ImmutableXmlConfigurationManager implements ImmutableConfigurationManager {
-
-        /**
-         * The global settings.
-         */
-        protected GlobalSettings          globalSettings;
 
         /**
          * The all repositories.
@@ -108,6 +86,11 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
          * The configuration.
          */
         protected XmlConfiguration        configuration;
+
+        /**
+         * The global settings.
+         */
+        protected GlobalSettings          globalSettings;
 
         /**
          * Instantiates a new immutable xml configuration manager.
@@ -125,6 +108,17 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
          * @see org.openspotlight.federation.loader.MutableConfigurationManager#closeResources ()
          */
 
+        /**
+         * Refresh configuration.
+         */
+        protected void refreshConfiguration() {
+            globalSettings = configuration.getSettings();
+            allRepositories.clear();
+            for (final Repository repo: configuration.getRepositories()) {
+                allRepositories.put(repo.getName(), repo);
+            }
+        }
+
         @Override
         public void closeResources() {
             //
@@ -137,6 +131,11 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
             return allNames;
         }
 
+        /*
+         * (non-Javadoc)
+         * @seeorg.openspotlight.federation.loader.MutableConfigurationManager# getGlobalSettings()
+         */
+
         @Override
         public Set<String> getAllRepositoryNames()
             throws ConfigurationException {
@@ -146,7 +145,7 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
 
         /*
          * (non-Javadoc)
-         * @seeorg.openspotlight.federation.loader.MutableConfigurationManager# getGlobalSettings()
+         * @seeorg.openspotlight.federation.loader.MutableConfigurationManager# getRepositoryByName(java.lang.String)
          */
 
         @Override
@@ -154,26 +153,10 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
             return globalSettings;
         }
 
-        /*
-         * (non-Javadoc)
-         * @seeorg.openspotlight.federation.loader.MutableConfigurationManager# getRepositoryByName(java.lang.String)
-         */
-
         @Override
         public Repository getRepositoryByName(final String name)
             throws ConfigurationException {
             return allRepositories.get(name);
-        }
-
-        /**
-         * Refresh configuration.
-         */
-        protected void refreshConfiguration() {
-            globalSettings = configuration.getSettings();
-            allRepositories.clear();
-            for (final Repository repo: configuration.getRepositories()) {
-                allRepositories.put(repo.getName(), repo);
-            }
         }
 
     }
@@ -185,14 +168,14 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
         MutableConfigurationManager {
 
         /**
-         * The x stream.
-         */
-        private final XStream xStream;
-
-        /**
          * The xml file location.
          */
         private final String  xmlFileLocation;
+
+        /**
+         * The x stream.
+         */
+        private final XStream xStream;
 
         /**
          * Instantiates a new muttable xml configuration manager.
@@ -217,28 +200,6 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
          * #saveGlobalSettings(org.openspotlight .federation.domain.GlobalSettings)
          */
 
-        @Override
-        public void saveGlobalSettings(final GlobalSettings globalSettings)
-            throws ConfigurationException {
-            configuration.setSettings(globalSettings);
-            refreshConfiguration();
-            saveXml();
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.openspotlight.federation.loader.XmlConfigurationManagerFactory .ImmutableXmlConfigurationManager
-         * #saveRepository(org.openspotlight.federation.domain.Repository)
-         */
-
-        @Override
-        public void saveRepository(final Repository configuration)
-            throws ConfigurationException {
-            this.configuration.getRepositories().add(configuration);
-            refreshConfiguration();
-            saveXml();
-        }
-
         /**
          * Save xml.
          * 
@@ -259,6 +220,47 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
             }
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.openspotlight.federation.loader.XmlConfigurationManagerFactory .ImmutableXmlConfigurationManager
+         * #saveRepository(org.openspotlight.federation.domain.Repository)
+         */
+
+        @Override
+        public void saveGlobalSettings(final GlobalSettings globalSettings)
+            throws ConfigurationException {
+            configuration.setSettings(globalSettings);
+            refreshConfiguration();
+            saveXml();
+        }
+
+        @Override
+        public void saveRepository(final Repository configuration)
+            throws ConfigurationException {
+            this.configuration.getRepositories().add(configuration);
+            refreshConfiguration();
+            saveXml();
+        }
+
+    }
+
+    private final String xmlFileLocation;
+
+    @Inject
+    public XmlConfigurationManagerFactory(@XmlConfigFileLocation final String xmlFileLocation) {
+        this.xmlFileLocation = xmlFileLocation;
+    }
+
+    /**
+     * Setup x stream.
+     * 
+     * @return the x stream
+     */
+    private static XStream setupXStream() {
+        final XStream xStream = new XStream();
+        xStream.aliasPackage("osl", "org.openspotlight.federation.domain");
+        xStream.alias("Configuration", XmlConfiguration.class);
+        return xStream;
     }
 
     /**
@@ -289,16 +291,14 @@ public class XmlConfigurationManagerFactory implements ConfigurationManagerFacto
 
     }
 
-    /**
-     * Setup x stream.
-     * 
-     * @return the x stream
-     */
-    private static XStream setupXStream() {
-        final XStream xStream = new XStream();
-        xStream.aliasPackage("osl", "org.openspotlight.federation.domain");
-        xStream.alias("Configuration", XmlConfiguration.class);
-        return xStream;
+    @Override
+    public ImmutableConfigurationManager createImmutable() {
+        return loadMutableFromFile(xmlFileLocation);
+    }
+
+    @Override
+    public MutableConfigurationManager createMutable() {
+        return loadMutableFromFile(xmlFileLocation);
     }
 
 }

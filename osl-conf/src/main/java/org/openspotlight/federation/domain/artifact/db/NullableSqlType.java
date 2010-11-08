@@ -62,22 +62,29 @@ import java.util.Map;
 public enum NullableSqlType {
 
     /**
+     * Wasn't possible to find if it is nullable or not
+     */
+    DONT_KNOW(2),
+    /**
      * Can not be null.
      */
     NOT_NULL(0),
     /**
      * Can be null.
      */
-    NULL(1),
-    /**
-     * Wasn't possible to find if it is nullable or not
-     */
-    DONT_KNOW(2);
+    NULL(1);
 
     /**
      * Internal cache
      */
     private static final Map<Integer, NullableSqlType> nullableCache = new HashMap<Integer, NullableSqlType>();
+    private final int                                  sqlTypeValue;
+
+    private NullableSqlType(
+                             final int sqlTypeValue) {
+        this.sqlTypeValue = sqlTypeValue;
+    }
+
     static {
         for (final NullableSqlType n: values()) {
             nullableCache.put(n.getSqlTypeValue(), n);
@@ -92,13 +99,6 @@ public enum NullableSqlType {
      */
     public static NullableSqlType getNullableByInt(final int sqlType) {
         return nullableCache.get(sqlType);
-    }
-
-    private final int sqlTypeValue;
-
-    private NullableSqlType(
-                             final int sqlTypeValue) {
-        this.sqlTypeValue = sqlTypeValue;
     }
 
     /**

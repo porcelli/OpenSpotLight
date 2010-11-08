@@ -194,6 +194,13 @@ public class PatternMatcher {
     private static final Logger logger = LoggerFactory.getLogger(PatternMatcher.class);
 
     /**
+     * Should not be instantiated.
+     */
+    private PatternMatcher() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Filter the names using the Apache Ant expression syntax (and also the {@link SelectorUtils} class.
      * 
      * @param namesToFilter the names to filter
@@ -256,13 +263,6 @@ public class PatternMatcher {
     public static boolean isMatchingWithoutCaseSentitiveness(final String nameToMatch,
                                                               final String patternToMatch) {
         return match(patternToMatch, nameToMatch, false);
-    }
-
-    /**
-     * Should not be instantiated.
-     */
-    private PatternMatcher() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

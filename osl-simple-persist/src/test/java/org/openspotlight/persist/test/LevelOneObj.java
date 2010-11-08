@@ -58,13 +58,13 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelOneObj implements SimpleNodeType {
-    private String  uuid;
-
     private String  key;
 
     private String  property;
 
     private RootObj rootObj;
+
+    private String  uuid;
 
     @Override
     public boolean equals(final Object o) {

@@ -114,149 +114,790 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public class NodeAndLinkSupport {
 
+    private static class LinkImpl extends Link
+            implements
+            PropertyContainerMetadata<StorageLink>,
+            PropertyContainerLineReferenceData {
+
+        private static final int            SOURCE        = 0;
+
+        private static final int            TARGET        = 1;
+
+        private WeakReference<StorageLink>  cachedEntry;
+
+        private int                         count;
+
+        private LinkDirection               linkDirection = LinkDirection.UNIDIRECTIONAL;
+
+        private final Class<? extends Link> linkType;
+
+        private final PropertyContainerImpl propertyContainerImpl;
+
+        private final Node[]                sides         = new Node[2];
+
+        public LinkImpl(final String id, final String linkName,
+                        final Class<? extends Link> linkType,
+                        final Map<String, Class<? extends Serializable>> propertyTypes,
+                        final Map<String, Serializable> propertyValues,
+                        final int initialWeigthValue, final int weightValue,
+                        final Node source, final Node target,
+                        final LinkDirection linkDirection) {
+            propertyContainerImpl = new PropertyContainerImpl(id,
+                    linkType.getName(), propertyTypes, propertyValues,
+                    initialWeigthValue, weightValue, source.getContextId());
+            sides[SOURCE] = source;
+            sides[TARGET] = target;
+            this.linkType = linkType;
+            this.linkDirection = linkDirection;
+
+        }
+
+        @Override
+        public int compareTo(final Link o) {
+            return getId().compareTo(o.getId());
+        }
+
+        @Override
+        public void createLineReference(final int beginLine, final int endLine,
+                                        final int beginColumn, final int endColumn,
+                                        final String statement, final String artifactId) {
+            propertyContainerImpl.createLineReference(beginLine, endLine,
+                    beginColumn, endColumn, statement, artifactId);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (!(obj instanceof Link)) { return false; }
+            final Link that = (Link) obj;
+            return getId().equals(that.getId());
+        }
+
+        @Override
+        public StorageLink getCached() {
+            return cachedEntry != null ? cachedEntry.get() : null;
+        }
+
+        @Override
+        public Iterable<ArtifactLineReference> getCachedLineReference(
+                                                                      final String artifactId) {
+            return propertyContainerImpl.getCachedLineReference(artifactId);
+        }
+
+        @Override
+        public String getContextId() {
+            return propertyContainerImpl.getContextId();
+        }
+
+        @Override
+        public int getCount() {
+            return count;
+        }
+
+        @Override
+        public String getId() {
+            return propertyContainerImpl.getId();
+        }
+
+        @Override
+        public final int getInitialWeightValue() {
+            return propertyContainerImpl.getInitialWeightValue();
+        }
+
+        @Override
+        public LinkDirection getLinkDirection() {
+            return linkDirection;
+        }
+
+        @Override
+        public Class<? extends Link> getLinkType() {
+            return linkType;
+        }
+
+        @Override
+        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
+            return propertyContainerImpl.getNewLineReferenceData();
+        }
+
+        @Override
+        public Node getOtherSide(final Node node)
+                throws IllegalArgumentException {
+            if (node.equals(sides[SOURCE])) { return sides[TARGET]; }
+            if (node.equals(sides[TARGET])) { return sides[SOURCE]; }
+            throw new IllegalArgumentException();
+        }
+
+        @Override
+        public Set<Pair<String, Serializable>> getProperties() {
+            return propertyContainerImpl.getProperties();
+        }
+
+        @Override
+        public PropertyContainerImpl getPropertyContainerImpl() {
+            return propertyContainerImpl;
+        }
+
+        @Override
+        public Iterable<String> getPropertyKeys() {
+            return propertyContainerImpl.getPropertyKeys();
+        }
+
+        @Override
+        public <V extends Serializable> V getPropertyValue(final String key) {
+            return propertyContainerImpl.<V>getPropertyValue(key);
+        }
+
+        @Override
+        public <V extends Serializable> V getPropertyValue(final String key,
+                                                           final V defaultValue) {
+            return propertyContainerImpl.getPropertyValue(key, defaultValue);
+        }
+
+        @Override
+        public String getPropertyValueAsString(final String key) {
+            return propertyContainerImpl.getPropertyValueAsString(key);
+        }
+
+        @Override
+        public Node[] getSides() {
+            return new Node[] {sides[SOURCE], sides[TARGET]};
+        }
+
+        @Override
+        public Node getSource() {
+            return sides[SOURCE];
+        }
+
+        @Override
+        public Node getTarget() {
+            return sides[TARGET];
+        }
+
+        @Override
+        public String getTypeName() {
+            return propertyContainerImpl.getTypeName();
+        }
+
+        @Override
+        public final int getWeightValue() {
+            return propertyContainerImpl.getWeightValue();
+        }
+
+        @Override
+        public int hashCode() {
+            return getId().hashCode();
+        }
+
+        @Override
+        public boolean hasProperty(final String key)
+                throws IllegalArgumentException {
+            return propertyContainerImpl.hasProperty(key);
+        }
+
+        @Override
+        public boolean isBidirectional() {
+            return linkDirection.equals(LinkDirection.BIDIRECTIONAL);
+        }
+
+        @Override
+        public boolean isDirty() {
+            return propertyContainerImpl.isDirty();
+        }
+
+        @Override
+        public void removeProperty(final String key) {
+            propertyContainerImpl.removeProperty(key);
+        }
+
+        public void resetDirtyFlag() {
+            propertyContainerImpl.resetDirtyFlag();
+        }
+
+        @Override
+        public void setCached(final StorageLink entry) {
+            cachedEntry = new WeakReference<StorageLink>(
+                    entry);
+
+        }
+
+        @Override
+        public void setCachedLineReference(final String artifactId,
+                                           final Iterable<ArtifactLineReference> newLineReference) {
+            propertyContainerImpl.setCachedLineReference(artifactId,
+                    newLineReference);
+        }
+
+        @Override
+        public void setCount(final int value) {
+            count = value;
+            propertyContainerImpl.markAsDirty();
+
+        }
+
+        @Override
+        public <V extends Serializable> void setProperty(final String key,
+                                                         final V value)
+            throws IllegalArgumentException {
+            propertyContainerImpl.setProperty(key, value);
+        }
+
+        @Override
+        public String toString() {
+            return "<" + linkDirection.name().substring(0, 3) + "> Link["
+                    + getId() + "]";
+        }
+
+    }
+
+    private static class NodeImpl extends Node
+            implements
+            PropertyContainerMetadata<StorageNode>,
+            PropertyContainerLineReferenceData {
+
+        private WeakReference<StorageNode>  cachedEntry;
+
+        private String                      caption;
+
+        private final String                contextId;
+
+        private volatile int                hashCode = 0;
+
+        private final String                name;
+
+        private final BigInteger            numericType;
+
+        private final String                parentId;
+
+        private final PropertyContainerImpl propertyContainerImpl;
+
+        private NodeImpl(final String name, final Class<? extends Node> type,
+                         final String id,
+                         final Map<String, Class<? extends Serializable>> propertyTypes,
+                         final Map<String, Serializable> propertyValues,
+                         final String parentId, final String contextId,
+                         final int weightValue) {
+            propertyContainerImpl = new PropertyContainerImpl(id,
+                    type.getName(), propertyTypes, propertyValues,
+                    findInitialWeight(type), weightValue, contextId);
+            this.name = name;
+            numericType = findNumericType(type);
+            this.parentId = parentId;
+            this.contextId = contextId;
+        }
+
+        @Override
+        public int compareTo(final Node o) {
+            return getId().compareTo(o.getId());
+        }
+
+        @Override
+        public void createLineReference(final int beginLine, final int endLine,
+                                        final int beginColumn, final int endColumn,
+                                        final String statement, final String artifactId) {
+            propertyContainerImpl.createLineReference(beginLine, endLine,
+                    beginColumn, endColumn, statement, artifactId);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (!(obj instanceof Node)) { return false; }
+            final Node slnode = (Node) obj;
+
+            final boolean result = getId().equals(slnode.getId())
+                    && Equals.eachEquality(getParentId(), slnode.getParentId())
+                    && Equals.eachEquality(getContextId(),
+                            slnode.getContextId());
+            return result;
+        }
+
+        @Override
+        public StorageNode getCached() {
+            return cachedEntry != null ? cachedEntry.get() : null;
+        }
+
+        @Override
+        public Iterable<ArtifactLineReference> getCachedLineReference(
+                                                                      final String artifactId) {
+            return propertyContainerImpl.getCachedLineReference(artifactId);
+        }
+
+        @Override
+        public String getCaption() {
+            return caption;
+        }
+
+        @Override
+        public String getContextId() {
+            return contextId;
+        }
+
+        @Override
+        public String getId() {
+            return propertyContainerImpl.getId();
+        }
+
+        @Override
+        public final int getInitialWeightValue() {
+            return propertyContainerImpl.getInitialWeightValue();
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
+            return propertyContainerImpl.getNewLineReferenceData();
+        }
+
+        @Override
+        public BigInteger getNumericType() {
+            return numericType;
+        }
+
+        @Override
+        public String getParentId() {
+            return parentId;
+        }
+
+        @Override
+        public Set<Pair<String, Serializable>> getProperties() {
+            return propertyContainerImpl.getProperties();
+        }
+
+        @Override
+        public PropertyContainerImpl getPropertyContainerImpl() {
+            return propertyContainerImpl;
+        }
+
+        @Override
+        public Iterable<String> getPropertyKeys() {
+            return propertyContainerImpl.getPropertyKeys();
+        }
+
+        @Override
+        public <V extends Serializable> V getPropertyValue(final String key) {
+            return propertyContainerImpl.<V>getPropertyValue(key);
+        }
+
+        @Override
+        public <V extends Serializable> V getPropertyValue(final String key,
+                                                           final V defaultValue) {
+            return propertyContainerImpl
+                    .<V>getPropertyValue(key, defaultValue);
+        }
+
+        @Override
+        public String getPropertyValueAsString(final String key) {
+            return propertyContainerImpl.getPropertyValueAsString(key);
+        }
+
+        @Override
+        public String getTypeName() {
+            return propertyContainerImpl.getTypeName();
+        }
+
+        @Override
+        public final int getWeightValue() {
+            return propertyContainerImpl.getWeightValue();
+        }
+
+        @Override
+        public int hashCode() {
+            int result = hashCode;
+            if (result == 0) {
+                result = HashCodes.hashOf(getId(), getParentId(),
+                        getContextId());
+                hashCode = result;
+            }
+            return result;
+        }
+
+        @Override
+        public boolean hasProperty(final String key)
+                throws IllegalArgumentException {
+            return propertyContainerImpl.hasProperty(key);
+        }
+
+        @Override
+        public boolean isDirty() {
+            return propertyContainerImpl.isDirty();
+        }
+
+        @Override
+        public void removeProperty(final String key) {
+            propertyContainerImpl.removeProperty(key);
+        }
+
+        public void resetDirtyFlag() {
+            propertyContainerImpl.resetDirtyFlag();
+        }
+
+        @Override
+        public void setCached(
+                              final StorageNode entry) {
+            cachedEntry = new WeakReference<StorageNode>(
+                    entry);
+
+        }
+
+        @Override
+        public void setCachedLineReference(final String artifactId,
+                                           final Iterable<ArtifactLineReference> newLineReference) {
+            propertyContainerImpl.setCachedLineReference(artifactId,
+                    newLineReference);
+        }
+
+        @Override
+        public void setCaption(final String caption) {
+            this.caption = caption;
+        }
+
+        @Override
+        public <V extends Serializable> void setProperty(final String key,
+                                                         final V value)
+            throws IllegalArgumentException {
+            propertyContainerImpl.setProperty(key, value);
+        }
+
+        @Override
+        public String toString() {
+            return getName() + ":" + getId();
+        }
+
+    }
+
+    private static class PropertyContainerInterceptor implements
+            MethodInterceptor {
+
+        private static enum MethodType {
+            GETTER,
+            OTHER,
+            SETTER
+        }
+
+        private final PropertyContainer internalPropertyContainerImpl;
+
+        public PropertyContainerInterceptor(
+                                            final PropertyContainer propertyContainerImpl) {
+            internalPropertyContainerImpl = propertyContainerImpl;
+        }
+
+        private MethodType getMethodType(final String methodName,
+                                         final Method method) {
+            if (method.isAnnotationPresent(TransientProperty.class)) { return MethodType.OTHER; }
+            if (methodName.startsWith("set")
+                    && method.getParameterTypes().length == 1
+                    && internalPropertyContainerImpl.hasProperty(methodName
+                            .substring(3))) {
+                return MethodType.SETTER;
+            } else if (methodName.startsWith("get")
+                    && method.getParameterTypes().length == 0
+                    && internalPropertyContainerImpl.hasProperty(methodName
+                            .substring(3))) {
+                return MethodType.GETTER;
+            } else if (methodName.startsWith("is")
+                    && method.getParameterTypes().length == 0
+                    && internalPropertyContainerImpl.hasProperty(methodName
+                            .substring(2))) { return MethodType.GETTER; }
+            return MethodType.OTHER;
+        }
+
+        private Serializable invokeGetter(final String methodName) {
+
+            final String propertyName = methodName.startsWith("get") ? Strings
+                    .firstLetterToLowerCase(methodName.substring(3)) : Strings
+                    .firstLetterToLowerCase(methodName.substring(2));// is
+            return internalPropertyContainerImpl.getPropertyValue(propertyName);
+
+        }
+
+        private Object invokeSetter(final Object obj, final String methodName,
+                                    final Method method, final Object[] args,
+                                    final MethodProxy methodProxy)
+            throws Throwable {
+            internalPropertyContainerImpl.setProperty(methodName.substring(3),
+                    (Serializable) args[0]);
+            return null;
+        }
+
+        @Override
+        public Object intercept(final Object obj, final Method method,
+                                final Object[] args, final MethodProxy proxy)
+            throws Throwable {
+
+            final Class<?> declarringClass = method.getDeclaringClass();
+            final boolean methodFromSuperClasses = declarringClass
+                    .equals(Node.class)
+                    || declarringClass.equals(Link.class)
+                    || declarringClass.equals(PropertyContainerImpl.class)
+                    || declarringClass.isInterface()
+                    || declarringClass.equals(Object.class);
+            final String methodName = method.getName();
+            if (methodFromSuperClasses) {
+                return method.invoke(internalPropertyContainerImpl, args);
+            } else {
+                switch (getMethodType(methodName, method)) {
+                    case GETTER:
+                        return invokeGetter(methodName);
+                    case SETTER:
+                        return invokeSetter(obj, methodName, method, args, proxy);
+                }
+                return proxy.invokeSuper(obj, args);
+            }
+
+        }
+    }
+
+    private static interface PropertyContainerLineReferenceData {
+        Iterable<ArtifactLineReference> getCachedLineReference(String artifactId);
+
+        Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData();
+
+        void setCachedLineReference(String artifactId,
+                                    Iterable<ArtifactLineReference> newLineReference);
+
+    }
+
+    public static class PropertyContainerImpl implements Element,
+            PropertyContainerLineReferenceData {
+
+        private final String                                                contextId;
+
+        private final AtomicBoolean                                         dirty;
+
+        private final String                                                id;
+
+        private final int                                                   initialWeightValue;
+        // ArtifactId,Statement,lineData
+        private final Map<String, Map<String, Set<SimpleLineReference>>>    lineReferenceNewData =
+                                                                                                     new HashMap<String, Map<String, Set<SimpleLineReference>>>();
+        private final Map<String, Class<? extends Serializable>>            propertyTypes;
+        private final Map<String, Serializable>                             propertyValues;
+        private final Set<String>                                           removedProperties;
+
+        private SoftReference<Map<String, Iterable<ArtifactLineReference>>> treeLineReference;
+
+        private final String                                                typeName;
+
+        private final int                                                   weightValue;
+
+        public PropertyContainerImpl(final String id, final String typeName,
+                                     final Map<String, Class<? extends Serializable>> propertyTypes,
+                                     final Map<String, Serializable> propertyValues,
+                                     final int initialWeigthValue, final int weightValue,
+                                     final String contextId) {
+            dirty = new AtomicBoolean();
+            this.typeName = typeName;
+            initialWeightValue = initialWeigthValue;
+            this.weightValue = weightValue;
+            this.id = id;
+            this.propertyTypes = propertyTypes;
+            this.propertyValues = propertyValues;
+            removedProperties = newHashSet();
+            this.contextId = contextId;
+        }
+
+        @Override
+        public void createLineReference(final int beginLine, final int endLine,
+                                        final int beginColumn, final int endColumn,
+                                        final String statement, final String artifactId) {
+            Map<String, Set<SimpleLineReference>> artifactEntry = lineReferenceNewData
+                    .get(artifactId);
+            if (artifactEntry == null) {
+                artifactEntry = new HashMap<String, Set<SimpleLineReference>>();
+                lineReferenceNewData.put(artifactId, artifactEntry);
+            }
+            Set<SimpleLineReference> statementEntry = artifactEntry
+                    .get(statement);
+            if (statementEntry == null) {
+                statementEntry = new HashSet<SimpleLineReference>();
+                artifactEntry.put(statement, statementEntry);
+            }
+            statementEntry.add(TreeLineReferenceSupport
+                    .createSimpleLineReference(beginLine, endLine, beginColumn,
+                            endColumn));
+            dirty.set(true);
+        }
+
+        @Override
+        public Iterable<ArtifactLineReference> getCachedLineReference(
+                                                                      final String artifactId) {
+            final Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
+                    : treeLineReference.get();
+            if (cache == null) { return null; }
+            if (artifactId != null) { return cache.get(artifactId); }
+            if (cache.isEmpty()) { return null; }
+            final Builder<ArtifactLineReference> builder = ImmutableSet.builder();
+            for (final Iterable<ArtifactLineReference> val: cache.values()) {
+                for (final ArtifactLineReference r: val) {
+                    builder.add(r);
+                }
+            }
+            return builder.build();
+        }
+
+        @Override
+        public String getContextId() {
+            return contextId;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public final int getInitialWeightValue() {
+            return initialWeightValue;
+        }
+
+        @Override
+        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
+            return lineReferenceNewData;
+        }
+
+        @Override
+        public Set<Pair<String, Serializable>> getProperties() {
+            final ImmutableSet.Builder<Pair<String, Serializable>> builder = ImmutableSet
+                    .builder();
+            for (final Map.Entry<String, ? extends Serializable> entry: propertyValues
+                    .entrySet()) {
+                builder.add(newPair(entry.getKey(),
+                        (Serializable) entry.getValue(), PairEqualsMode.K1));
+            }
+            return builder.build();
+        }
+
+        @Override
+        public Iterable<String> getPropertyKeys() {
+            return ImmutableSet.copyOf(propertyTypes.keySet());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <V extends Serializable> V getPropertyValue(final String key) {
+            return (V) propertyValues.get(key);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <V extends Serializable> V getPropertyValue(final String key,
+                                                           final V defaultValue) {
+            final V value = (V) propertyValues.get(key);
+            return value == null ? defaultValue : value;
+        }
+
+        @Override
+        public String getPropertyValueAsString(final String key) {
+            return convert(propertyValues.get(key), String.class);
+        }
+
+        @Override
+        public String getTypeName() {
+            return typeName;
+        }
+
+        @Override
+        public final int getWeightValue() {
+            return weightValue;
+        }
+
+        @Override
+        public boolean hasProperty(final String key)
+                throws IllegalArgumentException {
+            return propertyTypes.containsKey(Strings
+                    .firstLetterToLowerCase(key));
+        }
+
+        @Override
+        public boolean isDirty() {
+            return dirty.get();
+        }
+
+        public void markAsDirty() {
+            dirty.set(true);
+        }
+
+        @Override
+        public void removeProperty(String key) {
+            key = Strings.firstLetterToLowerCase(key);
+            propertyTypes.remove(key);
+            propertyValues.remove(key);
+            removedProperties.add(key);
+            dirty.set(true);
+        }
+
+        public void resetDirtyFlag() {
+            dirty.set(false);
+            removedProperties.clear();
+        }
+
+        @Override
+        public void setCachedLineReference(final String artifactId,
+                                           final Iterable<ArtifactLineReference> newLineReference) {
+            Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
+                    : treeLineReference.get();
+            if (cache == null) {
+                cache = new HashMap<String, Iterable<ArtifactLineReference>>();
+                treeLineReference = new SoftReference<Map<String, Iterable<ArtifactLineReference>>>(
+                        cache);
+            }
+            cache.put(artifactId, newLineReference);
+        }
+
+        @Override
+        public <V extends Serializable> void setProperty(String key,
+                                                         final V value)
+            throws IllegalArgumentException {
+            key = Strings.firstLetterToLowerCase(key);
+            if (!hasProperty(key)) { throw logAndReturn(new IllegalArgumentException(
+                        "invalid property key " + key + " for type "
+                                + getTypeName())); }
+            final Class<? extends Serializable> propType = propertyTypes
+                    .get(key);
+            if (value != null) {
+                final Class<?> valueType = Reflection
+                        .findClassWithoutPrimitives(value.getClass());
+                if (!valueType.isAssignableFrom(propType)) { throw logAndReturn(new IllegalArgumentException(
+                            "invalid property type "
+                                    + value.getClass().getName() + " for type "
+                                    + getTypeName() + " (should be "
+                                    + propertyTypes.get(key).getName() + ")"));
+
+                }
+
+            }
+            propertyValues.put(key, value);
+            dirty.set(true);
+        }
+
+    }
+
     public static interface PropertyContainerMetadata<T> {
         public T getCached();
 
-        public void setCached(T entry);
-
         public PropertyContainerImpl getPropertyContainerImpl();
 
+        public void setCached(T entry);
+
     }
 
-    public static final String NUMERIC_TYPE           = "__node_numeric_type";
-    public static final String CAPTION                = "__node_caption";
-    public static final String CORRECT_CLASS          = "__node_concrete_class";
-    public static final String NAME                   = "__node_name";
-    public static final String WEIGTH_VALUE           = "__node_weigth_value";
-    public static final String NODE_ID                = "__node_weigth_value";
-    public static final String LINK_DIRECTION         = "__link_direction";
-    public static final String BIDIRECTIONAL_LINK_IDS = "__bidirectional_link_ids";
+    private static final String LINEREF_SUFIX          = "_lineRef";
+    public static final String  BIDIRECTIONAL_LINK_IDS = "__bidirectional_link_ids";
+    public static final String  CAPTION                = "__node_caption";
 
-    public static int findInitialWeight(final Class<?> clazz) {
-        return clazz.getAnnotation(InitialWeight.class).value();
-    }
+    public static final String  CORRECT_CLASS          = "__node_concrete_class";
 
-    public static boolean isMetanode(final Class<? extends Node> clazz) {
-        return clazz.isAnnotationPresent(IsMetaType.class);
-    }
+    public static final String  LINK_DIRECTION         = "__link_direction";
 
-    @SuppressWarnings("unchecked")
-    public static BigInteger findNumericType(final Class<? extends Node> type) {
-        Class<?> currentType = type;
-        int depth = 0;
-        while (currentType != null) {
-            if (!Node.class.isAssignableFrom(currentType)) { throw logAndReturn(new IllegalStateException(
-                        "No SLNode inherited type found with annotation "
-                                + DefineHierarchy.class.getSimpleName())); }
-            if (currentType.isAnnotationPresent(DefineHierarchy.class)) { return numericTypeFromClass(
-                (Class<? extends Node>) currentType)
-                        .add(BigInteger.valueOf(depth)); }
-            currentType = currentType.getSuperclass();
-            depth++;
-        }
-        throw logAndReturn(new IllegalStateException(
-                "No SLNode inherited type found with annotation "
-                        + DefineHierarchy.class.getSimpleName() + " for type"
-                        + type));
-    }
+    public static final String  NAME                   = "__node_name";
 
-    private static BigInteger numericTypeFromClass(
-                                                   final Class<? extends Node> currentType) {
-        return getNumericSha1Signature(currentType.getName());
-    }
+    public static final String  NODE_ID                = "__node_weigth_value";
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Node> T createNode(
-                                                 final PartitionFactory factory,
-                                                 final StorageSession session,
-                                                 final String contextId,
-                                                 final String parentId,
-                                                 final Class<T> clazz,
-                                                 final String name,
-                                                 final boolean needsToVerifyType,
-                                                 final Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
-                                                 final Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
-        final Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
-        final Map<String, Serializable> propertyValues = newHashMap();
-        final PropertyDescriptor[] descriptors = PropertyUtils
-                .getPropertyDescriptors(clazz);
-        StorageNode node = null;
-        if (contextId == null) { throw new IllegalStateException(); }
-        final Partition partition = factory.getPartitionByName(contextId);
-        NodeKey internalNodeKey;
-        final Class<? extends Node> targetNodeType = findTargetClass(clazz);
+    public static final String  NUMERIC_TYPE           = "__node_numeric_type";
 
-        if (session != null) {
-            internalNodeKey = session.withPartition(partition)
-                    .createKey(targetNodeType.getName())
-                    .withSimpleKey(NAME, name).andCreate();
-            node = session.withPartition(partition).createCriteria()
-                    .withUniqueKey(internalNodeKey).buildCriteria()
-                    .andFindUnique(session);
-        } else {
-            internalNodeKey = new NodeKeyBuilderImpl(targetNodeType.getName(),
-                    partition).withSimpleKey(NAME, name)
-                    .andCreate();
-        }
-
-        for (final PropertyDescriptor d: descriptors) {
-            if (d.getName().equals("class")) {
-                continue;
-            }
-            propertyTypes.put(d.getName(),
-                    (Class<? extends Serializable>) Reflection
-                            .findClassWithoutPrimitives(d.getPropertyType()));
-            final Object rawValue = node != null ? node.getPropertyValueAsString(
-                    session, d.getName()) : null;
-            final Serializable value = (Serializable) (rawValue != null ? Conversion
-                    .convert(rawValue, d.getPropertyType()) : null);
-            propertyValues.put(d.getName(), value);
-        }
-        int weigthValue;
-        final Set<String> stNodeProperties = node != null ? node
-                .getPropertyNames(session) : Collections.<String>emptySet();
-        if (stNodeProperties.contains(WEIGTH_VALUE)) {
-            weigthValue = Conversion.convert(
-                    node.getPropertyValueAsString(session, WEIGTH_VALUE),
-                    Integer.class);
-        } else {
-            weigthValue = findInitialWeight(clazz);
-        }
-        Class<? extends Node> savedClass = null;
-        if (stNodeProperties.contains(CORRECT_CLASS)) {
-            savedClass = Conversion.convert(
-                    node.getPropertyValueAsString(session, CORRECT_CLASS),
-                    Class.class);
-        }
-        final BigInteger savedClassNumericType = savedClass != null ? findNumericType(savedClass)
-                : null;
-        final BigInteger proposedClassNumericType = findNumericType(clazz);
-        final Class<? extends Node> classToUse = savedClassNumericType != null
-                && savedClassNumericType.compareTo(proposedClassNumericType) > 0 ? savedClass
-                : clazz;
-
-        final NodeImpl internalNode = new NodeImpl(name, classToUse,
-                internalNodeKey.getKeyAsString(), propertyTypes,
-                propertyValues, parentId, contextId, weigthValue);
-        if (node != null) {
-            internalNode.cachedEntry = new WeakReference<StorageNode>(
-                    node);
-            if (needsToVerifyType) {
-                fixTypeData(session, classToUse, node);
-            }
-            final String captionAsString = node.getPropertyValueAsString(session,
-                    CAPTION);
-            if (captionAsString != null) {
-                internalNode.setCaption(captionAsString);
-            }
-
-        }
-        final Enhancer e = new Enhancer();
-        e.setSuperclass(classToUse);
-        e.setInterfaces(new Class<?>[] {PropertyContainerMetadata.class});
-        e.setCallback(new PropertyContainerInterceptor(internalNode));
-        return (T) e.create(new Class[0], new Object[0]);
-    }
+    public static final String  WEIGTH_VALUE           = "__node_weigth_value";
 
     private static void fixTypeData(final StorageSession session,
                                     final Class<? extends Node> clazz,
@@ -278,6 +919,11 @@ public class NodeAndLinkSupport {
         }
     }
 
+    private static BigInteger numericTypeFromClass(
+                                                   final Class<? extends Node> currentType) {
+        return getNumericSha1Signature(currentType.getName());
+    }
+
     private static void setWeigthAndTypeOnNode(final StorageSession session,
                                                final StorageNode node,
                                                final Class<? extends Node> type,
@@ -286,67 +932,6 @@ public class NodeAndLinkSupport {
                 weightFromTargetNodeType.toString());
         node.setIndexedProperty(session, CORRECT_CLASS, type.getName());
 
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Class<? extends Node> findTargetClass(final Class<?> type) {
-        Class<?> currentType = type;
-        while (currentType != null) {
-            if (!Node.class.isAssignableFrom(currentType)) { throw logAndReturn(new IllegalStateException(
-                        "No SLNode inherited type found with annotation "
-                                + DefineHierarchy.class.getSimpleName())); }
-            if (currentType.isAnnotationPresent(DefineHierarchy.class)) { return (Class<? extends Node>) currentType; }
-            currentType = currentType.getSuperclass();
-        }
-        throw logAndReturn(new IllegalStateException(
-                "No SLNode inherited type found with annotation "
-                        + DefineHierarchy.class.getSimpleName()));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static StorageNode retrievePreviousNode(
-                                                                                    final PartitionFactory factory,
-                                                                                    final StorageSession session,
-                                                                                    final Context context, final Node node,
-                                                                                    final boolean needsToVerifyType) {
-        try {
-            final PropertyContainerMetadata<StorageNode> metadata =
-                (PropertyContainerMetadata<StorageNode>) node;
-            StorageNode internalNode = metadata
-                    .getCached();
-            if (internalNode == null) {
-                final Partition partition = factory.getPartitionByName(context
-                        .getId());
-                internalNode = session
-                        .withPartition(partition)
-                        .createWithType(
-                                findTargetClass(node.getClass()).getName())
-                        .withSimpleKey(NAME, node.getName())
-                        .withParent(node.getParentId()).andCreate();
-                if (needsToVerifyType) {
-                    fixTypeData(session, (Class<? extends Node>) node
-                            .getClass().getSuperclass(), internalNode);
-                }
-                metadata.setCached(internalNode);
-
-            }
-            internalNode
-                    .setIndexedProperty(session, CAPTION, node.getCaption());
-            for (final String propName: node.getPropertyKeys()) {
-                final Serializable value = node.getPropertyValue(propName);
-                if (!PropertyUtils.getPropertyDescriptor(node, propName)
-                        .getReadMethod()
-                        .isAnnotationPresent(TransientProperty.class)) {
-                    internalNode.setIndexedProperty(session, propName,
-                            Conversion.convert(value, String.class));
-
-                }
-
-            }
-            return internalNode;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -489,781 +1074,136 @@ public class NodeAndLinkSupport {
         return (T) e.create(new Class[0], new Object[0]);
     }
 
-    private static class LinkImpl extends Link
-            implements
-            PropertyContainerMetadata<StorageLink>,
-            PropertyContainerLineReferenceData {
+    @SuppressWarnings("unchecked")
+    public static <T extends Node> T createNode(
+                                                 final PartitionFactory factory,
+                                                 final StorageSession session,
+                                                 final String contextId,
+                                                 final String parentId,
+                                                 final Class<T> clazz,
+                                                 final String name,
+                                                 final boolean needsToVerifyType,
+                                                 final Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                                 final Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
+        final Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
+        final Map<String, Serializable> propertyValues = newHashMap();
+        final PropertyDescriptor[] descriptors = PropertyUtils
+                .getPropertyDescriptors(clazz);
+        StorageNode node = null;
+        if (contextId == null) { throw new IllegalStateException(); }
+        final Partition partition = factory.getPartitionByName(contextId);
+        NodeKey internalNodeKey;
+        final Class<? extends Node> targetNodeType = findTargetClass(clazz);
 
-        @Override
-        public String getContextId() {
-            return propertyContainerImpl.getContextId();
+        if (session != null) {
+            internalNodeKey = session.withPartition(partition)
+                    .createKey(targetNodeType.getName())
+                    .withSimpleKey(NAME, name).andCreate();
+            node = session.withPartition(partition).createCriteria()
+                    .withUniqueKey(internalNodeKey).buildCriteria()
+                    .andFindUnique(session);
+        } else {
+            internalNodeKey = new NodeKeyBuilderImpl(targetNodeType.getName(),
+                    partition).withSimpleKey(NAME, name)
+                    .andCreate();
         }
 
-        @Override
-        public Iterable<ArtifactLineReference> getCachedLineReference(
-                                                                      final String artifactId) {
-            return propertyContainerImpl.getCachedLineReference(artifactId);
+        for (final PropertyDescriptor d: descriptors) {
+            if (d.getName().equals("class")) {
+                continue;
+            }
+            propertyTypes.put(d.getName(),
+                    (Class<? extends Serializable>) Reflection
+                            .findClassWithoutPrimitives(d.getPropertyType()));
+            final Object rawValue = node != null ? node.getPropertyValueAsString(
+                    session, d.getName()) : null;
+            final Serializable value = (Serializable) (rawValue != null ? Conversion
+                    .convert(rawValue, d.getPropertyType()) : null);
+            propertyValues.put(d.getName(), value);
         }
-
-        @Override
-        public void setCachedLineReference(final String artifactId,
-                                           final Iterable<ArtifactLineReference> newLineReference) {
-            propertyContainerImpl.setCachedLineReference(artifactId,
-                    newLineReference);
+        int weigthValue;
+        final Set<String> stNodeProperties = node != null ? node
+                .getPropertyNames(session) : Collections.<String>emptySet();
+        if (stNodeProperties.contains(WEIGTH_VALUE)) {
+            weigthValue = Conversion.convert(
+                    node.getPropertyValueAsString(session, WEIGTH_VALUE),
+                    Integer.class);
+        } else {
+            weigthValue = findInitialWeight(clazz);
         }
-
-        @Override
-        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
-            return propertyContainerImpl.getNewLineReferenceData();
+        Class<? extends Node> savedClass = null;
+        if (stNodeProperties.contains(CORRECT_CLASS)) {
+            savedClass = Conversion.convert(
+                    node.getPropertyValueAsString(session, CORRECT_CLASS),
+                    Class.class);
         }
+        final BigInteger savedClassNumericType = savedClass != null ? findNumericType(savedClass)
+                : null;
+        final BigInteger proposedClassNumericType = findNumericType(clazz);
+        final Class<? extends Node> classToUse = savedClassNumericType != null
+                && savedClassNumericType.compareTo(proposedClassNumericType) > 0 ? savedClass
+                : clazz;
 
-        @Override
-        public String toString() {
-            return "<" + linkDirection.name().substring(0, 3) + "> Link["
-                    + getId() + "]";
-        }
-
-        private LinkDirection linkDirection = LinkDirection.UNIDIRECTIONAL;
-
-        @Override
-        public LinkDirection getLinkDirection() {
-            return linkDirection;
-        }
-
-        private WeakReference<StorageLink>  cachedEntry;
-
-        private final Class<? extends Link> linkType;
-
-        public LinkImpl(final String id, final String linkName,
-                        final Class<? extends Link> linkType,
-                        final Map<String, Class<? extends Serializable>> propertyTypes,
-                        final Map<String, Serializable> propertyValues,
-                        final int initialWeigthValue, final int weightValue,
-                        final Node source, final Node target,
-                        final LinkDirection linkDirection) {
-            propertyContainerImpl = new PropertyContainerImpl(id,
-                    linkType.getName(), propertyTypes, propertyValues,
-                    initialWeigthValue, weightValue, source.getContextId());
-            sides[SOURCE] = source;
-            sides[TARGET] = target;
-            this.linkType = linkType;
-            this.linkDirection = linkDirection;
-
-        }
-
-        private final PropertyContainerImpl propertyContainerImpl;
-
-        @Override
-        public void createLineReference(final int beginLine, final int endLine,
-                                        final int beginColumn, final int endColumn,
-                                        final String statement, final String artifactId) {
-            propertyContainerImpl.createLineReference(beginLine, endLine,
-                    beginColumn, endColumn, statement, artifactId);
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (!(obj instanceof Link)) { return false; }
-            final Link that = (Link) obj;
-            return getId().equals(that.getId());
-        }
-
-        @Override
-        public int hashCode() {
-            return getId().hashCode();
-        }
-
-        @Override
-        public String getId() {
-            return propertyContainerImpl.getId();
-        }
-
-        @Override
-        public final int getInitialWeightValue() {
-            return propertyContainerImpl.getInitialWeightValue();
-        }
-
-        @Override
-        public Set<Pair<String, Serializable>> getProperties() {
-            return propertyContainerImpl.getProperties();
-        }
-
-        @Override
-        public Iterable<String> getPropertyKeys() {
-            return propertyContainerImpl.getPropertyKeys();
-        }
-
-        @Override
-        public <V extends Serializable> V getPropertyValue(final String key,
-                                                           final V defaultValue) {
-            return propertyContainerImpl.getPropertyValue(key, defaultValue);
-        }
-
-        @Override
-        public <V extends Serializable> V getPropertyValue(final String key) {
-            return propertyContainerImpl.<V>getPropertyValue(key);
-        }
-
-        @Override
-        public String getPropertyValueAsString(final String key) {
-            return propertyContainerImpl.getPropertyValueAsString(key);
-        }
-
-        @Override
-        public String getTypeName() {
-            return propertyContainerImpl.getTypeName();
-        }
-
-        @Override
-        public final int getWeightValue() {
-            return propertyContainerImpl.getWeightValue();
-        }
-
-        @Override
-        public boolean hasProperty(final String key)
-                throws IllegalArgumentException {
-            return propertyContainerImpl.hasProperty(key);
-        }
-
-        @Override
-        public boolean isDirty() {
-            return propertyContainerImpl.isDirty();
-        }
-
-        @Override
-        public void removeProperty(final String key) {
-            propertyContainerImpl.removeProperty(key);
-        }
-
-        public void resetDirtyFlag() {
-            propertyContainerImpl.resetDirtyFlag();
-        }
-
-        @Override
-        public <V extends Serializable> void setProperty(final String key,
-                                                         final V value)
-            throws IllegalArgumentException {
-            propertyContainerImpl.setProperty(key, value);
-        }
-
-        private static final int SOURCE = 0;
-        private static final int TARGET = 1;
-
-        private int              count;
-
-        private final Node[]     sides  = new Node[2];
-
-        @Override
-        public Node getOtherSide(final Node node)
-                throws IllegalArgumentException {
-            if (node.equals(sides[SOURCE])) { return sides[TARGET]; }
-            if (node.equals(sides[TARGET])) { return sides[SOURCE]; }
-            throw new IllegalArgumentException();
-        }
-
-        @Override
-        public Node[] getSides() {
-            return new Node[] {sides[SOURCE], sides[TARGET]};
-        }
-
-        @Override
-        public Node getSource() {
-            return sides[SOURCE];
-        }
-
-        @Override
-        public Node getTarget() {
-            return sides[TARGET];
-        }
-
-        @Override
-        public int getCount() {
-            return count;
-        }
-
-        @Override
-        public boolean isBidirectional() {
-            return linkDirection.equals(LinkDirection.BIDIRECTIONAL);
-        }
-
-        @Override
-        public void setCount(final int value) {
-            count = value;
-            propertyContainerImpl.markAsDirty();
+        final NodeImpl internalNode = new NodeImpl(name, classToUse,
+                internalNodeKey.getKeyAsString(), propertyTypes,
+                propertyValues, parentId, contextId, weigthValue);
+        if (node != null) {
+            internalNode.cachedEntry = new WeakReference<StorageNode>(
+                    node);
+            if (needsToVerifyType) {
+                fixTypeData(session, classToUse, node);
+            }
+            final String captionAsString = node.getPropertyValueAsString(session,
+                    CAPTION);
+            if (captionAsString != null) {
+                internalNode.setCaption(captionAsString);
+            }
 
         }
-
-        @Override
-        public int compareTo(final Link o) {
-            return getId().compareTo(o.getId());
-        }
-
-        @Override
-        public Class<? extends Link> getLinkType() {
-            return linkType;
-        }
-
-        @Override
-        public StorageLink getCached() {
-            return cachedEntry != null ? cachedEntry.get() : null;
-        }
-
-        @Override
-        public void setCached(final StorageLink entry) {
-            cachedEntry = new WeakReference<StorageLink>(
-                    entry);
-
-        }
-
-        @Override
-        public PropertyContainerImpl getPropertyContainerImpl() {
-            return propertyContainerImpl;
-        }
-
+        final Enhancer e = new Enhancer();
+        e.setSuperclass(classToUse);
+        e.setInterfaces(new Class<?>[] {PropertyContainerMetadata.class});
+        e.setCallback(new PropertyContainerInterceptor(internalNode));
+        return (T) e.create(new Class[0], new Object[0]);
     }
 
-    private static interface PropertyContainerLineReferenceData {
-        Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData();
-
-        Iterable<ArtifactLineReference> getCachedLineReference(String artifactId);
-
-        void setCachedLineReference(String artifactId,
-                                    Iterable<ArtifactLineReference> newLineReference);
-
+    public static int findInitialWeight(final Class<?> clazz) {
+        return clazz.getAnnotation(InitialWeight.class).value();
     }
 
-    public static class PropertyContainerImpl implements Element,
-            PropertyContainerLineReferenceData {
-
-        @Override
-        public final int getInitialWeightValue() {
-            return initialWeightValue;
+    @SuppressWarnings("unchecked")
+    public static BigInteger findNumericType(final Class<? extends Node> type) {
+        Class<?> currentType = type;
+        int depth = 0;
+        while (currentType != null) {
+            if (!Node.class.isAssignableFrom(currentType)) { throw logAndReturn(new IllegalStateException(
+                        "No SLNode inherited type found with annotation "
+                                + DefineHierarchy.class.getSimpleName())); }
+            if (currentType.isAnnotationPresent(DefineHierarchy.class)) { return numericTypeFromClass(
+                (Class<? extends Node>) currentType)
+                        .add(BigInteger.valueOf(depth)); }
+            currentType = currentType.getSuperclass();
+            depth++;
         }
-
-        @Override
-        public final int getWeightValue() {
-            return weightValue;
-        }
-
-        private final String                                     id;
-
-        private final String                                     typeName;
-        private final String                                     contextId;
-        private final Map<String, Class<? extends Serializable>> propertyTypes;
-        private final Map<String, Serializable>                  propertyValues;
-        private final AtomicBoolean                              dirty;
-
-        public void markAsDirty() {
-            dirty.set(true);
-        }
-
-        private final Set<String> removedProperties;
-
-        public PropertyContainerImpl(final String id, final String typeName,
-                                     final Map<String, Class<? extends Serializable>> propertyTypes,
-                                     final Map<String, Serializable> propertyValues,
-                                     final int initialWeigthValue, final int weightValue,
-                                     final String contextId) {
-            dirty = new AtomicBoolean();
-            this.typeName = typeName;
-            initialWeightValue = initialWeigthValue;
-            this.weightValue = weightValue;
-            this.id = id;
-            this.propertyTypes = propertyTypes;
-            this.propertyValues = propertyValues;
-            removedProperties = newHashSet();
-            this.contextId = contextId;
-        }
-
-        public void resetDirtyFlag() {
-            dirty.set(false);
-            removedProperties.clear();
-        }
-
-        // ArtifactId,Statement,lineData
-        private final Map<String, Map<String, Set<SimpleLineReference>>> lineReferenceNewData =
-                                                                                                  new HashMap<String, Map<String, Set<SimpleLineReference>>>();
-
-        @Override
-        public void createLineReference(final int beginLine, final int endLine,
-                                        final int beginColumn, final int endColumn,
-                                        final String statement, final String artifactId) {
-            Map<String, Set<SimpleLineReference>> artifactEntry = lineReferenceNewData
-                    .get(artifactId);
-            if (artifactEntry == null) {
-                artifactEntry = new HashMap<String, Set<SimpleLineReference>>();
-                lineReferenceNewData.put(artifactId, artifactEntry);
-            }
-            Set<SimpleLineReference> statementEntry = artifactEntry
-                    .get(statement);
-            if (statementEntry == null) {
-                statementEntry = new HashSet<SimpleLineReference>();
-                artifactEntry.put(statement, statementEntry);
-            }
-            statementEntry.add(TreeLineReferenceSupport
-                    .createSimpleLineReference(beginLine, endLine, beginColumn,
-                            endColumn));
-            dirty.set(true);
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public Set<Pair<String, Serializable>> getProperties() {
-            final ImmutableSet.Builder<Pair<String, Serializable>> builder = ImmutableSet
-                    .builder();
-            for (final Map.Entry<String, ? extends Serializable> entry: propertyValues
-                    .entrySet()) {
-                builder.add(newPair(entry.getKey(),
-                        (Serializable) entry.getValue(), PairEqualsMode.K1));
-            }
-            return builder.build();
-        }
-
-        @Override
-        public Iterable<String> getPropertyKeys() {
-            return ImmutableSet.copyOf(propertyTypes.keySet());
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <V extends Serializable> V getPropertyValue(final String key) {
-            return (V) propertyValues.get(key);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <V extends Serializable> V getPropertyValue(final String key,
-                                                           final V defaultValue) {
-            final V value = (V) propertyValues.get(key);
-            return value == null ? defaultValue : value;
-        }
-
-        @Override
-        public String getPropertyValueAsString(final String key) {
-            return convert(propertyValues.get(key), String.class);
-        }
-
-        @Override
-        public String getTypeName() {
-            return typeName;
-        }
-
-        @Override
-        public boolean hasProperty(final String key)
-                throws IllegalArgumentException {
-            return propertyTypes.containsKey(Strings
-                    .firstLetterToLowerCase(key));
-        }
-
-        @Override
-        public void removeProperty(String key) {
-            key = Strings.firstLetterToLowerCase(key);
-            propertyTypes.remove(key);
-            propertyValues.remove(key);
-            removedProperties.add(key);
-            dirty.set(true);
-        }
-
-        @Override
-        public <V extends Serializable> void setProperty(String key,
-                                                         final V value)
-            throws IllegalArgumentException {
-            key = Strings.firstLetterToLowerCase(key);
-            if (!hasProperty(key)) { throw logAndReturn(new IllegalArgumentException(
-                        "invalid property key " + key + " for type "
-                                + getTypeName())); }
-            final Class<? extends Serializable> propType = propertyTypes
-                    .get(key);
-            if (value != null) {
-                final Class<?> valueType = Reflection
-                        .findClassWithoutPrimitives(value.getClass());
-                if (!valueType.isAssignableFrom(propType)) { throw logAndReturn(new IllegalArgumentException(
-                            "invalid property type "
-                                    + value.getClass().getName() + " for type "
-                                    + getTypeName() + " (should be "
-                                    + propertyTypes.get(key).getName() + ")"));
-
-                }
-
-            }
-            propertyValues.put(key, value);
-            dirty.set(true);
-        }
-
-        @Override
-        public boolean isDirty() {
-            return dirty.get();
-        }
-
-        private final int                                                   initialWeightValue;
-
-        private final int                                                   weightValue;
-
-        private SoftReference<Map<String, Iterable<ArtifactLineReference>>> treeLineReference;
-
-        @Override
-        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
-            return lineReferenceNewData;
-        }
-
-        @Override
-        public Iterable<ArtifactLineReference> getCachedLineReference(
-                                                                      final String artifactId) {
-            final Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
-                    : treeLineReference.get();
-            if (cache == null) { return null; }
-            if (artifactId != null) { return cache.get(artifactId); }
-            if (cache.isEmpty()) { return null; }
-            final Builder<ArtifactLineReference> builder = ImmutableSet.builder();
-            for (final Iterable<ArtifactLineReference> val: cache.values()) {
-                for (final ArtifactLineReference r: val) {
-                    builder.add(r);
-                }
-            }
-            return builder.build();
-        }
-
-        @Override
-        public void setCachedLineReference(final String artifactId,
-                                           final Iterable<ArtifactLineReference> newLineReference) {
-            Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null
-                    : treeLineReference.get();
-            if (cache == null) {
-                cache = new HashMap<String, Iterable<ArtifactLineReference>>();
-                treeLineReference = new SoftReference<Map<String, Iterable<ArtifactLineReference>>>(
-                        cache);
-            }
-            cache.put(artifactId, newLineReference);
-        }
-
-        @Override
-        public String getContextId() {
-            return contextId;
-        }
-
+        throw logAndReturn(new IllegalStateException(
+                "No SLNode inherited type found with annotation "
+                        + DefineHierarchy.class.getSimpleName() + " for type"
+                        + type));
     }
 
-    private static class NodeImpl extends Node
-            implements
-            PropertyContainerMetadata<StorageNode>,
-            PropertyContainerLineReferenceData {
-
-        @Override
-        public Iterable<ArtifactLineReference> getCachedLineReference(
-                                                                      final String artifactId) {
-            return propertyContainerImpl.getCachedLineReference(artifactId);
+    @SuppressWarnings("unchecked")
+    public static Class<? extends Node> findTargetClass(final Class<?> type) {
+        Class<?> currentType = type;
+        while (currentType != null) {
+            if (!Node.class.isAssignableFrom(currentType)) { throw logAndReturn(new IllegalStateException(
+                        "No SLNode inherited type found with annotation "
+                                + DefineHierarchy.class.getSimpleName())); }
+            if (currentType.isAnnotationPresent(DefineHierarchy.class)) { return (Class<? extends Node>) currentType; }
+            currentType = currentType.getSuperclass();
         }
-
-        @Override
-        public void setCachedLineReference(final String artifactId,
-                                           final Iterable<ArtifactLineReference> newLineReference) {
-            propertyContainerImpl.setCachedLineReference(artifactId,
-                    newLineReference);
-        }
-
-        private final PropertyContainerImpl propertyContainerImpl;
-
-        @Override
-        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
-            return propertyContainerImpl.getNewLineReferenceData();
-        }
-
-        @Override
-        public void createLineReference(final int beginLine, final int endLine,
-                                        final int beginColumn, final int endColumn,
-                                        final String statement, final String artifactId) {
-            propertyContainerImpl.createLineReference(beginLine, endLine,
-                    beginColumn, endColumn, statement, artifactId);
-        }
-
-        @Override
-        public String getId() {
-            return propertyContainerImpl.getId();
-        }
-
-        @Override
-        public final int getInitialWeightValue() {
-            return propertyContainerImpl.getInitialWeightValue();
-        }
-
-        @Override
-        public Set<Pair<String, Serializable>> getProperties() {
-            return propertyContainerImpl.getProperties();
-        }
-
-        @Override
-        public Iterable<String> getPropertyKeys() {
-            return propertyContainerImpl.getPropertyKeys();
-        }
-
-        @Override
-        public <V extends Serializable> V getPropertyValue(final String key,
-                                                           final V defaultValue) {
-            return propertyContainerImpl
-                    .<V>getPropertyValue(key, defaultValue);
-        }
-
-        @Override
-        public <V extends Serializable> V getPropertyValue(final String key) {
-            return propertyContainerImpl.<V>getPropertyValue(key);
-        }
-
-        @Override
-        public String getPropertyValueAsString(final String key) {
-            return propertyContainerImpl.getPropertyValueAsString(key);
-        }
-
-        @Override
-        public String getTypeName() {
-            return propertyContainerImpl.getTypeName();
-        }
-
-        @Override
-        public final int getWeightValue() {
-            return propertyContainerImpl.getWeightValue();
-        }
-
-        @Override
-        public boolean hasProperty(final String key)
-                throws IllegalArgumentException {
-            return propertyContainerImpl.hasProperty(key);
-        }
-
-        @Override
-        public boolean isDirty() {
-            return propertyContainerImpl.isDirty();
-        }
-
-        @Override
-        public void removeProperty(final String key) {
-            propertyContainerImpl.removeProperty(key);
-        }
-
-        @Override
-        public <V extends Serializable> void setProperty(final String key,
-                                                         final V value)
-            throws IllegalArgumentException {
-            propertyContainerImpl.setProperty(key, value);
-        }
-
-        @Override
-        public BigInteger getNumericType() {
-            return numericType;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (!(obj instanceof Node)) { return false; }
-            final Node slnode = (Node) obj;
-
-            final boolean result = getId().equals(slnode.getId())
-                    && Equals.eachEquality(getParentId(), slnode.getParentId())
-                    && Equals.eachEquality(getContextId(),
-                            slnode.getContextId());
-            return result;
-        }
-
-        private volatile int hashCode = 0;
-
-        @Override
-        public int hashCode() {
-            int result = hashCode;
-            if (result == 0) {
-                result = HashCodes.hashOf(getId(), getParentId(),
-                        getContextId());
-                hashCode = result;
-            }
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return getName() + ":" + getId();
-        }
-
-        private final String contextId;
-
-        @Override
-        public String getContextId() {
-            return contextId;
-        }
-
-        private WeakReference<StorageNode> cachedEntry;
-
-        private String                     caption;
-
-        private final String               name;
-
-        private final String               parentId;
-
-        @Override
-        public String getParentId() {
-            return parentId;
-        }
-
-        private NodeImpl(final String name, final Class<? extends Node> type,
-                         final String id,
-                         final Map<String, Class<? extends Serializable>> propertyTypes,
-                         final Map<String, Serializable> propertyValues,
-                         final String parentId, final String contextId,
-                         final int weightValue) {
-            propertyContainerImpl = new PropertyContainerImpl(id,
-                    type.getName(), propertyTypes, propertyValues,
-                    findInitialWeight(type), weightValue, contextId);
-            this.name = name;
-            numericType = findNumericType(type);
-            this.parentId = parentId;
-            this.contextId = contextId;
-        }
-
-        public void resetDirtyFlag() {
-            propertyContainerImpl.resetDirtyFlag();
-        }
-
-        @Override
-        public String getCaption() {
-            return caption;
-        }
-
-        @Override
-        public void setCaption(final String caption) {
-            this.caption = caption;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public int compareTo(final Node o) {
-            return getId().compareTo(o.getId());
-        }
-
-        @Override
-        public StorageNode getCached() {
-            return cachedEntry != null ? cachedEntry.get() : null;
-        }
-
-        @Override
-        public void setCached(
-                              final StorageNode entry) {
-            cachedEntry = new WeakReference<StorageNode>(
-                    entry);
-
-        }
-
-        private final BigInteger numericType;
-
-        @Override
-        public PropertyContainerImpl getPropertyContainerImpl() {
-            return propertyContainerImpl;
-        }
-
-    }
-
-    private static class PropertyContainerInterceptor implements
-            MethodInterceptor {
-
-        private final PropertyContainer internalPropertyContainerImpl;
-
-        public PropertyContainerInterceptor(
-                                            final PropertyContainer propertyContainerImpl) {
-            internalPropertyContainerImpl = propertyContainerImpl;
-        }
-
-        @Override
-        public Object intercept(final Object obj, final Method method,
-                                final Object[] args, final MethodProxy proxy)
-            throws Throwable {
-
-            final Class<?> declarringClass = method.getDeclaringClass();
-            final boolean methodFromSuperClasses = declarringClass
-                    .equals(Node.class)
-                    || declarringClass.equals(Link.class)
-                    || declarringClass.equals(PropertyContainerImpl.class)
-                    || declarringClass.isInterface()
-                    || declarringClass.equals(Object.class);
-            final String methodName = method.getName();
-            if (methodFromSuperClasses) {
-                return method.invoke(internalPropertyContainerImpl, args);
-            } else {
-                switch (getMethodType(methodName, method)) {
-                    case GETTER:
-                        return invokeGetter(methodName);
-                    case SETTER:
-                        return invokeSetter(obj, methodName, method, args, proxy);
-                }
-                return proxy.invokeSuper(obj, args);
-            }
-
-        }
-
-        private Object invokeSetter(final Object obj, final String methodName,
-                                    final Method method, final Object[] args,
-                                    final MethodProxy methodProxy)
-            throws Throwable {
-            internalPropertyContainerImpl.setProperty(methodName.substring(3),
-                    (Serializable) args[0]);
-            return null;
-        }
-
-        private Serializable invokeGetter(final String methodName) {
-
-            final String propertyName = methodName.startsWith("get") ? Strings
-                    .firstLetterToLowerCase(methodName.substring(3)) : Strings
-                    .firstLetterToLowerCase(methodName.substring(2));// is
-            return internalPropertyContainerImpl.getPropertyValue(propertyName);
-
-        }
-
-        private MethodType getMethodType(final String methodName,
-                                         final Method method) {
-            if (method.isAnnotationPresent(TransientProperty.class)) { return MethodType.OTHER; }
-            if (methodName.startsWith("set")
-                    && method.getParameterTypes().length == 1
-                    && internalPropertyContainerImpl.hasProperty(methodName
-                            .substring(3))) {
-                return MethodType.SETTER;
-            } else if (methodName.startsWith("get")
-                    && method.getParameterTypes().length == 0
-                    && internalPropertyContainerImpl.hasProperty(methodName
-                            .substring(3))) {
-                return MethodType.GETTER;
-            } else if (methodName.startsWith("is")
-                    && method.getParameterTypes().length == 0
-                    && internalPropertyContainerImpl.hasProperty(methodName
-                            .substring(2))) { return MethodType.GETTER; }
-            return MethodType.OTHER;
-        }
-
-        private static enum MethodType {
-            SETTER,
-            GETTER,
-            OTHER
-        }
-    }
-
-    private static final String LINEREF_SUFIX = "_lineRef";
-
-    public static void writeTreeLineReference(final StorageSession session,
-                                              final PartitionFactory factory, final Element e) {
-        final TreeLineReference treeLineReferences = getTreeLineReferences(session,
-                factory, e, null);
-        final Partition lineRefPartition = factory.getPartitionByName(e
-                .getContextId() + LINEREF_SUFIX);
-        final StorageNode lineRefNode = session.withPartition(lineRefPartition)
-                .createNewSimpleNode(e.getId());
-        for (final ArtifactLineReference artifactLineReference: treeLineReferences
-                .getArtifacts()) {
-            lineRefNode.setSimpleProperty(session,
-                    artifactLineReference.getArtifactId(),
-                    SerializationUtil.serialize(artifactLineReference));
-        }
+        throw logAndReturn(new IllegalStateException(
+                "No SLNode inherited type found with annotation "
+                        + DefineHierarchy.class.getSimpleName()));
     }
 
     public static TreeLineReference getTreeLineReferences(
@@ -1305,6 +1245,72 @@ public class NodeAndLinkSupport {
         }
         return TreeLineReferenceSupport.createTreeLineReference(e.getId(),
                 cached);
+    }
+
+    public static boolean isMetanode(final Class<? extends Node> clazz) {
+        return clazz.isAnnotationPresent(IsMetaType.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static StorageNode retrievePreviousNode(
+                                                                                    final PartitionFactory factory,
+                                                                                    final StorageSession session,
+                                                                                    final Context context, final Node node,
+                                                                                    final boolean needsToVerifyType) {
+        try {
+            final PropertyContainerMetadata<StorageNode> metadata =
+                (PropertyContainerMetadata<StorageNode>) node;
+            StorageNode internalNode = metadata
+                    .getCached();
+            if (internalNode == null) {
+                final Partition partition = factory.getPartitionByName(context
+                        .getId());
+                internalNode = session
+                        .withPartition(partition)
+                        .createWithType(
+                                findTargetClass(node.getClass()).getName())
+                        .withSimpleKey(NAME, node.getName())
+                        .withParent(node.getParentId()).andCreate();
+                if (needsToVerifyType) {
+                    fixTypeData(session, (Class<? extends Node>) node
+                            .getClass().getSuperclass(), internalNode);
+                }
+                metadata.setCached(internalNode);
+
+            }
+            internalNode
+                    .setIndexedProperty(session, CAPTION, node.getCaption());
+            for (final String propName: node.getPropertyKeys()) {
+                final Serializable value = node.getPropertyValue(propName);
+                if (!PropertyUtils.getPropertyDescriptor(node, propName)
+                        .getReadMethod()
+                        .isAnnotationPresent(TransientProperty.class)) {
+                    internalNode.setIndexedProperty(session, propName,
+                            Conversion.convert(value, String.class));
+
+                }
+
+            }
+            return internalNode;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    public static void writeTreeLineReference(final StorageSession session,
+                                              final PartitionFactory factory, final Element e) {
+        final TreeLineReference treeLineReferences = getTreeLineReferences(session,
+                factory, e, null);
+        final Partition lineRefPartition = factory.getPartitionByName(e
+                .getContextId() + LINEREF_SUFIX);
+        final StorageNode lineRefNode = session.withPartition(lineRefPartition)
+                .createNewSimpleNode(e.getId());
+        for (final ArtifactLineReference artifactLineReference: treeLineReferences
+                .getArtifacts()) {
+            lineRefNode.setSimpleProperty(session,
+                    artifactLineReference.getArtifactId(),
+                    SerializationUtil.serialize(artifactLineReference));
+        }
     }
 
 }

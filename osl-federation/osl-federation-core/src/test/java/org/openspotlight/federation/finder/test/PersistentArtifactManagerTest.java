@@ -84,10 +84,15 @@ public class PersistentArtifactManagerTest {
 
     private static ArtifactSource                artifactSource;
 
-    private static Repository                    repository;
+    private static JRedis                        jredis;
 
     private static PersistentArtifactManagerImpl persistenArtifactManager;
-    private static JRedis                        jredis;
+    private static Repository                    repository;
+
+    @AfterClass
+    public static void closeResources() {
+        persistenArtifactManager.closeResources();
+    }
 
     /**
      * Setup.
@@ -122,11 +127,6 @@ public class PersistentArtifactManagerTest {
         }
         persistenArtifactManager.saveTransientData();
 
-    }
-
-    @AfterClass
-    public static void closeResources() {
-        persistenArtifactManager.closeResources();
     }
 
     @Test

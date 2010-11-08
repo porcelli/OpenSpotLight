@@ -58,8 +58,10 @@ import org.junit.Before;
 public abstract class AbstractCommandTest {
 
     protected Command       command = null;
-    protected ConsoleReader reader  = null;
     protected PrintWriter   out     = null;
+    protected ConsoleReader reader  = null;
+
+    protected abstract void setupCommand();
 
     @Before
     public void setup()
@@ -71,6 +73,4 @@ public abstract class AbstractCommandTest {
             setupCommand();
         }
     }
-
-    protected abstract void setupCommand();
 }

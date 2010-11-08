@@ -69,11 +69,11 @@ public class MethodIdentificationSupport {
         /** The hashcode. */
         private final int      hashcode;
 
-        /** The parameters. */
-        private final Object[] parameters;
-
         /** The key. */
         private final String   key;
+
+        /** The parameters. */
+        private final Object[] parameters;
 
         /**
          * Constructor with final fields.
@@ -130,6 +130,21 @@ public class MethodIdentificationSupport {
     }
 
     /**
+     * Checks if is equals in a null pointer safe way.
+     * 
+     * @param o1 the o1
+     * @param o2 the o2
+     * @return true, if is equals
+     */
+    static boolean isEquals(final Object o1,
+                             final Object o2) {
+        if (o1 == o2) { return true; }
+        if (o1 == null) { return false; }
+        if (o2 == null) { return false; }
+        return o1.equals(o2);
+    }
+
+    /**
      * Gets the method unique name.
      * 
      * @param arg1 the arg1
@@ -149,21 +164,6 @@ public class MethodIdentificationSupport {
             }
         }
         return nameBuff.toString();
-    }
-
-    /**
-     * Checks if is equals in a null pointer safe way.
-     * 
-     * @param o1 the o1
-     * @param o2 the o2
-     * @return true, if is equals
-     */
-    static boolean isEquals(final Object o1,
-                             final Object o2) {
-        if (o1 == o2) { return true; }
-        if (o1 == null) { return false; }
-        if (o2 == null) { return false; }
-        return o1.equals(o2);
     }
 
 }

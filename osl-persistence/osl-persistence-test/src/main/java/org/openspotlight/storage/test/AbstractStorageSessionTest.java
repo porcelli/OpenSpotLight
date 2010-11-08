@@ -82,21 +82,6 @@ import com.google.inject.Injector;
  */
 public abstract class AbstractStorageSessionTest {
 
-    protected abstract Injector createsAutoFlushInjector();
-
-    protected abstract Injector createsExplicitFlushInjector();
-
-    public void setupInjectors()
-        throws Exception {
-        if (supportsAutoFlushInjector()) {
-            autoFlushInjector = createsAutoFlushInjector();
-        }
-        if (supportsExplicitFlushInjector()) {
-            explicitFlushInjector = createsExplicitFlushInjector();
-        }
-
-    }
-
     protected enum ExamplePartition implements Partition {
 
         DEFAULT("DEFAULT"),
@@ -118,27 +103,35 @@ public abstract class AbstractStorageSessionTest {
 
         private final String                 partitionName;
 
-        public String getPartitionName() {
-            return partitionName;
-        }
-
         private ExamplePartition(final String partitionName) {
             this.partitionName = partitionName;
         }
+
+        public String getPartitionName() {
+            return partitionName;
+        }
     }
 
-    protected abstract boolean supportsAutoFlushInjector();
-
-    protected abstract boolean supportsExplicitFlushInjector();
-
-    protected abstract boolean supportsAdvancedQueries();
-
-    protected abstract void internalCleanPreviousData()
-        throws Exception;
+    public enum ExampleEnum {
+        FIRST
+    }
 
     protected Injector autoFlushInjector;
 
     protected Injector explicitFlushInjector;
+
+    protected abstract Injector createsAutoFlushInjector();
+
+    protected abstract Injector createsExplicitFlushInjector();
+
+    protected abstract void internalCleanPreviousData()
+        throws Exception;
+
+    protected abstract boolean supportsAdvancedQueries();
+
+    protected abstract boolean supportsAutoFlushInjector();
+
+    protected abstract boolean supportsExplicitFlushInjector();
 
     @Before
     public void cleanPreviousData()
@@ -147,1541 +140,28 @@ public abstract class AbstractStorageSessionTest {
         internalCleanPreviousData();
     }
 
-    @Test
-    public void shouldFindNodeTypesOnDifferentPartitionsOnAutoFlush()
-            throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
-                                                                            "a1", "b1", "c1");
-        session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
-                                                                          "b2", "c2");
-        final List<String> nodeTypes1 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.DEFAULT).getAllNodeTypes());
-        final List<String> nodeTypes2 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.FIRST).getAllNodeTypes());
-        assertThat(nodeTypes1.contains("a1"), is(true));
-        assertThat(nodeTypes1.contains("b1"), is(true));
-        assertThat(nodeTypes1.contains("c1"), is(true));
-        assertThat(nodeTypes2.contains("a2"), is(true));
-        assertThat(nodeTypes2.contains("b2"), is(true));
-        assertThat(nodeTypes2.contains("c2"), is(true));
-        assertThat(nodeTypes2.contains("a1"), is(false));
-        assertThat(nodeTypes2.contains("b1"), is(false));
-        assertThat(nodeTypes2.contains("c1"), is(false));
-        assertThat(nodeTypes1.contains("a2"), is(false));
-        assertThat(nodeTypes1.contains("b2"), is(false));
-        assertThat(nodeTypes1.contains("c2"), is(false));
-    }
-
-    @Test
-    public void shouldExcludeParentAndChildrenOnExplicitFlush()
-            throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode c1 = session.withPartition(ExamplePartition.DEFAULT)
-                                .createNewSimpleNode("a1", "b1", "c1");
-        session.flushTransient();
-        final StorageNode b1 = c1.getParent(session);
-        final StorageNode a1 = b1.getParent(session);
-        a1.removeNode(session);
-        session.flushTransient();
-        final Iterable<StorageNode> foundA1 = session.withPartition(
-                                                              ExamplePartition.DEFAULT).findByType("a1");
-        final Iterable<StorageNode> foundB1 = session.withPartition(
-                                                              ExamplePartition.DEFAULT).findByType("b1");
-        final Iterable<StorageNode> foundC1 = session.withPartition(
-                                                              ExamplePartition.DEFAULT).findByType("c1");
-        assertThat(foundA1.iterator().hasNext(), is(false));
-        assertThat(foundB1.iterator().hasNext(), is(false));
-        assertThat(foundC1.iterator().hasNext(), is(false));
-
-    }
-
-    @Test
-    public void shouldExcludeParentAndChildrenOnAutoFlush()
+    public void setupInjectors()
         throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode c1 = session.withPartition(ExamplePartition.DEFAULT)
-                                .createNewSimpleNode("a1", "b1", "c1");
-        final StorageNode b1 = c1.getParent(session);
-        final StorageNode a1 = b1.getParent(session);
-        a1.removeNode(session);
-        final Iterable<StorageNode> foundA1 = session.withPartition(
-                                                              ExamplePartition.DEFAULT).findByType("a1");
-        final Iterable<StorageNode> foundB1 = session.withPartition(
-                                                              ExamplePartition.DEFAULT).findByType("b1");
-        final Iterable<StorageNode> foundC1 = session.withPartition(
-                                                              ExamplePartition.DEFAULT).findByType("c1");
-        assertThat(foundA1.iterator().hasNext(), is(false));
-        assertThat(foundB1.iterator().hasNext(), is(false));
-        assertThat(foundC1.iterator().hasNext(), is(false));
-
-    }
-
-    @Test
-    public void shouldFindNodeTypesOnDifferentPartitionsOnExplicitFlush()
-            throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
-                                                                            "a1", "b1", "c1");
-        session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
-                                                                          "b2", "c2");
-        session.flushTransient();
-        final List<String> nodeTypes1 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.DEFAULT).getAllNodeTypes());
-        final List<String> nodeTypes2 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.FIRST).getAllNodeTypes());
-        assertThat(nodeTypes1.contains("a1"), is(true));
-        assertThat(nodeTypes1.contains("b1"), is(true));
-        assertThat(nodeTypes1.contains("c1"), is(true));
-        assertThat(nodeTypes2.contains("a2"), is(true));
-        assertThat(nodeTypes2.contains("b2"), is(true));
-        assertThat(nodeTypes2.contains("c2"), is(true));
-        assertThat(nodeTypes2.contains("a1"), is(false));
-        assertThat(nodeTypes2.contains("b1"), is(false));
-        assertThat(nodeTypes2.contains("c1"), is(false));
-        assertThat(nodeTypes1.contains("a2"), is(false));
-        assertThat(nodeTypes1.contains("b2"), is(false));
-        assertThat(nodeTypes1.contains("c2"), is(false));
-    }
-
-    @Test
-    public void shouldSaveSimpleNodesOnAutoFlush()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
-                                                                            "a", "b", "c");
-        final Iterable<StorageNode> result = session.withPartition(
-                                                             ExamplePartition.DEFAULT).findByType("c");
-        assertThat(result.iterator().hasNext(), is(true));
-
-    }
-
-    @Test
-    public void shouldFindSimpleNodeWithStringIdOnAutoFlush()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
-                                     .createNewSimpleNode("a", "b", "c");
-        final String nodeIdAsString = newNode.getKey().getKeyAsString();
-        final StorageNode result = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createCriteria().withUniqueKeyAsString(nodeIdAsString)
-                                    .buildCriteria().andFindUnique(session);
-        assertThat(result, is(newNode));
-
-    }
-
-    @Test
-    public void shouldFindSimpleNodeWithStringIdOnExplicitFlush()
-            throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
-                                     .createNewSimpleNode("a", "b", "c");
-        session.flushTransient();
-        final String nodeIdAsString = newNode.getKey().getKeyAsString();
-        final StorageNode result = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createCriteria().withUniqueKeyAsString(nodeIdAsString)
-                                    .buildCriteria().andFindUnique(session);
-        assertThat(result, is(newNode));
-
-    }
-
-    @Test
-    public void shouldInstantiateOneSessionPerThread()
-        throws Exception {
-        final StorageSession session1 = autoFlushInjector
-                                                   .getInstance(StorageSession.class);
-        final StorageSession session2 = autoFlushInjector
-                                                   .getInstance(StorageSession.class);
-        assertThat(session1, is(session2));
-
-        final List<StorageSession> sessions = new CopyOnWriteArrayList<StorageSession>();
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sessions.add(autoFlushInjector
-                                                  .getInstance(StorageSession.class));
-                } finally {
-                    latch.countDown();
-                }
-            }
-        }.start();
-        latch.await(5, TimeUnit.SECONDS);
-        assertThat(sessions.size(), is(1));
-        assertThat(session1, is(not(sessions.get(0))));
-    }
-
-    @Test
-    public void shouldCreateTheSameKey()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode aNode = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode sameNode = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        final String aKeyAsString = aNode.getKey().getKeyAsString();
-        final String sameKeyAsString = sameNode.getKey().getKeyAsString();
-        assertThat(aKeyAsString, is(sameKeyAsString));
-
-    }
-
-    @Test
-    public void shouldFindByUniqueKey()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode aNode = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode theSameNode =
-            session
-                .withPartition(
-                                                        ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withUniqueKey(
-                                                                                                                 aNode
-                                                                                                                     .getKey())
-                .buildCriteria().andFindUnique(session);
-        assertThat(aNode, is(theSameNode));
-        assertThat(theSameNode.getProperty(session, "name").getValueAsString(
-                                                                             session), is("name"));
-        final StorageNode nullNode = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createCriteria().withUniqueKey(
-                                                                      session.withPartition(ExamplePartition.DEFAULT)
-                                                                             .createKey("invalid").andCreate())
-                                      .buildCriteria().andFindUnique(session);
-        assertThat(nullNode, is(nullValue()));
-
-    }
-
-    @Test
-    public void shouldFindByLocalKey()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root1").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root2").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
-        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
-
-        final List<StorageNode> theSameNodes =
-            iterableToList(session
-                .withPartition(
-                                                                              ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withLocalKey(
-                                                                                                                                      aNode1
-                                                                                                                                          .getKey()
-                                                                                                                                          .getCompositeKey())
-                .buildCriteria()
-                .andFind(
-                                                                                                                                                                                                   session));
-        assertThat(theSameNodes.size(), is(2));
-        assertThat(theSameNodes.contains(aNode1), is(true));
-        assertThat(theSameNodes.contains(aNode2), is(true));
-        assertThat(theSameNodes.contains(root1), is(false));
-        assertThat(theSameNodes.contains(root2), is(false));
-    }
-
-    @Test
-    public void shouldFindByProperties()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root1").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root2").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
-        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
-        aNode1.setIndexedProperty(session, "parameter", "value");
-        aNode2.setIndexedProperty(session, "parameter", "value");
-        aNode1.setIndexedProperty(session, "parameter1", "value1");
-        aNode2.setIndexedProperty(session, "parameter1", "value2");
-        final List<StorageNode> theSameNodes =
-            iterableToList(session.withPartition(
-                                                                              ExamplePartition.DEFAULT).createCriteria()
-                                                               .withNodeEntry("node").withProperty("parameter").equalsTo(
-                                                                                                                         "value")
-                .buildCriteria().andFind(session));
-        assertThat(theSameNodes.size(), is(2));
-
-        assertThat(theSameNodes.contains(aNode1), is(true));
-        assertThat(theSameNodes.contains(aNode2), is(true));
-        assertThat(theSameNodes.contains(root1), is(false));
-        assertThat(theSameNodes.contains(root2), is(false));
-        final List<StorageNode> onlyOneNode =
-            iterableToList(session
-                .withPartition(
-                                                                             ExamplePartition.DEFAULT)
-                .createCriteria()
-                                                              .withNodeEntry("node")
-                .withProperty("parameter1")
-                .equalsTo(
-                                                                                                                         "value1")
-                .buildCriteria().andFind(session));
-        assertThat(onlyOneNode.size(), is(1));
-        assertThat(onlyOneNode.contains(aNode1), is(true));
-        assertThat(onlyOneNode.contains(aNode2), is(false));
-        assertThat(onlyOneNode.contains(root1), is(false));
-        assertThat(onlyOneNode.contains(root2), is(false));
-    }
-
-    @Test
-    public void shouldFindByPropertiesContainingString()
-        throws Exception {
-        if (supportsAdvancedQueries()) {
-            final StorageSession session = autoFlushInjector
-                                                      .getInstance(StorageSession.class);
-            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("node").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name1").andCreate();
-            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("node").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name2").andCreate();
-            final StorageNode aNode1 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "node")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                   "name",
-                        "name1").withParent(root1).andCreate();
-            final StorageNode aNode2 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "node")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                   "name",
-                        "name2").withParent(root2).andCreate();
-            aNode1.setIndexedProperty(session, "parameter", "io");
-            aNode2.setIndexedProperty(session, "parameter", "aeiou");
-            root1.setIndexedProperty(session, "parameter", "foo");
-            root2.setIndexedProperty(session, "parameter", "bar");
-            final List<StorageNode> theSameNodes = iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                                                   .withNodeEntry("node").withProperty("parameter")
-                                                                   .containsString("io").buildCriteria().andFind(session));
-            assertThat(theSameNodes.size(), is(2));
-            assertThat(theSameNodes.contains(aNode1), is(true));
-            assertThat(theSameNodes.contains(aNode2), is(true));
-            assertThat(theSameNodes.contains(root1), is(false));
-            assertThat(theSameNodes.contains(root2), is(false));
+        if (supportsAutoFlushInjector()) {
+            autoFlushInjector = createsAutoFlushInjector();
         }
-    }
-
-    @Test
-    public void shouldFindByPropertiesWithNullValue()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("node").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "a").andCreate();
-        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("node").withSimpleKey("sequence", "2")
-                                   .withSimpleKey("name", "b").andCreate();
-        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name1").withParent(root1).andCreate();
-        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name2").withParent(root2).andCreate();
-        aNode1.setIndexedProperty(session, "parameter", "io");
-        aNode2.setIndexedProperty(session, "parameter", "aeiou");
-        root1.setIndexedProperty(session, "parameter", null);
-        root2.setIndexedProperty(session, "parameter", null);
-        final List<StorageNode> theSameNodes = iterableToList(session.withPartition(
-                                                                              ExamplePartition.DEFAULT).createCriteria()
-                                                               .withNodeEntry("node").withProperty("parameter").equalsTo(null)
-                                                               .buildCriteria().andFind(session));
-        assertThat(theSameNodes.size(), is(2));
-        assertThat(theSameNodes.contains(root1), is(true));
-        assertThat(theSameNodes.contains(root2), is(true));
-        assertThat(theSameNodes.contains(aNode1), is(false));
-        assertThat(theSameNodes.contains(aNode2), is(false));
-    }
-
-    @Test
-    public void shouldFindByPropertiesStartingWithString()
-        throws Exception {
-        if (supportsAdvancedQueries()) {
-            final StorageSession session = autoFlushInjector
-                                                      .getInstance(StorageSession.class);
-            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("node").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name1").andCreate();
-            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("node").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name2").andCreate();
-            final StorageNode aNode1 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "node")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                   "name",
-                        "name1").withParent(root1).andCreate();
-            final StorageNode aNode2 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "node")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                   "name",
-                        "name2").withParent(root2).andCreate();
-            aNode1.setIndexedProperty(session, "parameter", "io");
-            aNode2.setIndexedProperty(session, "parameter", "iou");
-            root1.setIndexedProperty(session, "parameter", "fooiou");
-            root2.setIndexedProperty(session, "parameter", "baior");
-            final List<StorageNode> theSameNodes = iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                                                   .withNodeEntry("node").withProperty("parameter")
-                                                                   .startsWithString("io").buildCriteria().andFind(session));
-            assertThat(theSameNodes.contains(aNode1), is(true));
-            assertThat(theSameNodes.contains(aNode2), is(true));
-            assertThat(theSameNodes.contains(root1), is(false));
-            assertThat(theSameNodes.contains(root2), is(false));
-            assertThat(theSameNodes.size(), is(2));
-        }
-    }
-
-    @Test
-    public void shouldFindByPropertiesEndingWithString()
-        throws Exception {
-        if (supportsAdvancedQueries()) {
-            final StorageSession session = autoFlushInjector
-                                                      .getInstance(StorageSession.class);
-            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("node").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name1").andCreate();
-            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("node").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name2").andCreate();
-            final StorageNode aNode1 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "node")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                   "name",
-                        "name1").withParent(root1).andCreate();
-            final StorageNode aNode2 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "node")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                   "name",
-                        "name2").withParent(root2).andCreate();
-            aNode1.setIndexedProperty(session, "parameter", "io");
-            aNode2.setIndexedProperty(session, "parameter", "uio");
-            root1.setIndexedProperty(session, "parameter", "fooiou");
-            root2.setIndexedProperty(session, "parameter", "baior");
-            final List<StorageNode> theSameNodes = iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                                                   .withNodeEntry("node").withProperty("parameter")
-                                                                   .endsWithString("io").buildCriteria().andFind(session));
-            assertThat(theSameNodes.contains(aNode1), is(true));
-            assertThat(theSameNodes.contains(aNode2), is(true));
-            assertThat(theSameNodes.contains(root1), is(false));
-            assertThat(theSameNodes.contains(root2), is(false));
-            assertThat(theSameNodes.size(), is(2));
-        }
-    }
-
-    @Test
-    public void shouldFindByLocalKeyAndProperties()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root1").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root2").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
-        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
-        aNode1.setIndexedProperty(session, "parameter", "value");
-        aNode2.setIndexedProperty(session, "parameter", "value");
-        aNode1.setIndexedProperty(session, "parameter1", "value1");
-        aNode2.setIndexedProperty(session, "parameter1", "value2");
-        final List<StorageNode> theSameNodes =
-            iterableToList(session
-                .withPartition(
-                                                                              ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withLocalKey(
-                                                                                                                                      aNode1
-                                                                                                                                          .getKey()
-                                                                                                                                          .getCompositeKey())
-                .withProperty("parameter")
-                                                               .equalsTo("value").buildCriteria().andFind(session));
-        assertThat(theSameNodes.size(), is(2));
-        assertThat(theSameNodes.contains(aNode1), is(true));
-        assertThat(theSameNodes.contains(aNode2), is(true));
-        assertThat(theSameNodes.contains(root1), is(false));
-        assertThat(theSameNodes.contains(root2), is(false));
-        final List<StorageNode> onlyOneNode =
-            iterableToList(session
-                .withPartition(
-                                                                             ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withLocalKey(
-                                                                                                                                     aNode1
-                                                                                                                                         .getKey()
-                                                                                                                                         .getCompositeKey())
-                .withProperty("parameter1")
-                                                              .equalsTo("value1").buildCriteria().andFind(session));
-        assertThat(onlyOneNode.size(), is(1));
-        assertThat(onlyOneNode.contains(aNode1), is(true));
-        assertThat(onlyOneNode.contains(aNode2), is(false));
-        assertThat(onlyOneNode.contains(root1), is(false));
-        assertThat(onlyOneNode.contains(root2), is(false));
-    }
-
-    @Test
-    public void shouldFindNodesByType()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root1").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("root2").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
-        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("node").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
-
-        final List<StorageNode> onlyOneNode = iterableToList(session.withPartition(
-                                                                             ExamplePartition.DEFAULT).findByType("root1"));
-        assertThat(onlyOneNode.size(), is(1));
-        assertThat(onlyOneNode.contains(aNode1), is(false));
-        assertThat(onlyOneNode.contains(aNode2), is(false));
-        assertThat(onlyOneNode.contains(root1), is(true));
-        assertThat(onlyOneNode.contains(root2), is(false));
-        final List<StorageNode> twoNodes = iterableToList(session.withPartition(
-                                                                          ExamplePartition.DEFAULT).findByType("node"));
-        assertThat(twoNodes.size(), is(2));
-        assertThat(twoNodes.contains(aNode1), is(true));
-        assertThat(twoNodes.contains(aNode2), is(true));
-        assertThat(twoNodes.contains(root1), is(false));
-        assertThat(twoNodes.contains(root2), is(false));
-
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenFindingWithUniqueAndOtherAttributes()
-            throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
-                                                                             "1").withProperty("name").equalsTo("name")
-                .withUniqueKey(
-                               session.withPartition(ExamplePartition.DEFAULT)
-                                      .createKey("sample").andCreate())
-                .buildCriteria().andFindUnique(session);
-    }
-
-    @Test
-    public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        StorageNode foundNewNode1 =
-            session.withPartition(
-                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                   "newNode1")
-                .withProperty("sequence").equalsTo("1")
-                                           .withProperty("name").equalsTo("name").buildCriteria()
-                                           .andFindUnique(session);
-        assertThat(foundNewNode1, is(nullValue()));
-
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        foundNewNode1 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                               .createCriteria().withNodeEntry("newNode1").withProperty(
-                                                                                        "sequence").equalsTo("1")
-                .withProperty("name")
-                               .equalsTo("name").buildCriteria().andFindUnique(session);
-        assertThat(foundNewNode1, is(notNullValue()));
-        assertThat(foundNewNode1, is(newNode1));
-    }
-
-    @Test
-    public void shouldInsertNewNodeEntryAndFindUniqueWithExplicitFlush() {
-
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        StorageNode foundNewNode1 =
-            session.withPartition(
-                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                   "newNode1")
-                .withProperty("sequence").equalsTo("1")
-                                           .withProperty("name").equalsTo("name").buildCriteria()
-                                           .andFindUnique(session);
-        assertThat(foundNewNode1, is(nullValue()));
-
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        foundNewNode1 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                               .createCriteria().withNodeEntry("newNode1").withProperty(
-                                                                                        "sequence").equalsTo("1")
-                .withProperty("name")
-                               .equalsTo("name").buildCriteria().andFindUnique(session);
-        assertThat(foundNewNode1, is(nullValue()));
-        session.flushTransient();
-        final StorageNode foundNewNode2 =
-            session.withPartition(
-                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                   "newNode1")
-                .withProperty("sequence").equalsTo("1")
-                                           .withProperty("name").equalsTo("name").buildCriteria()
-                                           .andFindUnique(session);
-        assertThat(foundNewNode2, is(notNullValue()));
-        assertThat(foundNewNode2, is(newNode1));
-    }
-
-    @Test
-    public void shouldCreateHierarchyAndLoadParentNode() {
-
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("sameName").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        final StorageNode newNode2 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("sameName").withParent(newNode1).withSimpleKey(
-                                                                                                    "sequence", "1")
-                .withSimpleKey("name", "name")
-                                      .andCreate();
-        final StorageNode newNode3 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("sameName").withParent(newNode2).withSimpleKey(
-                                                                                                    "sequence", "3")
-                .withSimpleKey("name", "name")
-                                      .andCreate();
-
-        final StorageNode foundNewNode3 =
-            session.withPartition(
-                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                   "sameName")
-                .withProperty("sequence").equalsTo("3")
-                                           .withProperty("name").equalsTo("name").buildCriteria()
-                                           .andFindUnique(session);
-        assertThat(foundNewNode3, is(notNullValue()));
-        final StorageNode foundNewNode2 = foundNewNode3.getParent(session);
-        final StorageNode foundNewNode1 = foundNewNode2.getParent(session);
-        assertThat(foundNewNode3, is(newNode3));
-        assertThat(foundNewNode2, is(newNode2));
-        assertThat(foundNewNode1, is(newNode1));
-        assertThat(foundNewNode1.getPropertyValueAsString(session, "name"),
-                   is("name"));
-        assertThat(foundNewNode2.getPropertyValueAsString(session, "name"),
-                   is("name"));
-        assertThat(foundNewNode3.getPropertyValueAsString(session, "name"),
-                   is("name"));
-        assertThat(foundNewNode1.getPropertyValueAsString(session, "sequence"),
-                   is("1"));
-        assertThat(foundNewNode2.getPropertyValueAsString(session, "sequence"),
-                   is("1"));
-        assertThat(foundNewNode3.getPropertyValueAsString(session, "sequence"),
-                   is("3"));
-        assertThat(foundNewNode1.getType(), is("sameName"));
-        assertThat(foundNewNode2.getType(), is("sameName"));
-        assertThat(foundNewNode3.getType(), is("sameName"));
-
-    }
-
-    @Test
-    public void shouldCreateHierarchyAndLoadChildrenNodes() {
-
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-
-        final StorageNode root = session.withPartition(ExamplePartition.DEFAULT)
-                                  .createWithType("root").withSimpleKey("sequence", "1")
-                                  .withSimpleKey("name", "name").andCreate();
-        final StorageNode child1 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "1")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
-        final StorageNode child2 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "2")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
-        final StorageNode child3 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "3")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
-        final StorageNode child4 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "4")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
-        final StorageNode childAnotherType1 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "1").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
-        final StorageNode childAnotherType2 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "2").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
-        final StorageNode childAnotherType3 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "3").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
-        final StorageNode childAnotherType4 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "4").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
-
-        final List<StorageNode> allChildren = iterableToList(root.getChildren(
-                                                                        ExamplePartition.DEFAULT, session));
-        assertThat(allChildren.size(), is(8));
-        assertThat(allChildren.contains(child1), is(true));
-        assertThat(allChildren.contains(child2), is(true));
-        assertThat(allChildren.contains(child3), is(true));
-        assertThat(allChildren.contains(child4), is(true));
-        assertThat(allChildren.contains(childAnotherType1), is(true));
-        assertThat(allChildren.contains(childAnotherType2), is(true));
-        assertThat(allChildren.contains(childAnotherType3), is(true));
-        assertThat(allChildren.contains(childAnotherType4), is(true));
-
-        final List<StorageNode> childrenType2 =
-            iterableToList(root.getChildrenByType(
-                                                                               ExamplePartition.DEFAULT, session,
-                "childAnotherType"));
-
-        assertThat(childrenType2.size(), is(4));
-        assertThat(childrenType2.contains(childAnotherType1), is(true));
-        assertThat(childrenType2.contains(childAnotherType2), is(true));
-        assertThat(childrenType2.contains(childAnotherType3), is(true));
-        assertThat(childrenType2.contains(childAnotherType4), is(true));
-
-        final List<StorageNode> childrenType1 = iterableToList(root.getChildrenByType(
-                                                                               ExamplePartition.DEFAULT, session, "child"));
-
-        assertThat(childrenType1.size(), is(4));
-        assertThat(childrenType1.contains(child1), is(true));
-        assertThat(childrenType1.contains(child2), is(true));
-        assertThat(childrenType1.contains(child3), is(true));
-        assertThat(childrenType1.contains(child4), is(true));
-
-    }
-
-    @Test
-    public void shouldCheckPartitionsFactoryBehavior() {
-        final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
-
-    }
-
-    @Test
-    public void shouldWorkWithPartitions() {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-
-        session.withPartition(ExamplePartition.DEFAULT).createWithType("root")
-                .withSimpleKey("sequence", "1").withSimpleKey("name", "name")
-                .andCreate();
-        session.withPartition(ExamplePartition.FIRST).createWithType("root")
-                .withSimpleKey("sequence", "1").withSimpleKey("name", "name")
-                .andCreate();
-        session.withPartition(ExamplePartition.SECOND).createWithType("root")
-                .withSimpleKey("sequence", "1").withSimpleKey("name", "name")
-                .andCreate();
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createCriteria().withUniqueKey(
-                                                                   session.withPartition(ExamplePartition.DEFAULT)
-                                                                          .createKey("root").withSimpleKey("sequence", "1")
-                                                                          .withSimpleKey("name", "name").andCreate())
-                                   .buildCriteria().andFindUnique(session);
-
-        final StorageNode root2 = session.withPartition(ExamplePartition.FIRST)
-                                   .createCriteria().withUniqueKey(
-                                                                   session.withPartition(ExamplePartition.FIRST)
-                                                                          .createKey("root").withSimpleKey("sequence", "1")
-                                                                          .withSimpleKey("name", "name").andCreate())
-                                   .buildCriteria().andFindUnique(session);
-
-        final StorageNode root3 = session.withPartition(ExamplePartition.SECOND)
-                                   .createCriteria().withUniqueKey(
-                                                                   session.withPartition(ExamplePartition.SECOND)
-                                                                          .createKey("root").withSimpleKey("sequence", "1")
-                                                                          .withSimpleKey("name", "name").andCreate())
-                                   .buildCriteria().andFindUnique(session);
-
-        assertThat(root1, is(notNullValue()));
-
-        assertThat(root2, is(notNullValue()));
-
-        assertThat(root3, is(notNullValue()));
-
-        assertThat(root1, is(not(root2)));
-
-        assertThat(root2, is(not(root3)));
-
-        final List<StorageNode> list1 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.DEFAULT).findByType("root"));
-        final List<StorageNode> list2 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.DEFAULT).findByType("root"));
-        final List<StorageNode> list3 = iterableToList(session.withPartition(
-                                                                       ExamplePartition.DEFAULT).findByType("root"));
-
-        assertThat(list1.size(), is(1));
-        assertThat(list2.size(), is(1));
-        assertThat(list3.size(), is(1));
-    }
-
-    @Test
-    public void shouldWorkWithSimplePropertiesOnExplicitFlush()
-            throws Exception {
-
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
-                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                     .withSimpleKey("name", "name").andCreate();
-
-        final StorageNode loadedNode =
-            session
-                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
-                                                                                                     "1").withProperty("name")
-                .equalsTo("name")
-                                        .buildCriteria().andFindUnique(session);
-
-        assertThat(loadedNode, is(nullValue()));
-
-        session.flushTransient();
-
-        final StorageNode loadedNode1 =
-            session.withPartition(
-                                                        ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                 "newNode1")
-                .withProperty("sequence").equalsTo("1")
-                                         .withProperty("name").equalsTo("name").buildCriteria()
-                                         .andFindUnique(session);
-
-        assertThat(loadedNode1, is(notNullValue()));
-
-        newNode.setSimpleProperty(session, "stringProperty", "value");
-
-        assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty"))
-                          .getTransientValueAsString(session),
-                   is("value"));
-
-        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
-                   is(nullValue()));
-
-        session.flushTransient();
-        final StorageNode loadedNode2 =
-            session.withPartition(
-                                                        ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                 "newNode1")
-                .withProperty("sequence").equalsTo("1")
-                                         .withProperty("name").equalsTo("name").buildCriteria()
-                                         .andFindUnique(session);
-
-        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
-                   is(nullValue()));
-
-        assertThat(loadedNode2.getPropertyValueAsString(session, "stringProperty"),
-                   is("value"));
-
-        loadedNode1.forceReload();
-
-        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
-                   is("value"));
-
-    }
-
-    public enum ExampleEnum {
-        FIRST
-    }
-
-    @Test
-    public void shouldWorkWithSimplePropertiesOnAutoFlush()
-        throws Exception {
-
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
-                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                     .withSimpleKey("name", "name").andCreate();
-        newNode.setIndexedProperty(session, "stringProperty", "value");
-
-        final StorageNode loadedNode =
-            session
-                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
-                                                                                                     "1").withProperty("name")
-                .equalsTo("name")
-                                        .buildCriteria().andFindUnique(session);
-
-        assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty"))
-                                                                                 .getTransientValueAsString(session),
-                   is("value"));
-
-        assertThat(newNode.getPropertyValueAsString(session, "stringProperty"),
-                   is("value"));
-
-        assertThat(loadedNode.getPropertyValueAsString(session, "stringProperty"),
-                   is("value"));
-
-        final StorageNode anotherLoadedNode =
-            session
-                .withPartition(
-                                                              ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withNodeEntry(
-                                                                                                                       "newNode1")
-                .withProperty("stringProperty").equalsTo("value")
-                                               .buildCriteria().andFindUnique(session);
-
-        assertThat(anotherLoadedNode, is(loadedNode));
-
-        final StorageNode noLoadedNode =
-            session.withPartition(
-                                                         ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
-                                                                                                                  "newNode1")
-                .withProperty("stringProperty").equalsTo("invalid")
-                                          .buildCriteria().andFindUnique(session);
-
-        assertThat(noLoadedNode, is(nullValue()));
-    }
-
-    @Test
-    public void shouldWorkWithInputStreamPropertiesOnExplicitFlush()
-            throws Exception {
-
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
-                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                     .withSimpleKey("name", "name").andCreate();
-
-        final InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
-
-        newNode.setSimpleProperty(session, "streamProperty", stream);
-
-        final StorageNode nullNode =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                      .createCriteria().withNodeEntry("newNode1").withProperty(
-                                                                                               "sequence").equalsTo("1")
-                .withProperty("name")
-                                      .equalsTo("name").buildCriteria().andFindUnique(session);
-
-        assertThat(nullNode, is(nullValue()));
-        session.flushTransient();
-        final StorageNode loadedNode =
-            session
-                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
-                                                                                                     "1").withProperty("name")
-                .equalsTo("name")
-                                        .buildCriteria().andFindUnique(session);
-
-        stream.reset();
-        assertThat(IOUtils.contentEquals(newNode.getPropertyValueAsStream(session,
-                                                                     "streamProperty"), stream), is(true));
-
-        final InputStream loaded1 = loadedNode.getPropertyValueAsStream(session,
-                                                             "streamProperty");
-
-        final ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
-        IOUtils.copy(loaded1, temporary1);
-        final String asString1 = new String(temporary1.toByteArray());
-        final ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
-        final InputStream loaded2 = loadedNode.getPropertyValueAsStream(session,
-                                                             "streamProperty");
-
-        IOUtils.copy(loaded2, temporary2);
-        final String asString2 = new String(temporary2.toByteArray());
-        assertThat(asString1, is("streamValue"));
-        assertThat(asString2, is("streamValue"));
-    }
-
-    @Test
-    public void shouldWorkWithInputStreamPropertiesOnAutoFlush()
-            throws Exception {
-
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
-                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                     .withSimpleKey("name", "name").andCreate();
-
-        final InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
-
-        newNode.setSimpleProperty(session, "streamProperty", stream);
-
-        final StorageNode loadedNode =
-            session
-                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
-                                                                                                     "1").withProperty("name")
-                .equalsTo("name")
-                                        .buildCriteria().andFindUnique(session);
-
-        stream.reset();
-        assertThat(IOUtils.contentEquals(newNode.getPropertyValueAsStream(session,
-                                                                     "streamProperty"), stream), is(true));
-
-        final InputStream loaded1 = loadedNode.getPropertyValueAsStream(session,
-                                                             "streamProperty");
-
-        final ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
-        IOUtils.copy(loaded1, temporary1);
-        final String asString1 = new String(temporary1.toByteArray());
-        final ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
-        final InputStream loaded2 = loadedNode.getPropertyValueAsStream(session,
-                                                             "streamProperty");
-
-        IOUtils.copy(loaded2, temporary2);
-        final String asString2 = new String(temporary2.toByteArray());
-        assertThat(asString1, is("streamValue"));
-        assertThat(asString2, is("streamValue"));
-
-    }
-
-    @Test
-    public void shouldFindMultipleResults()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
-                                      .withSimpleKey("name", "name").andCreate();
-        final StorageNode newNode3 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "another name").andCreate();
-        final StorageNode newNode4 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("anotherName").withSimpleKey("sequence", "2")
-                                      .withSimpleKey("name", "name").andCreate();
-        final List<StorageNode> result =
-            iterableToList(session
-                .withPartition(
-                                                                        ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withNodeEntry(
-                                                                                                                                 "newNode1")
-                .withProperty("name").equalsTo("name")
-                                                         .buildCriteria().andFind(session));
-
-        assertThat(result, is(notNullValue()));
-        assertThat(result.size(), is(2));
-        assertThat(result.contains(newNode1), is(true));
-        assertThat(result.contains(newNode2), is(true));
-        assertThat(result.contains(newNode3), is(false));
-        assertThat(result.contains(newNode4), is(false));
-
-    }
-
-    @Test
-    public void shouldRemoveNodesOnAutoFlush()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
-                                      .withSimpleKey("name", "name").andCreate();
-
-        final List<StorageNode> result = iterableToList(session.withPartition(
-                                                                        ExamplePartition.DEFAULT).findByType("newNode1"));
-
-        assertThat(result.size(), is(2));
-        assertThat(result.contains(newNode1), is(true));
-        assertThat(result.contains(newNode2), is(true));
-
-        newNode1.removeNode(session);
-        List<StorageNode> newResult = iterableToList(session.withPartition(
-                                                                           ExamplePartition.DEFAULT).findByType("newNode1"));
-        assertThat(newResult.size(), is(1));
-        assertThat(newResult.contains(newNode1), is(false));
-        assertThat(newResult.contains(newNode2), is(true));
-
-        newNode2.removeNode(session);
-        newResult = iterableToList(session.withPartition(
-                                                         ExamplePartition.DEFAULT).findByType("newNode1"));
-        assertThat(newResult.size(), is(0));
-
-    }
-
-    @Test
-    public void shouldRemoveNodesOnExplicitFlush()
-        throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
-                                      .withSimpleKey("name", "name").andCreate();
-        session.flushTransient();
-        final List<StorageNode> result = iterableToList(session.withPartition(
-                                                                        ExamplePartition.DEFAULT).findByType("newNode1"));
-
-        assertThat(result.size(), is(2));
-        assertThat(result.contains(newNode1), is(true));
-        assertThat(result.contains(newNode2), is(true));
-
-        newNode1.removeNode(session);
-        final List<StorageNode> resultNotChanged =
-            iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT)
-                .findByType("newNode1"));
-
-        assertThat(resultNotChanged.size(), is(2));
-        assertThat(resultNotChanged.contains(newNode1), is(true));
-        assertThat(resultNotChanged.contains(newNode2), is(true));
-
-        session.flushTransient();
-
-        List<StorageNode> newResult = iterableToList(session.withPartition(
-                                                                           ExamplePartition.DEFAULT).findByType("newNode1"));
-        assertThat(newResult.size(), is(1));
-        assertThat(newResult.contains(newNode1), is(false));
-        assertThat(newResult.contains(newNode2), is(true));
-
-        newNode2.removeNode(session);
-        session.flushTransient();
-        newResult = iterableToList(session.withPartition(
-                                                         ExamplePartition.DEFAULT).findByType("newNode1"));
-        assertThat(newResult.size(), is(0));
-
-    }
-
-    @Test
-    public void shouldDiscardTransientNodesOnExplicitFlush()
-        throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
-                                      .withSimpleKey("name", "name").andCreate();
-        session.flushTransient();
-        final List<StorageNode> result = iterableToList(session.withPartition(
-                                                                        ExamplePartition.DEFAULT).findByType("newNode1"));
-
-        assertThat(result.size(), is(2));
-        assertThat(result.contains(newNode1), is(true));
-        assertThat(result.contains(newNode2), is(true));
-
-        newNode1.removeNode(session);
-        final List<StorageNode> resultNotChanged =
-            iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT)
-                .findByType("newNode1"));
-
-        assertThat(resultNotChanged.size(), is(2));
-        assertThat(resultNotChanged.contains(newNode1), is(true));
-        assertThat(resultNotChanged.contains(newNode2), is(true));
-
-        session.discardTransient();
-
-        final List<StorageNode> resultStillNotChanged =
-            iterableToList(session
-                                                                        .withPartition(ExamplePartition.DEFAULT).findByType(
-                                                                            "newNode1"));
-
-        assertThat(resultStillNotChanged.size(), is(2));
-        assertThat(resultStillNotChanged.contains(newNode1), is(true));
-        assertThat(resultStillNotChanged.contains(newNode2), is(true));
-
-        session.flushTransient();
-        final List<StorageNode> resultNotChangedAgain =
-            iterableToList(session
-                                                                        .withPartition(ExamplePartition.DEFAULT).findByType(
-                                                                            "newNode1"));
-
-        assertThat(resultNotChangedAgain.size(), is(2));
-        assertThat(resultNotChangedAgain.contains(newNode1), is(true));
-        assertThat(resultNotChangedAgain.contains(newNode2), is(true));
-
-    }
-
-    @Test
-    public void shouldUpdatePropertyAndFindWithUpdatedValue()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-
-        assertThat(newNode1.getProperty(session, "parameter"), is(nullValue()));
-
-        newNode1.setIndexedProperty(session, "parameter", "firstValue");
-        final List<StorageNode> found =
-            iterableToList(session
-                .withPartition(
-                                                                       ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withNodeEntry(
-                                                                                                                                "newNode1")
-                .withProperty("parameter").equalsTo("firstValue")
-                                                        .buildCriteria().andFind(session));
-        assertThat(found.size(), is(1));
-        assertThat(found.contains(newNode1), is(true));
-        newNode1.getProperty(session, "parameter").setStringValue(session,
-                                                                  "secondValue");
-
-        final List<StorageNode> notFound =
-            iterableToList(session
-                .withPartition(
-                                                                          ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withNodeEntry(
-                                                                                                                                   "newNode1")
-                .withProperty("parameter").equalsTo("firstValue")
-                                                           .buildCriteria().andFind(session));
-        assertThat(notFound.size(), is(0));
-
-        final List<StorageNode> foundAgain =
-            iterableToList(session
-                .withPartition(
-                                                                            ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withNodeEntry(
-                                                                                                                                     "newNode1")
-                .withProperty("parameter").equalsTo("secondValue")
-                                                             .buildCriteria().andFind(session));
-        assertThat(foundAgain.size(), is(1));
-        assertThat(foundAgain.contains(newNode1), is(true));
-
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotSetKeyProperty()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-        newNode1.setSimpleProperty(session, "sequence", "3");
-
-        newNode1.getProperty(session, "sequence");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotSetKeyPropertyII()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-
-        newNode1.getProperty(session, "sequence").setStringValue(session, "33");
-    }
-
-    public void shouldReturnKeysOnPropertyList()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
-                                      .withSimpleKey("name", "name").andCreate();
-
-        assertThat(newNode1.getProperties(session).size(), is(2));
-        for (final Property activeProperty: newNode1.getProperties(session)) {
-            assertThat(activeProperty.isKey(), is(true));
-            assertThat(activeProperty.getPropertyName().equals("sequence") ||
-                       activeProperty.getPropertyName().equals("name"), is(true));
+        if (supportsExplicitFlushInjector()) {
+            explicitFlushInjector = createsExplicitFlushInjector();
         }
 
-        assertThat(newNode1.getProperty(session, "sequence").getValueAsString(session), is("1"));
-        assertThat(newNode1.getProperty(session, "name").getValueAsString(session), is("name"));
-
-        assertThat(newNode1.getPropertyValueAsString(session, "sequence"), is("1"));
-        assertThat(newNode1.getPropertyValueAsString(session, "name"), is("name"));
-
-        assertThat(newNode1.getPropertyValueAsStream(session, "sequence"), is(newNode1.getProperty(session, "sequence")
-            .getValueAsStream(session)));
-        assertThat(newNode1.getPropertyValueAsStream(session, "name"),
-            is(newNode1.getProperty(session, "name").getValueAsStream(session)));
-
-        assertThat(newNode1.getPropertyValueAsBytes(session, "sequence"), is(newNode1.getProperty(session, "sequence")
-            .getValueAsBytes(session)));
-        assertThat(newNode1.getPropertyValueAsBytes(session, "name"),
-            is(newNode1.getProperty(session, "name").getValueAsBytes(session)));
     }
 
     @Test
-    public void shouldFindByPropertiesWithoutNodeType()
-        throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("abc").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                   .createWithType("def").withSimpleKey("sequence", "1")
-                                   .withSimpleKey("name", "name").andCreate();
-        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("ghi").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
-        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
-                                    .createWithType("jkl").withSimpleKey("sequence", "1")
-                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
-        aNode1.setIndexedProperty(session, "parameter", "value");
-        aNode2.setIndexedProperty(session, "parameter", "value");
-        aNode1.setIndexedProperty(session, "parameter1", "value1");
-        aNode2.setIndexedProperty(session, "parameter1", "value2");
-        final List<StorageNode> theSameNodes =
-            iterableToList(session
-                .withPartition(
-                                                                              ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withProperty(
-                                                                                                                                      "parameter")
-                .equalsTo("value").buildCriteria().andFind(session));
-        assertThat(theSameNodes.size(), is(2));
-        assertThat(theSameNodes.contains(aNode1), is(true));
-        assertThat(theSameNodes.contains(aNode2), is(true));
-        assertThat(theSameNodes.contains(root1), is(false));
-        assertThat(theSameNodes.contains(root2), is(false));
-        final List<StorageNode> onlyOneNode =
-            iterableToList(session
-                .withPartition(
-                                                                             ExamplePartition.DEFAULT)
-                .createCriteria()
-                .withProperty(
-                                                                                                                                     "parameter1")
-                .equalsTo("value1")
-                .buildCriteria()
-                .andFind(
-                                                                                                                                                                                              session));
-        assertThat(onlyOneNode.size(), is(1));
-        assertThat(onlyOneNode.contains(aNode1), is(true));
-        assertThat(onlyOneNode.contains(aNode2), is(false));
-        assertThat(onlyOneNode.contains(root1), is(false));
-        assertThat(onlyOneNode.contains(root2), is(false));
-    }
-
-    @Test
-    public void shouldFindByPropertiesContainingStringWithoutNodeType()
-            throws Exception {
-        if (supportsAdvancedQueries()) {
-            final StorageSession session = autoFlushInjector
-                                                      .getInstance(StorageSession.class);
-            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("abc").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name1").andCreate();
-            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("def").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name2").andCreate();
-            final StorageNode aNode1 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "ghi")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                  "name",
-                        "name1").withParent(root1).andCreate();
-            final StorageNode aNode2 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "jkl")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                  "name",
-                        "name2").withParent(root2).andCreate();
-            aNode1.setIndexedProperty(session, "parameter", "io");
-            aNode2.setIndexedProperty(session, "parameter", "aeiou");
-            root1.setIndexedProperty(session, "parameter", "foo");
-            root2.setIndexedProperty(session, "parameter", "bar");
-            final List<StorageNode> theSameNodes = iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                                                   .withProperty("parameter").containsString("io")
-                                                                   .buildCriteria().andFind(session));
-            assertThat(theSameNodes.contains(aNode1), is(true));
-            assertThat(theSameNodes.contains(aNode2), is(true));
-            assertThat(theSameNodes.contains(root1), is(false));
-            assertThat(theSameNodes.contains(root2), is(false));
-            assertThat(theSameNodes.size(), is(2));
-        }
-    }
-
-    @Test
-    public void shouldFindByPropertiesStartingWithStringWithoutNodeType()
-            throws Exception {
-        if (supportsAdvancedQueries()) {
-            final StorageSession session = autoFlushInjector
-                                                      .getInstance(StorageSession.class);
-            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("abc").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name1").andCreate();
-            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("def").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name2").andCreate();
-            final StorageNode aNode1 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "ghi")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                  "name",
-                        "name1").withParent(root1).andCreate();
-            final StorageNode aNode2 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "jkl")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                  "name",
-                        "name2").withParent(root2).andCreate();
-            aNode1.setIndexedProperty(session, "parameter", "io");
-            aNode2.setIndexedProperty(session, "parameter", "iou");
-            root1.setIndexedProperty(session, "parameter", "fooiou");
-            root2.setIndexedProperty(session, "parameter", "baior");
-            final List<StorageNode> theSameNodes = iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                                                   .withProperty("parameter").startsWithString("io")
-                                                                   .buildCriteria().andFind(session));
-            assertThat(theSameNodes.contains(aNode1), is(true));
-            assertThat(theSameNodes.contains(aNode2), is(true));
-            assertThat(theSameNodes.contains(root1), is(false));
-            assertThat(theSameNodes.contains(root2), is(false));
-            assertThat(theSameNodes.size(), is(2));
-        }
-    }
-
-    @Test
-    public void shouldFindByPropertiesEndingWithStringWithoutNodeType()
-            throws Exception {
-        if (supportsAdvancedQueries()) {
-            final StorageSession session = autoFlushInjector
-                                                      .getInstance(StorageSession.class);
-            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("abc").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name1").andCreate();
-            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
-                                       .createWithType("def").withSimpleKey("sequence", "1")
-                                       .withSimpleKey("name", "name2").andCreate();
-            final StorageNode aNode1 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "ghi")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                  "name",
-                        "name1").withParent(root1).andCreate();
-            final StorageNode aNode2 =
-                session
-                                        .withPartition(ExamplePartition.DEFAULT)
-                    .createWithType(
-                                                                                                "jkl")
-                    .withSimpleKey("sequence", "1")
-                    .withSimpleKey(
-                                                                                                                                                  "name",
-                        "name2").withParent(root2).andCreate();
-            aNode1.setIndexedProperty(session, "parameter", "io");
-            aNode2.setIndexedProperty(session, "parameter", "uio");
-            root1.setIndexedProperty(session, "parameter", "fooiou");
-            root2.setIndexedProperty(session, "parameter", "baior");
-            final List<StorageNode> theSameNodes = iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
-                                                                   .withProperty("parameter").endsWithString("io")
-                                                                   .buildCriteria().andFind(session));
-            assertThat(theSameNodes.contains(aNode1), is(true));
-            assertThat(theSameNodes.contains(aNode2), is(true));
-            assertThat(theSameNodes.contains(root1), is(false));
-            assertThat(theSameNodes.contains(root2), is(false));
-            assertThat(theSameNodes.size(), is(2));
-        }
-    }
-
-    @Test
-    public void shouldAddAndRetriveLinksOnSamePartitionWithAutoFlushInjector()
+    public void shouldAddAndRetriveLinksOnDifferentPartitionsWithAutoFlushInjector()
             throws Exception {
         final StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
         final StorageNode c = session.withPartition(ExamplePartition.DEFAULT)
-                               .createNewSimpleNode("a", "b", "c");
-        final StorageNode b = c.getParent(session);
-        final StorageNode a = b.getParent(session);
+                               .createNewSimpleNode("c");
+        final StorageNode b = session.withPartition(ExamplePartition.FIRST)
+                               .createNewSimpleNode("c");
+        final StorageNode a = session.withPartition(ExamplePartition.SECOND)
+                               .createNewSimpleNode("c");
 
         final StorageLink aToCLink = session.addLink(a, c, "AtoC");
         final StorageLink aToALink = session.addLink(a, a, "AtoA");
@@ -1728,16 +208,70 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldAddAndRetriveLinksOnDifferentPartitionsWithAutoFlushInjector()
+    public void shouldAddAndRetriveLinksOnDifferentPartitionsWithExplicitFlushInjector()
             throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
         final StorageNode c = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("c");
         final StorageNode b = session.withPartition(ExamplePartition.FIRST)
                                .createNewSimpleNode("c");
         final StorageNode a = session.withPartition(ExamplePartition.SECOND)
                                .createNewSimpleNode("c");
+
+        final StorageLink aToCLink = session.addLink(a, c, "AtoC");
+        final StorageLink aToALink = session.addLink(a, a, "AtoA");
+        final StorageLink aToBLink = session.addLink(a, b, "AtoB");
+        final StorageLink cToALink = session.addLink(c, a, "CtoA");
+        session.flushTransient();
+        assertThat(aToCLink.getOrigin(), is(a));
+        assertThat(aToCLink.getTarget(), is(c));
+
+        assertThat(aToALink.getOrigin(), is(a));
+        assertThat(aToALink.getTarget(), is(a));
+
+        assertThat(aToBLink.getOrigin(), is(a));
+        assertThat(aToBLink.getTarget(), is(b));
+
+        assertThat(cToALink.getOrigin(), is(c));
+        assertThat(cToALink.getTarget(), is(a));
+
+        final StorageLink foundCtoALink = session.getLink(c, a, "CtoA");
+        assertThat(cToALink, is(foundCtoALink));
+
+        final StorageLink foundAtoALink = session.getLink(a, a, "AtoA");
+        assertThat(aToALink, is(foundAtoALink));
+
+        final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
+        assertThat(foundALinks.size(), is(3));
+        assertThat(foundALinks.contains(aToCLink), is(true));
+        assertThat(foundALinks.contains(aToALink), is(true));
+        assertThat(foundALinks.contains(aToBLink), is(true));
+
+        final List<StorageLink> foundBLinks = iterableToList(session.findLinks(b));
+        assertThat(foundBLinks.size(), is(0));
+
+        final List<StorageLink> foundAToCLinks = iterableToList(session.findLinks(a,
+                                                                            "AtoC"));
+
+        assertThat(foundAToCLinks.size(), is(1));
+        assertThat(foundAToCLinks.contains(aToCLink), is(true));
+
+        final List<StorageLink> foundAToBLinks = iterableToList(session.findLinks(a,
+                                                                            b));
+        assertThat(foundAToBLinks.size(), is(1));
+        assertThat(foundAToBLinks.contains(aToBLink), is(true));
+    }
+
+    @Test
+    public void shouldAddAndRetriveLinksOnSamePartitionWithAutoFlushInjector()
+            throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode c = session.withPartition(ExamplePartition.DEFAULT)
+                               .createNewSimpleNode("a", "b", "c");
+        final StorageNode b = c.getParent(session);
+        final StorageNode a = b.getParent(session);
 
         final StorageLink aToCLink = session.addLink(a, c, "AtoC");
         final StorageLink aToALink = session.addLink(a, a, "AtoA");
@@ -1839,150 +373,8 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldAddAndRetriveLinksOnDifferentPartitionsWithExplicitFlushInjector()
-            throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-        final StorageNode c = session.withPartition(ExamplePartition.DEFAULT)
-                               .createNewSimpleNode("c");
-        final StorageNode b = session.withPartition(ExamplePartition.FIRST)
-                               .createNewSimpleNode("c");
-        final StorageNode a = session.withPartition(ExamplePartition.SECOND)
-                               .createNewSimpleNode("c");
-
-        final StorageLink aToCLink = session.addLink(a, c, "AtoC");
-        final StorageLink aToALink = session.addLink(a, a, "AtoA");
-        final StorageLink aToBLink = session.addLink(a, b, "AtoB");
-        final StorageLink cToALink = session.addLink(c, a, "CtoA");
-        session.flushTransient();
-        assertThat(aToCLink.getOrigin(), is(a));
-        assertThat(aToCLink.getTarget(), is(c));
-
-        assertThat(aToALink.getOrigin(), is(a));
-        assertThat(aToALink.getTarget(), is(a));
-
-        assertThat(aToBLink.getOrigin(), is(a));
-        assertThat(aToBLink.getTarget(), is(b));
-
-        assertThat(cToALink.getOrigin(), is(c));
-        assertThat(cToALink.getTarget(), is(a));
-
-        final StorageLink foundCtoALink = session.getLink(c, a, "CtoA");
-        assertThat(cToALink, is(foundCtoALink));
-
-        final StorageLink foundAtoALink = session.getLink(a, a, "AtoA");
-        assertThat(aToALink, is(foundAtoALink));
-
-        final List<StorageLink> foundALinks = iterableToList(session.findLinks(a));
-        assertThat(foundALinks.size(), is(3));
-        assertThat(foundALinks.contains(aToCLink), is(true));
-        assertThat(foundALinks.contains(aToALink), is(true));
-        assertThat(foundALinks.contains(aToBLink), is(true));
-
-        final List<StorageLink> foundBLinks = iterableToList(session.findLinks(b));
-        assertThat(foundBLinks.size(), is(0));
-
-        final List<StorageLink> foundAToCLinks = iterableToList(session.findLinks(a,
-                                                                            "AtoC"));
-
-        assertThat(foundAToCLinks.size(), is(1));
-        assertThat(foundAToCLinks.contains(aToCLink), is(true));
-
-        final List<StorageLink> foundAToBLinks = iterableToList(session.findLinks(a,
-                                                                            b));
-        assertThat(foundAToBLinks.size(), is(1));
-        assertThat(foundAToBLinks.contains(aToBLink), is(true));
-    }
-
-    @Test
-    public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithAutoFlushInjector()
-            throws Exception {
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
-
-        final StorageNode b = session.withPartition(ExamplePartition.DEFAULT)
-                               .createNewSimpleNode("b");
-        final StorageNode a = session.withPartition(ExamplePartition.DEFAULT)
-                               .createNewSimpleNode("a");
-
-        final StorageLink link = session.addLink(a, b, "AtoB");
-        final StorageLink link2 = session.addLink(a, b, "AtoB2");
-        final StorageLink linkR = session.addLink(a, a, "AtoA");
-        final StorageLink linkR2 = session.addLink(a, a, "AtoA2");
-
-        link.setIndexedProperty(session, "sample", "value");
-        linkR.setIndexedProperty(session, "sample", "value");
-
-        final StorageLink foundLink = session.getLink(a, b, "AtoB");
-        final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
-        assertThat(foundLink, is(link));
-        assertThat(foundLink2, is(link2));
-        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
-                                                                            .getPropertyValueAsString(session, "sample")));
-        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
-                   is("value"));
-
-        session.removeLink(a, b, "AtoB");
-        session.removeLink(link2);
-
-        final StorageLink notFoundLink = session.getLink(a, b, "AtoB");
-        final StorageLink notFoundLink2 = session.getLink(a, b, "AtoB2");
-
-        assertThat(notFoundLink, is(nullValue()));
-        assertThat(notFoundLink2, is(nullValue()));
-
-        final StorageLink foundLinkR = session.getLink(a, a, "AtoA");
-        final StorageLink foundLinkR2 = session.getLink(a, a, "AtoA2");
-        assertThat(foundLinkR, is(linkR));
-        assertThat(foundLinkR2, is(linkR2));
-        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"), is(linkR
-                                                                            .getPropertyValueAsString(session, "sample")));
-        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"),
-                   is("value"));
-
-        session.removeLink(a, a, "AtoA");
-        session.removeLink(linkR2);
-
-        final StorageLink notfoundLinkR = session.getLink(a, a, "AtoA");
-        final StorageLink notfoundLinkR2 = session.getLink(a, a, "AtoA2");
-
-        assertThat(notfoundLinkR, is(nullValue()));
-        assertThat(notfoundLinkR2, is(nullValue()));
-
-    }
-
-    @Test
-    public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithExplicitFlushInjector()
-            throws Exception {
-        final StorageSession session = explicitFlushInjector
-                                                      .getInstance(StorageSession.class);
-
-        final StorageNode b = session.withPartition(ExamplePartition.DEFAULT)
-                               .createNewSimpleNode("b");
-        final StorageNode a = session.withPartition(ExamplePartition.DEFAULT)
-                               .createNewSimpleNode("a");
-
-        final StorageLink link = session.addLink(a, b, "AtoB");
-        final StorageLink link2 = session.addLink(a, b, "AtoB2");
-        link.setIndexedProperty(session, "sample", "value");
-        session.flushTransient();
-        final StorageLink foundLink = session.getLink(a, b, "AtoB");
-        final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
-        assertThat(foundLink, is(link));
-        assertThat(foundLink2, is(link2));
-        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
-                                                                            .getPropertyValueAsString(session, "sample")));
-        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
-                   is("value"));
-
-        session.removeLink(a, b, "AtoB");
-        session.removeLink(link2);
-        session.flushTransient();
-        final StorageLink notFoundLink = session.getLink(a, b, "AtoB");
-        final StorageLink notFoundLink2 = session.getLink(a, b, "AtoB2");
-
-        assertThat(notFoundLink, is(nullValue()));
-        assertThat(notFoundLink2, is(nullValue()));
+    public void shouldCheckPartitionsFactoryBehavior() {
+        final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
 
     }
 
@@ -2098,6 +490,1614 @@ public abstract class AbstractStorageSessionTest {
 
         assertThat(notfoundLinkR, is(nullValue()));
         assertThat(notfoundLinkR2, is(nullValue()));
+    }
+
+    @Test
+    public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithAutoFlushInjector()
+            throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+
+        final StorageNode b = session.withPartition(ExamplePartition.DEFAULT)
+                               .createNewSimpleNode("b");
+        final StorageNode a = session.withPartition(ExamplePartition.DEFAULT)
+                               .createNewSimpleNode("a");
+
+        final StorageLink link = session.addLink(a, b, "AtoB");
+        final StorageLink link2 = session.addLink(a, b, "AtoB2");
+        final StorageLink linkR = session.addLink(a, a, "AtoA");
+        final StorageLink linkR2 = session.addLink(a, a, "AtoA2");
+
+        link.setIndexedProperty(session, "sample", "value");
+        linkR.setIndexedProperty(session, "sample", "value");
+
+        final StorageLink foundLink = session.getLink(a, b, "AtoB");
+        final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
+        assertThat(foundLink, is(link));
+        assertThat(foundLink2, is(link2));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
+                   is("value"));
+
+        session.removeLink(a, b, "AtoB");
+        session.removeLink(link2);
+
+        final StorageLink notFoundLink = session.getLink(a, b, "AtoB");
+        final StorageLink notFoundLink2 = session.getLink(a, b, "AtoB2");
+
+        assertThat(notFoundLink, is(nullValue()));
+        assertThat(notFoundLink2, is(nullValue()));
+
+        final StorageLink foundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink foundLinkR2 = session.getLink(a, a, "AtoA2");
+        assertThat(foundLinkR, is(linkR));
+        assertThat(foundLinkR2, is(linkR2));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"), is(linkR
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLinkR.getPropertyValueAsString(session, "sample"),
+                   is("value"));
+
+        session.removeLink(a, a, "AtoA");
+        session.removeLink(linkR2);
+
+        final StorageLink notfoundLinkR = session.getLink(a, a, "AtoA");
+        final StorageLink notfoundLinkR2 = session.getLink(a, a, "AtoA2");
+
+        assertThat(notfoundLinkR, is(nullValue()));
+        assertThat(notfoundLinkR2, is(nullValue()));
+
+    }
+
+    @Test
+    public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithExplicitFlushInjector()
+            throws Exception {
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+
+        final StorageNode b = session.withPartition(ExamplePartition.DEFAULT)
+                               .createNewSimpleNode("b");
+        final StorageNode a = session.withPartition(ExamplePartition.DEFAULT)
+                               .createNewSimpleNode("a");
+
+        final StorageLink link = session.addLink(a, b, "AtoB");
+        final StorageLink link2 = session.addLink(a, b, "AtoB2");
+        link.setIndexedProperty(session, "sample", "value");
+        session.flushTransient();
+        final StorageLink foundLink = session.getLink(a, b, "AtoB");
+        final StorageLink foundLink2 = session.getLink(a, b, "AtoB2");
+        assertThat(foundLink, is(link));
+        assertThat(foundLink2, is(link2));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"), is(link
+                                                                            .getPropertyValueAsString(session, "sample")));
+        assertThat(foundLink.getPropertyValueAsString(session, "sample"),
+                   is("value"));
+
+        session.removeLink(a, b, "AtoB");
+        session.removeLink(link2);
+        session.flushTransient();
+        final StorageLink notFoundLink = session.getLink(a, b, "AtoB");
+        final StorageLink notFoundLink2 = session.getLink(a, b, "AtoB2");
+
+        assertThat(notFoundLink, is(nullValue()));
+        assertThat(notFoundLink2, is(nullValue()));
+
+    }
+
+    @Test
+    public void shouldCreateHierarchyAndLoadChildrenNodes() {
+
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+
+        final StorageNode root = session.withPartition(ExamplePartition.DEFAULT)
+                                  .createWithType("root").withSimpleKey("sequence", "1")
+                                  .withSimpleKey("name", "name").andCreate();
+        final StorageNode child1 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("child").withParent(root).withSimpleKey(
+                                                                                           "sequence", "1")
+                .withSimpleKey("name", "name")
+                                    .andCreate();
+        final StorageNode child2 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("child").withParent(root).withSimpleKey(
+                                                                                           "sequence", "2")
+                .withSimpleKey("name", "name")
+                                    .andCreate();
+        final StorageNode child3 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("child").withParent(root).withSimpleKey(
+                                                                                           "sequence", "3")
+                .withSimpleKey("name", "name")
+                                    .andCreate();
+        final StorageNode child4 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("child").withParent(root).withSimpleKey(
+                                                                                           "sequence", "4")
+                .withSimpleKey("name", "name")
+                                    .andCreate();
+        final StorageNode childAnotherType1 =
+            session.withPartition(
+                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
+                                               .withParent(root).withSimpleKey("sequence", "1").withSimpleKey(
+                                                                                                            "name", "name")
+                .andCreate();
+        final StorageNode childAnotherType2 =
+            session.withPartition(
+                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
+                                               .withParent(root).withSimpleKey("sequence", "2").withSimpleKey(
+                                                                                                            "name", "name")
+                .andCreate();
+        final StorageNode childAnotherType3 =
+            session.withPartition(
+                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
+                                               .withParent(root).withSimpleKey("sequence", "3").withSimpleKey(
+                                                                                                            "name", "name")
+                .andCreate();
+        final StorageNode childAnotherType4 =
+            session.withPartition(
+                                                              ExamplePartition.DEFAULT).createWithType("childAnotherType")
+                                               .withParent(root).withSimpleKey("sequence", "4").withSimpleKey(
+                                                                                                            "name", "name")
+                .andCreate();
+
+        final List<StorageNode> allChildren = iterableToList(root.getChildren(
+                                                                        ExamplePartition.DEFAULT, session));
+        assertThat(allChildren.size(), is(8));
+        assertThat(allChildren.contains(child1), is(true));
+        assertThat(allChildren.contains(child2), is(true));
+        assertThat(allChildren.contains(child3), is(true));
+        assertThat(allChildren.contains(child4), is(true));
+        assertThat(allChildren.contains(childAnotherType1), is(true));
+        assertThat(allChildren.contains(childAnotherType2), is(true));
+        assertThat(allChildren.contains(childAnotherType3), is(true));
+        assertThat(allChildren.contains(childAnotherType4), is(true));
+
+        final List<StorageNode> childrenType2 =
+            iterableToList(root.getChildrenByType(
+                                                                               ExamplePartition.DEFAULT, session,
+                "childAnotherType"));
+
+        assertThat(childrenType2.size(), is(4));
+        assertThat(childrenType2.contains(childAnotherType1), is(true));
+        assertThat(childrenType2.contains(childAnotherType2), is(true));
+        assertThat(childrenType2.contains(childAnotherType3), is(true));
+        assertThat(childrenType2.contains(childAnotherType4), is(true));
+
+        final List<StorageNode> childrenType1 = iterableToList(root.getChildrenByType(
+                                                                               ExamplePartition.DEFAULT, session, "child"));
+
+        assertThat(childrenType1.size(), is(4));
+        assertThat(childrenType1.contains(child1), is(true));
+        assertThat(childrenType1.contains(child2), is(true));
+        assertThat(childrenType1.contains(child3), is(true));
+        assertThat(childrenType1.contains(child4), is(true));
+
+    }
+
+    @Test
+    public void shouldCreateHierarchyAndLoadParentNode() {
+
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("sameName").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        final StorageNode newNode2 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("sameName").withParent(newNode1).withSimpleKey(
+                                                                                                    "sequence", "1")
+                .withSimpleKey("name", "name")
+                                      .andCreate();
+        final StorageNode newNode3 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("sameName").withParent(newNode2).withSimpleKey(
+                                                                                                    "sequence", "3")
+                .withSimpleKey("name", "name")
+                                      .andCreate();
+
+        final StorageNode foundNewNode3 =
+            session.withPartition(
+                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                   "sameName")
+                .withProperty("sequence").equalsTo("3")
+                                           .withProperty("name").equalsTo("name").buildCriteria()
+                                           .andFindUnique(session);
+        assertThat(foundNewNode3, is(notNullValue()));
+        final StorageNode foundNewNode2 = foundNewNode3.getParent(session);
+        final StorageNode foundNewNode1 = foundNewNode2.getParent(session);
+        assertThat(foundNewNode3, is(newNode3));
+        assertThat(foundNewNode2, is(newNode2));
+        assertThat(foundNewNode1, is(newNode1));
+        assertThat(foundNewNode1.getPropertyValueAsString(session, "name"),
+                   is("name"));
+        assertThat(foundNewNode2.getPropertyValueAsString(session, "name"),
+                   is("name"));
+        assertThat(foundNewNode3.getPropertyValueAsString(session, "name"),
+                   is("name"));
+        assertThat(foundNewNode1.getPropertyValueAsString(session, "sequence"),
+                   is("1"));
+        assertThat(foundNewNode2.getPropertyValueAsString(session, "sequence"),
+                   is("1"));
+        assertThat(foundNewNode3.getPropertyValueAsString(session, "sequence"),
+                   is("3"));
+        assertThat(foundNewNode1.getType(), is("sameName"));
+        assertThat(foundNewNode2.getType(), is("sameName"));
+        assertThat(foundNewNode3.getType(), is("sameName"));
+
+    }
+
+    @Test
+    public void shouldCreateTheSameKey()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode aNode = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode sameNode = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        final String aKeyAsString = aNode.getKey().getKeyAsString();
+        final String sameKeyAsString = sameNode.getKey().getKeyAsString();
+        assertThat(aKeyAsString, is(sameKeyAsString));
+
+    }
+
+    @Test
+    public void shouldDiscardTransientNodesOnExplicitFlush()
+        throws Exception {
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
+                                      .withSimpleKey("name", "name").andCreate();
+        session.flushTransient();
+        final List<StorageNode> result = iterableToList(session.withPartition(
+                                                                        ExamplePartition.DEFAULT).findByType("newNode1"));
+
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+
+        newNode1.removeNode(session);
+        final List<StorageNode> resultNotChanged =
+            iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT)
+                .findByType("newNode1"));
+
+        assertThat(resultNotChanged.size(), is(2));
+        assertThat(resultNotChanged.contains(newNode1), is(true));
+        assertThat(resultNotChanged.contains(newNode2), is(true));
+
+        session.discardTransient();
+
+        final List<StorageNode> resultStillNotChanged =
+            iterableToList(session
+                                                                        .withPartition(ExamplePartition.DEFAULT).findByType(
+                                                                            "newNode1"));
+
+        assertThat(resultStillNotChanged.size(), is(2));
+        assertThat(resultStillNotChanged.contains(newNode1), is(true));
+        assertThat(resultStillNotChanged.contains(newNode2), is(true));
+
+        session.flushTransient();
+        final List<StorageNode> resultNotChangedAgain =
+            iterableToList(session
+                                                                        .withPartition(ExamplePartition.DEFAULT).findByType(
+                                                                            "newNode1"));
+
+        assertThat(resultNotChangedAgain.size(), is(2));
+        assertThat(resultNotChangedAgain.contains(newNode1), is(true));
+        assertThat(resultNotChangedAgain.contains(newNode2), is(true));
+
+    }
+
+    @Test
+    public void shouldExcludeParentAndChildrenOnAutoFlush()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode c1 = session.withPartition(ExamplePartition.DEFAULT)
+                                .createNewSimpleNode("a1", "b1", "c1");
+        final StorageNode b1 = c1.getParent(session);
+        final StorageNode a1 = b1.getParent(session);
+        a1.removeNode(session);
+        final Iterable<StorageNode> foundA1 = session.withPartition(
+                                                              ExamplePartition.DEFAULT).findByType("a1");
+        final Iterable<StorageNode> foundB1 = session.withPartition(
+                                                              ExamplePartition.DEFAULT).findByType("b1");
+        final Iterable<StorageNode> foundC1 = session.withPartition(
+                                                              ExamplePartition.DEFAULT).findByType("c1");
+        assertThat(foundA1.iterator().hasNext(), is(false));
+        assertThat(foundB1.iterator().hasNext(), is(false));
+        assertThat(foundC1.iterator().hasNext(), is(false));
+
+    }
+
+    @Test
+    public void shouldExcludeParentAndChildrenOnExplicitFlush()
+            throws Exception {
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        final StorageNode c1 = session.withPartition(ExamplePartition.DEFAULT)
+                                .createNewSimpleNode("a1", "b1", "c1");
+        session.flushTransient();
+        final StorageNode b1 = c1.getParent(session);
+        final StorageNode a1 = b1.getParent(session);
+        a1.removeNode(session);
+        session.flushTransient();
+        final Iterable<StorageNode> foundA1 = session.withPartition(
+                                                              ExamplePartition.DEFAULT).findByType("a1");
+        final Iterable<StorageNode> foundB1 = session.withPartition(
+                                                              ExamplePartition.DEFAULT).findByType("b1");
+        final Iterable<StorageNode> foundC1 = session.withPartition(
+                                                              ExamplePartition.DEFAULT).findByType("c1");
+        assertThat(foundA1.iterator().hasNext(), is(false));
+        assertThat(foundB1.iterator().hasNext(), is(false));
+        assertThat(foundC1.iterator().hasNext(), is(false));
+
+    }
+
+    @Test
+    public void shouldFindByLocalKey()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root1").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root2").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
+        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
+
+        final List<StorageNode> theSameNodes =
+            iterableToList(session
+                .withPartition(
+                                                                              ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withLocalKey(
+                                                                                                                                      aNode1
+                                                                                                                                          .getKey()
+                                                                                                                                          .getCompositeKey())
+                .buildCriteria()
+                .andFind(
+                                                                                                                                                                                                   session));
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+    }
+
+    @Test
+    public void shouldFindByLocalKeyAndProperties()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root1").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root2").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
+        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter", "value");
+        aNode2.setIndexedProperty(session, "parameter", "value");
+        aNode1.setIndexedProperty(session, "parameter1", "value1");
+        aNode2.setIndexedProperty(session, "parameter1", "value2");
+        final List<StorageNode> theSameNodes =
+            iterableToList(session
+                .withPartition(
+                                                                              ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withLocalKey(
+                                                                                                                                      aNode1
+                                                                                                                                          .getKey()
+                                                                                                                                          .getCompositeKey())
+                .withProperty("parameter")
+                                                               .equalsTo("value").buildCriteria().andFind(session));
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        final List<StorageNode> onlyOneNode =
+            iterableToList(session
+                .withPartition(
+                                                                             ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withLocalKey(
+                                                                                                                                     aNode1
+                                                                                                                                         .getKey()
+                                                                                                                                         .getCompositeKey())
+                .withProperty("parameter1")
+                                                              .equalsTo("value1").buildCriteria().andFind(session));
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(true));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(false));
+        assertThat(onlyOneNode.contains(root2), is(false));
+    }
+
+    @Test
+    public void shouldFindByProperties()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root1").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root2").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
+        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter", "value");
+        aNode2.setIndexedProperty(session, "parameter", "value");
+        aNode1.setIndexedProperty(session, "parameter1", "value1");
+        aNode2.setIndexedProperty(session, "parameter1", "value2");
+        final List<StorageNode> theSameNodes =
+            iterableToList(session.withPartition(
+                                                                              ExamplePartition.DEFAULT).createCriteria()
+                                                               .withNodeEntry("node").withProperty("parameter").equalsTo(
+                                                                                                                         "value")
+                .buildCriteria().andFind(session));
+        assertThat(theSameNodes.size(), is(2));
+
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        final List<StorageNode> onlyOneNode =
+            iterableToList(session
+                .withPartition(
+                                                                             ExamplePartition.DEFAULT)
+                .createCriteria()
+                                                              .withNodeEntry("node")
+                .withProperty("parameter1")
+                .equalsTo(
+                                                                                                                         "value1")
+                .buildCriteria().andFind(session));
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(true));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(false));
+        assertThat(onlyOneNode.contains(root2), is(false));
+    }
+
+    @Test
+    public void shouldFindByPropertiesContainingString()
+        throws Exception {
+        if (supportsAdvancedQueries()) {
+            final StorageSession session = autoFlushInjector
+                                                      .getInstance(StorageSession.class);
+            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("node").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name1").andCreate();
+            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("node").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name2").andCreate();
+            final StorageNode aNode1 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "node")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                   "name",
+                        "name1").withParent(root1).andCreate();
+            final StorageNode aNode2 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "node")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                   "name",
+                        "name2").withParent(root2).andCreate();
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "aeiou");
+            root1.setIndexedProperty(session, "parameter", "foo");
+            root2.setIndexedProperty(session, "parameter", "bar");
+            final List<StorageNode> theSameNodes = iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                                                   .withNodeEntry("node").withProperty("parameter")
+                                                                   .containsString("io").buildCriteria().andFind(session));
+            assertThat(theSameNodes.size(), is(2));
+            assertThat(theSameNodes.contains(aNode1), is(true));
+            assertThat(theSameNodes.contains(aNode2), is(true));
+            assertThat(theSameNodes.contains(root1), is(false));
+            assertThat(theSameNodes.contains(root2), is(false));
+        }
+    }
+
+    @Test
+    public void shouldFindByPropertiesContainingStringWithoutNodeType()
+            throws Exception {
+        if (supportsAdvancedQueries()) {
+            final StorageSession session = autoFlushInjector
+                                                      .getInstance(StorageSession.class);
+            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("abc").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name1").andCreate();
+            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("def").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name2").andCreate();
+            final StorageNode aNode1 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "ghi")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                  "name",
+                        "name1").withParent(root1).andCreate();
+            final StorageNode aNode2 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "jkl")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                  "name",
+                        "name2").withParent(root2).andCreate();
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "aeiou");
+            root1.setIndexedProperty(session, "parameter", "foo");
+            root2.setIndexedProperty(session, "parameter", "bar");
+            final List<StorageNode> theSameNodes = iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                                                   .withProperty("parameter").containsString("io")
+                                                                   .buildCriteria().andFind(session));
+            assertThat(theSameNodes.contains(aNode1), is(true));
+            assertThat(theSameNodes.contains(aNode2), is(true));
+            assertThat(theSameNodes.contains(root1), is(false));
+            assertThat(theSameNodes.contains(root2), is(false));
+            assertThat(theSameNodes.size(), is(2));
+        }
+    }
+
+    @Test
+    public void shouldFindByPropertiesEndingWithString()
+        throws Exception {
+        if (supportsAdvancedQueries()) {
+            final StorageSession session = autoFlushInjector
+                                                      .getInstance(StorageSession.class);
+            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("node").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name1").andCreate();
+            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("node").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name2").andCreate();
+            final StorageNode aNode1 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "node")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                   "name",
+                        "name1").withParent(root1).andCreate();
+            final StorageNode aNode2 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "node")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                   "name",
+                        "name2").withParent(root2).andCreate();
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "uio");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
+            final List<StorageNode> theSameNodes = iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                                                   .withNodeEntry("node").withProperty("parameter")
+                                                                   .endsWithString("io").buildCriteria().andFind(session));
+            assertThat(theSameNodes.contains(aNode1), is(true));
+            assertThat(theSameNodes.contains(aNode2), is(true));
+            assertThat(theSameNodes.contains(root1), is(false));
+            assertThat(theSameNodes.contains(root2), is(false));
+            assertThat(theSameNodes.size(), is(2));
+        }
+    }
+
+    @Test
+    public void shouldFindByPropertiesEndingWithStringWithoutNodeType()
+            throws Exception {
+        if (supportsAdvancedQueries()) {
+            final StorageSession session = autoFlushInjector
+                                                      .getInstance(StorageSession.class);
+            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("abc").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name1").andCreate();
+            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("def").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name2").andCreate();
+            final StorageNode aNode1 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "ghi")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                  "name",
+                        "name1").withParent(root1).andCreate();
+            final StorageNode aNode2 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "jkl")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                  "name",
+                        "name2").withParent(root2).andCreate();
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "uio");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
+            final List<StorageNode> theSameNodes = iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                                                   .withProperty("parameter").endsWithString("io")
+                                                                   .buildCriteria().andFind(session));
+            assertThat(theSameNodes.contains(aNode1), is(true));
+            assertThat(theSameNodes.contains(aNode2), is(true));
+            assertThat(theSameNodes.contains(root1), is(false));
+            assertThat(theSameNodes.contains(root2), is(false));
+            assertThat(theSameNodes.size(), is(2));
+        }
+    }
+
+    @Test
+    public void shouldFindByPropertiesStartingWithString()
+        throws Exception {
+        if (supportsAdvancedQueries()) {
+            final StorageSession session = autoFlushInjector
+                                                      .getInstance(StorageSession.class);
+            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("node").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name1").andCreate();
+            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("node").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name2").andCreate();
+            final StorageNode aNode1 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "node")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                   "name",
+                        "name1").withParent(root1).andCreate();
+            final StorageNode aNode2 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "node")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                   "name",
+                        "name2").withParent(root2).andCreate();
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "iou");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
+            final List<StorageNode> theSameNodes = iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                                                   .withNodeEntry("node").withProperty("parameter")
+                                                                   .startsWithString("io").buildCriteria().andFind(session));
+            assertThat(theSameNodes.contains(aNode1), is(true));
+            assertThat(theSameNodes.contains(aNode2), is(true));
+            assertThat(theSameNodes.contains(root1), is(false));
+            assertThat(theSameNodes.contains(root2), is(false));
+            assertThat(theSameNodes.size(), is(2));
+        }
+    }
+
+    @Test
+    public void shouldFindByPropertiesStartingWithStringWithoutNodeType()
+            throws Exception {
+        if (supportsAdvancedQueries()) {
+            final StorageSession session = autoFlushInjector
+                                                      .getInstance(StorageSession.class);
+            final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("abc").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name1").andCreate();
+            final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                       .createWithType("def").withSimpleKey("sequence", "1")
+                                       .withSimpleKey("name", "name2").andCreate();
+            final StorageNode aNode1 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "ghi")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                  "name",
+                        "name1").withParent(root1).andCreate();
+            final StorageNode aNode2 =
+                session
+                                        .withPartition(ExamplePartition.DEFAULT)
+                    .createWithType(
+                                                                                                "jkl")
+                    .withSimpleKey("sequence", "1")
+                    .withSimpleKey(
+                                                                                                                                                  "name",
+                        "name2").withParent(root2).andCreate();
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "iou");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
+            final List<StorageNode> theSameNodes = iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                                                   .withProperty("parameter").startsWithString("io")
+                                                                   .buildCriteria().andFind(session));
+            assertThat(theSameNodes.contains(aNode1), is(true));
+            assertThat(theSameNodes.contains(aNode2), is(true));
+            assertThat(theSameNodes.contains(root1), is(false));
+            assertThat(theSameNodes.contains(root2), is(false));
+            assertThat(theSameNodes.size(), is(2));
+        }
+    }
+
+    @Test
+    public void shouldFindByPropertiesWithNullValue()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("node").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "a").andCreate();
+        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("node").withSimpleKey("sequence", "2")
+                                   .withSimpleKey("name", "b").andCreate();
+        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name1").withParent(root1).andCreate();
+        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name2").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter", "io");
+        aNode2.setIndexedProperty(session, "parameter", "aeiou");
+        root1.setIndexedProperty(session, "parameter", null);
+        root2.setIndexedProperty(session, "parameter", null);
+        final List<StorageNode> theSameNodes = iterableToList(session.withPartition(
+                                                                              ExamplePartition.DEFAULT).createCriteria()
+                                                               .withNodeEntry("node").withProperty("parameter").equalsTo(null)
+                                                               .buildCriteria().andFind(session));
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(root1), is(true));
+        assertThat(theSameNodes.contains(root2), is(true));
+        assertThat(theSameNodes.contains(aNode1), is(false));
+        assertThat(theSameNodes.contains(aNode2), is(false));
+    }
+
+    @Test
+    public void shouldFindByPropertiesWithoutNodeType()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("abc").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("def").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("ghi").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
+        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("jkl").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter", "value");
+        aNode2.setIndexedProperty(session, "parameter", "value");
+        aNode1.setIndexedProperty(session, "parameter1", "value1");
+        aNode2.setIndexedProperty(session, "parameter1", "value2");
+        final List<StorageNode> theSameNodes =
+            iterableToList(session
+                .withPartition(
+                                                                              ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withProperty(
+                                                                                                                                      "parameter")
+                .equalsTo("value").buildCriteria().andFind(session));
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        final List<StorageNode> onlyOneNode =
+            iterableToList(session
+                .withPartition(
+                                                                             ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withProperty(
+                                                                                                                                     "parameter1")
+                .equalsTo("value1")
+                .buildCriteria()
+                .andFind(
+                                                                                                                                                                                              session));
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(true));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(false));
+        assertThat(onlyOneNode.contains(root2), is(false));
+    }
+
+    @Test
+    public void shouldFindByUniqueKey()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode aNode = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode theSameNode =
+            session
+                .withPartition(
+                                                        ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withUniqueKey(
+                                                                                                                 aNode
+                                                                                                                     .getKey())
+                .buildCriteria().andFindUnique(session);
+        assertThat(aNode, is(theSameNode));
+        assertThat(theSameNode.getProperty(session, "name").getValueAsString(
+                                                                             session), is("name"));
+        final StorageNode nullNode = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createCriteria().withUniqueKey(
+                                                                      session.withPartition(ExamplePartition.DEFAULT)
+                                                                             .createKey("invalid").andCreate())
+                                      .buildCriteria().andFindUnique(session);
+        assertThat(nullNode, is(nullValue()));
+
+    }
+
+    @Test
+    public void shouldFindMultipleResults()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
+                                      .withSimpleKey("name", "name").andCreate();
+        final StorageNode newNode3 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "another name").andCreate();
+        final StorageNode newNode4 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("anotherName").withSimpleKey("sequence", "2")
+                                      .withSimpleKey("name", "name").andCreate();
+        final List<StorageNode> result =
+            iterableToList(session
+                .withPartition(
+                                                                        ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withNodeEntry(
+                                                                                                                                 "newNode1")
+                .withProperty("name").equalsTo("name")
+                                                         .buildCriteria().andFind(session));
+
+        assertThat(result, is(notNullValue()));
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+        assertThat(result.contains(newNode3), is(false));
+        assertThat(result.contains(newNode4), is(false));
+
+    }
+
+    @Test
+    public void shouldFindNodesByType()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root1").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode root2 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createWithType("root2").withSimpleKey("sequence", "1")
+                                   .withSimpleKey("name", "name").andCreate();
+        final StorageNode aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root1).andCreate();
+        final StorageNode aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createWithType("node").withSimpleKey("sequence", "1")
+                                    .withSimpleKey("name", "name").withParent(root2).andCreate();
+
+        final List<StorageNode> onlyOneNode = iterableToList(session.withPartition(
+                                                                             ExamplePartition.DEFAULT).findByType("root1"));
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(false));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(true));
+        assertThat(onlyOneNode.contains(root2), is(false));
+        final List<StorageNode> twoNodes = iterableToList(session.withPartition(
+                                                                          ExamplePartition.DEFAULT).findByType("node"));
+        assertThat(twoNodes.size(), is(2));
+        assertThat(twoNodes.contains(aNode1), is(true));
+        assertThat(twoNodes.contains(aNode2), is(true));
+        assertThat(twoNodes.contains(root1), is(false));
+        assertThat(twoNodes.contains(root2), is(false));
+
+    }
+
+    @Test
+    public void shouldFindNodeTypesOnDifferentPartitionsOnAutoFlush()
+            throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
+                                                                            "a1", "b1", "c1");
+        session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
+                                                                          "b2", "c2");
+        final List<String> nodeTypes1 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.DEFAULT).getAllNodeTypes());
+        final List<String> nodeTypes2 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.FIRST).getAllNodeTypes());
+        assertThat(nodeTypes1.contains("a1"), is(true));
+        assertThat(nodeTypes1.contains("b1"), is(true));
+        assertThat(nodeTypes1.contains("c1"), is(true));
+        assertThat(nodeTypes2.contains("a2"), is(true));
+        assertThat(nodeTypes2.contains("b2"), is(true));
+        assertThat(nodeTypes2.contains("c2"), is(true));
+        assertThat(nodeTypes2.contains("a1"), is(false));
+        assertThat(nodeTypes2.contains("b1"), is(false));
+        assertThat(nodeTypes2.contains("c1"), is(false));
+        assertThat(nodeTypes1.contains("a2"), is(false));
+        assertThat(nodeTypes1.contains("b2"), is(false));
+        assertThat(nodeTypes1.contains("c2"), is(false));
+    }
+
+    @Test
+    public void shouldFindNodeTypesOnDifferentPartitionsOnExplicitFlush()
+            throws Exception {
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
+                                                                            "a1", "b1", "c1");
+        session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
+                                                                          "b2", "c2");
+        session.flushTransient();
+        final List<String> nodeTypes1 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.DEFAULT).getAllNodeTypes());
+        final List<String> nodeTypes2 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.FIRST).getAllNodeTypes());
+        assertThat(nodeTypes1.contains("a1"), is(true));
+        assertThat(nodeTypes1.contains("b1"), is(true));
+        assertThat(nodeTypes1.contains("c1"), is(true));
+        assertThat(nodeTypes2.contains("a2"), is(true));
+        assertThat(nodeTypes2.contains("b2"), is(true));
+        assertThat(nodeTypes2.contains("c2"), is(true));
+        assertThat(nodeTypes2.contains("a1"), is(false));
+        assertThat(nodeTypes2.contains("b1"), is(false));
+        assertThat(nodeTypes2.contains("c1"), is(false));
+        assertThat(nodeTypes1.contains("a2"), is(false));
+        assertThat(nodeTypes1.contains("b2"), is(false));
+        assertThat(nodeTypes1.contains("c2"), is(false));
+    }
+
+    @Test
+    public void shouldFindSimpleNodeWithStringIdOnAutoFlush()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
+                                     .createNewSimpleNode("a", "b", "c");
+        final String nodeIdAsString = newNode.getKey().getKeyAsString();
+        final StorageNode result = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createCriteria().withUniqueKeyAsString(nodeIdAsString)
+                                    .buildCriteria().andFindUnique(session);
+        assertThat(result, is(newNode));
+
+    }
+
+    @Test
+    public void shouldFindSimpleNodeWithStringIdOnExplicitFlush()
+            throws Exception {
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
+                                     .createNewSimpleNode("a", "b", "c");
+        session.flushTransient();
+        final String nodeIdAsString = newNode.getKey().getKeyAsString();
+        final StorageNode result = session.withPartition(ExamplePartition.DEFAULT)
+                                    .createCriteria().withUniqueKeyAsString(nodeIdAsString)
+                                    .buildCriteria().andFindUnique(session);
+        assertThat(result, is(newNode));
+
+    }
+
+    @Test
+    public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        StorageNode foundNewNode1 =
+            session.withPartition(
+                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                   "newNode1")
+                .withProperty("sequence").equalsTo("1")
+                                           .withProperty("name").equalsTo("name").buildCriteria()
+                                           .andFindUnique(session);
+        assertThat(foundNewNode1, is(nullValue()));
+
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        foundNewNode1 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                               .createCriteria().withNodeEntry("newNode1").withProperty(
+                                                                                        "sequence").equalsTo("1")
+                .withProperty("name")
+                               .equalsTo("name").buildCriteria().andFindUnique(session);
+        assertThat(foundNewNode1, is(notNullValue()));
+        assertThat(foundNewNode1, is(newNode1));
+    }
+
+    @Test
+    public void shouldInsertNewNodeEntryAndFindUniqueWithExplicitFlush() {
+
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        StorageNode foundNewNode1 =
+            session.withPartition(
+                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                   "newNode1")
+                .withProperty("sequence").equalsTo("1")
+                                           .withProperty("name").equalsTo("name").buildCriteria()
+                                           .andFindUnique(session);
+        assertThat(foundNewNode1, is(nullValue()));
+
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        foundNewNode1 =
+            session.withPartition(ExamplePartition.DEFAULT)
+                               .createCriteria().withNodeEntry("newNode1").withProperty(
+                                                                                        "sequence").equalsTo("1")
+                .withProperty("name")
+                               .equalsTo("name").buildCriteria().andFindUnique(session);
+        assertThat(foundNewNode1, is(nullValue()));
+        session.flushTransient();
+        final StorageNode foundNewNode2 =
+            session.withPartition(
+                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                   "newNode1")
+                .withProperty("sequence").equalsTo("1")
+                                           .withProperty("name").equalsTo("name").buildCriteria()
+                                           .andFindUnique(session);
+        assertThat(foundNewNode2, is(notNullValue()));
+        assertThat(foundNewNode2, is(newNode1));
+    }
+
+    @Test
+    public void shouldInstantiateOneSessionPerThread()
+        throws Exception {
+        final StorageSession session1 = autoFlushInjector
+                                                   .getInstance(StorageSession.class);
+        final StorageSession session2 = autoFlushInjector
+                                                   .getInstance(StorageSession.class);
+        assertThat(session1, is(session2));
+
+        final List<StorageSession> sessions = new CopyOnWriteArrayList<StorageSession>();
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sessions.add(autoFlushInjector
+                                                  .getInstance(StorageSession.class));
+                } finally {
+                    latch.countDown();
+                }
+            }
+        }.start();
+        latch.await(5, TimeUnit.SECONDS);
+        assertThat(sessions.size(), is(1));
+        assertThat(session1, is(not(sessions.get(0))));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotSetKeyProperty()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        newNode1.setSimpleProperty(session, "sequence", "3");
+
+        newNode1.getProperty(session, "sequence");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotSetKeyPropertyII()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+
+        newNode1.getProperty(session, "sequence").setStringValue(session, "33");
+    }
+
+    @Test
+    public void shouldRemoveNodesOnAutoFlush()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
+                                      .withSimpleKey("name", "name").andCreate();
+
+        final List<StorageNode> result = iterableToList(session.withPartition(
+                                                                        ExamplePartition.DEFAULT).findByType("newNode1"));
+
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+
+        newNode1.removeNode(session);
+        List<StorageNode> newResult = iterableToList(session.withPartition(
+                                                                           ExamplePartition.DEFAULT).findByType("newNode1"));
+        assertThat(newResult.size(), is(1));
+        assertThat(newResult.contains(newNode1), is(false));
+        assertThat(newResult.contains(newNode2), is(true));
+
+        newNode2.removeNode(session);
+        newResult = iterableToList(session.withPartition(
+                                                         ExamplePartition.DEFAULT).findByType("newNode1"));
+        assertThat(newResult.size(), is(0));
+
+    }
+
+    @Test
+    public void shouldRemoveNodesOnExplicitFlush()
+        throws Exception {
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+        final StorageNode newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "2")
+                                      .withSimpleKey("name", "name").andCreate();
+        session.flushTransient();
+        final List<StorageNode> result = iterableToList(session.withPartition(
+                                                                        ExamplePartition.DEFAULT).findByType("newNode1"));
+
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+
+        newNode1.removeNode(session);
+        final List<StorageNode> resultNotChanged =
+            iterableToList(session
+                                                                   .withPartition(ExamplePartition.DEFAULT)
+                .findByType("newNode1"));
+
+        assertThat(resultNotChanged.size(), is(2));
+        assertThat(resultNotChanged.contains(newNode1), is(true));
+        assertThat(resultNotChanged.contains(newNode2), is(true));
+
+        session.flushTransient();
+
+        List<StorageNode> newResult = iterableToList(session.withPartition(
+                                                                           ExamplePartition.DEFAULT).findByType("newNode1"));
+        assertThat(newResult.size(), is(1));
+        assertThat(newResult.contains(newNode1), is(false));
+        assertThat(newResult.contains(newNode2), is(true));
+
+        newNode2.removeNode(session);
+        session.flushTransient();
+        newResult = iterableToList(session.withPartition(
+                                                         ExamplePartition.DEFAULT).findByType("newNode1"));
+        assertThat(newResult.size(), is(0));
+
+    }
+
+    public void shouldReturnKeysOnPropertyList()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+
+        assertThat(newNode1.getProperties(session).size(), is(2));
+        for (final Property activeProperty: newNode1.getProperties(session)) {
+            assertThat(activeProperty.isKey(), is(true));
+            assertThat(activeProperty.getPropertyName().equals("sequence") ||
+                       activeProperty.getPropertyName().equals("name"), is(true));
+        }
+
+        assertThat(newNode1.getProperty(session, "sequence").getValueAsString(session), is("1"));
+        assertThat(newNode1.getProperty(session, "name").getValueAsString(session), is("name"));
+
+        assertThat(newNode1.getPropertyValueAsString(session, "sequence"), is("1"));
+        assertThat(newNode1.getPropertyValueAsString(session, "name"), is("name"));
+
+        assertThat(newNode1.getPropertyValueAsStream(session, "sequence"), is(newNode1.getProperty(session, "sequence")
+            .getValueAsStream(session)));
+        assertThat(newNode1.getPropertyValueAsStream(session, "name"),
+            is(newNode1.getProperty(session, "name").getValueAsStream(session)));
+
+        assertThat(newNode1.getPropertyValueAsBytes(session, "sequence"), is(newNode1.getProperty(session, "sequence")
+            .getValueAsBytes(session)));
+        assertThat(newNode1.getPropertyValueAsBytes(session, "name"),
+            is(newNode1.getProperty(session, "name").getValueAsBytes(session)));
+    }
+
+    @Test
+    public void shouldSaveSimpleNodesOnAutoFlush()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
+                                                                            "a", "b", "c");
+        final Iterable<StorageNode> result = session.withPartition(
+                                                             ExamplePartition.DEFAULT).findByType("c");
+        assertThat(result.iterator().hasNext(), is(true));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenFindingWithUniqueAndOtherAttributes()
+            throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
+                                                                             "1").withProperty("name").equalsTo("name")
+                .withUniqueKey(
+                               session.withPartition(ExamplePartition.DEFAULT)
+                                      .createKey("sample").andCreate())
+                .buildCriteria().andFindUnique(session);
+    }
+
+    @Test
+    public void shouldUpdatePropertyAndFindWithUpdatedValue()
+        throws Exception {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+                                      .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                      .withSimpleKey("name", "name").andCreate();
+
+        assertThat(newNode1.getProperty(session, "parameter"), is(nullValue()));
+
+        newNode1.setIndexedProperty(session, "parameter", "firstValue");
+        final List<StorageNode> found =
+            iterableToList(session
+                .withPartition(
+                                                                       ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withNodeEntry(
+                                                                                                                                "newNode1")
+                .withProperty("parameter").equalsTo("firstValue")
+                                                        .buildCriteria().andFind(session));
+        assertThat(found.size(), is(1));
+        assertThat(found.contains(newNode1), is(true));
+        newNode1.getProperty(session, "parameter").setStringValue(session,
+                                                                  "secondValue");
+
+        final List<StorageNode> notFound =
+            iterableToList(session
+                .withPartition(
+                                                                          ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withNodeEntry(
+                                                                                                                                   "newNode1")
+                .withProperty("parameter").equalsTo("firstValue")
+                                                           .buildCriteria().andFind(session));
+        assertThat(notFound.size(), is(0));
+
+        final List<StorageNode> foundAgain =
+            iterableToList(session
+                .withPartition(
+                                                                            ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withNodeEntry(
+                                                                                                                                     "newNode1")
+                .withProperty("parameter").equalsTo("secondValue")
+                                                             .buildCriteria().andFind(session));
+        assertThat(foundAgain.size(), is(1));
+        assertThat(foundAgain.contains(newNode1), is(true));
+
+    }
+
+    @Test
+    public void shouldWorkWithInputStreamPropertiesOnAutoFlush()
+            throws Exception {
+
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
+                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                     .withSimpleKey("name", "name").andCreate();
+
+        final InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
+
+        newNode.setSimpleProperty(session, "streamProperty", stream);
+
+        final StorageNode loadedNode =
+            session
+                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
+                                                                                                     "1").withProperty("name")
+                .equalsTo("name")
+                                        .buildCriteria().andFindUnique(session);
+
+        stream.reset();
+        assertThat(IOUtils.contentEquals(newNode.getPropertyValueAsStream(session,
+                                                                     "streamProperty"), stream), is(true));
+
+        final InputStream loaded1 = loadedNode.getPropertyValueAsStream(session,
+                                                             "streamProperty");
+
+        final ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
+        IOUtils.copy(loaded1, temporary1);
+        final String asString1 = new String(temporary1.toByteArray());
+        final ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
+        final InputStream loaded2 = loadedNode.getPropertyValueAsStream(session,
+                                                             "streamProperty");
+
+        IOUtils.copy(loaded2, temporary2);
+        final String asString2 = new String(temporary2.toByteArray());
+        assertThat(asString1, is("streamValue"));
+        assertThat(asString2, is("streamValue"));
+
+    }
+
+    @Test
+    public void shouldWorkWithInputStreamPropertiesOnExplicitFlush()
+            throws Exception {
+
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
+                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                     .withSimpleKey("name", "name").andCreate();
+
+        final InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
+
+        newNode.setSimpleProperty(session, "streamProperty", stream);
+
+        final StorageNode nullNode =
+            session.withPartition(ExamplePartition.DEFAULT)
+                                      .createCriteria().withNodeEntry("newNode1").withProperty(
+                                                                                               "sequence").equalsTo("1")
+                .withProperty("name")
+                                      .equalsTo("name").buildCriteria().andFindUnique(session);
+
+        assertThat(nullNode, is(nullValue()));
+        session.flushTransient();
+        final StorageNode loadedNode =
+            session
+                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
+                                                                                                     "1").withProperty("name")
+                .equalsTo("name")
+                                        .buildCriteria().andFindUnique(session);
+
+        stream.reset();
+        assertThat(IOUtils.contentEquals(newNode.getPropertyValueAsStream(session,
+                                                                     "streamProperty"), stream), is(true));
+
+        final InputStream loaded1 = loadedNode.getPropertyValueAsStream(session,
+                                                             "streamProperty");
+
+        final ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
+        IOUtils.copy(loaded1, temporary1);
+        final String asString1 = new String(temporary1.toByteArray());
+        final ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
+        final InputStream loaded2 = loadedNode.getPropertyValueAsStream(session,
+                                                             "streamProperty");
+
+        IOUtils.copy(loaded2, temporary2);
+        final String asString2 = new String(temporary2.toByteArray());
+        assertThat(asString1, is("streamValue"));
+        assertThat(asString2, is("streamValue"));
+    }
+
+    @Test
+    public void shouldWorkWithPartitions() {
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+
+        session.withPartition(ExamplePartition.DEFAULT).createWithType("root")
+                .withSimpleKey("sequence", "1").withSimpleKey("name", "name")
+                .andCreate();
+        session.withPartition(ExamplePartition.FIRST).createWithType("root")
+                .withSimpleKey("sequence", "1").withSimpleKey("name", "name")
+                .andCreate();
+        session.withPartition(ExamplePartition.SECOND).createWithType("root")
+                .withSimpleKey("sequence", "1").withSimpleKey("name", "name")
+                .andCreate();
+        final StorageNode root1 = session.withPartition(ExamplePartition.DEFAULT)
+                                   .createCriteria().withUniqueKey(
+                                                                   session.withPartition(ExamplePartition.DEFAULT)
+                                                                          .createKey("root").withSimpleKey("sequence", "1")
+                                                                          .withSimpleKey("name", "name").andCreate())
+                                   .buildCriteria().andFindUnique(session);
+
+        final StorageNode root2 = session.withPartition(ExamplePartition.FIRST)
+                                   .createCriteria().withUniqueKey(
+                                                                   session.withPartition(ExamplePartition.FIRST)
+                                                                          .createKey("root").withSimpleKey("sequence", "1")
+                                                                          .withSimpleKey("name", "name").andCreate())
+                                   .buildCriteria().andFindUnique(session);
+
+        final StorageNode root3 = session.withPartition(ExamplePartition.SECOND)
+                                   .createCriteria().withUniqueKey(
+                                                                   session.withPartition(ExamplePartition.SECOND)
+                                                                          .createKey("root").withSimpleKey("sequence", "1")
+                                                                          .withSimpleKey("name", "name").andCreate())
+                                   .buildCriteria().andFindUnique(session);
+
+        assertThat(root1, is(notNullValue()));
+
+        assertThat(root2, is(notNullValue()));
+
+        assertThat(root3, is(notNullValue()));
+
+        assertThat(root1, is(not(root2)));
+
+        assertThat(root2, is(not(root3)));
+
+        final List<StorageNode> list1 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.DEFAULT).findByType("root"));
+        final List<StorageNode> list2 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.DEFAULT).findByType("root"));
+        final List<StorageNode> list3 = iterableToList(session.withPartition(
+                                                                       ExamplePartition.DEFAULT).findByType("root"));
+
+        assertThat(list1.size(), is(1));
+        assertThat(list2.size(), is(1));
+        assertThat(list3.size(), is(1));
+    }
+
+    @Test
+    public void shouldWorkWithSimplePropertiesOnAutoFlush()
+        throws Exception {
+
+        final StorageSession session = autoFlushInjector
+                                                  .getInstance(StorageSession.class);
+        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
+                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                     .withSimpleKey("name", "name").andCreate();
+        newNode.setIndexedProperty(session, "stringProperty", "value");
+
+        final StorageNode loadedNode =
+            session
+                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
+                                                                                                     "1").withProperty("name")
+                .equalsTo("name")
+                                        .buildCriteria().andFindUnique(session);
+
+        assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty"))
+                                                                                 .getTransientValueAsString(session),
+                   is("value"));
+
+        assertThat(newNode.getPropertyValueAsString(session, "stringProperty"),
+                   is("value"));
+
+        assertThat(loadedNode.getPropertyValueAsString(session, "stringProperty"),
+                   is("value"));
+
+        final StorageNode anotherLoadedNode =
+            session
+                .withPartition(
+                                                              ExamplePartition.DEFAULT)
+                .createCriteria()
+                .withNodeEntry(
+                                                                                                                       "newNode1")
+                .withProperty("stringProperty").equalsTo("value")
+                                               .buildCriteria().andFindUnique(session);
+
+        assertThat(anotherLoadedNode, is(loadedNode));
+
+        final StorageNode noLoadedNode =
+            session.withPartition(
+                                                         ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                  "newNode1")
+                .withProperty("stringProperty").equalsTo("invalid")
+                                          .buildCriteria().andFindUnique(session);
+
+        assertThat(noLoadedNode, is(nullValue()));
+    }
+
+    @Test
+    public void shouldWorkWithSimplePropertiesOnExplicitFlush()
+            throws Exception {
+
+        final StorageSession session = explicitFlushInjector
+                                                      .getInstance(StorageSession.class);
+        final StorageNode newNode = session.withPartition(ExamplePartition.DEFAULT)
+                                     .createWithType("newNode1").withSimpleKey("sequence", "1")
+                                     .withSimpleKey("name", "name").andCreate();
+
+        final StorageNode loadedNode =
+            session
+                                        .withPartition(ExamplePartition.DEFAULT).createCriteria()
+                                        .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
+                                                                                                     "1").withProperty("name")
+                .equalsTo("name")
+                                        .buildCriteria().andFindUnique(session);
+
+        assertThat(loadedNode, is(nullValue()));
+
+        session.flushTransient();
+
+        final StorageNode loadedNode1 =
+            session.withPartition(
+                                                        ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                 "newNode1")
+                .withProperty("sequence").equalsTo("1")
+                                         .withProperty("name").equalsTo("name").buildCriteria()
+                                         .andFindUnique(session);
+
+        assertThat(loadedNode1, is(notNullValue()));
+
+        newNode.setSimpleProperty(session, "stringProperty", "value");
+
+        assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty"))
+                          .getTransientValueAsString(session),
+                   is("value"));
+
+        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
+                   is(nullValue()));
+
+        session.flushTransient();
+        final StorageNode loadedNode2 =
+            session.withPartition(
+                                                        ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
+                                                                                                                 "newNode1")
+                .withProperty("sequence").equalsTo("1")
+                                         .withProperty("name").equalsTo("name").buildCriteria()
+                                         .andFindUnique(session);
+
+        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
+                   is(nullValue()));
+
+        assertThat(loadedNode2.getPropertyValueAsString(session, "stringProperty"),
+                   is("value"));
+
+        loadedNode1.forceReload();
+
+        assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),
+                   is("value"));
+
     }
 
 }

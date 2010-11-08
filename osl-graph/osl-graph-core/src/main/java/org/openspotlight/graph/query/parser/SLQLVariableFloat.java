@@ -102,6 +102,14 @@ public class SLQLVariableFloat extends SLQLVariable {
      * {@inheritDoc}
      */
     @Override
+    public SLQLVariableType getType() {
+        return SLQLVariableType.FLOAT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Float getValue() {
         return (Float) value;
     }
@@ -137,13 +145,5 @@ public class SLQLVariableFloat extends SLQLVariable {
         if (value.getClass().getName().equals(float.class.getName())) { return true; }
         if (value instanceof Float) { return true; }
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SLQLVariableType getType() {
-        return SLQLVariableType.FLOAT;
     }
 }

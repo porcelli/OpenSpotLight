@@ -58,17 +58,17 @@ import org.openspotlight.common.util.HashCodes;
  */
 public class SelectTypeInfo {
 
-    /** The name. */
-    private String              name;
-
-    /** The sub types. */
-    private boolean             subTypes;
-
     /** The comma. */
     private boolean             comma;
 
+    /** The name. */
+    private String              name;
+
     /** The select statement info. */
     private SelectStatementInfo selectStatementInfo;
+
+    /** The sub types. */
+    private boolean             subTypes;
 
     /**
      * Instantiates a new sL select type info.
@@ -92,13 +92,13 @@ public class SelectTypeInfo {
         setName(name);
     }
 
-    /**
-     * Gets the select statement info.
-     * 
-     * @return the select statement info
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
-    public SelectStatementInfo getSelectStatementInfo() {
-        return selectStatementInfo;
+    @Override
+    public boolean equals(final Object obj) {
+        return Equals.eachEquality(SelectTypeInfo.class, this, obj, "name");
     }
 
     /**
@@ -111,30 +111,21 @@ public class SelectTypeInfo {
     }
 
     /**
-     * Sets the name.
+     * Gets the select statement info.
      * 
-     * @param name the new name
+     * @return the select statement info
      */
-    public void setName(final String name) {
-        this.name = name;
+    public SelectStatementInfo getSelectStatementInfo() {
+        return selectStatementInfo;
     }
 
-    /**
-     * Checks if is sub types.
-     * 
-     * @return true, if is sub types
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
      */
-    public boolean isSubTypes() {
-        return subTypes;
-    }
-
-    /**
-     * Sets the sub types.
-     * 
-     * @param subTypes the new sub types
-     */
-    public void setSubTypes(final boolean subTypes) {
-        this.subTypes = subTypes;
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(name);
     }
 
     /**
@@ -147,6 +138,15 @@ public class SelectTypeInfo {
     }
 
     /**
+     * Checks if is sub types.
+     * 
+     * @return true, if is sub types
+     */
+    public boolean isSubTypes() {
+        return subTypes;
+    }
+
+    /**
      * Sets the comma.
      * 
      * @param comma the new comma
@@ -155,21 +155,21 @@ public class SelectTypeInfo {
         this.comma = comma;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equalsTo(java.lang.Object)
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
      */
-    @Override
-    public boolean equals(final Object obj) {
-        return Equals.eachEquality(SelectTypeInfo.class, this, obj, "name");
+    public void setName(final String name) {
+        this.name = name;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    /**
+     * Sets the sub types.
+     * 
+     * @param subTypes the new sub types
      */
-    @Override
-    public int hashCode() {
-        return HashCodes.hashOf(name);
+    public void setSubTypes(final boolean subTypes) {
+        this.subTypes = subTypes;
     }
 }

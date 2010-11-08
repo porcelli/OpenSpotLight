@@ -62,11 +62,11 @@ import com.mongodb.Mongo;
  */
 public class MongoModule extends AbstractModule {
 
+    private final PartitionFactory         factory;
+
     private final StorageSession.FlushMode flushMode;
 
     private final Mongo                    mongo;
-
-    private final PartitionFactory         factory;
 
     public MongoModule(final StorageSession.FlushMode flushMode, final Mongo mongo) {
         this.flushMode = flushMode;

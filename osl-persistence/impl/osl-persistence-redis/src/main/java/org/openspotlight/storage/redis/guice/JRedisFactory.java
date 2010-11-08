@@ -61,8 +61,8 @@ import org.openspotlight.storage.Partition;
  */
 public interface JRedisFactory extends Disposable {
 
-    JRedis getFrom(Partition partition);
-
     Set<JRedis> getAllActive();
+
+    JRedis getFrom(Partition partition);
 
 }

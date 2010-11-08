@@ -61,8 +61,106 @@ import org.openspotlight.common.util.HashCodes;
  */
 public class SelectByNodeTypeInfo extends SelectInfo {
 
+    /**
+     * The Class SLSelectTypeInfo.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class SLSelectTypeInfo {
+
+        /** The comma. */
+        private boolean comma;
+
+        /** The name. */
+        private String  name;
+
+        /** The sub types. */
+        private boolean subTypes;
+
+        /**
+         * Instantiates a new sL select type info.
+         * 
+         * @param name the name
+         */
+        public SLSelectTypeInfo(
+                                 final String name) {
+            setName(name);
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see java.lang.Object#equalsTo(java.lang.Object)
+         */
+        @Override
+        public boolean equals(final Object obj) {
+            return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
+        }
+
+        /**
+         * Gets the name.
+         * 
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodes.hashOf(name);
+        }
+
+        /**
+         * Checks if is comma.
+         * 
+         * @return true, if is comma
+         */
+        public boolean isComma() {
+            return comma;
+        }
+
+        /**
+         * Checks if is sub types.
+         * 
+         * @return true, if is sub types
+         */
+        public boolean isSubTypes() {
+            return subTypes;
+        }
+
+        /**
+         * Sets the comma.
+         * 
+         * @param comma the new comma
+         */
+        public void setComma(final boolean comma) {
+            this.comma = comma;
+        }
+
+        /**
+         * Sets the name.
+         * 
+         * @param name the new name
+         */
+        public void setName(final String name) {
+            this.name = name;
+        }
+
+        /**
+         * Sets the sub types.
+         * 
+         * @param subTypes the new sub types
+         */
+        public void setSubTypes(final boolean subTypes) {
+            this.subTypes = subTypes;
+        }
+    }
+
     /** The Constant serialVersionUID. */
     private static final long            serialVersionUID = 1L;
+
+    /** The all types info. */
+    private AllTypesInfo                 allTypesInfo;
 
     /** The type info list. */
     private final List<SLSelectTypeInfo> typeInfoList;
@@ -70,23 +168,11 @@ public class SelectByNodeTypeInfo extends SelectInfo {
     /** The where statement info. */
     private WhereByNodeTypeInfo          whereStatementInfo;
 
-    /** The all types info. */
-    private AllTypesInfo                 allTypesInfo;
-
     /**
      * Instantiates a new sL select by node type info.
      */
     public SelectByNodeTypeInfo() {
         typeInfoList = new ArrayList<SLSelectTypeInfo>();
-    }
-
-    /**
-     * Gets the all types.
-     * 
-     * @return the all types
-     */
-    public AllTypesInfo getAllTypes() {
-        return allTypesInfo;
     }
 
     /**
@@ -111,6 +197,15 @@ public class SelectByNodeTypeInfo extends SelectInfo {
         final SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
         typeInfoList.add(typeInfo);
         return typeInfo;
+    }
+
+    /**
+     * Gets the all types.
+     * 
+     * @return the all types
+     */
+    public AllTypesInfo getAllTypes() {
+        return allTypesInfo;
     }
 
     /**
@@ -179,101 +274,6 @@ public class SelectByNodeTypeInfo extends SelectInfo {
         buffer.append(super.toString());
 
         return buffer.toString();
-    }
-
-    /**
-     * The Class SLSelectTypeInfo.
-     * 
-     * @author Vitor Hugo Chagas
-     */
-    public static class SLSelectTypeInfo {
-
-        /** The name. */
-        private String  name;
-
-        /** The sub types. */
-        private boolean subTypes;
-
-        /** The comma. */
-        private boolean comma;
-
-        /**
-         * Instantiates a new sL select type info.
-         * 
-         * @param name the name
-         */
-        public SLSelectTypeInfo(
-                                 final String name) {
-            setName(name);
-        }
-
-        /**
-         * Gets the name.
-         * 
-         * @return the name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Sets the name.
-         * 
-         * @param name the new name
-         */
-        public void setName(final String name) {
-            this.name = name;
-        }
-
-        /**
-         * Checks if is sub types.
-         * 
-         * @return true, if is sub types
-         */
-        public boolean isSubTypes() {
-            return subTypes;
-        }
-
-        /**
-         * Sets the sub types.
-         * 
-         * @param subTypes the new sub types
-         */
-        public void setSubTypes(final boolean subTypes) {
-            this.subTypes = subTypes;
-        }
-
-        /**
-         * Checks if is comma.
-         * 
-         * @return true, if is comma
-         */
-        public boolean isComma() {
-            return comma;
-        }
-
-        /**
-         * Sets the comma.
-         * 
-         * @param comma the new comma
-         */
-        public void setComma(final boolean comma) {
-            this.comma = comma;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see java.lang.Object#equalsTo(java.lang.Object)
-         */
-        @Override
-        public boolean equals(final Object obj) {
-            return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
-        }
-
-        @Override
-        public int hashCode() {
-            return HashCodes.hashOf(name);
-        }
     }
 
 }

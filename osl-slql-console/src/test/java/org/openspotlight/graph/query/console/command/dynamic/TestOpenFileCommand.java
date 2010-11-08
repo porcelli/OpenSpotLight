@@ -78,40 +78,6 @@ public class TestOpenFileCommand extends AbstractCommandTest {
         new File("out.slql").delete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAcceptNull() {
-        assertThat(command.accept(null), is(false));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testExecuteNull() {
-        command.execute(null, null, null);
-    }
-
-    @Test
-    public void testAcceptNullInout() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput(null);
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptValidParameter() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("get filename.slql");
-
-        assertThat(command.accept(state), is(true));
-    }
-
-    @Test
-    public void testAcceptValidParameter2() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("get something");
-
-        assertThat(command.accept(state), is(true));
-    }
-
     @Test
     public void testAcceptInValidParameter() {
         final ConsoleState state = new ConsoleState(null);
@@ -142,6 +108,40 @@ public class TestOpenFileCommand extends AbstractCommandTest {
         state.setInput("getx property ");
 
         assertThat(command.accept(state), is(false));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAcceptNull() {
+        assertThat(command.accept(null), is(false));
+    }
+
+    @Test
+    public void testAcceptNullInout() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptValidParameter() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("get filename.slql");
+
+        assertThat(command.accept(state), is(true));
+    }
+
+    @Test
+    public void testAcceptValidParameter2() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("get something");
+
+        assertThat(command.accept(state), is(true));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExecuteNull() {
+        command.execute(null, null, null);
     }
 
     @Test

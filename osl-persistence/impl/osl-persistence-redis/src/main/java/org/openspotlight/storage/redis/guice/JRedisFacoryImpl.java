@@ -75,11 +75,11 @@ import com.google.inject.Singleton;
 @Singleton
 public class JRedisFacoryImpl implements JRedisFactory {
 
-    private final Map<Partition, JRedisServerDetail>  mappedServerConfig;
+    private final List<JRedis>                        allInstances     = new ArrayList<JRedis>();
 
     private JRedisServerDetail                        defaultImpl      = null;
 
-    private final List<JRedis>                        allInstances     = new ArrayList<JRedis>();
+    private final Map<Partition, JRedisServerDetail>  mappedServerConfig;
 
     private final ThreadLocal<Map<Partition, JRedis>> threadLocalCache = new ThreadLocal<Map<Partition, JRedis>>();
 
@@ -100,6 +100,30 @@ public class JRedisFacoryImpl implements JRedisFactory {
             RedisServerExecutor.INSTANCE.startServerIfNecessary(
                     samplePartition, this);
         }
+    }
+
+    @Override
+    public void closeResources() {
+        List<JRedis> copy;
+        synchronized (allInstances) {
+            copy = new ArrayList<JRedis>(allInstances);
+            allInstances.clear();
+        }
+        for (final JRedis j: copy) {
+            j.quit();
+        }
+    }
+
+    @Override
+    public Set<JRedis> getAllActive() {
+        Set<JRedis> result;
+        final Map<Partition, JRedis> cache = threadLocalCache.get();
+        if (cache != null) {
+            result = ImmutableSet.copyOf(cache.values());
+        } else {
+            result = emptySet();
+        }
+        return result;
     }
 
     @Override
@@ -136,30 +160,6 @@ public class JRedisFacoryImpl implements JRedisFactory {
             throw logAndReturnNew(e, SLRuntimeException.class);
         }
         return jRedis;
-    }
-
-    @Override
-    public Set<JRedis> getAllActive() {
-        Set<JRedis> result;
-        final Map<Partition, JRedis> cache = threadLocalCache.get();
-        if (cache != null) {
-            result = ImmutableSet.copyOf(cache.values());
-        } else {
-            result = emptySet();
-        }
-        return result;
-    }
-
-    @Override
-    public void closeResources() {
-        List<JRedis> copy;
-        synchronized (allInstances) {
-            copy = new ArrayList<JRedis>(allInstances);
-            allInstances.clear();
-        }
-        for (final JRedis j: copy) {
-            j.quit();
-        }
     }
 
 }

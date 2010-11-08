@@ -19,9 +19,9 @@ import com.google.inject.Singleton;
 @Singleton
 public class BundleExecutorImpl implements BundleExecutor {
 
-    private final ExecutionContextFactory factory;
-
     private final ExecutorService         executor;
+
+    private final ExecutionContextFactory factory;
 
     @Inject
     public BundleExecutorImpl(final ExecutionContextFactory factory, final ConfigurationManagerFactory configurationManagerFactory) {

@@ -62,11 +62,6 @@ import org.openspotlight.graph.query.info.SelectStatementInfo;
 public abstract class SelectAbstractCommand {
 
     /**
-     * Execute.
-     */
-    public abstract void execute();
-
-    /**
      * Gets the execute command.
      * 
      * @param select the select
@@ -97,4 +92,9 @@ public abstract class SelectAbstractCommand {
         }
         return command;
     }
+
+    /**
+     * Execute.
+     */
+    public abstract void execute();
 }

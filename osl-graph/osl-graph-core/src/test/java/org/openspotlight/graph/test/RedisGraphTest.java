@@ -67,12 +67,20 @@ public class RedisGraphTest extends AbstractGraphTest {
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
 
-        GRAPH("localhost", 6379, 0, true),
         FEDERATION("localhost", 6379, 1, false),
-        SYNTAX_HIGHLIGHT("localhost", 6379, 2, false),
+        GRAPH("localhost", 6379, 0, true),
         LINE_REFERENCE("localhost", 6379, 3, false),
+        LOG("localhost", 6379, 5, false),
         SECURITY("localhost", 6379, 4, false),
-        LOG("localhost", 6379, 5, false);
+        SYNTAX_HIGHLIGHT("localhost", 6379, 2, false);
+
+        private final int     db;
+
+        private final boolean defaultConfig;
+
+        private final String  serverName;
+
+        private final int     serverPort;
 
         private JRedisServerConfigExample(final String serverName, final int serverPort,
                                           final int db, final boolean defaultConfig) {
@@ -81,12 +89,6 @@ public class RedisGraphTest extends AbstractGraphTest {
             this.db = db;
             this.defaultConfig = defaultConfig;
         }
-
-        private final String  serverName;
-
-        private final boolean defaultConfig;
-
-        private final int     db;
 
         @Override
         public int getDb() {
@@ -97,8 +99,6 @@ public class RedisGraphTest extends AbstractGraphTest {
         public String getPassword() {
             return null;
         }
-
-        private final int serverPort;
 
         @Override
         public String getServerName() {

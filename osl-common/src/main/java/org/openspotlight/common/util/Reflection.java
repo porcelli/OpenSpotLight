@@ -86,11 +86,6 @@ public class Reflection {
     public static enum InheritanceType {
 
         /**
-         * The two types are equals.
-         */
-        SAME_CLASS,
-
-        /**
          * The first type are inherited from the second.
          */
         INHERITED_CLASS,
@@ -98,7 +93,12 @@ public class Reflection {
         /**
          * There's no realtion between two types in the given order.
          */
-        NO_INHERITANCE
+        NO_INHERITANCE,
+
+        /**
+         * The two types are equals.
+         */
+        SAME_CLASS
     }
 
     /**
@@ -187,10 +187,48 @@ public class Reflection {
 
     }
 
+    private static final Map<String, Class<?>> primitiveTypes  =
+                                                                   ImmutableMap
+                                                                       .<String, Class<?>>builder()
+                                                                       .put("byte", Byte.class)
+                                                                       .put(
+                                                                                                                                     "short",
+                                                                                                                                     Short.class)
+                                                                       .put(
+                                                                                                                                                      "int",
+                                                                                                                                                      Integer.class)
+                                                                       .put(
+                                                                                                                                                                         "long",
+                                                                                                                                                                         Long.class)
+                                                                       .put(
+                                                                                                                                                                                         "float",
+                                                                                                                                                                                         Float.class)
+                                                                       .put(
+                                                                                                                                                                                                          "double",
+                                                                                                                                                                                                          Double.class)
+                                                                       .put(
+                                                                                                                                                                                                                            "boolean",
+                                                                                                                                                                                                                            Boolean.class)
+                                                                       .build();
+
     /**
      * Enum set of the inherited types.
      */
-    public static final Set<InheritanceType> INHERITED_TYPES = of(InheritanceType.SAME_CLASS, InheritanceType.INHERITED_CLASS);
+    public static final Set<InheritanceType>   INHERITED_TYPES = of(InheritanceType.SAME_CLASS, InheritanceType.INHERITED_CLASS);
+
+    public static Class<?> findClassWithoutPrimitives(final Class<?> possiblePrimitive) {
+        if (possiblePrimitive.isPrimitive()) { return primitiveTypes.get(possiblePrimitive.getName()); }
+        return possiblePrimitive;
+    }
+
+    public static Class<?> findClassWithoutPrimitives(final String name) {
+        try {
+            if (primitiveTypes.containsKey(name)) { return primitiveTypes.get(name); }
+            return forName(name);
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
     /**
      * Search for inheritance type on the given type array.
@@ -345,44 +383,6 @@ public class Reflection {
                                                                                                                  valueType));
 
         return result;
-    }
-
-    private static final Map<String, Class<?>> primitiveTypes =
-                                                                  ImmutableMap
-                                                                      .<String, Class<?>>builder()
-                                                                      .put("byte", Byte.class)
-                                                                      .put(
-                                                                                                                                     "short",
-                                                                                                                                     Short.class)
-                                                                      .put(
-                                                                                                                                                      "int",
-                                                                                                                                                      Integer.class)
-                                                                      .put(
-                                                                                                                                                                         "long",
-                                                                                                                                                                         Long.class)
-                                                                      .put(
-                                                                                                                                                                                         "float",
-                                                                                                                                                                                         Float.class)
-                                                                      .put(
-                                                                                                                                                                                                          "double",
-                                                                                                                                                                                                          Double.class)
-                                                                      .put(
-                                                                                                                                                                                                                            "boolean",
-                                                                                                                                                                                                                            Boolean.class)
-                                                                      .build();
-
-    public static Class<?> findClassWithoutPrimitives(final String name) {
-        try {
-            if (primitiveTypes.containsKey(name)) { return primitiveTypes.get(name); }
-            return forName(name);
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    public static Class<?> findClassWithoutPrimitives(final Class<?> possiblePrimitive) {
-        if (possiblePrimitive.isPrimitive()) { return primitiveTypes.get(possiblePrimitive.getName()); }
-        return possiblePrimitive;
     }
 
 }

@@ -18,6 +18,18 @@ import com.google.inject.Provider;
  * Templates.
  */
 public class DefaultExecutionContextFactory extends ThreadLocalProvider<ExecutionContext> implements ExecutionContextFactory {
+    private final MutableConfigurationManager                     configurationManager;
+
+    private final GraphSessionFactory                             graphSessionFactory;
+
+    private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
+
+    private final PersistentArtifactManagerProvider               persistentArtifactManagerProvider;
+
+    private final Provider<StorageSession>                        sessionProvider;
+
+    private final SimplePersistFactory                            simplePersistFactory;
+
     @Inject
     public DefaultExecutionContextFactory(
                                           final Provider<StorageSession> sessionProvider,
@@ -34,22 +46,18 @@ public class DefaultExecutionContextFactory extends ThreadLocalProvider<Executio
         this.loaderRegistry = loaderRegistry;
     }
 
-    private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
-
-    private final Provider<StorageSession>                        sessionProvider;
-
-    private final GraphSessionFactory                             graphSessionFactory;
-
-    private final SimplePersistFactory                            simplePersistFactory;
-
-    private final PersistentArtifactManagerProvider               persistentArtifactManagerProvider;
-
-    private final MutableConfigurationManager                     configurationManager;
-
     public static void closeResourcesIfNeeded(final Object o) {
         if (o instanceof Disposable) {
             ((Disposable) o).closeResources();
         }
+    }
+
+    @Override
+    protected ExecutionContext createInstance() {
+        return new DefaultExecutionContext(sessionProvider,
+                    graphSessionFactory, simplePersistFactory,
+                    persistentArtifactManagerProvider, configurationManager,
+                    loaderRegistry);
     }
 
     @Override
@@ -60,14 +68,6 @@ public class DefaultExecutionContextFactory extends ThreadLocalProvider<Executio
         closeResourcesIfNeeded(persistentArtifactManagerProvider);
         closeResourcesIfNeeded(configurationManager);
 
-    }
-
-    @Override
-    protected ExecutionContext createInstance() {
-        return new DefaultExecutionContext(sessionProvider,
-                    graphSessionFactory, simplePersistFactory,
-                    persistentArtifactManagerProvider, configurationManager,
-                    loaderRegistry);
     }
 
 }

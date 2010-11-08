@@ -35,6 +35,13 @@ import org.openspotlight.graph.Link;
 public final class GraphManipulationSupport {
 
     /**
+     * Should not be instantiated
+     */
+    private GraphManipulationSupport() {
+        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Supporter method that generates a list of link types.
      * 
      * @param linkTypes link types
@@ -42,13 +49,6 @@ public final class GraphManipulationSupport {
      */
     public static Collection<Class<? extends Link>> links(final Class<? extends Link>... linkTypes) {
         return Arrays.asList(linkTypes);
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private GraphManipulationSupport() {
-        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

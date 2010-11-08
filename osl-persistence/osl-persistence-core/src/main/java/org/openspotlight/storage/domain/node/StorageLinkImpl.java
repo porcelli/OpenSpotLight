@@ -58,6 +58,16 @@ public class StorageLinkImpl extends PropertyContainerImpl implements
 
     private static final long serialVersionUID = -3462836679437486046L;
 
+    private final String      linkId;
+
+    private final String      linkType;
+
+    private final StorageNode origin;
+
+    private final Partition   originPartition;
+
+    private final StorageNode target;
+
     public StorageLinkImpl(final String linkType, final StorageNode origin,
                            final StorageNode target, final boolean resetTimeout) {
         super(resetTimeout);
@@ -68,15 +78,17 @@ public class StorageLinkImpl extends PropertyContainerImpl implements
         linkId = StringKeysSupport.buildLinkKeyAsString(linkType, origin, target);
     }
 
-    private final String      linkId;
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) { return true; }
+        if (!(o instanceof StorageLink)) { return false; }
+        return getKeyAsString().equals(((StorageLink) o).getKeyAsString());
+    }
 
-    private final String      linkType;
-
-    private final StorageNode origin;
-
-    private final StorageNode target;
-
-    private final Partition   originPartition;
+    @Override
+    public String getKeyAsString() {
+        return linkId;
+    }
 
     @Override
     public String getLinkId() {
@@ -94,25 +106,13 @@ public class StorageLinkImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public StorageNode getTarget() {
-        return target;
-    }
-
-    @Override
-    public String getKeyAsString() {
-        return linkId;
-    }
-
-    @Override
     public Partition getPartition() {
         return originPartition;
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (o == this) { return true; }
-        if (!(o instanceof StorageLink)) { return false; }
-        return getKeyAsString().equals(((StorageLink) o).getKeyAsString());
+    public StorageNode getTarget() {
+        return target;
     }
 
     @Override

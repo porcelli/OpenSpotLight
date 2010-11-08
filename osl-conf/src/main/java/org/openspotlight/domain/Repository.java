@@ -70,13 +70,13 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name("repository")
 public class Repository implements SimpleNodeType, Serializable {
 
-    public static Builder newRepositoryNamed(final String name) {
-        return new Builder(name);
-    }
-
     public static class Builder {
 
+        private Group                 currentGroup;
+
         private ArtifactSourceMapping currentMapping;
+
+        private final Repository      repository;
 
         private Builder(final String name) {
             repository = new Repository();
@@ -84,31 +84,8 @@ public class Repository implements SimpleNodeType, Serializable {
             repository.setActive(true);
         }
 
-        private final Repository repository;
-
-        private Group            currentGroup;
-
         public Repository andCreate() {
             return repository;
-        }
-
-        public Builder withGroup(final String groupName) {
-            currentGroup = new Group();
-            currentGroup.setActive(true);
-            currentGroup.setName(groupName);
-            repository.getGroups().add(currentGroup);
-            return this;
-        }
-
-        public Builder withSubGroup(final String groupName) {
-
-            final Group group = new Group();
-            group.setActive(true);
-            group.setName(groupName);
-            currentGroup.getGroups().add(currentGroup);
-            group.setGroup(currentGroup);
-            currentGroup = group;
-            return this;
         }
 
         public Builder withArtifactSource(final String artifactSourceName, final String rootFolder, final String initialLookup) {
@@ -136,6 +113,25 @@ public class Repository implements SimpleNodeType, Serializable {
             return this;
         }
 
+        public Builder withGroup(final String groupName) {
+            currentGroup = new Group();
+            currentGroup.setActive(true);
+            currentGroup.setName(groupName);
+            repository.getGroups().add(currentGroup);
+            return this;
+        }
+
+        public Builder withSubGroup(final String groupName) {
+
+            final Group group = new Group();
+            group.setActive(true);
+            group.setName(groupName);
+            currentGroup.getGroups().add(currentGroup);
+            group.setGroup(currentGroup);
+            currentGroup = group;
+            return this;
+        }
+
     }
 
     public static interface GroupVisitor {
@@ -145,21 +141,25 @@ public class Repository implements SimpleNodeType, Serializable {
     private static final long      serialVersionUID = -8278810189446649901L;
 
     /**
-     * The name.
+     * The active.
      */
-    private String                 name;
+    private boolean                active;
 
     /**
      * The groups.
      */
     private Set<Group>             groups           = new HashSet<Group>();
 
-    /**
-     * The active.
-     */
-    private boolean                active;
-
     private volatile transient int hashCode;
+
+    /**
+     * The name.
+     */
+    private String                 name;
+
+    public static Builder newRepositoryNamed(final String name) {
+        return new Builder(name);
+    }
 
     public void acceptGroupVisitor(final GroupVisitor visitor) {
         for (final Group entry: getGroups()) {

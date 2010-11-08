@@ -67,165 +67,16 @@ import com.google.common.collect.ImmutableSet;
 
 public class CriteriaImpl implements Criteria {
 
-    private CriteriaImpl(final String nodeName,
-                         final Set<CriteriaItem> criteriaItems, final Partition partition) {
-        this.nodeName = nodeName;
-        this.partition = partition;
-        this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
-    }
-
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-
-        final CriteriaImpl that = (CriteriaImpl) o;
-
-        if (criteriaItems != null ? !criteriaItems
-            .equals(that.criteriaItems) : that.criteriaItems != null) { return false; }
-        if (nodeName != null ? !nodeName.equals(that.nodeName)
-            : that.nodeName != null) { return false; }
-        if (partition != null ? !partition.equals(that.partition)
-            : that.partition != null) { return false; }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = nodeName != null ? nodeName.hashCode() : 0;
-        result = 31 * result
-            + (partition != null ? partition.hashCode() : 0);
-        result = 31 * result
-            + (criteriaItems != null ? criteriaItems.hashCode() : 0);
-        return result;
-    }
-
-    private final String            nodeName;
-
-    private final Partition         partition;
-
-    private final Set<CriteriaItem> criteriaItems;
-
-    @Override
-    public String getNodeType() {
-        return nodeName;
-    }
-
-    @Override
-    public Partition getPartition() {
-        return partition;
-    }
-
-    @Override
-    public Set<CriteriaItem> getCriteriaItems() {
-        return criteriaItems;
-    }
-
-    @Override
-    public Iterable<StorageNode> andFind(
-                                         final StorageSession session) {
-        return session.withPartition(partition).findByCriteria(this);
-    }
-
-    @Override
-    public StorageNode andFindUnique(
-                                     final StorageSession session) {
-        return session.withPartition(partition).findUniqueByCriteria(this);
-    }
-
-    private static class UniqueKeyAsStringCriteriaItemImpl implements
-        NodeKeyAsStringCriteriaItem {
-
-        public UniqueKeyAsStringCriteriaItemImpl(final String keyAsString) {
-            this.keyAsString = keyAsString;
-            nodeType = StringKeysSupport.getNodeType(keyAsString);
-        }
-
-        private final String keyAsString;
-
-        private final String nodeType;
-
-        @Override
-        public String getKeyAsString() {
-            return keyAsString;
-        }
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-    }
-
-    private static class UniqueKeyCriteriaItemImpl implements
-        NodeKeyCriteriaItem {
-        private UniqueKeyCriteriaItemImpl(final NodeKey value,
-                                          final String nodeType) {
-            this.value = value;
-            this.nodeType = nodeType;
-        }
-
-        private final NodeKey value;
-
-        private final String  nodeType;
-
-        @Override
-        public NodeKey getValue() {
-            return value;
-        }
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final UniqueKeyCriteriaItemImpl that = (UniqueKeyCriteriaItemImpl) o;
-
-            if (nodeType != null ? !nodeType
-                .equals(that.nodeType) : that.nodeType != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = value != null ? value.hashCode() : 0;
-            result = 31 * result
-                + (nodeType != null ? nodeType.hashCode() : 0);
-            return result;
-        }
-
-    }
-
     private static class LocalKeyCriteriaItemImpl implements
         CompositeKeyCriteriaItem {
+        private final String       nodeType;
+
+        private final CompositeKey value;
+
         private LocalKeyCriteriaItemImpl(final CompositeKey value,
                                          final String nodeType) {
             this.value = value;
             this.nodeType = nodeType;
-        }
-
-        private final CompositeKey value;
-
-        private final String       nodeType;
-
-        @Override
-        public CompositeKey getValue() {
-            return value;
-        }
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
         }
 
         @Override
@@ -244,6 +95,16 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public CompositeKey getValue() {
+            return value;
+        }
+
+        @Override
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
             result = 31 * result
@@ -251,213 +112,22 @@ public class CriteriaImpl implements Criteria {
             return result;
         }
 
-    }
-
-    private static class PropertyCriteriaItemImpl implements
-        PropertyCriteriaItem {
-        private PropertyCriteriaItemImpl(final String propertyName, final String value,
-                                         final String nodeType) {
-            this.value = value;
-            this.propertyName = propertyName;
-            this.nodeType = nodeType;
-        }
-
-        private final String value;
-
-        private final String propertyName;
-
-        private final String nodeType;
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyCriteriaItemImpl that = (PropertyCriteriaItemImpl) o;
-
-            if (nodeType != null ? !nodeType
-                .equals(that.nodeType) : that.nodeType != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = value != null ? value.hashCode() : 0;
-            result = 31 * result
-                + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result
-                + (nodeType != null ? nodeType.hashCode() : 0);
-            return result;
-        }
-
-    }
-
-    private static class PropertyEndsWithStringImpl implements
-        PropertyEndsWithString {
-
-        private PropertyEndsWithStringImpl(final String nodeType,
-                                           final String propertyName, final String value) {
-            this.nodeType = nodeType;
-            this.propertyName = propertyName;
-            this.value = value;
-        }
-
-        private final String nodeType;
-
-        private final String propertyName;
-
-        private final String value;
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyEndsWithStringImpl that = (PropertyEndsWithStringImpl) o;
-
-            if (nodeType != null ? !nodeType
-                .equals(that.nodeType) : that.nodeType != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = nodeType != null ? nodeType.hashCode() : 0;
-            result = 31 * result
-                + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result + (value != null ? value.hashCode() : 0);
-            return result;
-        }
-    }
-
-    private static class PropertyStartsWithStringImpl implements
-        PropertyStartsWithString {
-
-        private PropertyStartsWithStringImpl(final String nodeType,
-                                             final String propertyName, final String value) {
-            this.nodeType = nodeType;
-            this.propertyName = propertyName;
-            this.value = value;
-        }
-
-        private final String nodeType;
-
-        private final String propertyName;
-
-        private final String value;
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyStartsWithStringImpl that = (PropertyStartsWithStringImpl) o;
-
-            if (nodeType != null ? !nodeType
-                .equals(that.nodeType) : that.nodeType != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = nodeType != null ? nodeType.hashCode() : 0;
-            result = 31 * result
-                + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result + (value != null ? value.hashCode() : 0);
-            return result;
-        }
     }
 
     private static class PropertyContainsStringImpl implements
         PropertyContainsString {
+
+        private final String nodeType;
+
+        private final String propertyName;
+
+        private final String value;
 
         private PropertyContainsStringImpl(final String nodeType,
                                            final String propertyName, final String value) {
             this.nodeType = nodeType;
             this.propertyName = propertyName;
             this.value = value;
-        }
-
-        private final String nodeType;
-
-        private final String propertyName;
-
-        private final String value;
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
         }
 
         @Override
@@ -478,6 +148,21 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
         public int hashCode() {
             int result = nodeType != null ? nodeType.hashCode() : 0;
             result = 31 * result
@@ -487,25 +172,272 @@ public class CriteriaImpl implements Criteria {
         }
     }
 
+    private static class PropertyCriteriaItemImpl implements
+        PropertyCriteriaItem {
+        private final String nodeType;
+
+        private final String propertyName;
+
+        private final String value;
+
+        private PropertyCriteriaItemImpl(final String propertyName, final String value,
+                                         final String nodeType) {
+            this.value = value;
+            this.propertyName = propertyName;
+            this.nodeType = nodeType;
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final PropertyCriteriaItemImpl that = (PropertyCriteriaItemImpl) o;
+
+            if (nodeType != null ? !nodeType
+                .equals(that.nodeType) : that.nodeType != null) { return false; }
+            if (propertyName != null ? !propertyName.equals(that.propertyName)
+                : that.propertyName != null) { return false; }
+            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = value != null ? value.hashCode() : 0;
+            result = 31 * result
+                + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result
+                + (nodeType != null ? nodeType.hashCode() : 0);
+            return result;
+        }
+
+    }
+
+    private static class PropertyEndsWithStringImpl implements
+        PropertyEndsWithString {
+
+        private final String nodeType;
+
+        private final String propertyName;
+
+        private final String value;
+
+        private PropertyEndsWithStringImpl(final String nodeType,
+                                           final String propertyName, final String value) {
+            this.nodeType = nodeType;
+            this.propertyName = propertyName;
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final PropertyEndsWithStringImpl that = (PropertyEndsWithStringImpl) o;
+
+            if (nodeType != null ? !nodeType
+                .equals(that.nodeType) : that.nodeType != null) { return false; }
+            if (propertyName != null ? !propertyName.equals(that.propertyName)
+                : that.propertyName != null) { return false; }
+            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeType != null ? nodeType.hashCode() : 0;
+            result = 31 * result
+                + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result + (value != null ? value.hashCode() : 0);
+            return result;
+        }
+    }
+
+    private static class PropertyStartsWithStringImpl implements
+        PropertyStartsWithString {
+
+        private final String nodeType;
+
+        private final String propertyName;
+
+        private final String value;
+
+        private PropertyStartsWithStringImpl(final String nodeType,
+                                             final String propertyName, final String value) {
+            this.nodeType = nodeType;
+            this.propertyName = propertyName;
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final PropertyStartsWithStringImpl that = (PropertyStartsWithStringImpl) o;
+
+            if (nodeType != null ? !nodeType
+                .equals(that.nodeType) : that.nodeType != null) { return false; }
+            if (propertyName != null ? !propertyName.equals(that.propertyName)
+                : that.propertyName != null) { return false; }
+            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeType != null ? nodeType.hashCode() : 0;
+            result = 31 * result
+                + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result + (value != null ? value.hashCode() : 0);
+            return result;
+        }
+    }
+
+    private static class UniqueKeyAsStringCriteriaItemImpl implements
+        NodeKeyAsStringCriteriaItem {
+
+        private final String keyAsString;
+
+        private final String nodeType;
+
+        public UniqueKeyAsStringCriteriaItemImpl(final String keyAsString) {
+            this.keyAsString = keyAsString;
+            nodeType = StringKeysSupport.getNodeType(keyAsString);
+        }
+
+        @Override
+        public String getKeyAsString() {
+            return keyAsString;
+        }
+
+        @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+    }
+
+    private static class UniqueKeyCriteriaItemImpl implements
+        NodeKeyCriteriaItem {
+        private final String  nodeType;
+
+        private final NodeKey value;
+
+        private UniqueKeyCriteriaItemImpl(final NodeKey value,
+                                          final String nodeType) {
+            this.value = value;
+            this.nodeType = nodeType;
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final UniqueKeyCriteriaItemImpl that = (UniqueKeyCriteriaItemImpl) o;
+
+            if (nodeType != null ? !nodeType
+                .equals(that.nodeType) : that.nodeType != null) { return false; }
+            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public NodeKey getValue() {
+            return value;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = value != null ? value.hashCode() : 0;
+            result = 31 * result
+                + (nodeType != null ? nodeType.hashCode() : 0);
+            return result;
+        }
+
+    }
+
     public static class CriteriaBuilderImpl implements CriteriaBuilder {
 
+        private String          contains;
+
+        private String          endsWith;
+
         private final Partition partition;
+
+        private String          startsWith;
+
+        private String          transientIdAsString;
+
+        private CompositeKey    transientLocalKey;
 
         private String          transientNodeType;
 
         private String          transientPropertyName;
-
-        private NodeKey         transientUniqueKey;
-
-        private CompositeKey    transientLocalKey;
-
         private String          transientPropertyValue;
-
-        private String          transientIdAsString;
-
-        private String          startsWith;
-        private String          endsWith;
-        private String          contains;
+        private NodeKey         transientUniqueKey;
 
         Set<CriteriaItem>       items;
 
@@ -522,79 +454,6 @@ public class CriteriaImpl implements Criteria {
         private void breakIfNull(
                                  final Object o) {
             if (o == null) { throw new IllegalStateException(); }
-        }
-
-        @Override
-        public CriteriaBuilder withProperty(
-                                            final String propertyName) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientPropertyValue);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNotNull(transientPropertyName);
-
-            transientPropertyName = propertyName;
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder withNodeEntry(
-                                             final String nodeName) {
-            breakIfNotNull(transientNodeType);
-            transientNodeType = nodeName;
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder equalsTo(
-                                        final String value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyValue);
-            transientPropertyValue = value;
-            and();
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder containsString(
-                                              final String value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            contains = value;
-            and();
-            return this;
-
-        }
-
-        @Override
-        public CriteriaBuilder startsWithString(
-                                                final String value) {
-
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            startsWith = value;
-            and();
-            return this;
-
-        }
-
-        @Override
-        public CriteriaBuilder endsWithString(
-                                              final String value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            endsWith = value;
-            and();
-            return this;
         }
 
         @Override
@@ -658,6 +517,58 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
+        public CriteriaBuilder containsString(
+                                              final String value) {
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            contains = value;
+            and();
+            return this;
+
+        }
+
+        @Override
+        public CriteriaBuilder endsWithString(
+                                              final String value) {
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            endsWith = value;
+            and();
+            return this;
+        }
+
+        @Override
+        public CriteriaBuilder equalsTo(
+                                        final String value) {
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            breakIfNotNull(transientPropertyValue);
+            transientPropertyValue = value;
+            and();
+            return this;
+        }
+
+        @Override
+        public CriteriaBuilder startsWithString(
+                                                final String value) {
+
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            startsWith = value;
+            and();
+            return this;
+
+        }
+
+        @Override
         public CriteriaBuilder withLocalKey(
                                             final CompositeKey localKey) {
             breakIfNotNull(transientUniqueKey);
@@ -669,6 +580,27 @@ public class CriteriaImpl implements Criteria {
             transientLocalKey = localKey;
             transientNodeType = localKey.getNodeType();
             and();
+            return this;
+        }
+
+        @Override
+        public CriteriaBuilder withNodeEntry(
+                                             final String nodeName) {
+            breakIfNotNull(transientNodeType);
+            transientNodeType = nodeName;
+            return this;
+        }
+
+        @Override
+        public CriteriaBuilder withProperty(
+                                            final String propertyName) {
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientPropertyValue);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNotNull(transientPropertyName);
+
+            transientPropertyName = propertyName;
             return this;
         }
 
@@ -695,6 +627,74 @@ public class CriteriaImpl implements Criteria {
             and();
             return this;
         }
+    }
+
+    private final Set<CriteriaItem> criteriaItems;
+
+    private final String            nodeName;
+
+    private final Partition         partition;
+
+    private CriteriaImpl(final String nodeName,
+                         final Set<CriteriaItem> criteriaItems, final Partition partition) {
+        this.nodeName = nodeName;
+        this.partition = partition;
+        this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
+    }
+
+    @Override
+    public Iterable<StorageNode> andFind(
+                                         final StorageSession session) {
+        return session.withPartition(partition).findByCriteria(this);
+    }
+
+    @Override
+    public StorageNode andFindUnique(
+                                     final StorageSession session) {
+        return session.withPartition(partition).findUniqueByCriteria(this);
+    }
+
+    @Override
+    public boolean equals(
+                          final Object o) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
+
+        final CriteriaImpl that = (CriteriaImpl) o;
+
+        if (criteriaItems != null ? !criteriaItems
+            .equals(that.criteriaItems) : that.criteriaItems != null) { return false; }
+        if (nodeName != null ? !nodeName.equals(that.nodeName)
+            : that.nodeName != null) { return false; }
+        if (partition != null ? !partition.equals(that.partition)
+            : that.partition != null) { return false; }
+
+        return true;
+    }
+
+    @Override
+    public Set<CriteriaItem> getCriteriaItems() {
+        return criteriaItems;
+    }
+
+    @Override
+    public String getNodeType() {
+        return nodeName;
+    }
+
+    @Override
+    public Partition getPartition() {
+        return partition;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = nodeName != null ? nodeName.hashCode() : 0;
+        result = 31 * result
+            + (partition != null ? partition.hashCode() : 0);
+        result = 31 * result
+            + (criteriaItems != null ? criteriaItems.hashCode() : 0);
+        return result;
     }
 
 }

@@ -65,8 +65,8 @@ import org.openspotlight.federation.finder.LocalSourceOriginArtifactLoader;
 
 public class LocalSourceOriginArtifactLoaderTest {
 
-    private final LocalSourceOriginArtifactLoader loader = new LocalSourceOriginArtifactLoader();
     private ArtifactSource                        artifactSource;
+    private final LocalSourceOriginArtifactLoader loader = new LocalSourceOriginArtifactLoader();
 
     @Before
     public void prepareArtifactSource()

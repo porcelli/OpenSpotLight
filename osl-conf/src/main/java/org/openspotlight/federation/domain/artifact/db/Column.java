@@ -62,21 +62,21 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class Column implements SimpleNodeType, Serializable {
     private static final long         serialVersionUID = -1495010016475838851L;
 
-    private String                    name;
-
-    private ColumnType                type;
-
-    private NullableSqlType           nullable;
-
     private int                       columnSize;
 
     private int                       decimalSize;
 
-    private transient TableArtifact   table;
-
     private volatile transient String description;
 
     private volatile transient int    hashCode;
+
+    private String                    name;
+
+    private NullableSqlType           nullable;
+
+    private transient TableArtifact   table;
+
+    private ColumnType                type;
 
     @Override
     public boolean equals(final Object o) {

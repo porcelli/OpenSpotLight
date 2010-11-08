@@ -67,6 +67,13 @@ import java.util.Set;
 public class Arrays {
 
     /**
+     * Should not be instantiated
+     */
+    private Arrays() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
+    /**
      * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
      * Ts on a method.
      * 
@@ -222,13 +229,6 @@ public class Arrays {
         }
         return list.toArray(anotherTypes);
 
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Arrays() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

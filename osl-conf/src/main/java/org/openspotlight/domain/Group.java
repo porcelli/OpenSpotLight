@@ -72,30 +72,26 @@ import org.openspotlight.persist.annotation.TransientProperty;
 @Name("group")
 public class Group implements SimpleNodeType, Serializable, Schedulable {
 
-    private static final long   serialVersionUID = -722058711327567623L;
+    private static final long                     serialVersionUID = -722058711327567623L;
 
-    private List<Group>         groups           = new ArrayList<Group>();
+    /**
+     * The active.
+     */
+    private boolean                               active;
 
     /** The artifact sources. */
-    private Set<ArtifactSource> artifactSources  = new HashSet<ArtifactSource>();
+    private Set<ArtifactSource>                   artifactSources  = new HashSet<ArtifactSource>();
 
-    public void setArtifactSources(final Set<ArtifactSource> artifactSources) {
-        this.artifactSources = artifactSources;
-    }
-
-    public Set<ArtifactSource> getArtifactSources() {
-        return artifactSources;
-    }
+    private List<String>                          cronInformation  = new ArrayList<String>();
 
     /**
-     * The repository.
+     * The group.
      */
-    private transient Repository                  repository;
+    private transient Group                       group;
 
-    /**
-     * The type.
-     */
-    private String                                type;
+    private List<Group>                           groups           = new ArrayList<Group>();
+
+    private volatile transient int                hashCode;
 
     /**
      * The name.
@@ -103,22 +99,25 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     private String                                name;
 
     /**
-     * The active.
+     * The repository.
      */
-    private boolean                               active;
+    private transient Repository                  repository;
+
+    private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
 
     /**
-     * The group.
+     * The type.
      */
-    private transient Group                       group;
-
-    private volatile transient int                hashCode;
-
-    private List<String>                          cronInformation = new ArrayList<String>();
+    private String                                type;
 
     private volatile transient String             uniqueName;
 
-    private List<Class<? extends Callable<Void>>> tasks           = new ArrayList<Class<? extends Callable<Void>>>();
+    public void acceptVisitor(final Repository.GroupVisitor visitor) {
+        visitor.visitGroup(this);
+        for (final Group g: getGroups()) {
+            g.acceptVisitor(visitor);
+        }
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -127,6 +126,10 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         final boolean result = Equals.eachEquality(Arrays.of(group, repository, name), Arrays.andOf(that.group, that.repository,
                 that.name));
         return result;
+    }
+
+    public Set<ArtifactSource> getArtifactSources() {
+        return artifactSources;
     }
 
     @Override
@@ -168,9 +171,19 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return repository;
     }
 
+    @Override
+    @TransientProperty
+    public Repository getRepositoryForSchedulable() {
+        return getRootRepository();
+    }
+
     @TransientProperty
     public Repository getRootRepository() {
         return repository != null ? repository : getGroup().getRootRepository();
+    }
+
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
     }
 
     /**
@@ -219,6 +232,10 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         this.active = active;
     }
 
+    public void setArtifactSources(final Set<ArtifactSource> artifactSources) {
+        this.artifactSources = artifactSources;
+    }
+
     public void setCronInformation(final List<String> cronInformation) {
         this.cronInformation = cronInformation;
     }
@@ -254,6 +271,10 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         this.repository = repository;
     }
 
+    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
+        this.tasks = tasks;
+    }
+
     /**
      * Sets the type.
      * 
@@ -273,27 +294,6 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     @Override
     public String toUniqueJobString() {
         return getUniqueName();
-    }
-
-    public List<Class<? extends Callable<Void>>> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
-        this.tasks = tasks;
-    }
-
-    @Override
-    @TransientProperty
-    public Repository getRepositoryForSchedulable() {
-        return getRootRepository();
-    }
-
-    public void acceptVisitor(final Repository.GroupVisitor visitor) {
-        visitor.visitGroup(this);
-        for (final Group g: getGroups()) {
-            g.acceptVisitor(visitor);
-        }
     }
 
 }

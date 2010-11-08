@@ -35,11 +35,11 @@ public interface SelectFacade {
     public SelectStatement select();
 
     /**
-     * Select by node type.
+     * Select by link count.
      * 
-     * @return the sL select by node type
+     * @return the sL select by link count
      */
-    public SelectByNodeType selectByNodeType();
+    public SelectByLinkCount selectByLinkCount();
 
     /**
      * Select by link type.
@@ -49,9 +49,9 @@ public interface SelectFacade {
     public SelectByLinkType selectByLinkType();
 
     /**
-     * Select by link count.
+     * Select by node type.
      * 
-     * @return the sL select by link count
+     * @return the sL select by node type
      */
-    public SelectByLinkCount selectByLinkCount();
+    public SelectByNodeType selectByNodeType();
 }

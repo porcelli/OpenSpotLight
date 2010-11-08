@@ -57,11 +57,16 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class ListItemObj implements SimpleNodeType, Comparable<ListItemObj> {
-    private String uuid;
-
     private String name;
 
+    private String uuid;
+
     private int    value;
+
+    @Override
+    public int compareTo(final ListItemObj o) {
+        return value < o.value ? -1 : (value == o.value ? 0 : 1);
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -96,10 +101,5 @@ public class ListItemObj implements SimpleNodeType, Comparable<ListItemObj> {
 
     public void setValue(final int value) {
         this.value = value;
-    }
-
-    @Override
-    public int compareTo(final ListItemObj o) {
-        return value < o.value ? -1 : (value == o.value ? 0 : 1);
     }
 }

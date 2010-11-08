@@ -83,13 +83,13 @@ public enum TaskExecManager {
     INSTANCE;
 
     private static class TaskBuilderImpl implements TaskExecBuilder {
-        private final TaskGroupImpl                  taskGroup;
+        private String                               description = null;
+        private final CopyOnWriteArrayList<TaskExec> parents     = new CopyOnWriteArrayList<TaskExec>();
         private final AtomicBoolean                  published   = new AtomicBoolean(false);
         private final AtomicBoolean                  started     = new AtomicBoolean(false);
-        private String                               description = null;
-        private RunnableWithException                thisRunnable;
+        private final TaskGroupImpl                  taskGroup;
         private String                               taskId;
-        private final CopyOnWriteArrayList<TaskExec> parents     = new CopyOnWriteArrayList<TaskExec>();
+        private RunnableWithException                thisRunnable;
 
         public TaskBuilderImpl(
                                 final TaskGroupImpl taskGroup) {
@@ -164,23 +164,23 @@ public enum TaskExecManager {
     }
 
     private static class TaskGroupImpl implements TaskExecGroup {
-        private final Logger                    logger = LoggerFactory.getLogger(getClass());
+        private final List<String>              alreadyRunnedTaskIds;
 
-        private final Priority                  thisGroupPriority;
+        private final AtomicReference<Priority> currentPriorityRunning;
+
+        private final ReentrantLock             lock;
+
+        private final Logger                    logger = LoggerFactory.getLogger(getClass());
+        private final String                    name;
+        private final String                    poolName;
+        private final BlockingQueue<TaskImpl>   queue;
+        private final List<String>              runningTaskIds;
 
         private final CountDownLatch            stopped;
 
-        private final BlockingQueue<TaskImpl>   queue;
-        private final List<String>              alreadyRunnedTaskIds;
-        private final List<String>              runningTaskIds;
-        private final ReentrantLock             lock;
-        private final AtomicReference<Priority> currentPriorityRunning;
+        private final Priority                  thisGroupPriority;
 
         LinkedBlockingQueue<TaskImpl>           tasksForThisPriority;
-
-        private final String                    name;
-
-        private final String                    poolName;
 
         public TaskGroupImpl(
                               final Priority thisGroupPriority, final CountDownLatch stopped,
@@ -260,6 +260,10 @@ public enum TaskExecManager {
 
     private static class TaskImpl implements TaskExec {
 
+        private final CountDownLatch        latch  = new CountDownLatch(1);
+
+        private final Logger                logger = LoggerFactory.getLogger(getClass());
+
         private final List<TaskExec>        parentTasks;
 
         private final String                readableDescription;
@@ -267,10 +271,6 @@ public enum TaskExecManager {
         private final RunnableWithException runnable;
 
         private final String                uniqueId;
-
-        private final CountDownLatch        latch  = new CountDownLatch(1);
-
-        private final Logger                logger = LoggerFactory.getLogger(getClass());
 
         public TaskImpl(
                          final List<TaskExec> parentTasks, final String readableDescription,
@@ -352,22 +352,22 @@ public enum TaskExecManager {
 
     private static class TaskPoolImpl implements TaskExecPool {
 
-        private final String                                 poolName;
-        private final int                                    poolSize;
-        private final CountDownLatch                         stopped                = new CountDownLatch(1);
-        private final BlockingQueue<TaskImpl>                queue                  = new LinkedBlockingQueue<TaskImpl>();
         private final List<String>                           alreadyRunnedTaskIds   = new CopyOnWriteArrayList<String>();
-        private final List<String>                           runningTaskIds         = new CopyOnWriteArrayList<String>();
-        private final ReentrantLock                          lock                   = new ReentrantLock(true);
-        private final GossipExecutor                         executor;
-
         private final AtomicReference<Priority>              currentPriorityRunning = new AtomicReference<Priority>();
+        private final GossipExecutor                         executor;
         private final BlockingQueue<Priority>                existentPriorities     = new PriorityBlockingQueue<Priority>();
-        private final Map<Priority, BlockingQueue<TaskImpl>> taskMap                =
-                                                                                        new ConcurrentHashMap<Priority, BlockingQueue<TaskImpl>>();
-
         private final CopyOnWriteArrayList<RunnableListener> listeners              =
                                                                                         new CopyOnWriteArrayList<RunnableListener>();
+        private final ReentrantLock                          lock                   = new ReentrantLock(true);
+        private final String                                 poolName;
+        private final int                                    poolSize;
+
+        private final BlockingQueue<TaskImpl>                queue                  = new LinkedBlockingQueue<TaskImpl>();
+        private final List<String>                           runningTaskIds         = new CopyOnWriteArrayList<String>();
+        private final CountDownLatch                         stopped                = new CountDownLatch(1);
+
+        private final Map<Priority, BlockingQueue<TaskImpl>> taskMap                =
+                                                                                        new ConcurrentHashMap<Priority, BlockingQueue<TaskImpl>>();
 
         public TaskPoolImpl(
                              final String poolName, final int poolSize) {
@@ -438,21 +438,21 @@ public enum TaskExecManager {
     }
 
     private static class Worker implements Runnable {
-        private final AtomicReference<Priority>              currentPriorityRunning;
-        private final BlockingQueue<Priority>                existentPriorities;
-        private final Map<Priority, BlockingQueue<TaskImpl>> taskMap;
-
-        private final AtomicReference<TaskImpl>              currentTask    = new AtomicReference<TaskImpl>();
-        private final CountDownLatch                         stopped;
-
-        private final String                                 workerId;
-        private final BlockingQueue<TaskImpl>                queue;
         private final List<String>                           alreadyRunnedTaskIds;
-        private final List<String>                           runningTaskIds;
+        private final AtomicReference<Priority>              currentPriorityRunning;
+        private final AtomicReference<TaskImpl>              currentTask    = new AtomicReference<TaskImpl>();
+
+        private final BlockingQueue<Priority>                existentPriorities;
+        private final CopyOnWriteArrayList<RunnableListener> listeners;
+
         private final ReentrantLock                          lock;
         private final Logger                                 logger         = LoggerFactory.getLogger(getClass());
+        private final BlockingQueue<TaskImpl>                queue;
+        private final List<String>                           runningTaskIds;
+        private final CountDownLatch                         stopped;
+        private final Map<Priority, BlockingQueue<TaskImpl>> taskMap;
         private final Map<String, Object>                    threadLocalMap = new HashMap<String, Object>();
-        private final CopyOnWriteArrayList<RunnableListener> listeners;
+        private final String                                 workerId;
 
         public Worker(
                        final CopyOnWriteArrayList<RunnableListener> listeners, final String workerId,

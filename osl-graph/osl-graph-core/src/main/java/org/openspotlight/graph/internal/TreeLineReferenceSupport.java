@@ -13,6 +13,193 @@ import org.openspotlight.graph.TreeLineReference.StatementLineReference;
 
 public class TreeLineReferenceSupport {
 
+    private static final class ArtifactLineReferenceImpl implements ArtifactLineReference {
+
+        private static final long                      serialVersionUID = 8671847295268238991L;
+
+        private final String                           artifactId;
+
+        private final String                           artifactVersion;
+
+        private final Iterable<StatementLineReference> statements;
+
+        private ArtifactLineReferenceImpl(final String artifactId, final String artifactVersion,
+                                          final Iterable<StatementLineReference> statements) {
+            this.artifactId = artifactId;
+            this.artifactVersion = artifactVersion;
+            this.statements = statements;
+
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final ArtifactLineReferenceImpl that = (ArtifactLineReferenceImpl) o;
+
+            if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) { return false; }
+            if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null) { return false; }
+            if (statements != null ? !statements.equals(that.statements) : that.statements != null) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public String getArtifactId() {
+            return artifactId;
+        }
+
+        @Override
+        public String getArtifactVersion() {
+            return artifactVersion;
+        }
+
+        @Override
+        public Iterable<StatementLineReference> getStatements() {
+            return statements;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = artifactId != null ? artifactId.hashCode() : 0;
+            result = 31 * result + (artifactVersion != null ? artifactVersion.hashCode() : 0);
+            result = 31 * result + (statements != null ? statements.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "ArtifactLineReferenceImpl{" +
+                "artifactId='" + artifactId + '\'' +
+                ", artifactVersion='" + artifactVersion + '\'' +
+                ", statements=" + statements +
+                '}';
+        }
+    }
+
+    private static final class SimpleLineReferenceImpl implements SimpleLineReference {
+
+        private static final long serialVersionUID = 1L;
+        private final int         beginColumn, endColumn, beginLine, endLine;
+
+        SimpleLineReferenceImpl(final int beginLine, final int endLine, final int beginColumn, final int endColumn) {
+            this.beginLine = beginColumn;
+            this.endLine = endLine;
+            this.beginColumn = beginColumn;
+            this.endColumn = endColumn;
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final SimpleLineReferenceImpl that = (SimpleLineReferenceImpl) o;
+
+            if (beginColumn != that.beginColumn) { return false; }
+            if (beginLine != that.beginLine) { return false; }
+            if (endColumn != that.endColumn) { return false; }
+            if (endLine != that.endLine) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public int getBeginColumn() {
+            return beginColumn;
+        }
+
+        @Override
+        public int getBeginLine() {
+            return beginLine;
+        }
+
+        @Override
+        public int getEndColumn() {
+            return endColumn;
+        }
+
+        @Override
+        public int getEndLine() {
+            return endLine;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = beginColumn;
+            result = 31 * result + endColumn;
+            result = 31 * result + beginLine;
+            result = 31 * result + endLine;
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "SimpleLineReferenceImpl{" +
+                "beginColumn=" + beginColumn +
+                ", endColumn=" + endColumn +
+                ", beginLine=" + beginLine +
+                ", endLine=" + endLine +
+                '}';
+        }
+    }
+
+    private static final class StatementLineReferenceImpl implements StatementLineReference {
+
+        private static final long                   serialVersionUID = 3325696914749205681L;
+
+        private final Iterable<SimpleLineReference> lineReferences;
+
+        private final String                        statement;
+
+        private StatementLineReferenceImpl(final Iterable<SimpleLineReference> lineReferences, final String statement) {
+            this.lineReferences = lineReferences;
+            this.statement = statement;
+        }
+
+        @Override
+        public boolean equals(
+                              final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            final StatementLineReferenceImpl that = (StatementLineReferenceImpl) o;
+
+            if (lineReferences != null ? !lineReferences.equals(that.lineReferences) : that.lineReferences != null) { return false; }
+            if (statement != null ? !statement.equals(that.statement) : that.statement != null) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public Iterable<SimpleLineReference> getLineReferences() {
+            return lineReferences;
+        }
+
+        @Override
+        public String getStatement() {
+            return statement;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = lineReferences != null ? lineReferences.hashCode() : 0;
+            result = 31 * result + (statement != null ? statement.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "StatementLineReferenceImpl{" +
+                "lineReferences=" + lineReferences +
+                ", statement='" + statement + '\'' +
+                '}';
+        }
+    }
+
     private static final class TreeLineReferenceImpl implements TreeLineReference {
 
         private static final long                     serialVersionUID = 8915154022785981563L;
@@ -41,6 +228,16 @@ public class TreeLineReferenceSupport {
         }
 
         @Override
+        public Iterable<ArtifactLineReference> getArtifacts() {
+            return artifacts;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
         public int hashCode() {
             int result = artifacts != null ? artifacts.hashCode() : 0;
             result = 31 * result + (id != null ? id.hashCode() : 0);
@@ -54,210 +251,6 @@ public class TreeLineReferenceSupport {
                 ", id='" + id + '\'' +
                 '}';
         }
-
-        @Override
-        public Iterable<ArtifactLineReference> getArtifacts() {
-            return artifacts;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-    }
-
-    private static final class ArtifactLineReferenceImpl implements ArtifactLineReference {
-
-        private static final long                      serialVersionUID = 8671847295268238991L;
-
-        private final String                           artifactId;
-
-        private final String                           artifactVersion;
-
-        private final Iterable<StatementLineReference> statements;
-
-        @Override
-        public String getArtifactId() {
-            return artifactId;
-        }
-
-        @Override
-        public String getArtifactVersion() {
-            return artifactVersion;
-        }
-
-        @Override
-        public Iterable<StatementLineReference> getStatements() {
-            return statements;
-        }
-
-        private ArtifactLineReferenceImpl(final String artifactId, final String artifactVersion,
-                                          final Iterable<StatementLineReference> statements) {
-            this.artifactId = artifactId;
-            this.artifactVersion = artifactVersion;
-            this.statements = statements;
-
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final ArtifactLineReferenceImpl that = (ArtifactLineReferenceImpl) o;
-
-            if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) { return false; }
-            if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null) { return false; }
-            if (statements != null ? !statements.equals(that.statements) : that.statements != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = artifactId != null ? artifactId.hashCode() : 0;
-            result = 31 * result + (artifactVersion != null ? artifactVersion.hashCode() : 0);
-            result = 31 * result + (statements != null ? statements.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "ArtifactLineReferenceImpl{" +
-                "artifactId='" + artifactId + '\'' +
-                ", artifactVersion='" + artifactVersion + '\'' +
-                ", statements=" + statements +
-                '}';
-        }
-    }
-
-    private static final class StatementLineReferenceImpl implements StatementLineReference {
-
-        private static final long                   serialVersionUID = 3325696914749205681L;
-
-        private final Iterable<SimpleLineReference> lineReferences;
-
-        private final String                        statement;
-
-        private StatementLineReferenceImpl(final Iterable<SimpleLineReference> lineReferences, final String statement) {
-            this.lineReferences = lineReferences;
-            this.statement = statement;
-        }
-
-        @Override
-        public Iterable<SimpleLineReference> getLineReferences() {
-            return lineReferences;
-        }
-
-        @Override
-        public String getStatement() {
-            return statement;
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final StatementLineReferenceImpl that = (StatementLineReferenceImpl) o;
-
-            if (lineReferences != null ? !lineReferences.equals(that.lineReferences) : that.lineReferences != null) { return false; }
-            if (statement != null ? !statement.equals(that.statement) : that.statement != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = lineReferences != null ? lineReferences.hashCode() : 0;
-            result = 31 * result + (statement != null ? statement.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "StatementLineReferenceImpl{" +
-                "lineReferences=" + lineReferences +
-                ", statement='" + statement + '\'' +
-                '}';
-        }
-    }
-
-    private static final class SimpleLineReferenceImpl implements SimpleLineReference {
-
-        private static final long serialVersionUID = 1L;
-        private final int         beginColumn, endColumn, beginLine, endLine;
-
-        SimpleLineReferenceImpl(final int beginLine, final int endLine, final int beginColumn, final int endColumn) {
-            this.beginLine = beginColumn;
-            this.endLine = endLine;
-            this.beginColumn = beginColumn;
-            this.endColumn = endColumn;
-        }
-
-        @Override
-        public int getBeginColumn() {
-            return beginColumn;
-        }
-
-        @Override
-        public int getEndColumn() {
-            return endColumn;
-        }
-
-        @Override
-        public int getBeginLine() {
-            return beginLine;
-        }
-
-        @Override
-        public int getEndLine() {
-            return endLine;
-        }
-
-        @Override
-        public String toString() {
-            return "SimpleLineReferenceImpl{" +
-                "beginColumn=" + beginColumn +
-                ", endColumn=" + endColumn +
-                ", beginLine=" + beginLine +
-                ", endLine=" + endLine +
-                '}';
-        }
-
-        @Override
-        public boolean equals(
-                              final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final SimpleLineReferenceImpl that = (SimpleLineReferenceImpl) o;
-
-            if (beginColumn != that.beginColumn) { return false; }
-            if (beginLine != that.beginLine) { return false; }
-            if (endColumn != that.endColumn) { return false; }
-            if (endLine != that.endLine) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = beginColumn;
-            result = 31 * result + endColumn;
-            result = 31 * result + beginLine;
-            result = 31 * result + endLine;
-            return result;
-        }
-    }
-
-    public static TreeLineReference copyOf(
-                                           final String treeLineReferenceId,
-                                           final TreeLineReference treeLineRef,
-                                           final Map<String, Map<String, Set<SimpleLineReference>>> newData) {
-        return copyOf(treeLineReferenceId, treeLineRef.getArtifacts(), newData, null);
     }
 
     public static TreeLineReference copyOf(
@@ -321,6 +314,13 @@ public class TreeLineReferenceSupport {
             artifacts.add(artifactLineReferenceImpl);
         }
         return treeLineReferenceImpl;
+    }
+
+    public static TreeLineReference copyOf(
+                                           final String treeLineReferenceId,
+                                           final TreeLineReference treeLineRef,
+                                           final Map<String, Map<String, Set<SimpleLineReference>>> newData) {
+        return copyOf(treeLineReferenceId, treeLineRef.getArtifacts(), newData, null);
     }
 
     public static SimpleLineReference createSimpleLineReference(

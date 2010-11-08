@@ -84,6 +84,14 @@ public class ConversionTest {
         Assert.assertThat(asBd, Is.is(new BigDecimal("3")));
     }
 
+    @Test(expected = SLRuntimeException.class)
+    public void shouldNotWorkWhenThereIsNoTimeZone()
+            throws Exception {
+        final String date1AsString = "2010-06-02 11:26:44";
+        Conversion.convert(date1AsString, Date.class);
+
+    }
+
     @Test
     public void shouldWorkWithClass()
             throws Exception {
@@ -100,14 +108,6 @@ public class ConversionTest {
         final String asString = Conversion.convert(d, String.class);
         final Date asDate = Conversion.convert(asString, Date.class);
         Assert.assertThat(d.toString(), Is.is(asDate.toString()));
-    }
-
-    @Test(expected = SLRuntimeException.class)
-    public void shouldNotWorkWhenThereIsNoTimeZone()
-            throws Exception {
-        final String date1AsString = "2010-06-02 11:26:44";
-        Conversion.convert(date1AsString, Date.class);
-
     }
 
     @Test

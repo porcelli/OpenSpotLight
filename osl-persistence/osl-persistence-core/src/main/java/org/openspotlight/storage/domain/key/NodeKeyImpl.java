@@ -68,98 +68,85 @@ import com.google.common.collect.ImmutableSet;
  */
 public class NodeKeyImpl implements NodeKey {
 
-    private static final long serialVersionUID = 7018608184362764936L;
-
-    private final int         hashCode;
-
-    @Override
-    public String toString() {
-        return "NodeKeyImpl{" +
-                "keyAsString='" + getKeyAsString() + '\'' +
-                '}';
-    }
-
-    public NodeKeyImpl(final CompositeKey localKey, final String parentKeyAsString, final Partition partition) {
-        if (localKey == null) { throw new IllegalArgumentException(); }
-        this.localKey = localKey;
-        this.parentKeyAsString = parentKeyAsString;
-        this.partition = partition;
-
-        int result = partition != null ? partition.hashCode() : 0;
-        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
-        result = 31 * result + (parentKeyAsString != null ? parentKeyAsString.hashCode() : 0);
-        hashCode = result;
-
-    }
-
-    private final Partition    partition;
-
-    private final CompositeKey localKey;
-
-    private final String       parentKeyAsString;
-
-    private transient String   keyAsString = null;
-
-    @Override
-    public String getKeyAsString() {
-        String value = keyAsString;
-        if (value == null) {
-            value = StringKeysSupport.buildNodeKeyAsString(this);
-            keyAsString = value;
-        }
-        return value;
-    }
-
-    @Override
-    public Partition getPartition() {
-        return partition;
-    }
-
-    @Override
-    public CompositeKey getCompositeKey() {
-        return localKey;
-    }
-
-    @Override
-    public String getParentKeyAsString() {
-        return parentKeyAsString;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-
-        final NodeKeyImpl uniqueKey = (NodeKeyImpl) o;
-        if (hashCode != uniqueKey.hashCode) { return false; }
-        if (localKey != null ? !localKey.equals(uniqueKey.localKey) : uniqueKey.localKey != null) { return false; }
-        if (parentKeyAsString != null ? !parentKeyAsString.equals(uniqueKey.parentKeyAsString)
-            : uniqueKey.parentKeyAsString != null) { return false; }
-        if (partition != null ? !partition.equals(uniqueKey.partition) : uniqueKey.partition != null) { return false; }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return hashCode;
-    }
-
-    @Override
-    public int compareTo(final NodeKey that) {
-        if (this == null && that == null) { return 0; }
-        if (this != null && that == null) { return 1; }
-        if (this == null && that != null) { return -1; }
-        final int result = getCompositeKey().compareTo(that.getCompositeKey());
-        return result;
-
-    }
-
     public static class CompositeKeyImpl implements CompositeKey {
 
-        private static final long serialVersionUID = -2241511690224419686L;
+        public static class SimpleKeyImpl implements SimpleKey {
 
-        private final int         hashCode;
+            private static final long serialVersionUID = -1370685091918627295L;
+
+            private final int         hashCode;
+
+            private final String      propertyName;
+
+            private final String      value;
+
+            public SimpleKeyImpl(final String propertyName, final String value) {
+                checkNotEmpty("propertyName", propertyName);
+                this.value = value;
+                this.propertyName = propertyName;
+                int result = value != null ? value.hashCode() : 0;
+                result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+                hashCode = result;
+
+            }
+
+            @Override
+            public int compareTo(final SimpleKey o) {
+                final int result = propertyName.compareTo(o.getKeyName());
+                return result;
+            }
+
+            @Override
+            public boolean equals(final Object o) {
+                if (this == o) { return true; }
+                if (o == null || getClass() != o.getClass()) { return false; }
+
+                final SimpleKeyImpl that = (SimpleKeyImpl) o;
+                if (hashCode != that.hashCode) { return false; }
+
+                if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) { return false; }
+                if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
+
+                return true;
+            }
+
+            @Override
+            public String getKeyName() {
+                return propertyName;
+
+            }
+
+            @Override
+            public String getValue() {
+                return value;
+            }
+
+            @Override
+            public int hashCode() {
+                return hashCode;
+            }
+
+            @Override
+            public String toString() {
+                return "SimpleKeyImpl{" +
+                        ", value=" + value +
+                        ", propertyName='" + propertyName + '\'' +
+                        '}';
+            }
+
+        }
+
+        private static final long    serialVersionUID = -2241511690224419686L;
+
+        private final Set<SimpleKey> entries;
+
+        private final Set<String>    entryNames;
+
+        private final int            hashCode;
+
+        private transient String     keyAsString      = null;
+
+        private final String         nodeType;
 
         public CompositeKeyImpl(final Set<SimpleKey> entries, final String nodeType) {
             if (nodeType == null) { throw new IllegalArgumentException(); }
@@ -178,58 +165,6 @@ public class NodeKeyImpl implements NodeKey {
             result = 31 * result + (nodeType != null ? nodeType.hashCode() : 0);
             hashCode = result;
 
-        }
-
-        private final Set<SimpleKey> entries;
-
-        private final Set<String>    entryNames;
-
-        @Override
-        public Set<String> getKeyNames() {
-            return entryNames;
-        }
-
-        private final String nodeType;
-
-        @Override
-        public Set<SimpleKey> getKeys() {
-            return entries;
-        }
-
-        @Override
-        public String getNodeType() {
-            return nodeType;
-        }
-
-        private transient String keyAsString = null;
-
-        @Override
-        public String getKeyAsString() {
-            String value = keyAsString;
-            if (value == null) {
-                value = StringKeysSupport.buildCompositeKeyAsHash(this);
-                keyAsString = value;
-            }
-            return value;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final CompositeKeyImpl localKey = (CompositeKeyImpl) o;
-            if (hashCode != localKey.hashCode) { return false; }
-
-            if (entries != null ? !entries.equals(localKey.entries) : localKey.entries != null) { return false; }
-            if (nodeType != null ? !nodeType.equals(localKey.nodeType) : localKey.nodeType != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode;
         }
 
         @Override
@@ -255,70 +190,135 @@ public class NodeKeyImpl implements NodeKey {
             }
         }
 
-        public static class SimpleKeyImpl implements SimpleKey {
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
 
-            private static final long serialVersionUID = -1370685091918627295L;
+            final CompositeKeyImpl localKey = (CompositeKeyImpl) o;
+            if (hashCode != localKey.hashCode) { return false; }
 
-            private final int         hashCode;
+            if (entries != null ? !entries.equals(localKey.entries) : localKey.entries != null) { return false; }
+            if (nodeType != null ? !nodeType.equals(localKey.nodeType) : localKey.nodeType != null) { return false; }
 
-            public SimpleKeyImpl(final String propertyName, final String value) {
-                checkNotEmpty("propertyName", propertyName);
-                this.value = value;
-                this.propertyName = propertyName;
-                int result = value != null ? value.hashCode() : 0;
-                result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
-                hashCode = result;
-
-            }
-
-            private final String value;
-
-            private final String propertyName;
-
-            @Override
-            public String getValue() {
-                return value;
-            }
-
-            @Override
-            public String getKeyName() {
-                return propertyName;
-
-            }
-
-            @Override
-            public boolean equals(final Object o) {
-                if (this == o) { return true; }
-                if (o == null || getClass() != o.getClass()) { return false; }
-
-                final SimpleKeyImpl that = (SimpleKeyImpl) o;
-                if (hashCode != that.hashCode) { return false; }
-
-                if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) { return false; }
-                if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-                return true;
-            }
-
-            @Override
-            public int hashCode() {
-                return hashCode;
-            }
-
-            @Override
-            public int compareTo(final SimpleKey o) {
-                final int result = propertyName.compareTo(o.getKeyName());
-                return result;
-            }
-
-            @Override
-            public String toString() {
-                return "SimpleKeyImpl{" +
-                        ", value=" + value +
-                        ", propertyName='" + propertyName + '\'' +
-                        '}';
-            }
-
+            return true;
         }
+
+        @Override
+        public String getKeyAsString() {
+            String value = keyAsString;
+            if (value == null) {
+                value = StringKeysSupport.buildCompositeKeyAsHash(this);
+                keyAsString = value;
+            }
+            return value;
+        }
+
+        @Override
+        public Set<String> getKeyNames() {
+            return entryNames;
+        }
+
+        @Override
+        public Set<SimpleKey> getKeys() {
+            return entries;
+        }
+
+        @Override
+        public String getNodeType() {
+            return nodeType;
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
+    }
+
+    private static final long  serialVersionUID = 7018608184362764936L;
+
+    private final int          hashCode;
+
+    private transient String   keyAsString      = null;
+
+    private final CompositeKey localKey;
+
+    private final String       parentKeyAsString;
+
+    private final Partition    partition;
+
+    public NodeKeyImpl(final CompositeKey localKey, final String parentKeyAsString, final Partition partition) {
+        if (localKey == null) { throw new IllegalArgumentException(); }
+        this.localKey = localKey;
+        this.parentKeyAsString = parentKeyAsString;
+        this.partition = partition;
+
+        int result = partition != null ? partition.hashCode() : 0;
+        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
+        result = 31 * result + (parentKeyAsString != null ? parentKeyAsString.hashCode() : 0);
+        hashCode = result;
+
+    }
+
+    @Override
+    public int compareTo(final NodeKey that) {
+        if (this == null && that == null) { return 0; }
+        if (this != null && that == null) { return 1; }
+        if (this == null && that != null) { return -1; }
+        final int result = getCompositeKey().compareTo(that.getCompositeKey());
+        return result;
+
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
+
+        final NodeKeyImpl uniqueKey = (NodeKeyImpl) o;
+        if (hashCode != uniqueKey.hashCode) { return false; }
+        if (localKey != null ? !localKey.equals(uniqueKey.localKey) : uniqueKey.localKey != null) { return false; }
+        if (parentKeyAsString != null ? !parentKeyAsString.equals(uniqueKey.parentKeyAsString)
+            : uniqueKey.parentKeyAsString != null) { return false; }
+        if (partition != null ? !partition.equals(uniqueKey.partition) : uniqueKey.partition != null) { return false; }
+
+        return true;
+    }
+
+    @Override
+    public CompositeKey getCompositeKey() {
+        return localKey;
+    }
+
+    @Override
+    public String getKeyAsString() {
+        String value = keyAsString;
+        if (value == null) {
+            value = StringKeysSupport.buildNodeKeyAsString(this);
+            keyAsString = value;
+        }
+        return value;
+    }
+
+    @Override
+    public String getParentKeyAsString() {
+        return parentKeyAsString;
+    }
+
+    @Override
+    public Partition getPartition() {
+        return partition;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    @Override
+    public String toString() {
+        return "NodeKeyImpl{" +
+                "keyAsString='" + getKeyAsString() + '\'' +
+                '}';
     }
 }

@@ -63,7 +63,28 @@ import org.openspotlight.persist.annotation.TransientProperty;
  */
 public class PathElement implements Comparable<PathElement>, Serializable {
 
-    private static final long serialVersionUID = -6520096568789344933L;
+    private static final long         serialVersionUID  = -6520096568789344933L;
+
+    private volatile transient String completePathCache = null;
+
+    /** The hashcode. */
+    private volatile transient int    hashcode;
+
+    /** The name. */
+    private String                    name;
+
+    /** The parent. */
+    private PathElement               parent;
+
+    public PathElement() {
+
+    }
+
+    public PathElement(
+                        final String name, final PathElement parent) {
+        this.name = name;
+        this.parent = parent;
+    }
 
     /**
      * Creates the from path string.
@@ -101,27 +122,6 @@ public class PathElement implements Comparable<PathElement>, Serializable {
 
         return createFromPathString(initialPathElement.getCompletePath() + Artifact.SEPARATOR + newPathString);
 
-    }
-
-    /** The name. */
-    private String                    name;
-
-    /** The parent. */
-    private PathElement               parent;
-
-    /** The hashcode. */
-    private volatile transient int    hashcode;
-
-    private volatile transient String completePathCache = null;
-
-    public PathElement() {
-
-    }
-
-    public PathElement(
-                        final String name, final PathElement parent) {
-        this.name = name;
-        this.parent = parent;
     }
 
     /*

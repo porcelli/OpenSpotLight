@@ -62,6 +62,21 @@ import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 
 public class TestSaveQueryCommand extends AbstractCommandTest {
 
+    private String getFileContent(final File in) {
+        final StringBuilder sb = new StringBuilder();
+        LineNumberReader fileReader;
+        try {
+            fileReader = new LineNumberReader(new FileReader(in));
+            while (fileReader.ready()) {
+                sb.append(fileReader.readLine());
+                sb.append("\n");
+            }
+            return sb.toString();
+        } catch (final Exception e) {
+            return "";
+        }
+    }
+
     @Override
     protected void setupCommand() {
         command = new SaveQueryCommand();
@@ -70,40 +85,6 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
     @After
     public void deleteTestFile() {
         new File("out.slql").delete();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testAcceptNull() {
-        assertThat(command.accept(null), is(false));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testExecuteNull() {
-        command.execute(null, null, null);
-    }
-
-    @Test
-    public void testAcceptNullInout() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput(null);
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptValidParameter() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("save filename.slql");
-
-        assertThat(command.accept(state), is(true));
-    }
-
-    @Test
-    public void testAcceptValidParameter2() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("save something");
-
-        assertThat(command.accept(state), is(true));
     }
 
     @Test
@@ -138,6 +119,40 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
         assertThat(command.accept(state), is(false));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testAcceptNull() {
+        assertThat(command.accept(null), is(false));
+    }
+
+    @Test
+    public void testAcceptNullInout() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptValidParameter() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("save filename.slql");
+
+        assertThat(command.accept(state), is(true));
+    }
+
+    @Test
+    public void testAcceptValidParameter2() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("save something");
+
+        assertThat(command.accept(state), is(true));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExecuteNull() {
+        command.execute(null, null, null);
+    }
+
     @Test
     public void testValidParameter() {
         final ConsoleState state = new ConsoleState(null);
@@ -155,20 +170,5 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
         assertThat(getFileContent(generatedFile), is("select *;\n"));
         assertThat(state.getLastQuery(), is("select *;"));
         assertThat(state.getInput(), is(""));
-    }
-
-    private String getFileContent(final File in) {
-        final StringBuilder sb = new StringBuilder();
-        LineNumberReader fileReader;
-        try {
-            fileReader = new LineNumberReader(new FileReader(in));
-            while (fileReader.ready()) {
-                sb.append(fileReader.readLine());
-                sb.append("\n");
-            }
-            return sb.toString();
-        } catch (final Exception e) {
-            return "";
-        }
     }
 }

@@ -62,14 +62,14 @@ public class SelectByLinkInfo {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The comma. */
+    private boolean           comma;
+
     /** The name. */
     private String            name;
 
     /** The side. */
     private SideType          side;
-
-    /** The comma. */
-    private boolean           comma;
 
     /**
      * Instantiates a new sL select by link info.
@@ -79,6 +79,15 @@ public class SelectByLinkInfo {
     public SelectByLinkInfo(
                                final String name) {
         setName(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        return Equals.eachEquality(SelectByLinkInfo.class, this, obj, "name");
     }
 
     /**
@@ -91,12 +100,21 @@ public class SelectByLinkInfo {
     }
 
     /**
-     * Sets the name.
+     * Gets the side.
      * 
-     * @param name the new name
+     * @return the side
      */
-    public void setName(final String name) {
-        this.name = name;
+    public SideType getSide() {
+        return side;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(name);
     }
 
     /**
@@ -118,12 +136,12 @@ public class SelectByLinkInfo {
     }
 
     /**
-     * Gets the side.
+     * Sets the name.
      * 
-     * @return the side
+     * @param name the new name
      */
-    public SideType getSide() {
-        return side;
+    public void setName(final String name) {
+        this.name = name;
     }
 
     /**
@@ -133,24 +151,6 @@ public class SelectByLinkInfo {
      */
     public void setSide(final SideType side) {
         this.side = side;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equalsTo(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        return Equals.eachEquality(SelectByLinkInfo.class, this, obj, "name");
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return HashCodes.hashOf(name);
     }
 
     /*

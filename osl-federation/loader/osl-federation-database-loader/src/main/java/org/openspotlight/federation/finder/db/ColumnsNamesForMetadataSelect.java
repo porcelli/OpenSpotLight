@@ -56,17 +56,9 @@ package org.openspotlight.federation.finder.db;
  */
 public enum ColumnsNamesForMetadataSelect {
     /**
-     * The script itself. Should not be returned on data select, but is mandatory on content select.
-     */
-    sql_content,
-    /**
      * The script catalog. Should be returned on data select, but not on content select.
      */
     catalog_name,
-    /**
-     * The script schema. Should be returned on data select, but not on content select.
-     */
-    schema_name,
     /**
      * The script name inside database. Should be returned on data select, but not on content select.
      */
@@ -74,6 +66,14 @@ public enum ColumnsNamesForMetadataSelect {
     /**
      * Any aditional information for the script. Should be returned on data select, but not on content select.
      */
-    remarks
+    remarks,
+    /**
+     * The script schema. Should be returned on data select, but not on content select.
+     */
+    schema_name,
+    /**
+     * The script itself. Should not be returned on data select, but is mandatory on content select.
+     */
+    sql_content
 
 }

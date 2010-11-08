@@ -68,16 +68,16 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public IdentityManager createIdentityManager(final StorageSession session) {
-        return new IdentityManagerSimpleImpl();
+    public PolicyEnforcement createGraphPolicyEnforcement(final StorageSession session) {
+        return new PolicyEnforcementGraphImpl();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PolicyEnforcement createGraphPolicyEnforcement(final StorageSession session) {
-        return new PolicyEnforcementGraphImpl();
+    public IdentityManager createIdentityManager(final StorageSession session) {
+        return new IdentityManagerSimpleImpl();
     }
 
     /**

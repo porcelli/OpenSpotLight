@@ -57,21 +57,11 @@ import org.openspotlight.persist.internal.LazyProperty;
 @Name("stream_artifact")
 public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
-    private long lastChange;
-
-    @Override
-    public long getLastChange() {
-        return lastChange;
-    }
-
-    @Override
-    public void setLastChange(final long lastChange) {
-        this.lastChange = lastChange;
-    }
-
     private static final long         serialVersionUID = -8912205023568005794L;
 
     private LazyProperty<InputStream> content          = LazyProperty.Factory.create(InputStream.class, this);
+
+    private long                      lastChange;
 
     @Override
     public boolean contentEquals(final Artifact other) {
@@ -87,8 +77,18 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
         return content;
     }
 
+    @Override
+    public long getLastChange() {
+        return lastChange;
+    }
+
     public void setContent(final LazyProperty<InputStream> content) {
         this.content = content;
+    }
+
+    @Override
+    public void setLastChange(final long lastChange) {
+        this.lastChange = lastChange;
     }
 
 }

@@ -66,19 +66,19 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
 
     private String            fromCatalogName;
 
+    private String            fromColumnName;
+
     private String            fromSchemaName;
-
-    private String            toCatalogName;
-
-    private String            toSchemaName;
 
     private String            fromTableName;
 
-    private String            fromColumnName;
-
-    private String            toTableName;
+    private String            toCatalogName;
 
     private String            toColumnName;
+
+    private String            toSchemaName;
+
+    private String            toTableName;
 
     @Override
     public boolean contentEquals(final Artifact other) {

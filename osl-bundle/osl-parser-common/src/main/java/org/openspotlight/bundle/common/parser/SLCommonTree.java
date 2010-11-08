@@ -55,14 +55,14 @@ import org.openspotlight.graph.Node;
 
 public class SLCommonTree extends CommonTree implements SLLineInfo {
 
-    private int              startCharOffset       = -1;
+    private SLArtifactStream artifactCache         = null;
     private int              endCharOffset         = -1;
     private int              endCharPositionInLine = -1;
     private int              endLine               = -1;
 
     private Node             node;
 
-    private SLArtifactStream artifactCache         = null;
+    private int              startCharOffset       = -1;
 
     public SLCommonTree() {
         super();

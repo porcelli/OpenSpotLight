@@ -80,9 +80,9 @@ import com.google.inject.Injector;
 public class PersistentConfigurationManagerTest extends
         AbstractConfigurationManagerTest {
 
-    private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
-
     private static JRedis                                            jredis;
+
+    private static SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     @BeforeClass
     public static void setupJcrRepo()
@@ -97,6 +97,12 @@ public class PersistentConfigurationManagerTest extends
                 RegularPartitions.FEDERATION);
     }
 
+    @Override
+    protected MutableConfigurationManager createNewConfigurationManager() {
+        return PersistentConfigurationManagerFactoryImpl
+                .createMutableUsingSession(simplePersist);
+    }
+
     @Before
     public void clean()
         throws Exception {
@@ -107,12 +113,6 @@ public class PersistentConfigurationManagerTest extends
     public void closeSession()
         throws Exception {
         // TODO
-    }
-
-    @Override
-    protected MutableConfigurationManager createNewConfigurationManager() {
-        return PersistentConfigurationManagerFactoryImpl
-                .createMutableUsingSession(simplePersist);
     }
 
     @Before

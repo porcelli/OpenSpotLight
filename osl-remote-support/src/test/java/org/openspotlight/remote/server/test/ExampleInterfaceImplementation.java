@@ -56,11 +56,11 @@ import java.util.Map;
 
 public class ExampleInterfaceImplementation implements ExampleInterface {
 
-    private final AnotherNonSerializableClass     remoteResult = new AnotherNonSerializableClass("damn cool stuff!");
-
     private Collection<NonSerializableInterface>  list         = new ArrayList<NonSerializableInterface>();
 
     private Map<String, NonSerializableInterface> map          = new HashMap<String, NonSerializableInterface>();
+
+    private final AnotherNonSerializableClass     remoteResult = new AnotherNonSerializableClass("damn cool stuff!");
 
     public ExampleInterfaceImplementation() {
         map.put("1", new AnotherNonSerializableClass("1"));

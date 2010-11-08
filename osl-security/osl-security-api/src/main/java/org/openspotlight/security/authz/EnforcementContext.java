@@ -71,6 +71,22 @@ public class EnforcementContext {
     }
 
     /**
+     * Clear.
+     * 
+     * @param name the name
+     */
+    public void clear(final String name) {
+        attributes.remove(name);
+    }
+
+    /**
+     * Clear all.
+     */
+    public void clearAll() {
+        attributes.clear();
+    }
+
+    /**
      * Gets the attribute.
      * 
      * @param name the name
@@ -78,17 +94,6 @@ public class EnforcementContext {
      */
     public Object getAttribute(final String name) {
         return attributes.get(name);
-    }
-
-    /**
-     * Sets the attribute.
-     * 
-     * @param name the name
-     * @param attribute the attribute
-     */
-    public void setAttribute(final String name,
-                              final Object attribute) {
-        attributes.put(name, attribute);
     }
 
     /**
@@ -110,18 +115,13 @@ public class EnforcementContext {
     }
 
     /**
-     * Clear.
+     * Sets the attribute.
      * 
      * @param name the name
+     * @param attribute the attribute
      */
-    public void clear(final String name) {
-        attributes.remove(name);
-    }
-
-    /**
-     * Clear all.
-     */
-    public void clearAll() {
-        attributes.clear();
+    public void setAttribute(final String name,
+                              final Object attribute) {
+        attributes.put(name, attribute);
     }
 }

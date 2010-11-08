@@ -34,39 +34,76 @@ import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 public interface QueryText extends Query {
 
     /**
-     * Checks for target.
+     * Execute.
      * 
-     * @return true, if has target
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @return the sL query result
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws QueryException the SL query exception
      */
-    public boolean hasTarget();
+    public QueryResult execute(Collection<Node> inputNodes,
+                                  Map<String, ?> variableValues)
+        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
 
     /**
-     * Checks for variables.
+     * Execute.
      * 
-     * @return true, if has variables
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws QueryException the SL query exception
      */
-    public boolean hasVariables();
+    public QueryResult execute(Collection<Node> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset)
+        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
 
     /**
-     * Checks for output model.
+     * Execute.
      * 
-     * @return true, if has output model
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @return the sL query result
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws QueryException the SL query exception
      */
-    public boolean hasOutputModel();
+    public QueryResult execute(Collection<Node> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL)
+        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
 
     /**
-     * Gets the output model name.
+     * Execute.
      * 
-     * @return the output model name
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws QueryException the SL query exception
      */
-    public String getOutputModelName();
-
-    /**
-     * Gets the variables.
-     * 
-     * @return the variables
-     */
-    public Collection<SLQLVariable> getVariables();
+    public QueryResult execute(Collection<Node> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset)
+        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
 
     /**
      * Execute.
@@ -99,22 +136,25 @@ public interface QueryText extends Query {
     /**
      * Execute.
      * 
-     * @param inputNodes the input nodes
      * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
      * @return the sL query result
      * @throws InvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws QueryException the SL query exception
      */
-    public QueryResult execute(Collection<Node> inputNodes,
-                                  Map<String, ?> variableValues)
+    public QueryResult execute(Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL)
         throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
 
     /**
      * Execute.
      * 
-     * @param inputNodes the input nodes
      * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
      * @param limit the limit
      * @param offset the offset
      * @return the sL query result
@@ -122,8 +162,9 @@ public interface QueryText extends Query {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws QueryException the SL query exception
      */
-    public QueryResult execute(Collection<Node> inputNodes,
-                                  Map<String, ?> variableValues,
+    public QueryResult execute(Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
                                   Integer limit,
                                   Integer offset)
         throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
@@ -156,82 +197,6 @@ public interface QueryText extends Query {
      */
     public QueryResult execute(String[] inputNodesIDs,
                                   Map<String, ?> variableValues,
-                                  Integer limit,
-                                  Integer offset)
-        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
-
-    /**
-     * Execute.
-     * 
-     * @param variableValues the variable values
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws QueryException the SL query exception
-     */
-    public QueryResult execute(Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL)
-        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
-
-    /**
-     * Execute.
-     * 
-     * @param variableValues the variable values
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws QueryException the SL query exception
-     */
-    public QueryResult execute(Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset)
-        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
-
-    /**
-     * Execute.
-     * 
-     * @param inputNodes the input nodes
-     * @param variableValues the variable values
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws QueryException the SL query exception
-     */
-    public QueryResult execute(Collection<Node> inputNodes,
-                                  Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL)
-        throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
-
-    /**
-     * Execute.
-     * 
-     * @param inputNodes the input nodes
-     * @param variableValues the variable values
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws QueryException the SL query exception
-     */
-    public QueryResult execute(Collection<Node> inputNodes,
-                                  Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
                                   Integer limit,
                                   Integer offset)
         throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
@@ -300,5 +265,40 @@ public interface QueryText extends Query {
     public QueryResult executeTarget(SortMode sortMode,
                                         boolean showSLQL)
         throws InvalidQueryElementException, InvalidQuerySyntaxException, QueryException;
+
+    /**
+     * Gets the output model name.
+     * 
+     * @return the output model name
+     */
+    public String getOutputModelName();
+
+    /**
+     * Gets the variables.
+     * 
+     * @return the variables
+     */
+    public Collection<SLQLVariable> getVariables();
+
+    /**
+     * Checks for output model.
+     * 
+     * @return true, if has output model
+     */
+    public boolean hasOutputModel();
+
+    /**
+     * Checks for target.
+     * 
+     * @return true, if has target
+     */
+    public boolean hasTarget();
+
+    /**
+     * Checks for variables.
+     * 
+     * @return true, if has variables
+     */
+    public boolean hasVariables();
 
 }

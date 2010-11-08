@@ -88,43 +88,6 @@ import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
 
 public abstract class AbstractGeneralQueryTest {
 
-    protected abstract Callable<Void> createStartUpHandler();
-
-    protected abstract Callable<Void> createShutdownHandler();
-
-    protected abstract GraphReader graphReader();
-
-    private static Callable<Void> shutdownHandler;
-
-    private final boolean         didItRun = false;
-
-    protected boolean appearsAfter(final NodeWrapper[] wrappers, final String firstType,
-                                   final String firstStr, final String afterType, final String afterStr) {
-        return appearsAfter(wrappers, firstType, "java.util", firstStr,
-                afterType, "java.util", afterStr);
-    }
-
-    protected boolean appearsAfter(final NodeWrapper[] wrappers, final String firstType,
-                                   final String firstParent, final String firstStr, final String afterType,
-                                   final String afterParent, final String afterStr) {
-        final NodeWrapper first = new NodeWrapper(firstType, firstParent, firstStr);
-        final NodeWrapper after = new NodeWrapper(afterType, afterParent, afterStr);
-        int firstIndex = -1, afterIndex = -1;
-        for (int i = 0, size = wrappers.length; i < size; i++) {
-            if (wrappers[i].equals(first)) {
-                firstIndex = i;
-            }
-            if (wrappers[i].equals(after)) {
-                afterIndex = i;
-            }
-            if (firstIndex != -1 && afterIndex != -1) {
-                break;
-            }
-        }
-        return afterIndex > firstIndex;
-
-    }
-
     /**
      * The Class NodeWrapper.
      * 
@@ -133,24 +96,24 @@ public abstract class AbstractGeneralQueryTest {
     public class NodeWrapper {
 
         /**
-         * The node.
-         */
-        private Node   node;
-
-        /**
-         * The type name.
-         */
-        private String typeName;
-
-        /**
          * The name.
          */
         private String name;
 
         /**
+         * The node.
+         */
+        private Node   node;
+
+        /**
          * The parent name.
          */
         private String parentName;
+
+        /**
+         * The type name.
+         */
+        private String typeName;
 
         /**
          * Instantiates a new node wrapper.
@@ -259,16 +222,71 @@ public abstract class AbstractGeneralQueryTest {
         }
     }
 
+    private static Callable<Void> shutdownHandler;
+
+    private final boolean         didItRun  = false;
+
     /**
      * The LOGGER.
      */
-    protected final Logger LOGGER   = Logger.getLogger(getClass());
+    protected final Logger        LOGGER    = Logger.getLogger(getClass());
 
-    protected GraphReader  session;
+    /**
+     * The print info.
+     */
+    protected boolean             printInfo = false;
 
-    protected GraphWriter  writer;
+    protected GraphReader         session;
 
-    protected SortMode     sortMode = SortMode.NOT_SORTED;
+    protected SortMode            sortMode  = SortMode.NOT_SORTED;
+
+    protected GraphWriter         writer;
+
+    /**
+     * Load classes.
+     * 
+     * @param fileName the file name
+     * @return the collection< class<?>>
+     * @throws SLException the SL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
+    private static Collection<Class<?>> loadClasses(final String fileName)
+            throws SLException, IOException, ClassNotFoundException {
+        final Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        final String packagePath = AbstractGeneralQueryTest.class.getPackage()
+                .getName().replace('.', '/');
+        final String filePath = packagePath + '/' + fileName;
+        final InputStream inputStream = getResourceFromClassPath(filePath);
+        final Collection<String> names = Files.readLines(inputStream);
+        inputStream.close();
+        for (final String name: names) {
+            final String className = "java.util.".concat(name).trim();
+            final Class<?> clazz = Class.forName(className);
+            classes.add(clazz);
+        }
+        return classes;
+    }
+
+    /**
+     * Random tag.
+     * 
+     * @return the int
+     */
+    private static int randomTag() {
+        return (int) Math.round(Math.random() * 100.0);
+    }
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish()
+        throws Exception {
+
+        shutdownHandler.call();
+        shutdownHandler = null;
+    }
 
     /**
      * Adds the class implements interface links.
@@ -382,41 +400,151 @@ public abstract class AbstractGeneralQueryTest {
         }
     }
 
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public static void finish()
-        throws Exception {
+    protected boolean appearsAfter(final NodeWrapper[] wrappers, final String firstType,
+                                   final String firstStr, final String afterType, final String afterStr) {
+        return appearsAfter(wrappers, firstType, "java.util", firstStr,
+                afterType, "java.util", afterStr);
+    }
 
-        shutdownHandler.call();
-        shutdownHandler = null;
+    protected boolean appearsAfter(final NodeWrapper[] wrappers, final String firstType,
+                                   final String firstParent, final String firstStr, final String afterType,
+                                   final String afterParent, final String afterStr) {
+        final NodeWrapper first = new NodeWrapper(firstType, firstParent, firstStr);
+        final NodeWrapper after = new NodeWrapper(afterType, afterParent, afterStr);
+        int firstIndex = -1, afterIndex = -1;
+        for (int i = 0, size = wrappers.length; i < size; i++) {
+            if (wrappers[i].equals(first)) {
+                firstIndex = i;
+            }
+            if (wrappers[i].equals(after)) {
+                afterIndex = i;
+            }
+            if (firstIndex != -1 && afterIndex != -1) {
+                break;
+            }
+        }
+        return afterIndex > firstIndex;
+
+    }
+
+    protected abstract Callable<Void> createShutdownHandler();
+
+    protected abstract Callable<Void> createStartUpHandler();
+
+    /**
+     * Gets the resource content.
+     * 
+     * @param resourceName the resource name
+     * @return the resource content
+     */
+    protected String getResourceContent(final String resourceName) {
+        try {
+            final InputStream in = this.getClass().getResourceAsStream(
+                    resourceName);
+            final Reader reader = new InputStreamReader(in);
+
+            final StringBuilder text = new StringBuilder();
+
+            final char[] buf = new char[1024];
+            int len = 0;
+
+            while ((len = reader.read(buf)) >= 0) {
+                text.append(buf, 0, len);
+            }
+
+            return text.toString();
+        } catch (final Exception e) {
+            return "";
+        }
+    }
+
+    protected abstract GraphReader graphReader();
+
+    /**
+     * Prints the result.
+     * 
+     * @param nodes the nodes
+     */
+    protected void printResult(final Collection<Node> nodes) {
+        if (printInfo && !nodes.isEmpty()) {
+            final StringBuilder buffer = new StringBuilder();
+            StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(),
+                    "):\n");
+            for (final Node node: nodes) {
+                StringBuilderUtil.append(buffer, StringUtils.rightPad(
+                        node.getTypeName(), 60), StringUtils.rightPad(
+                        node.getName(), 60), session.getParentNode(node)
+                        .getName(), '\n');
+            }
+            LOGGER.info(buffer);
+        }
     }
 
     /**
-     * Load classes.
+     * Wrap nodes.
      * 
-     * @param fileName the file name
-     * @return the collection< class<?>>
-     * @throws SLException the SL exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ClassNotFoundException the class not found exception
+     * @param nodes the nodes
+     * @return the node wrapper[]
      */
-    private static Collection<Class<?>> loadClasses(final String fileName)
-            throws SLException, IOException, ClassNotFoundException {
-        final Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        final String packagePath = AbstractGeneralQueryTest.class.getPackage()
-                .getName().replace('.', '/');
-        final String filePath = packagePath + '/' + fileName;
-        final InputStream inputStream = getResourceFromClassPath(filePath);
-        final Collection<String> names = Files.readLines(inputStream);
-        inputStream.close();
-        for (final String name: names) {
-            final String className = "java.util.".concat(name).trim();
-            final Class<?> clazz = Class.forName(className);
-            classes.add(clazz);
+    protected NodeWrapper[] wrapNodes(final List<Node> nodes) {
+        final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
+
+        for (int i = 0; i < wrappers.length; i++) {
+            wrappers[i] = new NodeWrapper(nodes.get(i));
         }
-        return classes;
+        return wrappers;
+    }
+
+    /**
+     * Prints the asserts.
+     * 
+     * @param wrappers the wrappers
+     */
+    void printAsserts(final NodeWrapper[] wrappers) {
+        final StringBuilder buffer = new StringBuilder();
+        StringBuilderUtil
+                .append(buffer, '\n', "assertThat(wrappers.length, is(",
+                        wrappers.length, "));", '\n');
+        for (final NodeWrapper wrapper: wrappers) {
+            String pattern =
+                "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), isOneOf(wrappers));";
+            pattern = StringUtils.replace(pattern, "${typeName}",
+                    wrapper.getTypeName());
+            pattern = StringUtils.replace(pattern, "${parentName}",
+                    wrapper.getParentName());
+            pattern = StringUtils
+                    .replace(pattern, "${name}", wrapper.getName());
+            buffer.append(pattern).append('\n');
+        }
+        buffer.append('\n');
+        LOGGER.info(buffer);
+    }
+
+    /**
+     * Prints the asserts in order.
+     * 
+     * @param wrappers the wrappers
+     */
+    void printAssertsInOrder(final NodeWrapper[] wrappers) {
+        final StringBuilder buffer = new StringBuilder();
+        StringBuilderUtil
+                .append(buffer, '\n', "assertThat(wrappers.length, is(",
+                        wrappers.length, "));", '\n');
+        for (int i = 0; i < wrappers.length; i++) {
+            final NodeWrapper wrapper = wrappers[i];
+            String pattern =
+                "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), is(wrappers[${index}]));";
+            pattern = StringUtils.replace(pattern, "${typeName}",
+                    wrapper.getTypeName());
+            pattern = StringUtils.replace(pattern, "${parentName}",
+                    wrapper.getParentName());
+            pattern = StringUtils
+                    .replace(pattern, "${name}", wrapper.getName());
+            pattern = StringUtils.replace(pattern, "${index}", "" + i);
+            buffer.append(pattern).append('\n');
+        }
+        buffer.append('\n');
+        LOGGER.info(buffer);
     }
 
     /**
@@ -485,133 +613,5 @@ public abstract class AbstractGeneralQueryTest {
             writer.flush();
         }
 
-    }
-
-    /**
-     * Random tag.
-     * 
-     * @return the int
-     */
-    private static int randomTag() {
-        return (int) Math.round(Math.random() * 100.0);
-    }
-
-    /**
-     * The print info.
-     */
-    protected boolean printInfo = false;
-
-    /**
-     * Gets the resource content.
-     * 
-     * @param resourceName the resource name
-     * @return the resource content
-     */
-    protected String getResourceContent(final String resourceName) {
-        try {
-            final InputStream in = this.getClass().getResourceAsStream(
-                    resourceName);
-            final Reader reader = new InputStreamReader(in);
-
-            final StringBuilder text = new StringBuilder();
-
-            final char[] buf = new char[1024];
-            int len = 0;
-
-            while ((len = reader.read(buf)) >= 0) {
-                text.append(buf, 0, len);
-            }
-
-            return text.toString();
-        } catch (final Exception e) {
-            return "";
-        }
-    }
-
-    /**
-     * Prints the asserts.
-     * 
-     * @param wrappers the wrappers
-     */
-    void printAsserts(final NodeWrapper[] wrappers) {
-        final StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil
-                .append(buffer, '\n', "assertThat(wrappers.length, is(",
-                        wrappers.length, "));", '\n');
-        for (final NodeWrapper wrapper: wrappers) {
-            String pattern =
-                "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), isOneOf(wrappers));";
-            pattern = StringUtils.replace(pattern, "${typeName}",
-                    wrapper.getTypeName());
-            pattern = StringUtils.replace(pattern, "${parentName}",
-                    wrapper.getParentName());
-            pattern = StringUtils
-                    .replace(pattern, "${name}", wrapper.getName());
-            buffer.append(pattern).append('\n');
-        }
-        buffer.append('\n');
-        LOGGER.info(buffer);
-    }
-
-    /**
-     * Prints the asserts in order.
-     * 
-     * @param wrappers the wrappers
-     */
-    void printAssertsInOrder(final NodeWrapper[] wrappers) {
-        final StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil
-                .append(buffer, '\n', "assertThat(wrappers.length, is(",
-                        wrappers.length, "));", '\n');
-        for (int i = 0; i < wrappers.length; i++) {
-            final NodeWrapper wrapper = wrappers[i];
-            String pattern =
-                "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), is(wrappers[${index}]));";
-            pattern = StringUtils.replace(pattern, "${typeName}",
-                    wrapper.getTypeName());
-            pattern = StringUtils.replace(pattern, "${parentName}",
-                    wrapper.getParentName());
-            pattern = StringUtils
-                    .replace(pattern, "${name}", wrapper.getName());
-            pattern = StringUtils.replace(pattern, "${index}", "" + i);
-            buffer.append(pattern).append('\n');
-        }
-        buffer.append('\n');
-        LOGGER.info(buffer);
-    }
-
-    /**
-     * Prints the result.
-     * 
-     * @param nodes the nodes
-     */
-    protected void printResult(final Collection<Node> nodes) {
-        if (printInfo && !nodes.isEmpty()) {
-            final StringBuilder buffer = new StringBuilder();
-            StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(),
-                    "):\n");
-            for (final Node node: nodes) {
-                StringBuilderUtil.append(buffer, StringUtils.rightPad(
-                        node.getTypeName(), 60), StringUtils.rightPad(
-                        node.getName(), 60), session.getParentNode(node)
-                        .getName(), '\n');
-            }
-            LOGGER.info(buffer);
-        }
-    }
-
-    /**
-     * Wrap nodes.
-     * 
-     * @param nodes the nodes
-     * @return the node wrapper[]
-     */
-    protected NodeWrapper[] wrapNodes(final List<Node> nodes) {
-        final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
-
-        for (int i = 0; i < wrappers.length; i++) {
-            wrappers[i] = new NodeWrapper(nodes.get(i));
-        }
-        return wrappers;
     }
 }

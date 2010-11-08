@@ -64,6 +64,13 @@ public class Exceptions {
     private static final Logger logger = LoggerFactory.getLogger(Exceptions.class);
 
     /**
+     * Should not be instantiated
+     */
+    private Exceptions() {
+        throw new IllegalStateException(Messages.getString("invalidConstructor")); //$NON-NLS-1$
+    }
+
+    /**
      * Just catch and log the exception.
      * 
      * <pre>
@@ -289,13 +296,6 @@ public class Exceptions {
             throw new RuntimeException(e);
         }
         throw newException;
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Exceptions() {
-        throw new IllegalStateException(Messages.getString("invalidConstructor")); //$NON-NLS-1$
     }
 
 }

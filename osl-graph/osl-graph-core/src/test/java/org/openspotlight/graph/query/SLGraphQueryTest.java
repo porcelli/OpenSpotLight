@@ -85,6 +85,19 @@ import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
 public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
     /**
+     * Instantiates a new sL graph query test.
+     * 
+     * @param sortMode the sort mode
+     * @param printInfo the print info
+     */
+    public SLGraphQueryTest(final boolean printInfo)
+        throws Exception {
+        this.printInfo = printInfo;
+        super.populateGraph();
+
+    }
+
+    /**
      * The main method.
      * 
      * @param args the arguments
@@ -127,17 +140,19 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         }
     }
 
-    /**
-     * Instantiates a new sL graph query test.
-     * 
-     * @param sortMode the sort mode
-     * @param printInfo the print info
-     */
-    public SLGraphQueryTest(final boolean printInfo)
-        throws Exception {
-        this.printInfo = printInfo;
-        super.populateGraph();
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected GraphReader graphReader() {
+        throw new UnsupportedOperationException();
     }
 
     @Test
@@ -308,6 +323,32 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             }
         }.execute();
 
+        printResult(nodes);
+
+    }
+
+    /**
+     * Test select types that contains set or list.
+     */
+    @Test
+    public void testSearchAll() {
+
+        final QueryApi query = session.createQueryApi();
+
+        query.select().type(Node.class.getName()).subTypes().selectEnd()
+                .where().type(Node.class.getName()).subTypes().each()
+                .property("caption").contains().value("Set").typeEnd()
+                .whereEnd().collator(Collator.PRIMARY);
+
+        final QueryResult result = query.execute(sortMode, printInfo);
+        final List<Node> nodes = result.getNodes();
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length >= 99, is(true));
+            }
+        }.execute();
         printResult(nodes);
 
     }
@@ -4204,26 +4245,25 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
     }
 
-    /**
-     * Test select types that contains set or list.
-     */
     @Test
-    public void testSearchAll() {
+    public void testThreeLevelsOfNodeType() {
 
         final QueryApi query = session.createQueryApi();
 
-        query.select().type(Node.class.getName()).subTypes().selectEnd()
-                .where().type(Node.class.getName()).subTypes().each()
-                .property("caption").contains().value("Set").typeEnd()
-                .whereEnd().collator(Collator.PRIMARY);
+        query.select().type(JavaType.class.getName()).subTypes().selectEnd();
 
         final QueryResult result = query.execute(sortMode, printInfo);
         final List<Node> nodes = result.getNodes();
         final NodeWrapper[] wrappers = wrapNodes(nodes);
+        printInfo = true;
+        printResult(nodes);
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length >= 99, is(true));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(),
+                        "java.util", java.util.Map.Entry.class.getName()),
+                        isOneOf(wrappers));
+                assertThat(wrappers.length >= 65, is(true));
             }
         }.execute();
         printResult(nodes);
@@ -4254,46 +4294,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         }.execute();
         printResult(nodes);
 
-    }
-
-    @Test
-    public void testThreeLevelsOfNodeType() {
-
-        final QueryApi query = session.createQueryApi();
-
-        query.select().type(JavaType.class.getName()).subTypes().selectEnd();
-
-        final QueryResult result = query.execute(sortMode, printInfo);
-        final List<Node> nodes = result.getNodes();
-        final NodeWrapper[] wrappers = wrapNodes(nodes);
-        printInfo = true;
-        printResult(nodes);
-
-        new AssertResult() {
-            public void execute() {
-                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(),
-                        "java.util", java.util.Map.Entry.class.getName()),
-                        isOneOf(wrappers));
-                assertThat(wrappers.length >= 65, is(true));
-            }
-        }.execute();
-        printResult(nodes);
-
-    }
-
-    @Override
-    protected Callable<Void> createStartUpHandler() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Callable<Void> createShutdownHandler() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected GraphReader graphReader() {
-        throw new UnsupportedOperationException();
     }
 
 }

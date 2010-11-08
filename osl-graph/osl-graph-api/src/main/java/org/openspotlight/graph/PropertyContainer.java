@@ -64,41 +64,11 @@ import org.openspotlight.common.Pair;
 public interface PropertyContainer {
 
     /**
-     * Checks if this element is modified.
-     * 
-     * @return true is modified, false otherwise
-     */
-    boolean isDirty();
-
-    /**
-     * Sets the property value for the given key. Null is not an accepted property value.
-     * 
-     * @param <V> any serializable type
-     * @param key the property key
-     * @param value the property value
-     * @throws IllegalArgumentException if any input param is null
-     */
-    <V extends Serializable> void setProperty(String key,
-                                               V value)
-        throws IllegalArgumentException;
-
-    /**
      * Returns a list of properties pairs (key-value).
      * 
      * @return the key-value properties pairs
      */
     Set<Pair<String, Serializable>> getProperties();
-
-    /**
-     * Returns <code>true</code> if this property container has a property accessible through the given key, <code>false</code>
-     * otherwise. Null is not an accepted property value.
-     * 
-     * @param key the property key
-     * @return <code>true</code> if this element has a property accessible through the given key, <code>false</code> otherwise
-     * @throws IllegalArgumentException if the input param is null
-     */
-    boolean hasProperty(String key)
-        throws IllegalArgumentException;
 
     /**
      * Returns all existing property keys, or an empty iterable if this element has no properties.
@@ -142,6 +112,24 @@ public interface PropertyContainer {
         throws IllegalArgumentException;
 
     /**
+     * Returns <code>true</code> if this property container has a property accessible through the given key, <code>false</code>
+     * otherwise. Null is not an accepted property value.
+     * 
+     * @param key the property key
+     * @return <code>true</code> if this element has a property accessible through the given key, <code>false</code> otherwise
+     * @throws IllegalArgumentException if the input param is null
+     */
+    boolean hasProperty(String key)
+        throws IllegalArgumentException;
+
+    /**
+     * Checks if this element is modified.
+     * 
+     * @return true is modified, false otherwise
+     */
+    boolean isDirty();
+
+    /**
      * Removes the property associated with the given key if exists. If there's no property associated with the key, nothing will
      * happen.
      * 
@@ -149,6 +137,18 @@ public interface PropertyContainer {
      * @throws IllegalArgumentException if the input param is null
      */
     void removeProperty(String key)
+        throws IllegalArgumentException;
+
+    /**
+     * Sets the property value for the given key. Null is not an accepted property value.
+     * 
+     * @param <V> any serializable type
+     * @param key the property key
+     * @param value the property value
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <V extends Serializable> void setProperty(String key,
+                                               V value)
         throws IllegalArgumentException;
 
 }

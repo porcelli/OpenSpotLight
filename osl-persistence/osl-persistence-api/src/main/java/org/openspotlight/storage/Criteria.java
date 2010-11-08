@@ -56,42 +56,35 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
 public interface Criteria {
 
-    Partition getPartition();
+    public interface CriteriaBuilder {
 
-    String getNodeType();
+        CriteriaBuilder and();
 
-    Set<CriteriaItem> getCriteriaItems();
+        Criteria buildCriteria();
 
-    Iterable<StorageNode> andFind(StorageSession session);
+        CriteriaBuilder containsString(String value);
 
-    StorageNode andFindUnique(StorageSession session);
+        CriteriaBuilder endsWithString(String value);
+
+        CriteriaBuilder equalsTo(String value);
+
+        CriteriaBuilder startsWithString(String value);
+
+        CriteriaBuilder withLocalKey(CompositeKey localKey);
+
+        CriteriaBuilder withNodeEntry(String nodeName);
+
+        CriteriaBuilder withProperty(String propertyName);
+
+        CriteriaBuilder withUniqueKey(NodeKey uniqueKey);
+
+        CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
+    }
 
     public interface CriteriaItem {
 
-        String getNodeType();
-
-        public interface PropertyCriteriaItem extends CriteriaItem {
-
-            String getValue();
-
-            String getPropertyName();
-
-        }
-
         public interface CompositeKeyCriteriaItem extends CriteriaItem {
             CompositeKey getValue();
-        }
-
-        public interface PropertyEndsWithString extends CriteriaItem {
-            String getValue();
-
-            String getPropertyName();
-        }
-
-        public interface PropertyStartsWithString extends CriteriaItem {
-            String getValue();
-
-            String getPropertyName();
         }
 
         public interface NodeKeyAsStringCriteriaItem extends CriteriaItem {
@@ -105,35 +98,42 @@ public interface Criteria {
         }
 
         public interface PropertyContainsString extends CriteriaItem {
-            String getValue();
-
             String getPropertyName();
+
+            String getValue();
         }
 
+        public interface PropertyCriteriaItem extends CriteriaItem {
+
+            String getPropertyName();
+
+            String getValue();
+
+        }
+
+        public interface PropertyEndsWithString extends CriteriaItem {
+            String getPropertyName();
+
+            String getValue();
+        }
+
+        public interface PropertyStartsWithString extends CriteriaItem {
+            String getPropertyName();
+
+            String getValue();
+        }
+
+        String getNodeType();
+
     }
 
-    public interface CriteriaBuilder {
+    Iterable<StorageNode> andFind(StorageSession session);
 
-        CriteriaBuilder withProperty(String propertyName);
+    StorageNode andFindUnique(StorageSession session);
 
-        CriteriaBuilder withNodeEntry(String nodeName);
+    Set<CriteriaItem> getCriteriaItems();
 
-        CriteriaBuilder equalsTo(String value);
+    String getNodeType();
 
-        CriteriaBuilder containsString(String value);
-
-        CriteriaBuilder startsWithString(String value);
-
-        CriteriaBuilder endsWithString(String value);
-
-        CriteriaBuilder and();
-
-        Criteria buildCriteria();
-
-        CriteriaBuilder withLocalKey(CompositeKey localKey);
-
-        CriteriaBuilder withUniqueKey(NodeKey uniqueKey);
-
-        CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
-    }
+    Partition getPartition();
 }

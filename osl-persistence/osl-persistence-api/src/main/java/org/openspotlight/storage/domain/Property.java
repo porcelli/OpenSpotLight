@@ -65,11 +65,48 @@ import org.openspotlight.storage.StorageSession;
 public interface Property {
 
     /**
+     * Returns the {@link PropertyContainer} ({@link StorageNode} or {@link StorageLink}) that owns this object.
+     * 
+     * @return the property owner
+     */
+    PropertyContainer getParent();
+
+    /**
      * Returns the property name.
      * 
      * @return the property name
      */
     String getPropertyName();
+
+    /**
+     * Returns the property value as byte array.
+     * 
+     * @param session the storage session
+     * @return the value as byte array
+     * @throws IllegalArgumentException if input param is null
+     */
+    byte[] getValueAsBytes(StorageSession session)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns the property value as {@link InputStream} - usefull for large data value.
+     * 
+     * @param session the storage session
+     * @return the value as {@link InputStream}
+     * @throws IllegalArgumentException if input param is null
+     */
+    InputStream getValueAsStream(StorageSession session)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns the property value as String.
+     * 
+     * @param session the storage session
+     * @return the value as string
+     * @throws IllegalArgumentException if input param is null
+     */
+    String getValueAsString(StorageSession session)
+        throws IllegalArgumentException;
 
     /**
      * Checks if this property is indexed. Only indexed properties are searchable.
@@ -85,25 +122,6 @@ public interface Property {
      */
     //TODO: needs more info about what is this key!
     boolean isKey();
-
-    /**
-     * Returns the {@link PropertyContainer} ({@link StorageNode} or {@link StorageLink}) that owns this object.
-     * 
-     * @return the property owner
-     */
-    PropertyContainer getParent();
-
-    /**
-     * Sets the property value in String format. Null is an accepted value. <br>
-     * 
-     * @param session the storage session
-     * @param value the property value
-     * @throws IllegalArgumentException if input param session is null
-     * @throws IllegalStateException if try to set a property that is also a
-     *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
-     */
-    void setStringValue(StorageSession session, String value)
-        throws IllegalArgumentException;
 
     /**
      * Sets the property value in byte array format. Null is an accepted value. <br>
@@ -132,33 +150,15 @@ public interface Property {
         throws IllegalArgumentException;
 
     /**
-     * Returns the property value as String.
+     * Sets the property value in String format. Null is an accepted value. <br>
      * 
      * @param session the storage session
-     * @return the value as string
-     * @throws IllegalArgumentException if input param is null
+     * @param value the property value
+     * @throws IllegalArgumentException if input param session is null
+     * @throws IllegalStateException if try to set a property that is also a
+     *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
      */
-    String getValueAsString(StorageSession session)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns the property value as byte array.
-     * 
-     * @param session the storage session
-     * @return the value as byte array
-     * @throws IllegalArgumentException if input param is null
-     */
-    byte[] getValueAsBytes(StorageSession session)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns the property value as {@link InputStream} - usefull for large data value.
-     * 
-     * @param session the storage session
-     * @return the value as {@link InputStream}
-     * @throws IllegalArgumentException if input param is null
-     */
-    InputStream getValueAsStream(StorageSession session)
+    void setStringValue(StorageSession session, String value)
         throws IllegalArgumentException;
 
 }

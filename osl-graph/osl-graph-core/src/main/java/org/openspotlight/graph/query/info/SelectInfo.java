@@ -63,14 +63,41 @@ public abstract class SelectInfo {
     /** The keep result. */
     private boolean         keepResult;
 
-    /** The x times. */
-    private Integer         xTimes     = null;
-
     /** The limit. */
     private Integer         limit      = null;
 
     /** The offset. */
     private Integer         offset     = null;
+
+    /** The x times. */
+    private Integer         xTimes     = null;
+
+    /**
+     * Gets the limit.
+     * 
+     * @return the limit
+     */
+    public Integer getLimit() {
+        return limit;
+    }
+
+    /**
+     * Gets the offset.
+     * 
+     * @return the offset
+     */
+    public Integer getOffset() {
+        return offset;
+    }
+
+    /**
+     * Gets the x times.
+     * 
+     * @return the x times
+     */
+    public Integer getXTimes() {
+        return xTimes;
+    }
 
     /**
      * Checks if is keep result.
@@ -91,33 +118,6 @@ public abstract class SelectInfo {
     }
 
     /**
-     * Gets the x times.
-     * 
-     * @return the x times
-     */
-    public Integer getXTimes() {
-        return xTimes;
-    }
-
-    /**
-     * Sets the x times.
-     * 
-     * @param times the new x times
-     */
-    public void setXTimes(final Integer times) {
-        xTimes = times;
-    }
-
-    /**
-     * Gets the limit.
-     * 
-     * @return the limit
-     */
-    public Integer getLimit() {
-        return limit;
-    }
-
-    /**
      * Sets the limit.
      * 
      * @param limit the new limit
@@ -127,21 +127,21 @@ public abstract class SelectInfo {
     }
 
     /**
-     * Gets the offset.
-     * 
-     * @return the offset
-     */
-    public Integer getOffset() {
-        return offset;
-    }
-
-    /**
      * Sets the offset.
      * 
      * @param offset the new offset
      */
     public void setOffset(final Integer offset) {
         this.offset = offset;
+    }
+
+    /**
+     * Sets the x times.
+     * 
+     * @param times the new x times
+     */
+    public void setXTimes(final Integer times) {
+        xTimes = times;
     }
 
     /**

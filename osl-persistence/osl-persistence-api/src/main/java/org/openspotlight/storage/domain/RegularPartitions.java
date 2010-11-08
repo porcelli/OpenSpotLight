@@ -58,10 +58,10 @@ import org.openspotlight.storage.PartitionFactory;
 public enum RegularPartitions implements Partition {
 
     FEDERATION("federation"),
-    SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION),
     LINE_REFERENCE("line_reference"),
+    LOG("log"),
     SECURITY("security"),
-    LOG("log");
+    SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION);
 
     private static class CustomPartition implements Partition {
 
@@ -72,16 +72,16 @@ public enum RegularPartitions implements Partition {
         }
 
         @Override
-        public String getPartitionName() {
-            return partitionName;
-        }
-
-        @Override
         public boolean equals(final Object o) {
             if (o == this) { return true; }
             if (!(o instanceof Partition)) { return false; }
             final Partition that = (Partition) o;
             return partitionName.equals(that.getPartitionName());
+        }
+
+        @Override
+        public String getPartitionName() {
+            return partitionName;
         }
 
         @Override
@@ -107,24 +107,24 @@ public enum RegularPartitions implements Partition {
                                                      }
                                                  };
 
-    private String                       partitionName;
     private RegularPartitions            parent;
+    private String                       partitionName;
+
+    RegularPartitions(final String partitionName) {
+        this.partitionName = partitionName;
+    }
 
     RegularPartitions(final String partitionName, final RegularPartitions parent) {
         this.partitionName = partitionName;
         this.parent = parent;
     }
 
-    RegularPartitions(final String partitionName) {
-        this.partitionName = partitionName;
+    public RegularPartitions getParent() {
+        return parent;
     }
 
     @Override
     public String getPartitionName() {
         return partitionName;
-    }
-
-    public RegularPartitions getParent() {
-        return parent;
     }
 }

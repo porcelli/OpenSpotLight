@@ -67,6 +67,16 @@ public class RemovePropertyCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean accept(final ConsoleState state) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("remove property ")) { return true; }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(final ConsoleReader reader,
                          final PrintWriter out,
                          final ConsoleState state) {
@@ -87,7 +97,7 @@ public class RemovePropertyCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getCommand() {
+    public String getAutoCompleteCommand() {
         return "remove property";
     }
 
@@ -95,7 +105,7 @@ public class RemovePropertyCommand implements DynamicCommand {
      * {@inheritDoc}
      */
     @Override
-    public String getAutoCompleteCommand() {
+    public String getCommand() {
         return "remove property";
     }
 
@@ -128,16 +138,6 @@ public class RemovePropertyCommand implements DynamicCommand {
      */
     @Override
     public boolean hasFileCompletion() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean accept(final ConsoleState state) {
-        Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("remove property ")) { return true; }
         return false;
     }
 }

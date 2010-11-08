@@ -71,40 +71,34 @@ import org.openspotlight.persist.annotation.TransientProperty;
 @Name("artifact_source")
 public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable {
 
-    private boolean           binary           = false;
-
-    private static final long serialVersionUID = -2430120111043500137L;
-
-    private List<String>      cronInformation  = new ArrayList<String>();
-
-    private String            encodingForFileContent;
-
-    public String getEncodingForFileContent() {
-        return encodingForFileContent;
-    }
-
-    public void setEncodingForFileContent(final String encodingForFileContent) {
-        this.encodingForFileContent = encodingForFileContent;
-    }
-
-    /** The repository. */
-    private transient Repository                  repository;
+    private static final long                     serialVersionUID = -2430120111043500137L;
 
     /** The active. */
     private boolean                               active;
 
+    private boolean                               binary           = false;
+
+    private List<String>                          cronInformation  = new ArrayList<String>();
+
+    private String                                encodingForFileContent;
+
+    private volatile transient int                hashCode;
+
     /** The initial lookup. */
     private String                                initialLookup;
+
+    /** The mappings. */
+    private Set<ArtifactSourceMapping>            mappings         = new HashSet<ArtifactSourceMapping>();
 
     /** The name. */
     private String                                name;
 
-    /** The mappings. */
-    private Set<ArtifactSourceMapping>            mappings = new HashSet<ArtifactSourceMapping>();
+    /** The repository. */
+    private transient Repository                  repository;
 
-    private List<Class<? extends Callable<Void>>> tasks    = new ArrayList<Class<? extends Callable<Void>>>();
+    private String                                rootFolder;
 
-    private volatile transient int                hashCode;
+    private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
 
     @Override
     public boolean equals(final Object o) {
@@ -119,6 +113,10 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
     @Override
     public List<String> getCronInformation() {
         return cronInformation;
+    }
+
+    public String getEncodingForFileContent() {
+        return encodingForFileContent;
     }
 
     /**
@@ -160,6 +158,20 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
     }
 
     @Override
+    @TransientProperty
+    public Repository getRepositoryForSchedulable() {
+        return getRepository();
+    }
+
+    public String getRootFolder() {
+        return rootFolder;
+    }
+
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
+    }
+
+    @Override
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
@@ -191,22 +203,16 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         this.active = active;
     }
 
-    private String rootFolder;
-
-    public String getRootFolder() {
-        return rootFolder;
-    }
-
-    public void setRootFolder(final String rootFolder) {
-        this.rootFolder = rootFolder;
-    }
-
     public void setBinary(final boolean binary) {
         this.binary = binary;
     }
 
     public void setCronInformation(final List<String> cronInformation) {
         this.cronInformation = cronInformation;
+    }
+
+    public void setEncodingForFileContent(final String encodingForFileContent) {
+        this.encodingForFileContent = encodingForFileContent;
     }
 
     /**
@@ -245,24 +251,18 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         this.repository = repository;
     }
 
-    @Override
-    public String toUniqueJobString() {
-        return getRepository().getName() + ":" + getName() + ":"
-                + getInitialLookup();
-    }
-
-    @Override
-    @TransientProperty
-    public Repository getRepositoryForSchedulable() {
-        return getRepository();
-    }
-
-    public List<Class<? extends Callable<Void>>> getTasks() {
-        return tasks;
+    public void setRootFolder(final String rootFolder) {
+        this.rootFolder = rootFolder;
     }
 
     public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
         this.tasks = tasks;
+    }
+
+    @Override
+    public String toUniqueJobString() {
+        return getRepository().getName() + ":" + getName() + ":"
+                + getInitialLookup();
     }
 
 }

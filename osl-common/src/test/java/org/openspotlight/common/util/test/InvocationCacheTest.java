@@ -60,8 +60,8 @@ import org.openspotlight.common.util.InvocationCacheFactory;
 @SuppressWarnings("boxing")
 public class InvocationCacheTest {
 
-    private ExampleClass exampleWrapped;
     private ExampleClass exampleCreated;
+    private ExampleClass exampleWrapped;
 
     @Before
     public void createExample()

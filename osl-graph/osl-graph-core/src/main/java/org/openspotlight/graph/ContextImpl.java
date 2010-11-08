@@ -64,8 +64,20 @@ import com.google.common.collect.ImmutableSet;
 @InitialWeight(1)
 public class ContextImpl extends Context {
 
-    private static final int DEFAULT_CONTEXT_WEIGTH = NodeAndLinkSupport
-                                                        .findInitialWeight(ContextImpl.class);
+    private static final int                DEFAULT_CONTEXT_WEIGTH = NodeAndLinkSupport
+                                                                       .findInitialWeight(ContextImpl.class);
+
+    private String                          caption;
+
+    private boolean                         dirty                  = false;
+
+    private final String                    id;
+
+    private final Map<String, Serializable> properties;
+
+    private final Set<String>               removedProperties;
+
+    private int                             weightValue;
 
     public ContextImpl(final String id, final Map<String, Serializable> properties,
                        final String caption, final int weight) {
@@ -77,40 +89,17 @@ public class ContextImpl extends Context {
         removedProperties = new HashSet<String>();
     }
 
-    private boolean                         dirty = false;
-
-    private String                          caption;
-
-    private final String                    id;
-
-    private int                             weightValue;
-
-    private final Map<String, Serializable> properties;
-
-    private final Set<String>               removedProperties;
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) { return true; }
+        if (!(o instanceof ContextImpl)) { return false; }
+        final ContextImpl that = (ContextImpl) o;
+        return id.equals(that.id);
+    }
 
     @Override
     public String getCaption() {
         return caption;
-    }
-
-    public void setCaption(final String caption) {
-        dirty = true;
-        this.caption = caption;
-    }
-
-    public void resetDirty() {
-        dirty = false;
-        removedProperties.clear();
-    }
-
-    @Override
-    public int getWeightValue() {
-        return weightValue;
-    }
-
-    public void setWeightValue(final int weightValue) {
-        this.weightValue = weightValue;
     }
 
     @Override
@@ -160,6 +149,16 @@ public class ContextImpl extends Context {
     }
 
     @Override
+    public int getWeightValue() {
+        return weightValue;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
     public boolean hasProperty(final String key)
         throws IllegalArgumentException {
         return properties.containsKey(key);
@@ -177,22 +176,23 @@ public class ContextImpl extends Context {
         removedProperties.add(key);
     }
 
+    public void resetDirty() {
+        dirty = false;
+        removedProperties.clear();
+    }
+
+    public void setCaption(final String caption) {
+        dirty = true;
+        this.caption = caption;
+    }
+
     @Override
     public <V extends Serializable> void setProperty(final String key, final V value) {
         dirty = true;
         properties.put(key, value);
     }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == this) { return true; }
-        if (!(o instanceof ContextImpl)) { return false; }
-        final ContextImpl that = (ContextImpl) o;
-        return id.equals(that.id);
+    public void setWeightValue(final int weightValue) {
+        this.weightValue = weightValue;
     }
 }

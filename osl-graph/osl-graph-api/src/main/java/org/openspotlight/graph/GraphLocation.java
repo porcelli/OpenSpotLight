@@ -33,13 +33,13 @@ public enum GraphLocation {
      */
     CACHE,
     /**
-     * Data should be retrieved directed from cache.
-     */
-    SERVER,
-    /**
      * Data should be retrieved from cache and, if not found, should try the graph server.
      */
     CACHE_SERVER,
+    /**
+     * Data should be retrieved directed from cache.
+     */
+    SERVER,
     /**
      * Data should be retrieved from server and, if not found, should try cache.
      */

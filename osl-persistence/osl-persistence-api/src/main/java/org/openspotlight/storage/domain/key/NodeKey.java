@@ -73,68 +73,12 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
     /**
-     * Returns this key encoded into a string format
-     * 
-     * @return the node key encoded into string format
-     */
-    String getKeyAsString();
-
-    /**
-     * Returns the {@link Partition} where the {@link StorageNode} is stored.
-     * 
-     * @return the partition where node is stored
-     */
-    Partition getPartition();
-
-    /**
-     * Returns the {@link CompositeKey}
-     * 
-     * @return the composite key
-     */
-    CompositeKey getCompositeKey();
-
-    /**
-     * Returns the parent key (using {@link #getKeyAsString()}), or null if there is no parent.
-     * 
-     * @return the parent key, or null if there is no parent
-     */
-    String getParentKeyAsString();
-
-    /**
      * The composite key aggregates all {@link SimpleKey}s and the node type.
      * 
      * @author feuteston
      * @author porcelli
      */
     public interface CompositeKey extends StorageDataMarker, Comparable<CompositeKey> {
-
-        /**
-         * Returns this key encoded into a string format
-         * 
-         * @return the node key encoded into string format
-         */
-        String getKeyAsString();
-
-        /**
-         * Returns all existing {@link SimpleKey}, or an empty {@link Set} if there is no SimpleKeys. <br>
-         * 
-         * @return all simple key of this composite key
-         */
-        Set<SimpleKey> getKeys();
-
-        /**
-         * Returns all existing {@link SimpleKey} names, or an empty {@link Set} if there is no SimpleKeys. <br>
-         * 
-         * @return all simple key names of this composite key
-         */
-        Set<String> getKeyNames();
-
-        /**
-         * Returns the node type
-         * 
-         * @return the node type
-         */
-        String getNodeType();
 
         /**
          * The simplest key (pair of name and value) that composes a node key.
@@ -158,6 +102,62 @@ public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
              */
             String getValue();
         }
+
+        /**
+         * Returns this key encoded into a string format
+         * 
+         * @return the node key encoded into string format
+         */
+        String getKeyAsString();
+
+        /**
+         * Returns all existing {@link SimpleKey} names, or an empty {@link Set} if there is no SimpleKeys. <br>
+         * 
+         * @return all simple key names of this composite key
+         */
+        Set<String> getKeyNames();
+
+        /**
+         * Returns all existing {@link SimpleKey}, or an empty {@link Set} if there is no SimpleKeys. <br>
+         * 
+         * @return all simple key of this composite key
+         */
+        Set<SimpleKey> getKeys();
+
+        /**
+         * Returns the node type
+         * 
+         * @return the node type
+         */
+        String getNodeType();
     }
+
+    /**
+     * Returns the {@link CompositeKey}
+     * 
+     * @return the composite key
+     */
+    CompositeKey getCompositeKey();
+
+    /**
+     * Returns this key encoded into a string format
+     * 
+     * @return the node key encoded into string format
+     */
+    String getKeyAsString();
+
+    /**
+     * Returns the parent key (using {@link #getKeyAsString()}), or null if there is no parent.
+     * 
+     * @return the parent key, or null if there is no parent
+     */
+    String getParentKeyAsString();
+
+    /**
+     * Returns the {@link Partition} where the {@link StorageNode} is stored.
+     * 
+     * @return the partition where node is stored
+     */
+    Partition getPartition();
 
 }

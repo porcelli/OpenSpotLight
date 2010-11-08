@@ -87,22 +87,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class DefaultSchedulerTest {
-    private GlobalSettings        settings;
-    private ArrayList<Repository> repositories;
-    private Scheduler             scheduler;
-
     public static class SampleGroupSchedulableCommand implements SchedulableTaskFactory<Group> {
-        public static AtomicBoolean wasExecuted = new AtomicBoolean(false);
         public static AtomicInteger counter     = new AtomicInteger(0);
+        public static AtomicBoolean wasExecuted = new AtomicBoolean(false);
 
         @Override
         public SchedulerTask[] createTasks(final Group schedulable, final ExecutionContextFactory factory) {
             return TaskSupport.wrapTask(new SchedulerTask() {
-
-                @Override
-                public String getUniqueJobId() {
-                    return schedulable.getUniqueName();
-                }
 
                 @Override
                 public Void call()
@@ -111,11 +102,29 @@ public class DefaultSchedulerTest {
                     counter.incrementAndGet();
                     return null;
                 }
+
+                @Override
+                public String getUniqueJobId() {
+                    return schedulable.getUniqueName();
+                }
             });
         }
     }
 
-    private boolean runned = false;
+    private ArrayList<Repository> repositories;
+    private boolean               runned = false;
+
+    private Scheduler             scheduler;
+
+    private GlobalSettings        settings;
+
+    public void resetStatus() {
+        SampleGroupSchedulableCommand.wasExecuted.set(false);
+        SampleGroupSchedulableCommand.counter.set(0);
+        scheduler.startScheduler();
+        System.err.println(">>> before");
+
+    }
 
     @Before
     public void setupScheduler() {
@@ -162,14 +171,6 @@ public class DefaultSchedulerTest {
             runned = true;
         }
         resetStatus();
-
-    }
-
-    public void resetStatus() {
-        SampleGroupSchedulableCommand.wasExecuted.set(false);
-        SampleGroupSchedulableCommand.counter.set(0);
-        scheduler.startScheduler();
-        System.err.println(">>> before");
 
     }
 

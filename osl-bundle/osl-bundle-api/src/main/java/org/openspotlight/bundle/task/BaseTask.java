@@ -55,6 +55,8 @@ import org.openspotlight.bundle.annotation.WeakDependsOn;
 
 public abstract class BaseTask implements Task {
 
+    private final int level;
+
     protected BaseTask() {
         final Class<? extends Task> thisType = getClass();
         level = countDependencies(thisType);
@@ -81,8 +83,6 @@ public abstract class BaseTask implements Task {
         }
         return count;
     }
-
-    private final int level;
 
     @Override
     public int compareTo(final Task arg0) {

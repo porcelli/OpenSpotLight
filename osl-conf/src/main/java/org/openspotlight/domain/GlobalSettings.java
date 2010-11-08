@@ -62,24 +62,16 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
     private static final long serialVersionUID = 3443359462450366393L;
 
-    private int               parallelThreads  = Runtime.getRuntime().availableProcessors() * 2;
-
-    public int getParallelThreads() {
-        return parallelThreads;
-    }
-
-    public void setParallelThreads(final int parallelThreads) {
-        this.parallelThreads = parallelThreads;
-    }
-
-    private long   defaultSleepingIntervalInMilliseconds;
+    private long              defaultSleepingIntervalInMilliseconds;
 
     /** The max result list size. */
-    private int    maxResultListSize;
+    private int               maxResultListSize;
 
-    private String systemUser;
+    private int               parallelThreads  = Runtime.getRuntime().availableProcessors() * 2;
 
-    private String systemPassword;
+    private String            systemPassword;
+
+    private String            systemUser;
 
     public GlobalSettings() {}
 
@@ -94,6 +86,10 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
      */
     public int getMaxResultListSize() {
         return maxResultListSize;
+    }
+
+    public int getParallelThreads() {
+        return parallelThreads;
     }
 
     public String getSystemPassword() {
@@ -116,6 +112,10 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
      */
     public void setMaxResultListSize(final int maxResultListSize) {
         this.maxResultListSize = maxResultListSize;
+    }
+
+    public void setParallelThreads(final int parallelThreads) {
+        this.parallelThreads = parallelThreads;
     }
 
     public void setSystemPassword(final String systemPassword) {

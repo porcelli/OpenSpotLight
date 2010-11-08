@@ -64,10 +64,6 @@ import org.openspotlight.task.ExecutorInstance;
 import com.google.common.collect.ImmutableSet;
 
 public abstract class AbstractPersistentArtifactManager implements PersistentArtifactManager {
-    protected abstract boolean isMultithreaded();
-
-    private final PersistentArtifactInternalMethods internalMethods = new PersistentArtifactInternalMethodsImpl();
-
     private final class PersistentArtifactInternalMethodsImpl implements PersistentArtifactInternalMethods {
 
         @Override
@@ -102,6 +98,16 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
         }
 
         @Override
+        public <A extends Artifact> Iterable<String> retrieveNames(final Class<A> type,
+                                                                   final String initialPath) {
+            try {
+                return internalRetrieveNames(type, initialPath);
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+            }
+        }
+
+        @Override
         public <A extends Artifact> Iterable<String> retrieveOriginalNames(final ArtifactSource source,
                                                                            final Class<A> type,
                                                                            final String initialPath) {
@@ -112,110 +118,26 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
             }
         }
 
-        @Override
-        public <A extends Artifact> Iterable<String> retrieveNames(final Class<A> type,
-                                                                   final String initialPath) {
-            try {
-                return internalRetrieveNames(type, initialPath);
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-            }
-        }
-
     }
 
-    @Override
-    public <A extends Artifact> void addTransient(final A artifact) {
-        try {
-            internalAddTransient(artifact);
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+    private final PersistentArtifactInternalMethods internalMethods = new PersistentArtifactInternalMethodsImpl();
 
-    @Override
-    public <A extends Artifact> A findByPath(final Class<A> type,
-                                              final String path) {
-        try {
-            return internalFindByPath(type, path);
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+    protected abstract <A extends Artifact> void internalAddTransient(A artifact)
+        throws Exception;
 
-    @Override
-    public PersistentArtifactInternalMethods getInternalMethods() {
-        return internalMethods;
-    }
-
-    @Override
-    public <A extends Artifact> Iterable<A> listByInitialPath(final Class<A> type,
-                                                              final String path) {
-        try {
-            return internalListByPath(type, path);
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    @Override
-    public <A extends Artifact> void markAsRemoved(final A artifact) {
-        try {
-            internalMarkAsRemoved(artifact);
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    @Override
-    public void saveTransientData() {
-        try {
-            internalSaveTransientData();
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    @Override
-    public void closeResources() {
-        try {
-            internalCloseResources();
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+    protected abstract void internalCloseResources()
+        throws Exception;
 
     protected abstract <A extends Artifact> A internalFindByOriginalName(ArtifactSource source,
                                                                           Class<A> type,
                                                                           String originName)
         throws Exception;
 
-    protected abstract <A extends Artifact> boolean internalIsTypeSupported(Class<A> type)
-        throws Exception;
-
-    protected abstract <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(ArtifactSource source,
-                                                                                           Class<A> type,
-                                                                                           String initialPath)
-        throws Exception;
-
-    protected abstract <A extends Artifact> Iterable<String> internalRetrieveNames(Class<A> type,
-                                                                                   String initialPath)
-        throws Exception;
-
-    protected abstract <A extends Artifact> void internalAddTransient(A artifact)
-        throws Exception;
-
     protected abstract <A extends Artifact> A internalFindByPath(Class<A> type,
                                                                   String path)
         throws Exception;
 
-    protected abstract <A extends Artifact> void internalMarkAsRemoved(A artifact)
-        throws Exception;
-
-    protected abstract void internalSaveTransientData()
-        throws Exception;
-
-    protected abstract void internalCloseResources()
+    protected abstract <A extends Artifact> boolean internalIsTypeSupported(Class<A> type)
         throws Exception;
 
     protected final <A extends Artifact> Iterable<A> internalListByOriginalNames(final ArtifactSource source,
@@ -275,6 +197,84 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
             }
         }
         return ImmutableSet.copyOf(result);
+    }
+
+    protected abstract <A extends Artifact> void internalMarkAsRemoved(A artifact)
+        throws Exception;
+
+    protected abstract <A extends Artifact> Iterable<String> internalRetrieveNames(Class<A> type,
+                                                                                   String initialPath)
+        throws Exception;
+
+    protected abstract <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(ArtifactSource source,
+                                                                                           Class<A> type,
+                                                                                           String initialPath)
+        throws Exception;
+
+    protected abstract void internalSaveTransientData()
+        throws Exception;
+
+    protected abstract boolean isMultithreaded();
+
+    @Override
+    public <A extends Artifact> void addTransient(final A artifact) {
+        try {
+            internalAddTransient(artifact);
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    @Override
+    public void closeResources() {
+        try {
+            internalCloseResources();
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    @Override
+    public <A extends Artifact> A findByPath(final Class<A> type,
+                                              final String path) {
+        try {
+            return internalFindByPath(type, path);
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    @Override
+    public PersistentArtifactInternalMethods getInternalMethods() {
+        return internalMethods;
+    }
+
+    @Override
+    public <A extends Artifact> Iterable<A> listByInitialPath(final Class<A> type,
+                                                              final String path) {
+        try {
+            return internalListByPath(type, path);
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    @Override
+    public <A extends Artifact> void markAsRemoved(final A artifact) {
+        try {
+            internalMarkAsRemoved(artifact);
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    @Override
+    public void saveTransientData() {
+        try {
+            internalSaveTransientData();
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
     }
 
 }

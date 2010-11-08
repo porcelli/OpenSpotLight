@@ -115,14 +115,6 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
         return endLine;
     }
 
-    public void setEndCharPositionInLine(final int endCharPositionInLine) {
-        this.endCharPositionInLine = endCharPositionInLine;
-    }
-
-    public void setEndLine(final int endLine) {
-        this.endLine = endLine;
-    }
-
     @Override
     public int getStartCharPositionInLine() {
         return getCharPositionInLine();
@@ -131,6 +123,14 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
     @Override
     public int getStartLine() {
         return getLine();
+    }
+
+    public void setEndCharPositionInLine(final int endCharPositionInLine) {
+        this.endCharPositionInLine = endCharPositionInLine;
+    }
+
+    public void setEndLine(final int endLine) {
+        this.endLine = endLine;
     }
 
 }

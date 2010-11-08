@@ -58,9 +58,9 @@ public class SerializablePojoProperty implements StreamPropertyWithParent<ClassW
 	 */
     private static final long     serialVersionUID = -4223160649233298985L;
 
-    private ClassWithLazyProperty parent;
-
     private String                anotherProperty;
+
+    private ClassWithLazyProperty parent;
 
     public String getAnotherProperty() {
         return anotherProperty;

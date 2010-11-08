@@ -56,17 +56,17 @@ package org.openspotlight.common;
  */
 public enum LazyType {
     /**
-     * Should behave in a lazy way.
+     * Should not load ever
      */
-    LAZY,
+    DO_NOT_LOAD,
     /**
      * Should not behave in a lazy way.
      */
     EAGER,
 
     /**
-     * Should not load ever
+     * Should behave in a lazy way.
      */
-    DO_NOT_LOAD
+    LAZY
 
 }

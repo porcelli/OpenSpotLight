@@ -103,73 +103,12 @@ public abstract class DatabaseStreamTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Before
-    public void cleanFiles()
-        throws Exception {
-        delete("./target/test-data/" + this.getClass().getSimpleName() + "/");
-    }
-
-    /**
-     * Here a valid configuration to connect on the target database should be created. The necessary data to be created here are
-     * the database connection and also the artifact mappings to load all artifacts been tested for a given type.
-     * 
-     * @return a valid database configuration
-     */
-    protected abstract DbArtifactSource createValidConfigurationWithMappings();
-
-    /**
-     * Fill the data necessary to run the database tests. For example, here it could be created procedure, triggers and so on.
-     * 
-     * @param conn
-     * @throws Exception
-     */
-    protected void fillDatabase(final Connection conn)
-        throws Exception {
-        //
-    }
-
-    /**
-     * Here's an option to reset all filled data on the database.
-     * 
-     * @param conn
-     * @throws Exception
-     */
-    protected void resetDatabase(final Connection conn)
-        throws Exception {
-        //
-    }
-
-    ;
-
-    /**
-     * This test method will load all artifacts from the configuration and assert if all artifacts of the {@link #typesToAssert()}
-     * are loaded.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void shouldLoadAllValidTypes()
-        throws Exception {
-
-        if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
-            if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
-                validateAllTypes();
-            } else {
-                logger.warn(format(
-                        "Ignoring test {0} because system property {1} isn't set to true.",
-                        this.getClass().getSimpleName(),
-                        "runDatabaseVendorTests"));
-            }
-        } else {
-            validateAllTypes();
-        }
+    private void refreshResources(final GlobalSettings configuration,
+                                  final DbArtifactSource bundle, final PersistentArtifactManagerProvider provider) {
+        throw new UnsupportedOperationException();
+        // configuration.getLoaderRegistry().add(DatabaseStreamArtifactFinder.class);
 
     }
-
-    /**
-     * @return the types to load during the test.
-     */
-    protected abstract Set<ScriptType> typesToAssert();
 
     private void validateAllTypes()
         throws Exception {
@@ -256,10 +195,71 @@ public abstract class DatabaseStreamTest {
 
     }
 
-    private void refreshResources(final GlobalSettings configuration,
-                                  final DbArtifactSource bundle, final PersistentArtifactManagerProvider provider) {
-        throw new UnsupportedOperationException();
-        // configuration.getLoaderRegistry().add(DatabaseStreamArtifactFinder.class);
+    /**
+     * Here a valid configuration to connect on the target database should be created. The necessary data to be created here are
+     * the database connection and also the artifact mappings to load all artifacts been tested for a given type.
+     * 
+     * @return a valid database configuration
+     */
+    protected abstract DbArtifactSource createValidConfigurationWithMappings();
+
+    /**
+     * Fill the data necessary to run the database tests. For example, here it could be created procedure, triggers and so on.
+     * 
+     * @param conn
+     * @throws Exception
+     */
+    protected void fillDatabase(final Connection conn)
+        throws Exception {
+        //
+    }
+
+    ;
+
+    /**
+     * Here's an option to reset all filled data on the database.
+     * 
+     * @param conn
+     * @throws Exception
+     */
+    protected void resetDatabase(final Connection conn)
+        throws Exception {
+        //
+    }
+
+    /**
+     * @return the types to load during the test.
+     */
+    protected abstract Set<ScriptType> typesToAssert();
+
+    @Before
+    public void cleanFiles()
+        throws Exception {
+        delete("./target/test-data/" + this.getClass().getSimpleName() + "/");
+    }
+
+    /**
+     * This test method will load all artifacts from the configuration and assert if all artifacts of the {@link #typesToAssert()}
+     * are loaded.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void shouldLoadAllValidTypes()
+        throws Exception {
+
+        if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
+            if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
+                validateAllTypes();
+            } else {
+                logger.warn(format(
+                        "Ignoring test {0} because system property {1} isn't set to true.",
+                        this.getClass().getSimpleName(),
+                        "runDatabaseVendorTests"));
+            }
+        } else {
+            validateAllTypes();
+        }
 
     }
 

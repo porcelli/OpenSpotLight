@@ -64,46 +64,11 @@ import org.openspotlight.storage.domain.StorageNode;
 public interface PersistentArtifactManager extends Disposable {
 
     /**
-     * @return {@link PersistentArtifactInternalMethods} instance
-     */
-    public PersistentArtifactInternalMethods getInternalMethods();
-
-    /**
      * This class have methods that should be used only on low level stuff.
      * 
      * @author feu
      */
     public interface PersistentArtifactInternalMethods {
-
-        /**
-         * @param <A>
-         * @param type
-         * @return true if the given type is supported
-         */
-        public <A extends Artifact> boolean isTypeSupported(Class<A> type);
-
-        /**
-         * This method returns the original names as it was before any mapping.
-         * 
-         * @param <A>
-         * @param source
-         * @param type
-         * @return
-         */
-        public <A extends Artifact> Iterable<String> retrieveOriginalNames(ArtifactSource source,
-                                                                           Class<A> type,
-                                                                           String initialPath);
-
-        /**
-         * This method returns the current names as it is.
-         * 
-         * @param <A>
-         * @param initialPath
-         * @param type
-         * @return
-         */
-        public <A extends Artifact> Iterable<String> retrieveNames(Class<A> type,
-                                                                   String initialPath);
 
         /**
          * This method finds an artifact by its name before any mapping.
@@ -120,6 +85,13 @@ public interface PersistentArtifactManager extends Disposable {
 
         /**
          * @param <A>
+         * @param type
+         * @return true if the given type is supported
+         */
+        public <A extends Artifact> boolean isTypeSupported(Class<A> type);
+
+        /**
+         * @param <A>
          * @param source
          * @param type
          * @param originName
@@ -128,6 +100,29 @@ public interface PersistentArtifactManager extends Disposable {
         public <A extends Artifact> Iterable<A> listByOriginalNames(ArtifactSource source,
                                                                     Class<A> type,
                                                                     String originName);
+
+        /**
+         * This method returns the current names as it is.
+         * 
+         * @param <A>
+         * @param initialPath
+         * @param type
+         * @return
+         */
+        public <A extends Artifact> Iterable<String> retrieveNames(Class<A> type,
+                                                                   String initialPath);
+
+        /**
+         * This method returns the original names as it was before any mapping.
+         * 
+         * @param <A>
+         * @param source
+         * @param type
+         * @return
+         */
+        public <A extends Artifact> Iterable<String> retrieveOriginalNames(ArtifactSource source,
+                                                                           Class<A> type,
+                                                                           String initialPath);
 
     }
 
@@ -138,14 +133,6 @@ public interface PersistentArtifactManager extends Disposable {
      * @param artifact
      */
     public <A extends Artifact> void addTransient(A artifact);
-
-    /**
-     * Marks an artifact to be removed on next save
-     * 
-     * @param <A>
-     * @param artifact
-     */
-    public <A extends Artifact> void markAsRemoved(A artifact);
 
     /**
      * find method
@@ -159,6 +146,15 @@ public interface PersistentArtifactManager extends Disposable {
                                               String path);
 
     /**
+     * @return {@link PersistentArtifactInternalMethods} instance
+     */
+    public PersistentArtifactInternalMethods getInternalMethods();
+
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist();
+
+    public StorageSession getStorageSession();
+
+    /**
      * list method
      * 
      * @param <A>
@@ -170,12 +166,16 @@ public interface PersistentArtifactManager extends Disposable {
                                                               String path);
 
     /**
+     * Marks an artifact to be removed on next save
+     * 
+     * @param <A>
+     * @param artifact
+     */
+    public <A extends Artifact> void markAsRemoved(A artifact);
+
+    /**
      * Saves or flush transient data to the persistent store
      */
     public void saveTransientData();
-
-    public StorageSession getStorageSession();
-
-    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist();
 
 }

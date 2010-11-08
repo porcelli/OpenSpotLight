@@ -73,18 +73,18 @@ public interface IdentityManager {
         throws IdentityException;
 
     /**
-     * Checks if is valid.
-     * 
-     * @param user the user
-     * @return true, if is valid
-     */
-    public boolean isValid(final AuthenticatedUser user);
-
-    /**
      * Gets the user status.
      * 
      * @param user the user
      * @return the user status
      */
     public UserStatus getUserStatus(final User user);
+
+    /**
+     * Checks if is valid.
+     * 
+     * @param user the user
+     * @return true, if is valid
+     */
+    public boolean isValid(final AuthenticatedUser user);
 }

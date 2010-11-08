@@ -59,9 +59,9 @@ import org.openspotlight.persist.annotation.IndexedProperty;
 
 public class SLTransientIdentityObjectAttribute implements IdentityObjectAttribute {
 
-    private Set<String> values = new HashSet<String>();
-
     private String      name;
+
+    private Set<String> values = new HashSet<String>();
 
     @Override
     public void addValue(final Object value) {

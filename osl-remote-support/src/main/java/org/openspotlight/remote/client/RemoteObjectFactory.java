@@ -125,8 +125,14 @@ public class RemoteObjectFactory {
 
         }
 
+        /** The Constant EMPTY_ARR. */
+        private static final Object[]                      EMPTY_ARR         = new Object[0];
+
         /** The Constant NULL_VALUE. */
         private static final Object                        NULL_VALUE        = new Object();
+
+        /** The from server. */
+        private final RemoteObjectServer                   fromServer;
 
         /** The method result cache. */
         private final Map<MethodWithParametersKey, Object> methodResultCache =
@@ -134,12 +140,6 @@ public class RemoteObjectFactory {
 
         /** The remote reference. */
         private final RemoteReference<T>                   remoteReference;
-
-        /** The from server. */
-        private final RemoteObjectServer                   fromServer;
-
-        /** The Constant EMPTY_ARR. */
-        private static final Object[]                      EMPTY_ARR         = new Object[0];
 
         /**
          * Instantiates a new remote reference handler.
@@ -154,6 +154,43 @@ public class RemoteObjectFactory {
 
             this.remoteReference = remoteReference;
             this.fromServer = fromServer;
+        }
+
+        /**
+         * Return result from cache.
+         * 
+         * @param key the key
+         * @return the object
+         * @throws Throwable the throwable
+         */
+        private Object returnResultFromCache(final MethodWithParametersKey key)
+            throws Throwable {
+            final Object value = this.methodResultCache.get(key);
+            if (value == NULL_VALUE) { return null; }
+
+            if (value instanceof ExceptionWrapper) {
+                final ExceptionWrapper ex = (ExceptionWrapper) value;
+                throw ex.getThrowable();
+            }
+
+            return value;
+        }
+
+        /**
+         * Store result on cache.
+         * 
+         * @param key the key
+         * @param resultFromMethod the result from method
+         */
+        private void storeResultOnCache(final MethodWithParametersKey key,
+                                         final Object resultFromMethod) {
+
+            if (resultFromMethod == null) {
+                this.methodResultCache.put(key, NULL_VALUE);
+            } else {
+                this.methodResultCache.put(key, resultFromMethod);
+            }
+
         }
 
         /**
@@ -372,43 +409,6 @@ public class RemoteObjectFactory {
                 throw e.getCause();
             } catch (final Exception e) {
                 throw logAndReturn(e);
-            }
-
-        }
-
-        /**
-         * Return result from cache.
-         * 
-         * @param key the key
-         * @return the object
-         * @throws Throwable the throwable
-         */
-        private Object returnResultFromCache(final MethodWithParametersKey key)
-            throws Throwable {
-            final Object value = this.methodResultCache.get(key);
-            if (value == NULL_VALUE) { return null; }
-
-            if (value instanceof ExceptionWrapper) {
-                final ExceptionWrapper ex = (ExceptionWrapper) value;
-                throw ex.getThrowable();
-            }
-
-            return value;
-        }
-
-        /**
-         * Store result on cache.
-         * 
-         * @param key the key
-         * @param resultFromMethod the result from method
-         */
-        private void storeResultOnCache(final MethodWithParametersKey key,
-                                         final Object resultFromMethod) {
-
-            if (resultFromMethod == null) {
-                this.methodResultCache.put(key, NULL_VALUE);
-            } else {
-                this.methodResultCache.put(key, resultFromMethod);
             }
 
         }

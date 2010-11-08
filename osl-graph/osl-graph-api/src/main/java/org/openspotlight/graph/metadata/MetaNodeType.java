@@ -37,6 +37,10 @@ import org.openspotlight.graph.annotation.Property;
 public abstract class MetaNodeType extends Node {
 
     @Property
+    @Description("Defines Hierarchy")
+    public abstract boolean definesHierarchy();
+
+    @Property
     @Description("Description")
     public abstract String getDescription();
 
@@ -45,19 +49,15 @@ public abstract class MetaNodeType extends Node {
     public abstract int getInitialWeight();
 
     @Property
-    @Description("isMetaType")
-    public abstract boolean isMetaType();
-
-    @Property
     @Description("Languages")
     public abstract String getLanguages();
 
     @Property
-    @Description("Defines Hierarchy")
-    public abstract boolean definesHierarchy();
-
-    @Property
     @Description("Type Group")
     public abstract String getTypeGroup();
+
+    @Property
+    @Description("isMetaType")
+    public abstract boolean isMetaType();
 
 }

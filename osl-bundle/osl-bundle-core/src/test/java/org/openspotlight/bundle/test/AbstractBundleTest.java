@@ -33,46 +33,13 @@ import com.google.inject.Injector;
  */
 public abstract class AbstractBundleTest {
 
-    public abstract Repository createRepository();
+    private ArtifactSource artifactSource;
+
+    private Group          group;
 
     private Repository     repository;
 
     private Scheduler      scheduler;
-
-    private Group          group;
-
-    private ArtifactSource artifactSource;
-
-    public Repository getRepository() {
-        return repository;
-    }
-
-    public Scheduler getScheduler() {
-        return scheduler;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public ArtifactSource getArtifactSource() {
-        return artifactSource;
-    }
-
-    @Before
-    public void setup()
-        throws Exception {
-
-        final Injector injector = createInjector();
-
-        repository = createRepository();
-        group = repository.getGroups().iterator().next();
-        artifactSource = group.getArtifactSources().iterator().next();
-        scheduler = injector.getInstance(Scheduler.class);
-
-        ExampleExecutionHistory.resetData();
-
-    }
 
     protected Injector createInjector() {
         final Map<Class<? extends Schedulable>, Class<? extends SchedulableTaskFactory>> schedulableMap = newHashMap();
@@ -88,6 +55,39 @@ public abstract class AbstractBundleTest {
                             new GraphModule());
 
         return injector;
+    }
+
+    public abstract Repository createRepository();
+
+    public ArtifactSource getArtifactSource() {
+        return artifactSource;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public Repository getRepository() {
+        return repository;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
+    @Before
+    public void setup()
+        throws Exception {
+
+        final Injector injector = createInjector();
+
+        repository = createRepository();
+        group = repository.getGroups().iterator().next();
+        artifactSource = group.getArtifactSources().iterator().next();
+        scheduler = injector.getInstance(Scheduler.class);
+
+        ExampleExecutionHistory.resetData();
+
     }
 
 }

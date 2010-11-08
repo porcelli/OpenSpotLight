@@ -88,15 +88,16 @@ import com.google.inject.Injector;
 @SuppressWarnings("all")
 public class DatabaseCustomTest {
 
+    private DbArtifactSource                      bundle;
+
+    private DatabaseCustomArtifactFinder          finder;
+    private PersistentArtifactManagerProviderImpl persistentManagerProvider;
+
     @BeforeClass
     public static void loadDriver()
         throws Exception {
         Class.forName("org.h2.Driver");
     }
-
-    private DatabaseCustomArtifactFinder          finder;
-    private DbArtifactSource                      bundle;
-    private PersistentArtifactManagerProviderImpl persistentManagerProvider;
 
     @Before
     public void setup()

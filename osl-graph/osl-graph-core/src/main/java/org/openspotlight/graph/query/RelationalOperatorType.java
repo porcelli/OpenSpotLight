@@ -59,29 +59,29 @@ import org.openspotlight.common.util.Strings;
  */
 public enum RelationalOperatorType implements OperatorType {
 
-    /** The EQUAL. */
-    EQUAL("="),
-
-    /** The GREATE r_ than. */
-    GREATER_THAN(">"),
-
-    /** The LESSE r_ than. */
-    LESSER_THAN("<"),
-
-    /** The GREATE r_ o r_ equa l_ than. */
-    GREATER_OR_EQUAL_THAN(">="),
-
-    /** The LESSE r_ o r_ equa l_ than. */
-    LESSER_OR_EQUAL_THAN("<="),
-
-    /** The START s_ with. */
-    STARTS_WITH("..*"),
+    /** The CONTAINS. */
+    CONTAINS("<*>"),
 
     /** The END s_ with. */
     ENDS_WITH("*.."),
 
-    /** The CONTAINS. */
-    CONTAINS("<*>");
+    /** The EQUAL. */
+    EQUAL("="),
+
+    /** The GREATE r_ o r_ equa l_ than. */
+    GREATER_OR_EQUAL_THAN(">="),
+
+    /** The GREATE r_ than. */
+    GREATER_THAN(">"),
+
+    /** The LESSE r_ o r_ equa l_ than. */
+    LESSER_OR_EQUAL_THAN("<="),
+
+    /** The LESSE r_ than. */
+    LESSER_THAN("<"),
+
+    /** The START s_ with. */
+    STARTS_WITH("..*");
 
     /** The symbol. */
     private String symbol;
@@ -101,6 +101,11 @@ public enum RelationalOperatorType implements OperatorType {
      */
     @Override
     public String symbol() {
+        return symbol;
+    }
+
+    @Override
+    public String toString() {
         return symbol;
     }
 
@@ -130,11 +135,6 @@ public enum RelationalOperatorType implements OperatorType {
             buffer.append(')');
         }
         return buffer.toString();
-    }
-
-    @Override
-    public String toString() {
-        return symbol;
     }
 
 }

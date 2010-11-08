@@ -79,15 +79,15 @@ public class IdentityManagerSimpleImpl implements IdentityManager {
      * {@inheritDoc}
      */
     @Override
-    public boolean isValid(final AuthenticatedUser user) {
-        return true;
+    public UserStatus getUserStatus(final User user) {
+        return UserStatus.OK;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public UserStatus getUserStatus(final User user) {
-        return UserStatus.OK;
+    public boolean isValid(final AuthenticatedUser user) {
+        return true;
     }
 }

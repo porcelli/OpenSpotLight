@@ -63,8 +63,8 @@ import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 
 public class FileSystemOriginArtifactLoaderTest {
 
-    private final FileSystemOriginArtifactLoader loader = new FileSystemOriginArtifactLoader();
     private ArtifactSource                       artifactSource;
+    private final FileSystemOriginArtifactLoader loader = new FileSystemOriginArtifactLoader();
     private ArtifactSource                       stringArtifactSource;
 
     @Before
@@ -102,6 +102,23 @@ public class FileSystemOriginArtifactLoaderTest {
     }
 
     /**
+     * Should find by relative path.
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void shouldFindStringByRelativePath()
+        throws Exception {
+        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, stringArtifactSource,
+                                                                 "/folder/subfolder/file_not_changed1", null);
+        final StringArtifact streamArtifact2 = loader.findByRelativePath(StringArtifact.class, stringArtifactSource,
+                                                                         streamArtifact1, "../file_not_changed1", null);
+        assertThat(streamArtifact2, is(notNullValue()));
+        assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_not_changed1"));
+
+    }
+
+    /**
      * Should load not changed artifact.
      * 
      * @throws Exception the exception
@@ -123,23 +140,6 @@ public class FileSystemOriginArtifactLoaderTest {
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));
-    }
-
-    /**
-     * Should find by relative path.
-     * 
-     * @throws Exception the exception
-     */
-    @Test
-    public void shouldFindStringByRelativePath()
-        throws Exception {
-        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, stringArtifactSource,
-                                                                 "/folder/subfolder/file_not_changed1", null);
-        final StringArtifact streamArtifact2 = loader.findByRelativePath(StringArtifact.class, stringArtifactSource,
-                                                                         streamArtifact1, "../file_not_changed1", null);
-        assertThat(streamArtifact2, is(notNullValue()));
-        assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_not_changed1"));
-
     }
 
     /**

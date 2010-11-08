@@ -67,6 +67,26 @@ public abstract class AbstractFactory {
                                                                                          new HashMap<Class<? extends AbstractFactory>, AbstractFactory>();
 
     /**
+     * Load props.
+     * 
+     * @param clazz the clazz
+     * @return the properties
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    private static Properties loadProps(final Class<?> clazz)
+        throws AbstractFactoryException {
+        final String resource = clazz.getName().replace('.', '/').concat(".properties");
+        try {
+            final InputStream inputStream = AbstractFactory.class.getClassLoader().getResourceAsStream(resource);
+            final Properties props = new Properties();
+            props.load(inputStream);
+            return props;
+        } catch (final IOException e) {
+            throw new AbstractFactoryException("Error on attempt to load factory properties file " + resource, e);
+        }
+    }
+
+    /**
      * Gets the default instance.
      * 
      * @param clazz the clazz
@@ -91,25 +111,5 @@ public abstract class AbstractFactory {
             throw new AbstractFactoryException("Error on attempt to newPair the factory.", e);
         }
         return factory;
-    }
-
-    /**
-     * Load props.
-     * 
-     * @param clazz the clazz
-     * @return the properties
-     * @throws AbstractFactoryException the abstract factory exception
-     */
-    private static Properties loadProps(final Class<?> clazz)
-        throws AbstractFactoryException {
-        final String resource = clazz.getName().replace('.', '/').concat(".properties");
-        try {
-            final InputStream inputStream = AbstractFactory.class.getClassLoader().getResourceAsStream(resource);
-            final Properties props = new Properties();
-            props.load(inputStream);
-            return props;
-        } catch (final IOException e) {
-            throw new AbstractFactoryException("Error on attempt to load factory properties file " + resource, e);
-        }
     }
 }

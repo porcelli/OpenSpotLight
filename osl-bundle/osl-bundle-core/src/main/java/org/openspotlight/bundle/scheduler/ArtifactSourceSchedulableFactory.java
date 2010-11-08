@@ -65,11 +65,6 @@ public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<
 
         return TaskSupport.wrapTask(new SchedulerTask() {
             @Override
-            public String getUniqueJobId() {
-                return schedulable.toUniqueJobString();
-            }
-
-            @Override
             public Void call()
                 throws Exception {
                 final ExecutionContext ctx = factory.get();
@@ -79,6 +74,11 @@ public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<
                         schedulable.getRepositoryForSchedulable());
                 ArtifactLoaderManager.INSTANCE.refreshResources(schedulable, provider, ctx.getLoaderRegistry());
                 return null;
+            }
+
+            @Override
+            public String getUniqueJobId() {
+                return schedulable.toUniqueJobString();
             }
         });
     }

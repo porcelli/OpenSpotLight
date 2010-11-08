@@ -73,6 +73,13 @@ public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
         SECOND(
                 "localhost", 6379, 2, false);
 
+        private final int     db;
+
+        private final boolean defaultConfig;
+        private final String  serverName;
+
+        private final int     serverPort;
+
         private JRedisServerConfigExample(final String serverName, final int serverPort,
                                           final int db, final boolean defaultConfig) {
             this.serverName = serverName;
@@ -80,11 +87,6 @@ public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
             this.db = db;
             this.defaultConfig = defaultConfig;
         }
-
-        private final boolean defaultConfig;
-        private final String  serverName;
-
-        private final int     db;
 
         @Override
         public int getDb() {
@@ -95,8 +97,6 @@ public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
         public String getPassword() {
             return null;
         }
-
-        private final int serverPort;
 
         @Override
         public String getServerName() {
@@ -141,13 +141,12 @@ public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
     }
 
     @Override
-    protected boolean supportsAutoFlushInjector() {
-        return true;
-    }
-
-    @Override
-    protected boolean supportsExplicitFlushInjector() {
-        return true;
+    protected void internalCleanPreviousData()
+        throws Exception {
+        final JRedisFactory autoFlushFactory = autoFlushInjector
+                .getInstance(JRedisFactory.class);
+        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
+        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).save();
     }
 
     @Override
@@ -156,11 +155,12 @@ public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
     }
 
     @Override
-    protected void internalCleanPreviousData()
-        throws Exception {
-        final JRedisFactory autoFlushFactory = autoFlushInjector
-                .getInstance(JRedisFactory.class);
-        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
-        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).save();
+    protected boolean supportsAutoFlushInjector() {
+        return true;
+    }
+
+    @Override
+    protected boolean supportsExplicitFlushInjector() {
+        return true;
     }
 }

@@ -63,12 +63,6 @@ import org.openspotlight.federation.finder.db.ScriptType;
 @SuppressWarnings("all")
 public class H2DatabaseStreamTest extends DatabaseStreamTest {
 
-    @Before
-    public void cleanDatabaseFiles()
-        throws Exception {
-        delete("./target/test-data/H2DatabaseStreamTest"); //$NON-NLS-1$
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -94,6 +88,12 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
     protected Set<ScriptType> typesToAssert() {
         return EnumSet.of(ScriptType.VIEW, ScriptType.FUNCTION, ScriptType.PROCEDURE, ScriptType.INDEX, ScriptType.TABLE,
                           ScriptType.TRIGGER);
+    }
+
+    @Before
+    public void cleanDatabaseFiles()
+        throws Exception {
+        delete("./target/test-data/H2DatabaseStreamTest"); //$NON-NLS-1$
     }
 
 }

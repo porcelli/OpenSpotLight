@@ -56,9 +56,9 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class MapValueObj implements SimpleNodeType {
-    private String uuid;
-
     private String name;
+
+    private String uuid;
 
     private int    value;
 

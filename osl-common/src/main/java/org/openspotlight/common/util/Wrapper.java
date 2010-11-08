@@ -53,33 +53,6 @@ package org.openspotlight.common.util;
  * Created by User: feu - Date: Apr 6, 2010 - Time: 5:38:38 PM
  */
 public abstract class Wrapper<W> {
-    protected W wrapped;
-
-    public static <W> Wrapper<W> createMutable() {
-        return new MutableWrapper<W>();
-    }
-
-    public static <W> Wrapper<W> createImmutable(final W wrapped) {
-        return new ImmutableWrapper<W>(wrapped);
-    }
-
-    public abstract W getWrapped();
-
-    public abstract void setWrapped(W wrapped);
-
-    private static final class MutableWrapper<W> extends Wrapper<W> {
-
-        @Override
-        public W getWrapped() {
-            return wrapped;
-        }
-
-        @Override
-        public void setWrapped(final W wrapped) {
-            this.wrapped = wrapped;
-        }
-    }
-
     private static final class ImmutableWrapper<W> extends Wrapper<W> {
         private ImmutableWrapper(
                                   final W wrapped) {
@@ -97,6 +70,29 @@ public abstract class Wrapper<W> {
         }
     }
 
+    private static final class MutableWrapper<W> extends Wrapper<W> {
+
+        @Override
+        public W getWrapped() {
+            return wrapped;
+        }
+
+        @Override
+        public void setWrapped(final W wrapped) {
+            this.wrapped = wrapped;
+        }
+    }
+
+    protected W wrapped;
+
+    public static <W> Wrapper<W> createImmutable(final W wrapped) {
+        return new ImmutableWrapper<W>(wrapped);
+    }
+
+    public static <W> Wrapper<W> createMutable() {
+        return new MutableWrapper<W>();
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
@@ -109,8 +105,12 @@ public abstract class Wrapper<W> {
         return true;
     }
 
+    public abstract W getWrapped();
+
     @Override
     public int hashCode() {
         return wrapped != null ? wrapped.hashCode() : 0;
     }
+
+    public abstract void setWrapped(W wrapped);
 }

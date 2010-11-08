@@ -102,20 +102,20 @@ public final class InvocationCacheFactory {
             }
         }
 
-        /** The use enhanced method. */
-        private final UseEnhanced                          useEnhancedMethod;
-
-        /** The source. */
-        private Object                                     source;
-
-        /** The cache. */
-        private final Map<MethodWithParametersKey, Object> cache      = new HashMap<MethodWithParametersKey, Object>();
-
         /** The Constant NULL_VALUE. */
         private static final Object                        NULL_VALUE = new Object();
 
         /** The Constant VOID_VALUE. */
         private static final Object                        VOID_VALUE = new Object();
+
+        /** The cache. */
+        private final Map<MethodWithParametersKey, Object> cache      = new HashMap<MethodWithParametersKey, Object>();
+
+        /** The source. */
+        private Object                                     source;
+
+        /** The use enhanced method. */
+        private final UseEnhanced                          useEnhancedMethod;
 
         /**
          * Instantiates a new cached interceptor using the behavior described on {@link UseEnhanced}.
@@ -125,6 +125,33 @@ public final class InvocationCacheFactory {
         public CachedInterceptor(
                                   final UseEnhanced useEnhancedMethod) {
             this.useEnhancedMethod = useEnhancedMethod;
+        }
+
+        /**
+         * Invoke the method itself.
+         * 
+         * @param method the method
+         * @param parameters the parameters
+         * @param proxy the proxy
+         * @return the object
+         * @throws Throwable the throwable
+         * @throws IllegalAccessException the illegal access exception
+         * @throws InvocationTargetException the invocation target exception
+         */
+        private Object invoke(final Method method,
+                               final Object[] parameters,
+                               final MethodProxy proxy)
+            throws Throwable, IllegalAccessException, InvocationTargetException {
+            Object value = null;
+            switch (useEnhancedMethod) {
+                case USE_ENHANCED:
+                    value = proxy.invokeSuper(source, parameters);
+                    break;
+                case USE_WRAPPED:
+                    value = method.invoke(source, parameters);
+                    break;
+            }
+            return value;
         }
 
         @Override
@@ -180,33 +207,6 @@ public final class InvocationCacheFactory {
         }
 
         /**
-         * Invoke the method itself.
-         * 
-         * @param method the method
-         * @param parameters the parameters
-         * @param proxy the proxy
-         * @return the object
-         * @throws Throwable the throwable
-         * @throws IllegalAccessException the illegal access exception
-         * @throws InvocationTargetException the invocation target exception
-         */
-        private Object invoke(final Method method,
-                               final Object[] parameters,
-                               final MethodProxy proxy)
-            throws Throwable, IllegalAccessException, InvocationTargetException {
-            Object value = null;
-            switch (useEnhancedMethod) {
-                case USE_ENHANCED:
-                    value = proxy.invokeSuper(source, parameters);
-                    break;
-                case USE_WRAPPED:
-                    value = method.invoke(source, parameters);
-                    break;
-            }
-            return value;
-        }
-
-        /**
          * Sets the source.
          * 
          * @param source the new source
@@ -215,6 +215,13 @@ public final class InvocationCacheFactory {
             this.source = source;
         }
 
+    }
+
+    /**
+     * do not newPair a new cache factory.
+     */
+    private InvocationCacheFactory() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -255,13 +262,6 @@ public final class InvocationCacheFactory {
         @SuppressWarnings("unchecked")
         final T wrapped = (T) e.create();
         return wrapped;
-    }
-
-    /**
-     * do not newPair a new cache factory.
-     */
-    private InvocationCacheFactory() {
-        throw new UnsupportedOperationException();
     }
 
 }

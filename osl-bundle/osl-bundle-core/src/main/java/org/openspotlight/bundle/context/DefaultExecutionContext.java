@@ -74,7 +74,21 @@ import com.google.inject.Provider;
  */
 public class DefaultExecutionContext implements ExecutionContext {
 
+    private final MutableConfigurationManager                     configurationManager;
+
+    private final GraphSessionFactory                             graphSessionFactory;
+
     private final Iterable<Class<? extends OriginArtifactLoader>> loaderRegistry;
+
+    private FullGraphSession                                      openedFullGraphSession   = null;
+
+    private SimpleGraphSession                                    openedSimpleGraphSession = null;
+
+    private final PersistentArtifactManagerProvider               persistentArtifactManagerProvider;
+
+    private final Provider<StorageSession>                        sessionProvider;
+
+    private final SimplePersistFactory                            simplePersistFactory;
 
     @Inject
     public DefaultExecutionContext(final Provider<StorageSession> sessionProvider,
@@ -91,25 +105,6 @@ public class DefaultExecutionContext implements ExecutionContext {
         this.loaderRegistry = loaderRegistry;
 
     }
-
-    @Override
-    public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
-        return loaderRegistry;
-    }
-
-    private final Provider<StorageSession>          sessionProvider;
-
-    private final GraphSessionFactory               graphSessionFactory;
-
-    private final SimplePersistFactory              simplePersistFactory;
-
-    private final PersistentArtifactManagerProvider persistentArtifactManagerProvider;
-
-    private SimpleGraphSession                      openedSimpleGraphSession = null;
-
-    private FullGraphSession                        openedFullGraphSession   = null;
-
-    private final MutableConfigurationManager       configurationManager;
 
     public static void closeResourcesIfNeeded(final Object o) {
         if (o instanceof Disposable) {
@@ -130,11 +125,44 @@ public class DefaultExecutionContext implements ExecutionContext {
     }
 
     @Override
-    public SimpleGraphSession openSimple() {
-        if (openedSimpleGraphSession == null) {
-            openedSimpleGraphSession = graphSessionFactory.openSimple();
-        }
-        return openedSimpleGraphSession;
+    public MutableConfigurationManager getDefaultConfigurationManager() {
+        return configurationManager;
+    }
+
+    @Override
+    public Iterable<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+        return loaderRegistry;
+    }
+
+    @Override
+    public String getPassword() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PersistentArtifactManager getPersistentArtifactManager() {
+        return persistentArtifactManagerProvider.get();
+    }
+
+    @Override
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
+                                                                              final Partition partition) {
+        return simplePersistFactory.createSimplePersist(partition);
+    }
+
+    @Override
+    public SimplePersistFactory getSimplePersistFactory() {
+        return simplePersistFactory;
+    }
+
+    @Override
+    public AuthenticatedUser getUser() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getUserName() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -152,39 +180,11 @@ public class DefaultExecutionContext implements ExecutionContext {
     }
 
     @Override
-    public PersistentArtifactManager getPersistentArtifactManager() {
-        return persistentArtifactManagerProvider.get();
-    }
-
-    @Override
-    public MutableConfigurationManager getDefaultConfigurationManager() {
-        return configurationManager;
-    }
-
-    @Override
-    public String getPassword() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public AuthenticatedUser getUser() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getUserName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist(
-                                                                              final Partition partition) {
-        return simplePersistFactory.createSimplePersist(partition);
-    }
-
-    @Override
-    public SimplePersistFactory getSimplePersistFactory() {
-        return simplePersistFactory;
+    public SimpleGraphSession openSimple() {
+        if (openedSimpleGraphSession == null) {
+            openedSimpleGraphSession = graphSessionFactory.openSimple();
+        }
+        return openedSimpleGraphSession;
     }
 
 }

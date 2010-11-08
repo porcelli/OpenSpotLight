@@ -58,21 +58,26 @@ import org.openspotlight.graph.annotation.TransientProperty;
 @InitialWeight(6)
 public abstract class JavaType extends Node {
 
-    private String  typeName;
-
     private boolean publicClass;
 
     private Integer someNumber;
 
     private String  transientValue;
 
+    private String  typeName;
+
+    public Integer getSomeNumber() {
+        return someNumber;
+    }
+
+    @TransientProperty
+    public String getTransientValue() {
+        return transientValue;
+    }
+
     @Override
     public String getTypeName() {
         return typeName;
-    }
-
-    public void setTypeName(final String typeName) {
-        this.typeName = typeName;
     }
 
     public boolean isPublicClass() {
@@ -83,21 +88,16 @@ public abstract class JavaType extends Node {
         this.publicClass = publicClass;
     }
 
-    public Integer getSomeNumber() {
-        return someNumber;
-    }
-
     public void setSomeNumber(final Integer someNumber) {
         this.someNumber = someNumber;
     }
 
-    @TransientProperty
-    public String getTransientValue() {
-        return transientValue;
-    }
-
     public void setTransientValue(final String transientValue) {
         this.transientValue = transientValue;
+    }
+
+    public void setTypeName(final String typeName) {
+        this.typeName = typeName;
     }
 
 }

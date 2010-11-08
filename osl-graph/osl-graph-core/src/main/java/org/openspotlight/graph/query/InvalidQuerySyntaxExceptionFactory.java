@@ -70,6 +70,21 @@ import org.openspotlight.graph.query.parser.SLQLLexer;
  */
 public class InvalidQuerySyntaxExceptionFactory {
 
+    /** The Constant EARLY_EXIT_MESSAGE. */
+    private final static String EARLY_EXIT_MESSAGE                    =
+                                                                          "Line %1$d:%2$d required (...)+ loop did not match anything at input '%3$s'";
+
+    /** The Constant FAILED_PREDICATE_MESSAGE. */
+    private final static String FAILED_PREDICATE_MESSAGE              = "Line %1$d:%2$d rule '%3$s' failed predicate: {%4$s}?";
+
+    /** The Constant MISMATCHED_NOT_SET_MESSAGE. */
+    private final static String MISMATCHED_NOT_SET_MESSAGE            =
+                                                                          "Line %1$d:%2$d mismatched input '%3$' expecting set '%4$s'";
+
+    /** The Constant MISMATCHED_SET_MESSAGE. */
+    private final static String MISMATCHED_SET_MESSAGE                =
+                                                                          "Line %1$d:%2$d mismatched input '%3$' expecting set '%4$s'.";
+
     /** The Constant MISMATCHED_TOKEN_MESSAGE_COMPLETE. */
     private final static String MISMATCHED_TOKEN_MESSAGE_COMPLETE     = "Line %1$d:%2$d mismatched input '%3$s' expecting '%4$s'";
 
@@ -86,21 +101,6 @@ public class InvalidQuerySyntaxExceptionFactory {
     /** The Constant NO_VIABLE_ALT_MESSAGE. */
     private final static String NO_VIABLE_ALT_MESSAGE                 = "Line %1$d:%2$d no viable alternative at input '%3$s'";
 
-    /** The Constant EARLY_EXIT_MESSAGE. */
-    private final static String EARLY_EXIT_MESSAGE                    =
-                                                                          "Line %1$d:%2$d required (...)+ loop did not match anything at input '%3$s'";
-
-    /** The Constant MISMATCHED_SET_MESSAGE. */
-    private final static String MISMATCHED_SET_MESSAGE                =
-                                                                          "Line %1$d:%2$d mismatched input '%3$' expecting set '%4$s'.";
-
-    /** The Constant MISMATCHED_NOT_SET_MESSAGE. */
-    private final static String MISMATCHED_NOT_SET_MESSAGE            =
-                                                                          "Line %1$d:%2$d mismatched input '%3$' expecting set '%4$s'";
-
-    /** The Constant FAILED_PREDICATE_MESSAGE. */
-    private final static String FAILED_PREDICATE_MESSAGE              = "Line %1$d:%2$d rule '%3$s' failed predicate: {%4$s}?";
-
     /** The token names. */
     private String[]            tokenNames                            = null;
 
@@ -112,99 +112,6 @@ public class InvalidQuerySyntaxExceptionFactory {
     public InvalidQuerySyntaxExceptionFactory(
                                                  final String[] tokenNames) {
         this.tokenNames = tokenNames;
-    }
-
-    /**
-     * This method creates a InvalidQuerySyntaxException full of information.
-     * 
-     * @param e original exception
-     * @return InvalidQuerySyntaxException filled.
-     */
-    public InvalidQuerySyntaxException createSLQueryLanguageException(final RecognitionException e) {
-        final List<String> codeAndMessage = createErrorMessage(e);
-        return new InvalidQuerySyntaxException(codeAndMessage.get(1), codeAndMessage.get(0), e.line, e.charPositionInLine,
-                                                 e.index, e);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createSLQueryLanguageException() {
-        return new InvalidQuerySyntaxException("");
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createInvalidExecutingException() {
-        return new InvalidQuerySyntaxException("ERR 108", "invalid use of executing times", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createInvalidDoubleStarException() {
-        return new InvalidQuerySyntaxException("ERR 109", "invalid use of double star (**)", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createDuplicatedDefineMessageException() {
-        return new InvalidQuerySyntaxException("ERR 110", "invalid use of double star (**)", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createDuplicatedDefineDomainException() {
-        return new InvalidQuerySyntaxException("ERR 111", "invalid use of double star (**)", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createDefineTargetWithoutByLinkException() {
-        return new InvalidQuerySyntaxException("ERR 112", "invalid use of double star (**)", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createByLinkWithoutDefineTargetException() {
-        return new InvalidQuerySyntaxException("ERR 113", "invalid use of double star (**)", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createCannotUseWhereWithByLInkException() {
-        return new InvalidQuerySyntaxException("ERR 114", "invalid use of double star (**)", -1, -1, -1, null);
-    }
-
-    /**
-     * Creates a new InvalidQuerySyntaxException object.
-     * 
-     * @return the SL invalid query syntax exception
-     */
-    public InvalidQuerySyntaxException createDefineTargetWithByLinkException() {
-        return new InvalidQuerySyntaxException("ERR 115", "invalid use of by link in define target", -1, -1, -1, null);
     }
 
     /**
@@ -282,17 +189,6 @@ public class InvalidQuerySyntaxExceptionFactory {
     /**
      * Helper method that creates a user friendly token definition.
      * 
-     * @param token token
-     * @return user friendly token definition
-     */
-    private String getBetterToken(final Token token) {
-        if (token == null) { return ""; }
-        return getBetterToken(token.getType(), token.getText());
-    }
-
-    /**
-     * Helper method that creates a user friendly token definition.
-     * 
      * @param tokenType token type
      * @return user friendly token definition
      */
@@ -357,5 +253,109 @@ public class InvalidQuerySyntaxExceptionFactory {
             default:
                 return tokenType > tokenNames.length ? "unknown" : tokenNames[tokenType];
         }
+    }
+
+    /**
+     * Helper method that creates a user friendly token definition.
+     * 
+     * @param token token
+     * @return user friendly token definition
+     */
+    private String getBetterToken(final Token token) {
+        if (token == null) { return ""; }
+        return getBetterToken(token.getType(), token.getText());
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createByLinkWithoutDefineTargetException() {
+        return new InvalidQuerySyntaxException("ERR 113", "invalid use of double star (**)", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createCannotUseWhereWithByLInkException() {
+        return new InvalidQuerySyntaxException("ERR 114", "invalid use of double star (**)", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createDefineTargetWithByLinkException() {
+        return new InvalidQuerySyntaxException("ERR 115", "invalid use of by link in define target", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createDefineTargetWithoutByLinkException() {
+        return new InvalidQuerySyntaxException("ERR 112", "invalid use of double star (**)", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createDuplicatedDefineDomainException() {
+        return new InvalidQuerySyntaxException("ERR 111", "invalid use of double star (**)", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createDuplicatedDefineMessageException() {
+        return new InvalidQuerySyntaxException("ERR 110", "invalid use of double star (**)", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createInvalidDoubleStarException() {
+        return new InvalidQuerySyntaxException("ERR 109", "invalid use of double star (**)", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createInvalidExecutingException() {
+        return new InvalidQuerySyntaxException("ERR 108", "invalid use of executing times", -1, -1, -1, null);
+    }
+
+    /**
+     * Creates a new InvalidQuerySyntaxException object.
+     * 
+     * @return the SL invalid query syntax exception
+     */
+    public InvalidQuerySyntaxException createSLQueryLanguageException() {
+        return new InvalidQuerySyntaxException("");
+    }
+
+    /**
+     * This method creates a InvalidQuerySyntaxException full of information.
+     * 
+     * @param e original exception
+     * @return InvalidQuerySyntaxException filled.
+     */
+    public InvalidQuerySyntaxException createSLQueryLanguageException(final RecognitionException e) {
+        final List<String> codeAndMessage = createErrorMessage(e);
+        return new InvalidQuerySyntaxException(codeAndMessage.get(1), codeAndMessage.get(0), e.line, e.charPositionInLine,
+                                                 e.index, e);
     }
 }

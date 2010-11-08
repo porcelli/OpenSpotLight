@@ -80,6 +80,18 @@ public interface PropertyContainer {
     Partition getPartition();
 
     /**
+     * Returns all existing properties, or an empty {@link Set} if this element has no properties. <br>
+     * In {@link StorageNode} case, this method returns also the {@link SimpleKey} entries.<br>
+     * 
+     * @param session the storage session
+     * @return all properties of this element
+     * @throws IllegalArgumentException if input param is null
+     * @see Property
+     */
+    Set<Property> getProperties(StorageSession session)
+        throws IllegalArgumentException;
+
+    /**
      * Returns the property associated with the given name or null if property not found. <br>
      * In {@link StorageNode} case, you can also use this method to get any {@link SimpleKey} entry.<br>
      * 
@@ -93,15 +105,28 @@ public interface PropertyContainer {
         throws IllegalArgumentException;
 
     /**
-     * Returns the property value as string or null if property not found. <br>
-     * In {@link StorageNode} case, you can also use this method to get any {@link SimpleKey} value.<br>
+     * Returns all existing property names, or an empty {@link Set} if this element has no properties. <br>
+     * In {@link StorageNode} case, this method returns also the {@link SimpleKey} names.<br>
+     * 
+     * @param session the storage session
+     * @return all property keys of this element
+     * @throws IllegalArgumentException if input param is null
+     */
+    Set<String> getPropertyNames(StorageSession session)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns the property value as an array of bytes or null if property not found. <br>
+     * In {@link StorageNode} case, you can also use this method to get any {@link SimpleKey} value. <b>Important</b>: you should
+     * prefer use the {@link #getPropertyValueAsString(StorageSession, String)} method, once that {@link SimpleKey} are always
+     * {@link String} values. <br>
      * 
      * @param session the storage session
      * @param name the property name
-     * @return the property value as string or null if property not found
+     * @return the property value as an array of bytes or null if property not found
      * @throws IllegalArgumentException if any input param is null or empty
      */
-    String getPropertyValueAsString(StorageSession session, String name)
+    byte[] getPropertyValueAsBytes(StorageSession session, String name)
         throws IllegalArgumentException;
 
     /**
@@ -120,41 +145,34 @@ public interface PropertyContainer {
         throws IllegalArgumentException;
 
     /**
-     * Returns the property value as an array of bytes or null if property not found. <br>
-     * In {@link StorageNode} case, you can also use this method to get any {@link SimpleKey} value. <b>Important</b>: you should
-     * prefer use the {@link #getPropertyValueAsString(StorageSession, String)} method, once that {@link SimpleKey} are always
-     * {@link String} values. <br>
+     * Returns the property value as string or null if property not found. <br>
+     * In {@link StorageNode} case, you can also use this method to get any {@link SimpleKey} value.<br>
      * 
      * @param session the storage session
      * @param name the property name
-     * @return the property value as an array of bytes or null if property not found
+     * @return the property value as string or null if property not found
      * @throws IllegalArgumentException if any input param is null or empty
      */
-    byte[] getPropertyValueAsBytes(StorageSession session, String name)
+    String getPropertyValueAsString(StorageSession session, String name)
         throws IllegalArgumentException;
 
     /**
-     * Returns all existing property names, or an empty {@link Set} if this element has no properties. <br>
-     * In {@link StorageNode} case, this method returns also the {@link SimpleKey} names.<br>
+     * Sets (or creates if does not exists) an <b>indexed</b> property value for the given name. <br>
+     * Null is an accepted property value.<br>
+     * <b>Important Notes:</b><br>
+     * &nbsp;1. Only indexed properties are searchable.<br>
+     * &nbsp;2. Indexed properties consumes more disk space.
      * 
      * @param session the storage session
-     * @return all property keys of this element
-     * @throws IllegalArgumentException if input param is null
-     */
-    Set<String> getPropertyNames(StorageSession session)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns all existing properties, or an empty {@link Set} if this element has no properties. <br>
-     * In {@link StorageNode} case, this method returns also the {@link SimpleKey} entries.<br>
-     * 
-     * @param session the storage session
-     * @return all properties of this element
-     * @throws IllegalArgumentException if input param is null
+     * @param name the property name
+     * @param value the property value
+     * @return the setted (or created) indexed property
+     * @throws IllegalArgumentException if input params session and name are null or empty
+     * @throws IllegalStateException if try to set a property that is also a {@link SimpleKey}
      * @see Property
      */
-    Set<Property> getProperties(StorageSession session)
-        throws IllegalArgumentException;
+    Property setIndexedProperty(StorageSession session, String name, String value)
+        throws IllegalArgumentException, IllegalStateException;
 
     /**
      * Sets (or creates if does not exists) the property value for the given name. <br>
@@ -170,7 +188,7 @@ public interface PropertyContainer {
      * @throws IllegalStateException if try to set a property that is also a {@link SimpleKey}
      * @see Property
      */
-    Property setSimpleProperty(StorageSession session, String name, String value)
+    Property setSimpleProperty(StorageSession session, String name, byte[] value)
         throws IllegalArgumentException, IllegalStateException;
 
     /**
@@ -205,25 +223,7 @@ public interface PropertyContainer {
      * @throws IllegalStateException if try to set a property that is also a {@link SimpleKey}
      * @see Property
      */
-    Property setSimpleProperty(StorageSession session, String name, byte[] value)
-        throws IllegalArgumentException, IllegalStateException;
-
-    /**
-     * Sets (or creates if does not exists) an <b>indexed</b> property value for the given name. <br>
-     * Null is an accepted property value.<br>
-     * <b>Important Notes:</b><br>
-     * &nbsp;1. Only indexed properties are searchable.<br>
-     * &nbsp;2. Indexed properties consumes more disk space.
-     * 
-     * @param session the storage session
-     * @param name the property name
-     * @param value the property value
-     * @return the setted (or created) indexed property
-     * @throws IllegalArgumentException if input params session and name are null or empty
-     * @throws IllegalStateException if try to set a property that is also a {@link SimpleKey}
-     * @see Property
-     */
-    Property setIndexedProperty(StorageSession session, String name, String value)
+    Property setSimpleProperty(StorageSession session, String name, String value)
         throws IllegalArgumentException, IllegalStateException;
 
 }

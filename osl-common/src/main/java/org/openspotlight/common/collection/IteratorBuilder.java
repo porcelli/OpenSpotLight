@@ -61,68 +61,13 @@ import org.openspotlight.common.exception.SLRuntimeException;
  */
 public class IteratorBuilder {
 
-    public static <T, O> SimpleIteratorBuilder<T, O> createIteratorBuilder() {
-        return new SimpleIteratorBuilder();
-    }
-
-    public static class SimpleIteratorBuilder<T, O> {
-
-        private SimpleIteratorBuilder() {}
-
-        private NextItemReferee<O> referee;
-        private Iterable<O>        items;
-        private Converter<T, O>    converter;
-
-        public SimpleIteratorBuilder withReferee(final NextItemReferee<O> referee) {
-            this.referee = referee;
-            return this;
-        }
-
-        public SimpleIteratorBuilder withItems(final Iterable<O> items) {
-            this.items = items;
-            return this;
-        }
-
-        public SimpleIteratorBuilder withConverter(final Converter<T, O> converter) {
-            this.converter = converter;
-            return this;
-        }
-
-        public Iterable<T> andBuild() {
-            return new SimpleIterable<T, O>(items, referee, converter);
-        }
-    }
-
-    public static interface Converter<T, O> {
-        T convert(O o)
-            throws Exception;
-    }
-
-    public static interface NextItemReferee<O> {
-        boolean canAcceptAsNewItem(O o)
-            throws Exception;
-    }
-
     private static class SimpleIterable<T, O> implements Iterable<T> {
-
-        private final Iterable<O>        origin;
-
-        private final NextItemReferee<O> referee;
-
-        private final Converter<T, O>    converter;
-
-        private SimpleIterable(final Iterable<O> origin, final NextItemReferee<O> referee,
-                               final Converter<T, O> converter) {
-            this.origin = origin;
-            this.referee = referee;
-            this.converter = converter;
-        }
 
         private class SimpleIterator implements Iterator<T> {
 
-            private final Iterator<O> iterator;
-
             private O                 cachedOrigin;
+
+            private final Iterator<O> iterator;
 
             public SimpleIterator(final Iterator<O> iterator) {
                 this.iterator = iterator;
@@ -192,10 +137,66 @@ public class IteratorBuilder {
             }
         }
 
+        private final Converter<T, O>    converter;
+
+        private final Iterable<O>        origin;
+
+        private final NextItemReferee<O> referee;
+
+        private SimpleIterable(final Iterable<O> origin, final NextItemReferee<O> referee,
+                               final Converter<T, O> converter) {
+            this.origin = origin;
+            this.referee = referee;
+            this.converter = converter;
+        }
+
         @Override
         public Iterator<T> iterator() {
             return new SimpleIterator(origin.iterator());
 
         }
+    }
+
+    public static interface Converter<T, O> {
+        T convert(O o)
+            throws Exception;
+    }
+
+    public static interface NextItemReferee<O> {
+        boolean canAcceptAsNewItem(O o)
+            throws Exception;
+    }
+
+    public static class SimpleIteratorBuilder<T, O> {
+
+        private Converter<T, O>    converter;
+
+        private Iterable<O>        items;
+        private NextItemReferee<O> referee;
+
+        private SimpleIteratorBuilder() {}
+
+        public Iterable<T> andBuild() {
+            return new SimpleIterable<T, O>(items, referee, converter);
+        }
+
+        public SimpleIteratorBuilder withConverter(final Converter<T, O> converter) {
+            this.converter = converter;
+            return this;
+        }
+
+        public SimpleIteratorBuilder withItems(final Iterable<O> items) {
+            this.items = items;
+            return this;
+        }
+
+        public SimpleIteratorBuilder withReferee(final NextItemReferee<O> referee) {
+            this.referee = referee;
+            return this;
+        }
+    }
+
+    public static <T, O> SimpleIteratorBuilder<T, O> createIteratorBuilder() {
+        return new SimpleIteratorBuilder();
     }
 }

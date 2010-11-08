@@ -51,12 +51,12 @@ package org.openspotlight.security.idm.store;
 
 public class SLIdentityStoreSessionContext {
 
+    private final SLIdentityStoreSessionImpl session;
+
     public SLIdentityStoreSessionContext(
                                           final SLIdentityStoreSessionImpl session) {
         this.session = session;
     }
-
-    private final SLIdentityStoreSessionImpl session;
 
     public SLIdentityStoreSessionImpl getSession() {
         return session;

@@ -57,6 +57,10 @@ package org.openspotlight.federation.domain.artifact.db;
 public enum DatabaseType {
 
     /**
+     * DB2
+     */
+    DB2,
+    /**
      * The first type supported, just to be possible to do tests on a pure java way.
      */
     H2,
@@ -64,10 +68,6 @@ public enum DatabaseType {
      * MySQL Database.
      */
     MY_SQL,
-    /**
-     * Postgre Sql Database.
-     */
-    POSTGRES,
     /**
      * Oracle version before 9i
      */
@@ -77,13 +77,13 @@ public enum DatabaseType {
      */
     ORACLE9(ORACLE),
     /**
+     * Postgre Sql Database.
+     */
+    POSTGRES,
+    /**
      * SQL Server
      */
-    SQL_SERVER,
-    /**
-     * DB2
-     */
-    DB2;
+    SQL_SERVER;
 
     private final DatabaseType parent;
 

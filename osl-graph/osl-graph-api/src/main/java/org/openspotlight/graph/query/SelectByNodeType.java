@@ -28,28 +28,6 @@ package org.openspotlight.graph.query;
 public interface SelectByNodeType extends Select {
 
     /**
-     * All types.
-     * 
-     * @return the all types
-     */
-    public AllTypes allTypes();
-
-    /**
-     * Type.
-     * 
-     * @param typeName the type name
-     * @return the type
-     */
-    public Type type(String typeName);
-
-    /**
-     * End.
-     * 
-     * @return the end
-     */
-    public End end();
-
-    /**
      * The Interface AllTypes.
      */
     public static interface AllTypes {
@@ -67,6 +45,68 @@ public interface SelectByNodeType extends Select {
          * @return the end
          */
         public End selectEnd();
+    }
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End extends SelectFacade {
+
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
+
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes(int x);
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit(Integer size);
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit(Integer size,
+                          Integer offset);
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public OrderByStatement orderBy();
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by node type
+         */
+        public WhereByNodeType where();
     }
 
     /**
@@ -99,64 +139,24 @@ public interface SelectByNodeType extends Select {
     }
 
     /**
-     * The Interface End.
+     * All types.
      * 
-     * @author Vitor Hugo Chagas
+     * @return the all types
      */
-    public static interface End extends SelectFacade {
+    public AllTypes allTypes();
 
-        /**
-         * Where.
-         * 
-         * @return the sL where by node type
-         */
-        public WhereByNodeType where();
+    /**
+     * End.
+     * 
+     * @return the end
+     */
+    public End end();
 
-        /**
-         * Order by.
-         * 
-         * @return the sL order by statement
-         */
-        public OrderByStatement orderBy();
-
-        /**
-         * Keep result.
-         * 
-         * @return the end
-         */
-        public End keepResult();
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @return the end
-         */
-        public End limit(Integer size);
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @param offset the offset
-         * @return the end
-         */
-        public End limit(Integer size,
-                          Integer offset);
-
-        /**
-         * Execute x times.
-         * 
-         * @return the end
-         */
-        public End executeXTimes();
-
-        /**
-         * Execute x times.
-         * 
-         * @param x the x
-         * @return the end
-         */
-        public End executeXTimes(int x);
-    }
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type(String typeName);
 }

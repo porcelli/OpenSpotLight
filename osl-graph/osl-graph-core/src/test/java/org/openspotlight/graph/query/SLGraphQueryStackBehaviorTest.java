@@ -66,6 +66,21 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     private static AuthenticatedUser user;
 
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected GraphReader graphReader() {
+        throw new UnsupportedOperationException();
+    }
+
     @Test
     public void testVerifyWhereInStack()
         throws Exception {
@@ -204,21 +219,6 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
         assertThat(resultData2.getNodes().size(), is(resultData.getNodes()
                 .size()));
-    }
-
-    @Override
-    protected Callable<Void> createStartUpHandler() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Callable<Void> createShutdownHandler() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected GraphReader graphReader() {
-        throw new UnsupportedOperationException();
     }
 
 }

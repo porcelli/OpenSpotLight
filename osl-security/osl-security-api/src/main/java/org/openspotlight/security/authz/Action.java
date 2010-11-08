@@ -56,20 +56,20 @@ package org.openspotlight.security.authz;
  */
 public enum Action {
 
-    /** The READ. */
-    READ,
-
-    /** The WRITE. */
-    WRITE(READ),
-
     /** The DELETE. */
     DELETE(WRITE),
+
+    /** The MANAGE. */
+    MANAGE(OPERATE),
 
     /** The OPERATE. */
     OPERATE(DELETE),
 
-    /** The MANAGE. */
-    MANAGE(OPERATE);
+    /** The READ. */
+    READ,
+
+    /** The WRITE. */
+    WRITE(READ);
 
     /** The parent. */
     private final Action parent;

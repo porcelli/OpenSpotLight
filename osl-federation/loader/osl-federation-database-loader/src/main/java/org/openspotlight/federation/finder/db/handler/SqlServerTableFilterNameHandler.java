@@ -59,6 +59,11 @@ import org.openspotlight.federation.finder.db.ScriptType;
  */
 public class SqlServerTableFilterNameHandler implements DatabaseArtifactNameHandler {
 
+    @Override
+    public String fixName(final String oldName) {
+        return oldName;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -69,11 +74,6 @@ public class SqlServerTableFilterNameHandler implements DatabaseArtifactNameHand
         throws Exception {
         if ("TABLE".equals(resultSet.getString("TABLE_TYPE"))) { return true; }
         return false;
-    }
-
-    @Override
-    public String fixName(final String oldName) {
-        return oldName;
     }
 
 }

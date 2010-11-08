@@ -35,13 +35,6 @@ import org.openspotlight.common.Disposable;
 public interface GraphSessionFactory extends Disposable {
 
     /**
-     * Opens a simple graph session.
-     * 
-     * @return the simple session
-     */
-    public SimpleGraphSession openSimple();
-
-    /**
      * Opens a full graph session.
      * 
      * @return the full session
@@ -57,4 +50,11 @@ public interface GraphSessionFactory extends Disposable {
      */
     public FullGraphSession openFull(String artifactId)
         throws IllegalArgumentException;
+
+    /**
+     * Opens a simple graph session.
+     * 
+     * @return the simple session
+     */
+    public SimpleGraphSession openSimple();
 }

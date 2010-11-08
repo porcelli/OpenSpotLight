@@ -62,40 +62,6 @@ public class TestShowLinkTypesCommand extends AbstractCommandTest {
         command = new ShowLinkTypesCommand();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAcceptNull() {
-        assertThat(command.accept(null), is(false));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testExecuteNull() {
-        command.execute(null, null, null);
-    }
-
-    @Test
-    public void testAcceptNullInout() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput(null);
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptValidParameter() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("show link types");
-
-        assertThat(command.accept(state), is(true));
-    }
-
-    @Test
-    public void testAcceptValidParameter2() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("show link types  ");
-
-        assertThat(command.accept(state), is(true));
-    }
-
     @Test
     public void testAcceptInValidParameter() {
         final ConsoleState state = new ConsoleState(null);
@@ -126,6 +92,40 @@ public class TestShowLinkTypesCommand extends AbstractCommandTest {
         state.setInput("show link types ?");
 
         assertThat(command.accept(state), is(false));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAcceptNull() {
+        assertThat(command.accept(null), is(false));
+    }
+
+    @Test
+    public void testAcceptNullInout() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptValidParameter() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("show link types");
+
+        assertThat(command.accept(state), is(true));
+    }
+
+    @Test
+    public void testAcceptValidParameter2() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("show link types  ");
+
+        assertThat(command.accept(state), is(true));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExecuteNull() {
+        command.execute(null, null, null);
     }
 
     @Test

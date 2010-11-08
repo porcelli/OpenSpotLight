@@ -73,128 +73,87 @@ import org.openspotlight.storage.domain.StorageNode;
  */
 public class SelectByLinkCountExecuteCommand extends SelectAbstractCommand {
 
-    /** The select info. */
-    private final SelectByLinkCountInfo    selectInfo;
-
-    /** The command do. */
-    private final SelectCommandDO          commandDO;
-
-    /** The node wrapper list map. */
-    private Map<String, List<StorageNode>> nodeWrapperListMap;
-
-    /** The metadata. */
-    private final Metadata                 metadata;
-
     /**
-     * Instantiates a new sL select by link count execute command.
+     * The Class LinkCountEvaluator.
      * 
-     * @param selectByLinkCountInfo the select by link count info
-     * @param commandDO the command do
+     * @author Vitor Hugo Chagas
      */
-    public SelectByLinkCountExecuteCommand(
-                                           final SelectByLinkCountInfo selectByLinkCountInfo,
-                                           final SelectCommandDO commandDO) {
-        selectInfo = selectByLinkCountInfo;
-        this.commandDO = commandDO;
-        metadata = commandDO.getMetadata();
-    }
+    class LinkCountEvaluator {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void execute() {
-        try {
+        /** The mapper. */
+        private final LinkCountMapper mapper;
 
-            final Set<StorageNode> nodeWrappers = new HashSet<StorageNode>();
-            commandDO.setNodeWrappers(nodeWrappers);
+        /** The where type info. */
+        private final SLWhereTypeInfo whereTypeInfo;
 
-            final Set<SLWhereTypeInfo> whereTypeInfoSet = getWhereTypeInfoSet();
-            if (commandDO.getPreviousNodeWrappers() != null) {
-                nodeWrapperListMap = QuerySupport.mapNodesByType(commandDO
-                        .getPreviousNodeWrappers());
-            } else {
-                nodeWrapperListMap = new HashMap<String, List<StorageNode>>();
-                for (final SLWhereTypeInfo whereTypeInfo: whereTypeInfoSet) {
-                    final List<StorageNode> wrappers = getStorageNodesOfType(whereTypeInfo
-                            .getName());
-                    nodeWrapperListMap.put(whereTypeInfo.getName(), wrappers);
+        /**
+         * Instantiates a new link count evaluator.
+         * 
+         * @param whereTypeInfo the where type info
+         * @param mapper the mapper
+         */
+        private LinkCountEvaluator(final SLWhereTypeInfo whereTypeInfo,
+                                   final LinkCountMapper mapper) {
+            this.whereTypeInfo = whereTypeInfo;
+            this.mapper = mapper;
+        }
+
+        /**
+         * Evaluate.
+         * 
+         * @param statementInfo the statement info
+         * @param id the id
+         * @return true, if successful
+         */
+        private boolean evaluate(final SLTypeStatementInfo statementInfo, final String id) {
+
+            boolean status = false;
+
+            final List<SLConditionInfo> conditionInfoList = statementInfo
+                    .getConditionInfoList();
+            for (final SLConditionInfo conditionInfo: conditionInfoList) {
+
+                final ConditionalOperatorType conditionalOperator = conditionInfo
+                        .getConditionalOperator();
+                if (conditionalOperator != null) {
+                    if (status && conditionalOperator.equals(OR)) { return true; }
+                    if (!status && conditionalOperator.equals(AND)) { return false; }
                 }
-            }
 
-            for (final SLWhereTypeInfo whereTypeInfo: whereTypeInfoSet) {
-
-                final List<StorageNode> inputNodeWrappers = nodeWrapperListMap
-                        .get(whereTypeInfo.getName());
-                final LinkCountMapper mapper = new LinkCountMapper(whereTypeInfo,
-                        inputNodeWrappers);
-                mapper.map();
-
-                final LinkCountEvaluator evaluator = new LinkCountEvaluator(
-                        whereTypeInfo, mapper);
-                for (final StorageNode nodeWrapper: inputNodeWrappers) {
-                    final String id = nodeWrapper.getKeyAsString();
-                    final boolean status = evaluator.evaluate(id);
-                    if (status) {
-                        nodeWrappers.add(nodeWrapper);
+                if (conditionInfo.getInnerStatementInfo() == null) {
+                    final int linkCount = mapper.getLinkCount(conditionInfo, id);
+                    if (conditionInfo.getRelationalOperator().equals(
+                            RelationalOperatorType.EQUAL)) {
+                        status = linkCount == conditionInfo.getValue();
+                    } else if (conditionInfo.getRelationalOperator().equals(
+                            RelationalOperatorType.GREATER_THAN)) {
+                        status = linkCount > conditionInfo.getValue();
+                    } else if (conditionInfo.getRelationalOperator().equals(
+                            RelationalOperatorType.GREATER_OR_EQUAL_THAN)) {
+                        status = linkCount >= conditionInfo.getValue();
+                    } else if (conditionInfo.getRelationalOperator().equals(
+                            RelationalOperatorType.LESSER_THAN)) {
+                        status = linkCount < conditionInfo.getValue();
+                    } else if (conditionInfo.getRelationalOperator().equals(
+                            RelationalOperatorType.LESSER_OR_EQUAL_THAN)) {
+                        status = linkCount <= conditionInfo.getValue();
                     }
+                } else {
+                    status = evaluate(conditionInfo.getInnerStatementInfo(), id);
                 }
             }
-        } catch (final Exception e) {
-            throw new QueryException("Error on attempt to execute "
-                    + this.getClass().getName() + " command.");
+            return status;
         }
-    }
 
-    /**
-     * Gets the where type info set.
-     * 
-     * @return the where type info set
-     */
-    private Set<SLWhereTypeInfo> getWhereTypeInfoSet()
-            throws MetaNodeTypeNotFoundException {
-        final Set<SLWhereTypeInfo> set = new HashSet<SLWhereTypeInfo>();
-        for (final SLWhereTypeInfo whereTypeInfo: selectInfo.getWhereStatementInfo()
-                .getWhereTypeInfoList()) {
-            final List<String> typeNames = QuerySupport.getHierarchyTypeNames(
-                    metadata, whereTypeInfo.getName(),
-                    whereTypeInfo.isSubTypes());
-            for (final String typeName: typeNames) {
-                final SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
-                typeInfo.setTypeStatementInfo(whereTypeInfo
-                        .getTypeStatementInfo());
-                set.add(typeInfo);
-            }
+        /**
+         * Evaluate.
+         * 
+         * @param id the id
+         * @return true, if successful
+         */
+        private boolean evaluate(final String id) {
+            return evaluate(whereTypeInfo.getTypeStatementInfo(), id);
         }
-        return set;
-    }
-
-    /**
-     * Gets the p node wrappers of type.
-     * 
-     * @param name the name
-     * @return the p node wrappers of type @ the SL persistent tree session exception
-     */
-    private List<StorageNode> getStorageNodesOfType(final String name) {
-        // List<StorageNode> pNodeWrappers = new ArrayList<StorageNode>();
-        // XPathStatementBuilder statementBuilder = new
-        // XPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
-        // + "/contexts//*");
-        // Statement rootStatement = statementBuilder.getRootStatement();
-        // String typePropName =
-        // SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-        // rootStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(name);
-        // String xpath = statementBuilder.getXPath();
-        // SLPersistentQuery query =
-        // commandDO.getTreeSession().createQuery(xpath,
-        // SLPersistentQuery.TYPE_XPATH);
-        // SLPersistentQueryResult result = query.execute();
-        // Collection<StorageNode> pNodes = result.getNodes();
-        // for (StorageNode pNode : pNodes) {
-        // pNodeWrappers.add(new StorageNode(pNode));
-        // }
-        // return pNodeWrappers;
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -204,14 +163,14 @@ public class SelectByLinkCountExecuteCommand extends SelectAbstractCommand {
      */
     class LinkCountMapper {
 
+        /** The input node wrappers. */
+        private final List<StorageNode>                          inputNodeWrappers;
+
         /** The map. */
         private final Map<SLConditionInfo, Map<String, Integer>> map = new HashMap<SLConditionInfo, Map<String, Integer>>();
 
         /** The where type info. */
         private final SLWhereTypeInfo                            whereTypeInfo;
-
-        /** The input node wrappers. */
-        private final List<StorageNode>                          inputNodeWrappers;
 
         /**
          * Instantiates a new link count mapper.
@@ -226,6 +185,22 @@ public class SelectByLinkCountExecuteCommand extends SelectAbstractCommand {
         }
 
         /**
+         * Creates the node occurences map.
+         * 
+         * @param nodeWrappers the node wrappers
+         * @return the map< string, integer> @ the SL persistent tree session exception
+         */
+        private Map<String, Integer> createNodeOccurencesMap(
+                                                             final List<StorageNode> nodeWrappers) {
+            final Map<String, Integer> map = new HashMap<String, Integer>();
+            for (final StorageNode nodeWrapper: nodeWrappers) {
+                final String id = nodeWrapper.getKeyAsString();
+                map.put(id, 0);
+            }
+            return map;
+        }
+
+        /**
          * Gets the link count.
          * 
          * @param conditionInfo the condition info
@@ -234,6 +209,30 @@ public class SelectByLinkCountExecuteCommand extends SelectAbstractCommand {
          */
         private int getLinkCount(final SLConditionInfo conditionInfo, final String id) {
             return map.get(conditionInfo).get(id);
+        }
+
+        /**
+         * Gets the node wrappers.
+         * 
+         * @param pLinkNodes the link nodes
+         * @param side the side
+         * @return the node wrappers @ the SL persistent tree session exception
+         */
+        private Collection<StorageNode> getNodeWrappers(
+                                                        final Collection<StorageNode> pLinkNodes, final SideType side) {
+            // Collection<StorageNode> nodeWrappers = new
+            // ArrayList<StorageNode>();
+            // Collection<PLinkNodeWrapper> pLinkNodeWrappers =
+            // QuerySupport.wrapLinkNodes(pLinkNodes);
+            // for (PLinkNodeWrapper linkNodeWrapper : pLinkNodeWrappers) {
+            // String id = side.equals(SLSideType.A_SIDE) ?
+            // linkNodeWrapper.getSourceID() : linkNodeWrapper.getTargetID();
+            // StorageNode pNode = commandDO.getTreeSession().getNodeByID(id);
+            // StorageNode nodeWrapper = new StorageNode(pNode);
+            // nodeWrappers.add(nodeWrapper);
+            // }
+            // return nodeWrappers;
+            throw new UnsupportedOperationException();
         }
 
         /**
@@ -304,30 +303,6 @@ public class SelectByLinkCountExecuteCommand extends SelectAbstractCommand {
         }
 
         /**
-         * Gets the node wrappers.
-         * 
-         * @param pLinkNodes the link nodes
-         * @param side the side
-         * @return the node wrappers @ the SL persistent tree session exception
-         */
-        private Collection<StorageNode> getNodeWrappers(
-                                                        final Collection<StorageNode> pLinkNodes, final SideType side) {
-            // Collection<StorageNode> nodeWrappers = new
-            // ArrayList<StorageNode>();
-            // Collection<PLinkNodeWrapper> pLinkNodeWrappers =
-            // QuerySupport.wrapLinkNodes(pLinkNodes);
-            // for (PLinkNodeWrapper linkNodeWrapper : pLinkNodeWrappers) {
-            // String id = side.equals(SLSideType.A_SIDE) ?
-            // linkNodeWrapper.getSourceID() : linkNodeWrapper.getTargetID();
-            // StorageNode pNode = commandDO.getTreeSession().getNodeByID(id);
-            // StorageNode nodeWrapper = new StorageNode(pNode);
-            // nodeWrappers.add(nodeWrapper);
-            // }
-            // return nodeWrappers;
-            throw new UnsupportedOperationException();
-        }
-
-        /**
          * Update number ocurrences.
          * 
          * @param map the map
@@ -343,104 +318,129 @@ public class SelectByLinkCountExecuteCommand extends SelectAbstractCommand {
 
             }
         }
+    }
 
-        /**
-         * Creates the node occurences map.
-         * 
-         * @param nodeWrappers the node wrappers
-         * @return the map< string, integer> @ the SL persistent tree session exception
-         */
-        private Map<String, Integer> createNodeOccurencesMap(
-                                                             final List<StorageNode> nodeWrappers) {
-            final Map<String, Integer> map = new HashMap<String, Integer>();
-            for (final StorageNode nodeWrapper: nodeWrappers) {
-                final String id = nodeWrapper.getKeyAsString();
-                map.put(id, 0);
-            }
-            return map;
-        }
+    /** The command do. */
+    private final SelectCommandDO          commandDO;
+
+    /** The metadata. */
+    private final Metadata                 metadata;
+
+    /** The node wrapper list map. */
+    private Map<String, List<StorageNode>> nodeWrapperListMap;
+
+    /** The select info. */
+    private final SelectByLinkCountInfo    selectInfo;
+
+    /**
+     * Instantiates a new sL select by link count execute command.
+     * 
+     * @param selectByLinkCountInfo the select by link count info
+     * @param commandDO the command do
+     */
+    public SelectByLinkCountExecuteCommand(
+                                           final SelectByLinkCountInfo selectByLinkCountInfo,
+                                           final SelectCommandDO commandDO) {
+        selectInfo = selectByLinkCountInfo;
+        this.commandDO = commandDO;
+        metadata = commandDO.getMetadata();
     }
 
     /**
-     * The Class LinkCountEvaluator.
+     * Gets the p node wrappers of type.
      * 
-     * @author Vitor Hugo Chagas
+     * @param name the name
+     * @return the p node wrappers of type @ the SL persistent tree session exception
      */
-    class LinkCountEvaluator {
+    private List<StorageNode> getStorageNodesOfType(final String name) {
+        // List<StorageNode> pNodeWrappers = new ArrayList<StorageNode>();
+        // XPathStatementBuilder statementBuilder = new
+        // XPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+        // + "/contexts//*");
+        // Statement rootStatement = statementBuilder.getRootStatement();
+        // String typePropName =
+        // SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
+        // rootStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(name);
+        // String xpath = statementBuilder.getXPath();
+        // SLPersistentQuery query =
+        // commandDO.getTreeSession().createQuery(xpath,
+        // SLPersistentQuery.TYPE_XPATH);
+        // SLPersistentQueryResult result = query.execute();
+        // Collection<StorageNode> pNodes = result.getNodes();
+        // for (StorageNode pNode : pNodes) {
+        // pNodeWrappers.add(new StorageNode(pNode));
+        // }
+        // return pNodeWrappers;
+        throw new UnsupportedOperationException();
+    }
 
-        /** The where type info. */
-        private final SLWhereTypeInfo whereTypeInfo;
-
-        /** The mapper. */
-        private final LinkCountMapper mapper;
-
-        /**
-         * Instantiates a new link count evaluator.
-         * 
-         * @param whereTypeInfo the where type info
-         * @param mapper the mapper
-         */
-        private LinkCountEvaluator(final SLWhereTypeInfo whereTypeInfo,
-                                   final LinkCountMapper mapper) {
-            this.whereTypeInfo = whereTypeInfo;
-            this.mapper = mapper;
+    /**
+     * Gets the where type info set.
+     * 
+     * @return the where type info set
+     */
+    private Set<SLWhereTypeInfo> getWhereTypeInfoSet()
+            throws MetaNodeTypeNotFoundException {
+        final Set<SLWhereTypeInfo> set = new HashSet<SLWhereTypeInfo>();
+        for (final SLWhereTypeInfo whereTypeInfo: selectInfo.getWhereStatementInfo()
+                .getWhereTypeInfoList()) {
+            final List<String> typeNames = QuerySupport.getHierarchyTypeNames(
+                    metadata, whereTypeInfo.getName(),
+                    whereTypeInfo.isSubTypes());
+            for (final String typeName: typeNames) {
+                final SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
+                typeInfo.setTypeStatementInfo(whereTypeInfo
+                        .getTypeStatementInfo());
+                set.add(typeInfo);
+            }
         }
+        return set;
+    }
 
-        /**
-         * Evaluate.
-         * 
-         * @param id the id
-         * @return true, if successful
-         */
-        private boolean evaluate(final String id) {
-            return evaluate(whereTypeInfo.getTypeStatementInfo(), id);
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void execute() {
+        try {
 
-        /**
-         * Evaluate.
-         * 
-         * @param statementInfo the statement info
-         * @param id the id
-         * @return true, if successful
-         */
-        private boolean evaluate(final SLTypeStatementInfo statementInfo, final String id) {
+            final Set<StorageNode> nodeWrappers = new HashSet<StorageNode>();
+            commandDO.setNodeWrappers(nodeWrappers);
 
-            boolean status = false;
-
-            final List<SLConditionInfo> conditionInfoList = statementInfo
-                    .getConditionInfoList();
-            for (final SLConditionInfo conditionInfo: conditionInfoList) {
-
-                final ConditionalOperatorType conditionalOperator = conditionInfo
-                        .getConditionalOperator();
-                if (conditionalOperator != null) {
-                    if (status && conditionalOperator.equals(OR)) { return true; }
-                    if (!status && conditionalOperator.equals(AND)) { return false; }
-                }
-
-                if (conditionInfo.getInnerStatementInfo() == null) {
-                    final int linkCount = mapper.getLinkCount(conditionInfo, id);
-                    if (conditionInfo.getRelationalOperator().equals(
-                            RelationalOperatorType.EQUAL)) {
-                        status = linkCount == conditionInfo.getValue();
-                    } else if (conditionInfo.getRelationalOperator().equals(
-                            RelationalOperatorType.GREATER_THAN)) {
-                        status = linkCount > conditionInfo.getValue();
-                    } else if (conditionInfo.getRelationalOperator().equals(
-                            RelationalOperatorType.GREATER_OR_EQUAL_THAN)) {
-                        status = linkCount >= conditionInfo.getValue();
-                    } else if (conditionInfo.getRelationalOperator().equals(
-                            RelationalOperatorType.LESSER_THAN)) {
-                        status = linkCount < conditionInfo.getValue();
-                    } else if (conditionInfo.getRelationalOperator().equals(
-                            RelationalOperatorType.LESSER_OR_EQUAL_THAN)) {
-                        status = linkCount <= conditionInfo.getValue();
-                    }
-                } else {
-                    status = evaluate(conditionInfo.getInnerStatementInfo(), id);
+            final Set<SLWhereTypeInfo> whereTypeInfoSet = getWhereTypeInfoSet();
+            if (commandDO.getPreviousNodeWrappers() != null) {
+                nodeWrapperListMap = QuerySupport.mapNodesByType(commandDO
+                        .getPreviousNodeWrappers());
+            } else {
+                nodeWrapperListMap = new HashMap<String, List<StorageNode>>();
+                for (final SLWhereTypeInfo whereTypeInfo: whereTypeInfoSet) {
+                    final List<StorageNode> wrappers = getStorageNodesOfType(whereTypeInfo
+                            .getName());
+                    nodeWrapperListMap.put(whereTypeInfo.getName(), wrappers);
                 }
             }
-            return status;
+
+            for (final SLWhereTypeInfo whereTypeInfo: whereTypeInfoSet) {
+
+                final List<StorageNode> inputNodeWrappers = nodeWrapperListMap
+                        .get(whereTypeInfo.getName());
+                final LinkCountMapper mapper = new LinkCountMapper(whereTypeInfo,
+                        inputNodeWrappers);
+                mapper.map();
+
+                final LinkCountEvaluator evaluator = new LinkCountEvaluator(
+                        whereTypeInfo, mapper);
+                for (final StorageNode nodeWrapper: inputNodeWrappers) {
+                    final String id = nodeWrapper.getKeyAsString();
+                    final boolean status = evaluator.evaluate(id);
+                    if (status) {
+                        nodeWrappers.add(nodeWrapper);
+                    }
+                }
+            }
+        } catch (final Exception e) {
+            throw new QueryException("Error on attempt to execute "
+                    + this.getClass().getName() + " command.");
         }
     }
 }

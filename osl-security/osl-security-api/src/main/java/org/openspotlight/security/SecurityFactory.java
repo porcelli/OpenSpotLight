@@ -65,20 +65,20 @@ public abstract class SecurityFactory extends AbstractFactory {
     static final String SYSTEM_USER_NAME = "sysuser";
 
     /**
-     * Creates a new Identity Manager.
-     * 
-     * @param session
-     * @return the identity manager
-     */
-    public abstract IdentityManager createIdentityManager(StorageSession session);
-
-    /**
      * Creates a new specialized PolicyEnforcement for Graphs.
      * 
      * @param session
      * @return the policy enforcement
      */
     public abstract PolicyEnforcement createGraphPolicyEnforcement(StorageSession session);
+
+    /**
+     * Creates a new Identity Manager.
+     * 
+     * @param session
+     * @return the identity manager
+     */
+    public abstract IdentityManager createIdentityManager(StorageSession session);
 
     /**
      * Creates a System User.

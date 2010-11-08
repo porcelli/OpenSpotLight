@@ -54,10 +54,6 @@ import java.util.Map;
 
 public enum RoutineParameterType {
     /**
-     * Wasn't possible to discover its type.
-     */
-    UNKNOWN(0),
-    /**
      * Input parameter.
      */
     IN(1),
@@ -70,18 +66,29 @@ public enum RoutineParameterType {
      */
     OUT(4),
     /**
+     * Column result as described in {@link DatabaseMetaData#procedureColumnResult}.
+     */
+    RESULT_COLUMN(3),
+    /**
      * Return value as described in {@link DatabaseMetaData#procedureColumnReturn}.
      */
     RETURN_VALUE(5),
     /**
-     * Column result as described in {@link DatabaseMetaData#procedureColumnResult}.
+     * Wasn't possible to discover its type.
      */
-    RESULT_COLUMN(3);
+    UNKNOWN(0);
 
     /**
      * Internal cache
      */
     private static final Map<Integer, RoutineParameterType> cache = new HashMap<Integer, RoutineParameterType>();
+    private final int                                       sqlTypeValue;
+
+    private RoutineParameterType(
+                                  final int sqlTypeValue) {
+        this.sqlTypeValue = sqlTypeValue;
+    }
+
     static {
         for (final RoutineParameterType n: values()) {
             cache.put(n.getSqlTypeValue(), n);
@@ -96,13 +103,6 @@ public enum RoutineParameterType {
      */
     public static RoutineParameterType getTypeByInt(final int sqlType) {
         return cache.get(sqlType);
-    }
-
-    private final int sqlTypeValue;
-
-    private RoutineParameterType(
-                                  final int sqlTypeValue) {
-        this.sqlTypeValue = sqlTypeValue;
     }
 
     /**

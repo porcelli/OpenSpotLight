@@ -58,8 +58,8 @@ import org.openspotlight.storage.StorageSession;
 
 public class DefaultUserAuthenticator implements UserAuthenticator {
 
-    private final StorageSession  session;
     private final SecurityFactory securityFactory;
+    private final StorageSession  session;
 
     public DefaultUserAuthenticator(final StorageSession session) {
         try {

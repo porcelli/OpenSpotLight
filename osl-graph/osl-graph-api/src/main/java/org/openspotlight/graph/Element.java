@@ -35,22 +35,6 @@ public interface Element extends BaseIdentifer {
     //TODO remove the artifactId String for the real Artifact.
 
     /**
-     * Returns the contextId where the element is stored.
-     * <p>
-     * <b>Note</b> the context is not directly exposed due performance issues.
-     * 
-     * @return the contextId
-     */
-    public abstract String getContextId();
-
-    /**
-     * Returns the type name, that is a simple shortcut for getClass().getName();
-     * 
-     * @return the type name
-     */
-    String getTypeName();
-
-    /**
      * Creates a line reference.
      * 
      * @param beginLine the initial line
@@ -66,5 +50,21 @@ public interface Element extends BaseIdentifer {
                               int endColumn,
                               String statement,
                               String artifactId);
+
+    /**
+     * Returns the type name, that is a simple shortcut for getClass().getName();
+     * 
+     * @return the type name
+     */
+    String getTypeName();
+
+    /**
+     * Returns the contextId where the element is stored.
+     * <p>
+     * <b>Note</b> the context is not directly exposed due performance issues.
+     * 
+     * @return the contextId
+     */
+    public abstract String getContextId();
 
 }

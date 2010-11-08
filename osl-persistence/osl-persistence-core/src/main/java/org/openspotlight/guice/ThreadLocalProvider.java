@@ -65,7 +65,11 @@ import com.google.inject.Provider;
  */
 public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable {
 
-    private final ThreadLocal<T> threadLocal = new ThreadLocal<T>();
+    private final List<Disposable> disposableItems = new ArrayList<Disposable>();
+
+    private final ThreadLocal<T>   threadLocal     = new ThreadLocal<T>();
+
+    protected abstract T createInstance();
 
     @Override
     public void closeResources() {
@@ -78,10 +82,6 @@ public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable 
             d.closeResources();
         }
     }
-
-    protected abstract T createInstance();
-
-    private final List<Disposable> disposableItems = new ArrayList<Disposable>();
 
     @Override
     public T get() {

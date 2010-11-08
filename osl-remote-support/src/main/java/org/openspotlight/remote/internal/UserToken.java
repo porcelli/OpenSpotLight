@@ -66,14 +66,14 @@ public class UserToken implements Serializable {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 7576539340354513998L;
 
-    /** The user. */
-    private final String      user;
+    /** The hashcode. */
+    private final int         hashcode;
 
     /** The token. */
     private final String      token;
 
-    /** The hashcode. */
-    private final int         hashcode;
+    /** The user. */
+    private final String      user;
 
     /**
      * Instantiates a new user token.

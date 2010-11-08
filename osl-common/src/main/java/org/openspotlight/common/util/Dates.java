@@ -76,6 +76,14 @@ public class Dates {
      * Common date time format.
      */
     private static final DateFormat DTF = getDateInstance();
+
+    /**
+     * Should not be instantiated
+     */
+    private Dates() {
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
+    }
+
     static {
         final String df = Messages.getString("Dates.defaultFormat"); //$NON-NLS-1$
         final String dtf = Messages.getString("Dates.defaultDateTimeFormat"); //$NON-NLS-1$
@@ -137,13 +145,6 @@ public class Dates {
         checkNotNull("date", date); //$NON-NLS-1$
         return DTF.format(date);
 
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private Dates() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

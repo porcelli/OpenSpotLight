@@ -72,13 +72,36 @@ import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData
 
 public class TestQueryCommand extends AbstractCommandTest {
 
+    private static final String DEFAULT_REPOSITORY_NAME = "default";
+
+    private ConsoleState        state                   = null;
+
     @BeforeClass
     public static void setupServer()
         throws Exception {
         ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
     }
 
-    private ConsoleState state = null;
+    private String getFileContent(final File in) {
+        final StringBuilder sb = new StringBuilder();
+        LineNumberReader fileReader;
+        try {
+            fileReader = new LineNumberReader(new FileReader(in));
+            while (fileReader.ready()) {
+                sb.append(fileReader.readLine());
+                sb.append("\n");
+            }
+            return sb.toString();
+        } catch (final Exception e) {
+            return "";
+        }
+    }
+
+    @Override
+    protected void setupCommand() {
+        state = new ConsoleState(null);
+        command = new QueryCommand();
+    }
 
     /***
      * We love you Windows... Thanks for all the enjoyable moments we spend together...
@@ -102,27 +125,6 @@ public class TestQueryCommand extends AbstractCommandTest {
         // this.state.getSession().close();
         // }
         new File("out.txt").delete();
-    }
-
-    private String getFileContent(final File in) {
-        final StringBuilder sb = new StringBuilder();
-        LineNumberReader fileReader;
-        try {
-            fileReader = new LineNumberReader(new FileReader(in));
-            while (fileReader.ready()) {
-                sb.append(fileReader.readLine());
-                sb.append("\n");
-            }
-            return sb.toString();
-        } catch (final Exception e) {
-            return "";
-        }
-    }
-
-    @Override
-    protected void setupCommand() {
-        state = new ConsoleState(null);
-        command = new QueryCommand();
     }
 
     @Test
@@ -521,8 +523,6 @@ public class TestQueryCommand extends AbstractCommandTest {
         assertThat(fileContent, is(notNullValue()));
         assertThat(fileContent.length(), is(not(0)));
     }
-
-    private static final String DEFAULT_REPOSITORY_NAME = "default";
 
     @Test
     public void testValidParameterSyntaxError()

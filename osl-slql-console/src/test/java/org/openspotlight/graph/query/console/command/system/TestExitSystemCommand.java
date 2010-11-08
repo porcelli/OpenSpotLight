@@ -62,14 +62,33 @@ public class TestExitSystemCommand extends AbstractCommandTest {
         command = new ExitSystemCommand();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAcceptNull() {
-        assertThat(command.accept(null), is(false));
+    @Test
+    public void testAcceptInValidParameter() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("xxexit ");
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptInValidParameter2() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("add exit");
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptInValidParameter3() {
+        final ConsoleState state = new ConsoleState(null);
+        state.setInput("exit something");
+
+        assertThat(command.accept(state), is(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExecuteNull() {
-        command.execute(null, null, null);
+    public void testAcceptNull() {
+        assertThat(command.accept(null), is(false));
     }
 
     @Test
@@ -96,28 +115,9 @@ public class TestExitSystemCommand extends AbstractCommandTest {
         assertThat(command.accept(state), is(true));
     }
 
-    @Test
-    public void testAcceptInValidParameter() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("xxexit ");
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptInValidParameter2() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("add exit");
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptInValidParameter3() {
-        final ConsoleState state = new ConsoleState(null);
-        state.setInput("exit something");
-
-        assertThat(command.accept(state), is(false));
+    @Test(expected = IllegalArgumentException.class)
+    public void testExecuteNull() {
+        command.execute(null, null, null);
     }
 
     @Test

@@ -62,17 +62,17 @@ public class SLIdentityObjectRelationship implements SimpleNodeType, Serializabl
 
     private static final long                serialVersionUID = 4264443925216883621L;
 
-    private String                           typeAsString;
+    private IdentityObject                   fromIdentityObject;
 
     private String                           fromIdentityObjectId;
 
-    private String                           toIdentityObjectId;
-
-    private IdentityObject                   fromIdentityObject;
+    private String                           name;
 
     private IdentityObject                   toIdentityObject;
 
-    private String                           name;
+    private String                           toIdentityObjectId;
+
+    private String                           typeAsString;
 
     private SLIdentityObjectRelationshipType typedRelationshipType;
 

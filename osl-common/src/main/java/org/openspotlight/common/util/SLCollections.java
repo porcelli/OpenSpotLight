@@ -52,91 +52,90 @@ import com.google.common.collect.ImmutableSet;
  */
 public class SLCollections {
 
+    private static enum IteratorNextState {
+        HAS_NEXT,
+        HAS_NOT_NEXT,
+        RESET
+    }
+
     public static interface ReturnOneEntryCommand<T> {
         T getEntry();
     }
 
-    public static <T> Iterable<T> iterableOfOne(
-                                                final ReturnOneEntryCommand<T> command) {
-        final Iterable<T> result = new Iterable<T>() {
-
-            private T       ref      = null;
-            private boolean loaded   = false;
-            private boolean iterated = false;
-
-            @Override
-            public Iterator<T> iterator() {
-                return new Iterator<T>() {
-
-                    @Override
-                    public boolean hasNext() {
-                        if (iterated) {
-                        return false;
-                        }
-                        if (!loaded) {
-                            ref = command.getEntry();
-                            loaded = true;
-                        }
-                        if (loaded && ref == null) {
-                        return false;
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public T next() {
-                        if (iterated) {
-                        throw new NoSuchElementException();
-                        }
-                        if (!loaded) {
-                            ref = command.getEntry();
-                            loaded = true;
-                        }
-                        if (loaded && ref == null) {
-                        throw new NoSuchElementException();
-                        }
-                        if (ref != null) {
-                            iterated = true;
-                        }
-                        return ref;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
-        return result;
+    /**
+     * Should not be instantiated
+     */
+    private SLCollections() {
+        logAndThrow(new IllegalStateException(Messages
+            .getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
-    public static <T> Iterable<T> iterableOf(
-                                             final T... ts) {
-        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
-        for (final T tn: ts) {
-            builder.add(tn);
+    public static <T> boolean contains(
+                                       final Iterable<T> iterable, final T item) {
+        for (final T t: iterable) {
+            if (item.equals(t)) { return true; }
         }
-        return builder.build();
+        return false;
     }
 
-    public static <T> Iterable<T> iterableOfOne(
-                                                final T t) {
-        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
-        builder.add(t);
-        return builder.build();
-    }
-
-    public static <T> Iterable<T> iterableOf(
-                                             final T t, final T... ts) {
-        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
-        builder.add(t);
-        if (ts != null) {
-            for (final T tn: ts) {
-                builder.add(tn);
-            }
+    /**
+     * Creates an immutable map in a null pointer safe way
+     * 
+     * @param <K>
+     * @param <V>
+     * @param base
+     * @return an immutable map
+     */
+    public static <K, V> Map<K, V> createImmutableMap(
+                                                      final Map<K, V> base) {
+        Map<K, V> temp = base;
+        if (temp == null) {
+            temp = emptyMap();
+        } else {
+            temp = unmodifiableMap(new HashMap<K, V>(temp));
         }
-        return builder.build();
+        return temp;
+    }
+
+    /**
+     * Creates an immutable set in a null pointer safe way
+     * 
+     * @param <E>
+     * @param base
+     * @return an immutable set
+     */
+    public static <E> Set<E> createImmutableSet(
+                                                final Set<E> base) {
+        Set<E> temp = base;
+        if (temp == null) {
+            temp = emptySet();
+        } else {
+            temp = unmodifiableSet(new HashSet<E>(temp));
+        }
+        return temp;
+    }
+
+    /**
+     * Creates the new collection.
+     * 
+     * @param <I>
+     * @param collectionType the collection type
+     * @param initialSize the initial size
+     * @return the c
+     */
+    @SuppressWarnings("unchecked")
+    public static <I> Collection<I> createNewCollection(
+                                                        final Class<? extends Iterable> collectionType,
+                                                        final int initialSize) {
+        if (Set.class.isAssignableFrom(collectionType)) {
+            return new HashSet<I>(initialSize);
+        } else if (Queue.class.isAssignableFrom(collectionType)) {
+            return new PriorityQueue<I>(initialSize);
+        } else if (List.class.isAssignableFrom(collectionType)) {
+            return new ArrayList<I>(initialSize);
+        } else {
+            return new ArrayList<I>(initialSize);
+        }
     }
 
     public static <T> T firstOf(
@@ -151,21 +150,34 @@ public class SLCollections {
         return result;
     }
 
-    public static <T> Iterable<T> iterableOfAll(
-                                                final Iterable<T> iterable,
-                                                final Iterable<T>... iterables) {
-        final ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
-        builder.add(iterable);
-        for (final Iterable<T> it: iterables) {
-            builder.add(it);
+    public static <K, V> V getOrPut(final Map<K, V> map, final K key, final V defaultValue) {
+        V v = map.get(key);
+        if (v == null) {
+            map.put(key, defaultValue);
+            v = defaultValue;
         }
-        return iterableOfAll(builder.build());
+        return v;
     }
 
-    private static enum IteratorNextState {
-        RESET,
-        HAS_NEXT,
-        HAS_NOT_NEXT
+    public static <T> Iterable<T> iterableOf(
+                                             final T... ts) {
+        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+        for (final T tn: ts) {
+            builder.add(tn);
+        }
+        return builder.build();
+    }
+
+    public static <T> Iterable<T> iterableOf(
+                                             final T t, final T... ts) {
+        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+        builder.add(t);
+        if (ts != null) {
+            for (final T tn: ts) {
+                builder.add(tn);
+            }
+        }
+        return builder.build();
     }
 
     public static <T> Iterable<T> iterableOfAll(
@@ -230,23 +242,77 @@ public class SLCollections {
         };
     }
 
-    /**
-     * Creates an immutable map in a null pointer safe way
-     * 
-     * @param <K>
-     * @param <V>
-     * @param base
-     * @return an immutable map
-     */
-    public static <K, V> Map<K, V> createImmutableMap(
-                                                      final Map<K, V> base) {
-        Map<K, V> temp = base;
-        if (temp == null) {
-            temp = emptyMap();
-        } else {
-            temp = unmodifiableMap(new HashMap<K, V>(temp));
+    public static <T> Iterable<T> iterableOfAll(
+                                                final Iterable<T> iterable,
+                                                final Iterable<T>... iterables) {
+        final ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
+        builder.add(iterable);
+        for (final Iterable<T> it: iterables) {
+            builder.add(it);
         }
-        return temp;
+        return iterableOfAll(builder.build());
+    }
+
+    public static <T> Iterable<T> iterableOfOne(
+                                                final ReturnOneEntryCommand<T> command) {
+        final Iterable<T> result = new Iterable<T>() {
+
+            private boolean iterated = false;
+            private boolean loaded   = false;
+            private T       ref      = null;
+
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+
+                    @Override
+                    public boolean hasNext() {
+                        if (iterated) {
+                        return false;
+                        }
+                        if (!loaded) {
+                            ref = command.getEntry();
+                            loaded = true;
+                        }
+                        if (loaded && ref == null) {
+                        return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public T next() {
+                        if (iterated) {
+                        throw new NoSuchElementException();
+                        }
+                        if (!loaded) {
+                            ref = command.getEntry();
+                            loaded = true;
+                        }
+                        if (loaded && ref == null) {
+                        throw new NoSuchElementException();
+                        }
+                        if (ref != null) {
+                            iterated = true;
+                        }
+                        return ref;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+        return result;
+    }
+
+    public static <T> Iterable<T> iterableOfOne(
+                                                final T t) {
+        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+        builder.add(t);
+        return builder.build();
     }
 
     public static <T> java.util.List<T> iterableToList(
@@ -258,47 +324,6 @@ public class SLCollections {
             builder.add(it.next());
         }
         return builder.build();
-    }
-
-    /**
-     * Creates an immutable set in a null pointer safe way
-     * 
-     * @param <E>
-     * @param base
-     * @return an immutable set
-     */
-    public static <E> Set<E> createImmutableSet(
-                                                final Set<E> base) {
-        Set<E> temp = base;
-        if (temp == null) {
-            temp = emptySet();
-        } else {
-            temp = unmodifiableSet(new HashSet<E>(temp));
-        }
-        return temp;
-    }
-
-    /**
-     * Creates the new collection.
-     * 
-     * @param <I>
-     * @param collectionType the collection type
-     * @param initialSize the initial size
-     * @return the c
-     */
-    @SuppressWarnings("unchecked")
-    public static <I> Collection<I> createNewCollection(
-                                                        final Class<? extends Iterable> collectionType,
-                                                        final int initialSize) {
-        if (Set.class.isAssignableFrom(collectionType)) {
-            return new HashSet<I>(initialSize);
-        } else if (Queue.class.isAssignableFrom(collectionType)) {
-            return new PriorityQueue<I>(initialSize);
-        } else if (List.class.isAssignableFrom(collectionType)) {
-            return new ArrayList<I>(initialSize);
-        } else {
-            return new ArrayList<I>(initialSize);
-        }
     }
 
     /**
@@ -317,30 +342,5 @@ public class SLCollections {
             }
         }
         return set;
-    }
-
-    /**
-     * Should not be instantiated
-     */
-    private SLCollections() {
-        logAndThrow(new IllegalStateException(Messages
-            .getString("invalidConstructor"))); //$NON-NLS-1$
-    }
-
-    public static <T> boolean contains(
-                                       final Iterable<T> iterable, final T item) {
-        for (final T t: iterable) {
-            if (item.equals(t)) { return true; }
-        }
-        return false;
-    }
-
-    public static <K, V> V getOrPut(final Map<K, V> map, final K key, final V defaultValue) {
-        V v = map.get(key);
-        if (v == null) {
-            map.put(key, defaultValue);
-            v = defaultValue;
-        }
-        return v;
     }
 }

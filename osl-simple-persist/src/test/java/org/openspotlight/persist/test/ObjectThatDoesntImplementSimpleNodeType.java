@@ -58,11 +58,11 @@ public class ObjectThatDoesntImplementSimpleNodeType implements StreamPropertyWi
 	 */
     private static final long serialVersionUID = -5823210668928982292L;
 
-    private RootObj           parent;
-
     private String            name;
 
     private int               number;
+
+    private RootObj           parent;
 
     public String getName() {
         return name;

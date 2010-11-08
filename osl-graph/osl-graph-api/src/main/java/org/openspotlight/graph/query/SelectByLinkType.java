@@ -28,27 +28,109 @@ package org.openspotlight.graph.query;
 public interface SelectByLinkType extends Select {
 
     /**
-     * Type.
+     * The Interface ByLink.
      * 
-     * @param typeName the type name
-     * @return the type
+     * @author Vitor Hugo Chagas
      */
-    public Type type(String typeName);
+    public static interface ByLink {
+
+        /**
+         * A.
+         * 
+         * @return the by link
+         */
+        public ByLink a();
+
+        /**
+         * Any.
+         * 
+         * @return the by link
+         */
+        public ByLink any();
+
+        /**
+         * B.
+         * 
+         * @return the by link
+         */
+        public ByLink b();
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select by link type
+         */
+        public SelectByLinkType comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+    }
 
     /**
-     * By link.
+     * The Interface End.
      * 
-     * @param typeName the type name
-     * @return the by link
+     * @author Vitor Hugo Chagas
      */
-    public ByLink byLink(String typeName);
+    public static interface End extends SelectFacade {
 
-    /**
-     * End.
-     * 
-     * @return the end
-     */
-    public End end();
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
+
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes(int x);
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit(Integer size);
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit(Integer size,
+                          Integer offset);
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public OrderByStatement orderBy();
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by link type
+         */
+        public WhereByLinkType where();
+    }
 
     /**
      * The Interface Type.
@@ -80,107 +162,25 @@ public interface SelectByLinkType extends Select {
     }
 
     /**
-     * The Interface End.
+     * By link.
      * 
-     * @author Vitor Hugo Chagas
+     * @param typeName the type name
+     * @return the by link
      */
-    public static interface End extends SelectFacade {
-
-        /**
-         * Where.
-         * 
-         * @return the sL where by link type
-         */
-        public WhereByLinkType where();
-
-        /**
-         * Order by.
-         * 
-         * @return the sL order by statement
-         */
-        public OrderByStatement orderBy();
-
-        /**
-         * Keep result.
-         * 
-         * @return the end
-         */
-        public End keepResult();
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @return the end
-         */
-        public End limit(Integer size);
-
-        /**
-         * Limit.
-         * 
-         * @param size the size
-         * @param offset the offset
-         * @return the end
-         */
-        public End limit(Integer size,
-                          Integer offset);
-
-        /**
-         * Execute x times.
-         * 
-         * @return the end
-         */
-        public End executeXTimes();
-
-        /**
-         * Execute x times.
-         * 
-         * @param x the x
-         * @return the end
-         */
-        public End executeXTimes(int x);
-    }
+    public ByLink byLink(String typeName);
 
     /**
-     * The Interface ByLink.
+     * End.
      * 
-     * @author Vitor Hugo Chagas
+     * @return the end
      */
-    public static interface ByLink {
+    public End end();
 
-        /**
-         * Comma.
-         * 
-         * @return the sL select by link type
-         */
-        public SelectByLinkType comma();
-
-        /**
-         * Select end.
-         * 
-         * @return the end
-         */
-        public End selectEnd();
-
-        /**
-         * A.
-         * 
-         * @return the by link
-         */
-        public ByLink a();
-
-        /**
-         * B.
-         * 
-         * @return the by link
-         */
-        public ByLink b();
-
-        /**
-         * Any.
-         * 
-         * @return the by link
-         */
-        public ByLink any();
-    }
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type(String typeName);
 }

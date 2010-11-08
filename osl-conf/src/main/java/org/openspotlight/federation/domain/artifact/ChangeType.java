@@ -53,15 +53,15 @@ package org.openspotlight.federation.domain.artifact;
  */
 public enum ChangeType {
 
-    /** The N o_ change. */
-    NOT_CHANGED,
-
-    /** The INCLUDED. */
-    INCLUDED,
+    /** The CHANGED. */
+    CHANGED,
 
     /** The EXCLUDED. */
     EXCLUDED,
 
-    /** The CHANGED. */
-    CHANGED
+    /** The INCLUDED. */
+    INCLUDED,
+
+    /** The N o_ change. */
+    NOT_CHANGED
 }

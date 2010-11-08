@@ -107,6 +107,14 @@ public class SLQLVariableString extends SLQLVariable {
      * {@inheritDoc}
      */
     @Override
+    public SLQLVariableType getType() {
+        return SLQLVariableType.STRING;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getValue() {
         return (String) value;
     }
@@ -141,13 +149,5 @@ public class SLQLVariableString extends SLQLVariable {
         if (value == null) { return false; }
         if (value instanceof String) { return true; }
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SLQLVariableType getType() {
-        return SLQLVariableType.STRING;
     }
 }

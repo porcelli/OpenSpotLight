@@ -36,21 +36,21 @@ public class InvalidQueryElementException extends GraphRuntimeException {
      * Instantiates a new sL invalid query element exception.
      * 
      * @param message the message
-     * @param cause the cause
      */
     public InvalidQueryElementException(
-                                           final String message, final Throwable cause) {
-        super(message, cause);
+                                           final String message) {
+        super(message);
     }
 
     /**
      * Instantiates a new sL invalid query element exception.
      * 
      * @param message the message
+     * @param cause the cause
      */
     public InvalidQueryElementException(
-                                           final String message) {
-        super(message);
+                                           final String message, final Throwable cause) {
+        super(message, cause);
     }
 
     /**

@@ -73,6 +73,22 @@ import org.openspotlight.log.LogableObject;
 public abstract class Node implements Element, Comparable<Node>, LogableObject {
 
     /**
+     * Returns the caption.
+     * 
+     * @return the caption
+     */
+    public abstract String getCaption();
+
+    /**
+     * Returns the name. <br>
+     * The name is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName}) that
+     * defines uniquely the node.
+     * 
+     * @return the name
+     */
+    public abstract String getName();
+
+    /**
      * The numeric type is used to find node types inherited from some type. To understand its use, first it' necessary to
      * understand how it is created: Each node should extend {@link Node} class, but it is possible to have an hierarchy of node
      * inheritance. One of this nodes needs to define a hierarchy. For example, a JavaType node defines an hierarchy wich should
@@ -87,31 +103,6 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
     public abstract BigInteger getNumericType();
 
     /**
-     * Returns the name. <br>
-     * The name is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName}) that
-     * defines uniquely the node.
-     * 
-     * @return the name
-     */
-    public abstract String getName();
-
-    /**
-     * Returns the caption.
-     * 
-     * @return the caption
-     */
-    public abstract String getCaption();
-
-    /**
-     * Sets the caption. Caption is just a simple form to identify (not uniquely) the node.
-     * 
-     * @param caption the caption
-     * @throws IllegalArgumentException if the input param is null
-     */
-    public abstract void setCaption(String caption)
-        throws IllegalArgumentException;
-
-    /**
      * Returns the parent's node id. <br>
      * The parentId is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName})
      * that defines uniquely the node.
@@ -121,4 +112,13 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
      * @return the parent id
      */
     public abstract String getParentId();
+
+    /**
+     * Sets the caption. Caption is just a simple form to identify (not uniquely) the node.
+     * 
+     * @param caption the caption
+     * @throws IllegalArgumentException if the input param is null
+     */
+    public abstract void setCaption(String caption)
+        throws IllegalArgumentException;
 }

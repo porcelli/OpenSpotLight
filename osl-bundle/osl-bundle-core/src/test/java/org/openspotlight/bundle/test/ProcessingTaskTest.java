@@ -18,6 +18,19 @@ import org.openspotlight.federation.domain.artifact.Artifact;
  */
 public class ProcessingTaskTest extends AbstractBundleTest {
 
+    @Override
+    public Repository createRepository() {
+        return Repository.newRepositoryNamed("repository")
+                .withGroup("group").withArtifactSource("source", "src", "/")
+                .withBundleConfig("bundle task 1", ExampleProcessingTask.class)
+                .withBundleConfig("bundle task 2", AnotherExampleProcessingTask.class)
+                .withBundleConfig("bundle task 3", AnotherExampleProcessingTask.class)
+                .withBundleConfig("bundle task 4", AnotherExampleProcessingTask.class)
+                .withBundleConfig("bundle task 5", AnotherExampleProcessingTask.class)
+                .withBundleConfig("bundle task 6", AnotherOneExampleProcessingTask.class)
+                .andCreate();
+    }
+
     @Test
     public void shouldProcessFederatedSources()
         throws Exception {
@@ -35,18 +48,5 @@ public class ProcessingTaskTest extends AbstractBundleTest {
             AnotherExampleProcessingTask.class, null, "bundle task 5")));
         assertThat(it.next(), is(Triple.<Class<? extends Callable>, Artifact, String>newTriple(
             AnotherOneExampleProcessingTask.class, null, "bundle task 6")));
-    }
-
-    @Override
-    public Repository createRepository() {
-        return Repository.newRepositoryNamed("repository")
-                .withGroup("group").withArtifactSource("source", "src", "/")
-                .withBundleConfig("bundle task 1", ExampleProcessingTask.class)
-                .withBundleConfig("bundle task 2", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 3", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 4", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 5", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 6", AnotherOneExampleProcessingTask.class)
-                .andCreate();
     }
 }
