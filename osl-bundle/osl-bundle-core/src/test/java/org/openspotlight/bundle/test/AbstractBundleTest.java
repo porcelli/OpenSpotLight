@@ -1,17 +1,20 @@
 package org.openspotlight.bundle.test;
 
-import com.google.inject.Guice;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.openspotlight.bundle.context.ExecutionContextModule;
 import org.openspotlight.bundle.scheduler.SchedulableTaskFactory;
 import org.openspotlight.bundle.scheduler.Scheduler;
 import org.openspotlight.bundle.scheduler.SchedulerModule;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.domain.Group;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.domain.Schedulable;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-
-import com.google.inject.Injector;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.loader.PersistentConfigurationManagerModule;
@@ -21,11 +24,8 @@ import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import java.util.List;
-import java.util.Map;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Created by IntelliJ IDEA.

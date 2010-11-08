@@ -60,14 +60,14 @@ import org.openspotlight.domain.Repository;
  */
 public interface MutableConfigurationManager extends ImmutableConfigurationManager {
 
-
     /**
      * Save global settings.
      * 
      * @param globalSettings the global settings
      * @throws ConfigurationException the configuration exception
      */
-    void saveGlobalSettings( GlobalSettings globalSettings ) throws ConfigurationException;
+    void saveGlobalSettings(GlobalSettings globalSettings)
+        throws ConfigurationException;
 
     /**
      * Saves the group on a persistent layer marking the current configuration as a saved configuration.
@@ -75,6 +75,7 @@ public interface MutableConfigurationManager extends ImmutableConfigurationManag
      * @param configuration the configuration
      * @throws ConfigurationException the configuration exception
      */
-    void saveRepository( Repository configuration ) throws ConfigurationException;
+    void saveRepository(Repository configuration)
+        throws ConfigurationException;
 
 }

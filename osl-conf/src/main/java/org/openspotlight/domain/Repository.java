@@ -58,7 +58,6 @@ import java.util.concurrent.Callable;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
@@ -83,14 +82,13 @@ public class Repository implements SimpleNodeType, Serializable {
             repository = new Repository();
             repository.setName(name);
             repository.setActive(true);
-
         }
 
         private Repository repository;
 
-        private Group currentGroup;
+        private Group      currentGroup;
 
-        public Repository andCreate(){
+        public Repository andCreate() {
             return repository;
         }
 
@@ -131,12 +129,11 @@ public class Repository implements SimpleNodeType, Serializable {
             BundleConfig bundleProcessorType = new BundleConfig();
             bundleProcessorType.setActive(true);
             bundleProcessorType.setName(name);
-            for (Class<? extends Callable<Void>> t : taskType)
+            for (Class<? extends Callable<Void>> t: taskType)
                 bundleProcessorType.getTasks().add(t);
             currentMapping.getBundleConfig().add(bundleProcessorType);
             return this;
         }
-
 
     }
 
@@ -144,43 +141,40 @@ public class Repository implements SimpleNodeType, Serializable {
         public void visitGroup(Group group);
     }
 
-    private static final long serialVersionUID = -8278810189446649901L;
-
+    private static final long      serialVersionUID = -8278810189446649901L;
 
     /**
      * The name.
      */
-    private String name;
+    private String                 name;
 
     /**
      * The groups.
      */
-    private Set<Group> groups = new HashSet<Group>();
+    private Set<Group>             groups           = new HashSet<Group>();
 
     /**
      * The active.
      */
-    private boolean active;
+    private boolean                active;
 
     private volatile transient int hashCode;
 
     public void acceptGroupVisitor(final GroupVisitor visitor) {
-        for (final Group entry : getGroups()) {
+        for (final Group entry: getGroups()) {
             entry.acceptVisitor(visitor);
         }
     }
 
     public boolean equals(final Object o) {
-        if (!(o instanceof Repository)) {
-            return false;
-        }
+        if (!(o instanceof Repository)) { return false; }
         final Repository that = (Repository) o;
         return Equals.eachEquality(of(name), andOf(that.name));
     }
 
     /**
      * Gets the groups.
-     *
+     * 
      * @return the groups
      */
     public Set<Group> getGroups() {
@@ -189,7 +183,7 @@ public class Repository implements SimpleNodeType, Serializable {
 
     /**
      * Gets the name.
-     *
+     * 
      * @return the name
      */
     @KeyProperty
@@ -208,7 +202,7 @@ public class Repository implements SimpleNodeType, Serializable {
 
     /**
      * Checks if is active.
-     *
+     * 
      * @return true, if is active
      */
     public boolean isActive() {
@@ -217,13 +211,12 @@ public class Repository implements SimpleNodeType, Serializable {
 
     /**
      * Sets the active.
-     *
+     * 
      * @param active the new active
      */
     public void setActive(final boolean active) {
         this.active = active;
     }
-
 
     public void setGroups(final Set<Group> groups) {
         this.groups = groups;
@@ -231,11 +224,11 @@ public class Repository implements SimpleNodeType, Serializable {
 
     /**
      * Sets the name.
-     *
+     * 
      * @param name the new name
      */
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
 }

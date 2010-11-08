@@ -59,11 +59,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.OriginArtifactLoader;

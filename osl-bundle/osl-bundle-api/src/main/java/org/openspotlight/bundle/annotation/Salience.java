@@ -46,20 +46,15 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.domain;
+package org.openspotlight.bundle.annotation;
 
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class JavaArtifactSource extends ArtifactSource {
-    private static final long serialVersionUID = 5899043044379454212L;
-
-    private String            virtualMachineVersion;
-
-    public String getVirtualMachineVersion() {
-        return this.virtualMachineVersion;
-    }
-
-    public void setVirtualMachineVersion( final String virtualMachineVersion ) {
-        this.virtualMachineVersion = virtualMachineVersion;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Salience {
+    int value() default 0;
 }

@@ -16,6 +16,7 @@
 	<modules>
 		<module>osl-bundle-api</module>
 		<module>osl-bundle-core</module>
+		<module>osl-parser-common</module>
 <!--		<module>processor/osl-bundle-db</module> -->
 <!--		<module>processor/osl-bundle-java</module> -->
 	</modules>

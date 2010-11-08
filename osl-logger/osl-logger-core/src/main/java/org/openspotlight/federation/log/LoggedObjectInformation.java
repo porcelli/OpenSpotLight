@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.graph.Node;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;

@@ -58,6 +58,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.persist.annotation.IndexedProperty;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.PersistPropertyAsStream;

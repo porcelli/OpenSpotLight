@@ -53,11 +53,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -66,39 +66,38 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Class ArtifactMapping.
  */
-@Name( "artifact_source_mapping" )
+@Name("artifact_source_mapping")
 public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
-    private static final long        serialVersionUID = -242895748094958633L;
+    private static final long                     serialVersionUID = -242895748094958633L;
 
     /** The to. */
-    private String                   to;
+    private String                                to;
 
     /** The relative. */
-    private String                   from;
+    private String                                from;
 
     /** The source. */
-    private transient ArtifactSource source;
+    private transient ArtifactSource              source;
 
     /** The excludeds. */
-    private Set<String>              excludeds        = new HashSet<String>();
+    private Set<String>                           excludeds        = new HashSet<String>();
 
     /** The includeds. */
-    private Set<String>              includeds        = new HashSet<String>();
+    private Set<String>                           includeds        = new HashSet<String>();
+
+    private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
 
     /** The hash code. */
-    private volatile transient int   hashCode;
+    private volatile transient int                hashCode;
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equalsTo(java.lang.Object)
      */
-    public boolean equals( final Object o ) {
-        if (!(o instanceof ArtifactSourceMapping)) {
-            return false;
-        }
-        final ArtifactSourceMapping that = (ArtifactSourceMapping)o;
+    public boolean equals(final Object o) {
+        if (!(o instanceof ArtifactSourceMapping)) { return false; }
+        final ArtifactSourceMapping that = (ArtifactSourceMapping) o;
         final boolean result = Equals.eachEquality(Arrays.of(to, source, from), Arrays.andOf(that.to, that.source, that.from));
         return result;
     }
@@ -152,7 +151,6 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     public synchronized int hashCode() {
@@ -169,7 +167,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param excludeds the new excludeds
      */
-    public synchronized void setExcludeds( final Set<String> excludeds ) {
+    public synchronized void setExcludeds(final Set<String> excludeds) {
         this.excludeds = excludeds;
     }
 
@@ -178,7 +176,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param from the new relative
      */
-    public synchronized void setFrom( final String from ) {
+    public synchronized void setFrom(final String from) {
         this.from = from;
     }
 
@@ -187,7 +185,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param includeds the new includeds
      */
-    public synchronized void setIncludeds( final Set<String> includeds ) {
+    public synchronized void setIncludeds(final Set<String> includeds) {
         this.includeds = includeds;
     }
 
@@ -196,7 +194,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param source the new source
      */
-    public synchronized void setSource( final ArtifactSource source ) {
+    public synchronized void setSource(final ArtifactSource source) {
         this.source = source;
     }
 
@@ -205,21 +203,16 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param to the new to
      */
-    public synchronized void setTo( final String to ) {
+    public synchronized void setTo(final String to) {
         this.to = to;
     }
 
-
-    public void setBundleConfig(final List<BundleConfig> bundleConfig) {
-        this.bundleConfig = bundleConfig;
+    public List<Class<? extends Callable<Void>>> getTasks() {
+        return tasks;
     }
 
-    public List<BundleConfig> getBundleConfig() {
-        return bundleConfig;
+    public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
+        this.tasks = tasks;
     }
-
-
-    private List<BundleConfig> bundleConfig = new ArrayList<BundleConfig>();
-    
 
 }

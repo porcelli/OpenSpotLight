@@ -56,9 +56,9 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.LocalSourceOriginArtifactLoader;

@@ -53,11 +53,11 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.domain.ArtifactSourceMapping;
 import org.openspotlight.domain.GlobalSettings;
 import org.openspotlight.domain.Group;
 import org.openspotlight.domain.Repository;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 /**
  * The Class XmlConfigurationManagerTest.

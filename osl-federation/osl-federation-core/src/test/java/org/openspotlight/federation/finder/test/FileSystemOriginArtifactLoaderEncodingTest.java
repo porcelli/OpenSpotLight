@@ -58,8 +58,8 @@ import java.io.FileOutputStream;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.domain.Repository;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 

@@ -52,9 +52,9 @@ import static org.openspotlight.common.collection.IteratorBuilder.createIterator
 import static org.openspotlight.common.util.Strings.concatPaths;
 
 import org.openspotlight.common.collection.IteratorBuilder;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.StorageSession;

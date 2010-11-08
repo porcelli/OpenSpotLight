@@ -14,9 +14,10 @@
     <packaging>jar</packaging>
     <name>OpenSpotLight Bundle API</name>
     <dependencies>
+        <!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-core</artifactId>
+			<artifactId>osl-federation-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
@@ -24,14 +25,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-core</artifactId>
+			<artifactId>osl-graph-api</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>dynamo</groupId>
-            <artifactId>dynamo-file-gen</artifactId>
-			<scope>test</scope>
-        </dependency>
-        <!-- Internal dependencies -->
         <dependency>
             <groupId>org.openspotlight</groupId>
             <artifactId>osl-common</artifactId>
@@ -40,10 +35,6 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr-runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>asm</groupId>
@@ -56,6 +47,11 @@
         <dependency>
             <groupId>ant</groupId>
             <artifactId>ant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dynamo</groupId>
+            <artifactId>dynamo-file-gen</artifactId>
+			<scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -73,21 +69,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openspotlight</groupId>
-            <artifactId>osl-graph-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openspotlight</groupId>
-            <artifactId>osl-slql-console</artifactId>
-            <version>0.7-SNAPSHOT</version>
-            <!-- FIXME Maven gots hungry here. Needs to be solved! -->
         </dependency>
     </dependencies>
 </project>

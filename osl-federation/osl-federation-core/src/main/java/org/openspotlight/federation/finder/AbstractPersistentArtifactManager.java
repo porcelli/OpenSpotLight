@@ -57,8 +57,8 @@ import java.util.concurrent.Future;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.domain.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.task.ExecutorInstance;
 
 import com.google.common.collect.ImmutableSet;

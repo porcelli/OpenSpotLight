@@ -49,62 +49,14 @@
 package org.openspotlight.bundle.task;
 
 import java.util.Map;
-import java.util.Set;
 
-import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextProvider;
 import org.openspotlight.federation.domain.artifact.Artifact;
 
-import com.google.common.collect.ImmutableMap;
-
-public abstract class AfterFederationTask extends BaseTask {
-
-    private final ExecutionContextProvider     provider;
-    private final ImmutableMap<String, String> properties;
-    private ExecutionContext                   context;
-    private final Artifact                     artifact;
+public abstract class AfterFederationTask extends ArtifactTask {
 
     protected AfterFederationTask(ExecutionContextProvider provider, Artifact artifact, Map<String, String> properties) {
-        this.provider = provider;
-        this.artifact = artifact;
-        this.properties = ImmutableMap.copyOf(properties);
+        super(provider, artifact, properties);
     }
-
-    @Override
-    public Void call()
-        throws Exception {
-        provider.setupBeforeGet();
-        try {
-            execute();
-            return null;
-        } finally {
-            if (context != null) {
-                provider.release();
-            }
-        }
-    }
-
-    public ExecutionContext getContext() {
-        if (context == null) {
-            provider.setupBeforeGet();
-            context = provider.get();
-        }
-        return context;
-    }
-
-    public Set<String> getPropertyNames() {
-        return properties.keySet();
-    }
-
-    public String getPropertyValue(String name) {
-        return properties.get(name);
-    }
-
-    public Artifact getArtifact() {
-        return artifact;
-    }
-
-    protected abstract void execute()
-        throws Exception;
 
 }

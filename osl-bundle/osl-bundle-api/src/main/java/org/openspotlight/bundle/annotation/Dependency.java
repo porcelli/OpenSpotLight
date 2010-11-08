@@ -58,5 +58,5 @@ import org.openspotlight.bundle.task.Task;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Dependency {
-	Class<? extends Task> value();
+    Class<? extends Task> value();
 }

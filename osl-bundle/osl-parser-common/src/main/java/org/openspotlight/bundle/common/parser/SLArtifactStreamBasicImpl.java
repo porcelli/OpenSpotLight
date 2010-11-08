@@ -71,7 +71,6 @@ public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements SLAr
         this.data = builder.toString().toCharArray();
         this.version = version;
         n = artifactContent.size();
-        int count = 0;
         this.lineCount = artifactContent.size();
     }
 

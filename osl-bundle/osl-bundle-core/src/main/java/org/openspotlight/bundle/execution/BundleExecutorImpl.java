@@ -1,15 +1,16 @@
 package org.openspotlight.bundle.execution;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.loader.ConfigurationManagerFactory;
-import org.openspotlight.federation.loader.ImmutableConfigurationManager;
-
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.openspotlight.bundle.context.ExecutionContextFactory;
+import org.openspotlight.federation.loader.ConfigurationManagerFactory;
+import org.openspotlight.federation.loader.ImmutableConfigurationManager;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Created by IntelliJ IDEA.

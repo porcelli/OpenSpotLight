@@ -50,9 +50,9 @@ package org.openspotlight.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.openspotlight.common.util.Arrays;
@@ -64,87 +64,103 @@ import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class BundleConfig.
+ * The Class ArtifactSource.
  */
-@Name("bundle_processor_type")
-public class BundleConfig implements SimpleNodeType, Serializable {
-    private volatile transient String             uniqueName       = null;
+@Name("artifact_source")
+public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable {
 
-    private String                                name;
+    private boolean           binary           = false;
 
-    private Map<String, String>                   bundleProperties = new HashMap<String, String>();
+    private static final long serialVersionUID = -2430120111043500137L;
 
-    private static final long                     serialVersionUID = -8305990807194729295L;
+    private List<String>      cronInformation  = new ArrayList<String>();
 
-    private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
+    private String            encodingForFileContent;
 
-    /**
-     * The active.
-     */
+    public String getEncodingForFileContent() {
+        return encodingForFileContent;
+    }
+
+    public void setEncodingForFileContent(String encodingForFileContent) {
+        this.encodingForFileContent = encodingForFileContent;
+    }
+
+    /** The repository. */
+    private transient Repository                  repository;
+
+    /** The active. */
     private boolean                               active;
 
-    /**
-     * The group.
-     */
-    private transient Group                       group;
+    /** The initial lookup. */
+    private String                                initialLookup;
 
-    /**
-     * The hash code.
-     */
+    /** The name. */
+    private String                                name;
+
+    /** The mappings. */
+    private Set<ArtifactSourceMapping>            mappings = new HashSet<ArtifactSourceMapping>();
+
+    private List<Class<? extends Callable<Void>>> tasks    = new ArrayList<Class<? extends Callable<Void>>>();
+
     private volatile transient int                hashCode;
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equalsTo(java.lang.Object)
-     */
-
     public boolean equals(final Object o) {
-        if (o == this) { return true; }
-        if (!(o instanceof BundleConfig)) { return false; }
-        final BundleConfig that = (BundleConfig) o;
-        final boolean result = Equals.eachEquality(Arrays.of(group, name), Arrays.andOf(that.group, that.name));
+        if (!(o instanceof ArtifactSource)) { return false; }
+        final ArtifactSource that = (ArtifactSource) o;
+        final boolean result = Equals.eachEquality(
+                Arrays.of(this.getClass(), name, repository),
+                Arrays.andOf(that.getClass(), that.name, that.repository));
         return result;
     }
 
-    public Map<String, String> getBundleProperties() {
-        return bundleProperties;
+    public List<String> getCronInformation() {
+        return cronInformation;
     }
 
     /**
-     * Gets the artifact source.
+     * Gets the initial lookup.
      * 
-     * @return the artifact source
+     * @return the initial lookup
      */
-    @ParentProperty
-    public Group getGroup() {
-        return group;
+    public String getInitialLookup() {
+        return initialLookup;
     }
 
+    /**
+     * Gets the mappings.
+     * 
+     * @return the mappings
+     */
+    public Set<ArtifactSourceMapping> getMappings() {
+        return mappings;
+    }
+
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
     @KeyProperty
     public String getName() {
         return name;
     }
 
-    @TransientProperty
-    public String getUniqueName() {
-        String temp = uniqueName;
-        if (temp == null) {
-            temp = getGroup().getUniqueName() + "/" + getName();
-            uniqueName = temp;
-        }
-        return temp;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    /**
+     * Gets the repository.
+     * 
+     * @return the repository
      */
+    @ParentProperty
+    public Repository getRepository() {
+        return repository;
+    }
 
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(group, name);
+            result = HashCodes.hashOf(this.getClass(), name, repository);
             hashCode = result;
         }
         return result;
@@ -159,6 +175,10 @@ public class BundleConfig implements SimpleNodeType, Serializable {
         return active;
     }
 
+    public boolean isBinary() {
+        return binary;
+    }
+
     /**
      * Sets the active.
      * 
@@ -168,21 +188,68 @@ public class BundleConfig implements SimpleNodeType, Serializable {
         this.active = active;
     }
 
-    public void setBundleProperties(final Map<String, String> bundleProperties) {
-        this.bundleProperties = bundleProperties;
+    private String rootFolder;
+
+    public String getRootFolder() {
+        return rootFolder;
+    }
+
+    public void setRootFolder(String rootFolder) {
+        this.rootFolder = rootFolder;
+    }
+
+    public void setBinary(final boolean binary) {
+        this.binary = binary;
+    }
+
+    public void setCronInformation(final List<String> cronInformation) {
+        this.cronInformation = cronInformation;
     }
 
     /**
-     * Sets the group.
+     * Sets the initial lookup.
      * 
-     * @param group the new group
+     * @param initialLookup the new initial lookup
      */
-    public void setGroup(final Group group) {
-        this.group = group;
+    public void setInitialLookup(final String initialLookup) {
+        this.initialLookup = initialLookup;
     }
 
+    /**
+     * Sets the mappings.
+     * 
+     * @param mappings the new mappings
+     */
+    public void setMappings(final Set<ArtifactSourceMapping> mappings) {
+        this.mappings = mappings;
+    }
+
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
     public void setName(final String name) {
         this.name = name;
+    }
+
+    /**
+     * Sets the repository.
+     * 
+     * @param repository the new repository
+     */
+    public void setRepository(final Repository repository) {
+        this.repository = repository;
+    }
+
+    public String toUniqueJobString() {
+        return getRepository().getName() + ":" + getName() + ":"
+                + getInitialLookup();
+    }
+
+    @TransientProperty
+    public Repository getRepositoryForSchedulable() {
+        return getRepository();
     }
 
     public List<Class<? extends Callable<Void>>> getTasks() {
@@ -192,4 +259,6 @@ public class BundleConfig implements SimpleNodeType, Serializable {
     public void setTasks(List<Class<? extends Callable<Void>>> tasks) {
         this.tasks = tasks;
     }
+
+    
 }

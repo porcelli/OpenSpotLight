@@ -46,39 +46,17 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.scheduler;
+package org.openspotlight.bundle.task;
 
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.domain.ArtifactSource;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
-import org.openspotlight.federation.loader.ArtifactLoaderManager;
+import java.util.Map;
 
-/**
- * The Class ArtifactSourceSchedulable.
- */
-public class ArtifactSourceSchedulableFactory implements SchedulableTaskFactory<ArtifactSource> {
+import org.openspotlight.bundle.context.ExecutionContextProvider;
+import org.openspotlight.federation.domain.artifact.Artifact;
 
-    
-    @Override
-    public SchedulerTask[] createTasks(final ArtifactSource schedulable, final ExecutionContextFactory factory) {
+public abstract class DetachedArtifactTask extends ArtifactTask {
 
-        return TaskSupport.wrapTask(new SchedulerTask() {
-            @Override
-            public String getUniqueJobId() {
-                return schedulable.toUniqueJobString();
-            }
-
-            @Override
-            public Void call() throws Exception {
-                ExecutionContext ctx = factory.get();
-
-                PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
-                        schedulable.getRepositoryForSchedulable());
-                ArtifactLoaderManager.INSTANCE.refreshResources(schedulable, provider, ctx.getLoaderRegistry());
-                return null;
-            }
-        });
+    protected DetachedArtifactTask(ExecutionContextProvider provider, Artifact artifact, Map<String, String> properties) {
+        super(provider, artifact, properties);
     }
+
 }

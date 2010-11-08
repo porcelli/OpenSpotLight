@@ -36,6 +36,6 @@ public class AfterFederationTaskTest extends AbstractBundleTest {
     public Repository createRepository() {
         return Repository.newRepositoryNamed("repository")
                 .withGroup("group").withArtifactSource("source", "src", "/")
-                .withBundleConfig("bundle", ExampleAfterFederationTask.class).andCreate();
+                .withBundles("bundle", ExampleAfterFederationTask.class).andCreate();
     }
 }

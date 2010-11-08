@@ -48,7 +48,6 @@
  */
 package org.openspotlight.domain;
 
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 public class DbArtifactSource extends ArtifactSource {
