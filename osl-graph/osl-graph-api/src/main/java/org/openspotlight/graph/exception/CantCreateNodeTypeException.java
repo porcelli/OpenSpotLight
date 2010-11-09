@@ -24,8 +24,8 @@ package org.openspotlight.graph.exception;
  * Thrown when a {@link org.openspotlight.graph.Node} can't be created.<br>
  * When throwed the graph has a seriosly state damage.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public class CantCreateNodeTypeException extends GraphRuntimeException {
 

@@ -54,8 +54,8 @@ package org.openspotlight.graph;
  * <p>
  * Weight are data related to OpenSpotLight Indexing.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface BaseIdentifer extends PropertyContainer {
 

@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
  * weight is also stored as metadata on node and link types.<br>
  * The weight data are used to indexing.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

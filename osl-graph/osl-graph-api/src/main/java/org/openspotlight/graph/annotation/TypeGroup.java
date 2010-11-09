@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
  * Adds metadata about high-level categorization for node and link types. <br>
  * This information can be used for search/index purpose.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
@@ -39,8 +39,8 @@ public @interface TypeGroup {
     /**
      * Highe-level categories available.
      * 
-     * @author porcelli
      * @author feuteston
+     * @author porcelli
      */
     public enum TypeGroupValue {
         /**

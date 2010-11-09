@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * This annotations marks a property (getter or setter) as a node type property as well defines its change behavior. <br>
  * This information is also added as metadata into node and link types.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -38,8 +38,8 @@ public @interface Property {
     /**
      * Defines the change behavior of node and link types properties.
      * 
-     * @author porcelli
      * @author feuteston
+     * @author porcelli
      */
     public enum PropertyChangeBehavior {
         /**

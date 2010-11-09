@@ -29,8 +29,8 @@ import org.openspotlight.graph.annotation.Property;
  * This special node type represents the metadata of a node type, so every node type added to graph should have one MetaNodeType
  * associated.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @IsMetaType
 @Description("Node Type")

@@ -65,8 +65,8 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 /**
  * Helper methods that helps build encoded strings that represents nodes and links keys as well extract data from these keys.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public final class StringKeysSupport {
     private static final String LINK_KEY_SEP = "::";

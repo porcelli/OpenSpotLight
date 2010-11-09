@@ -24,8 +24,8 @@ package org.openspotlight.graph;
 /**
  * Defines the link types.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public enum LinkDirection {
     /**

@@ -60,8 +60,8 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
  * identifier and wich partition it is stored.
  * 
  * @see Property
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface PropertyContainer {
 

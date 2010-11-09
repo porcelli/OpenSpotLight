@@ -58,8 +58,8 @@ import org.openspotlight.common.Pair;
  * <p>
  * Properties are key-value pairs where keys are always strings and values are any serializable object.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface PropertyContainer {
 

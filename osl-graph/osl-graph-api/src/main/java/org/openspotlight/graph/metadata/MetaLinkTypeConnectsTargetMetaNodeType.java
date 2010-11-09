@@ -58,8 +58,8 @@ import org.openspotlight.graph.annotation.IsMetaType;
  * Every link type added to graph should have one MetaLinkTypeConnectsTargetMetaNodeType that links the meta link type and the
  * target meta node type.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @IsMetaType
 @Description("Meta Link Type Connects Target Meta Node Type")

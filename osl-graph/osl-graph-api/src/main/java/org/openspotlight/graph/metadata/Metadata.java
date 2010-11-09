@@ -29,8 +29,8 @@ import org.openspotlight.graph.Node;
  * {@link org.openspotlight.graph.manipulation.GraphReader#createQueryApi} or
  * {@link org.openspotlight.graph.manipulation.GraphReader#createQueryText} methods.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  * @author Vitor Hugo Chagas
  */
 public interface Metadata {

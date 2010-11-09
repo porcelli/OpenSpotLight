@@ -57,8 +57,8 @@ import java.lang.annotation.Target;
 /**
  * This is a mark annotation that defines a property as transient.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

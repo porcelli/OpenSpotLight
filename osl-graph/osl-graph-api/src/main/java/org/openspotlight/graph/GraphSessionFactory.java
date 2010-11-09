@@ -29,8 +29,8 @@ import org.openspotlight.common.Disposable;
  * instances from this factory.<br>
  * The internal state of a GraphSessionFactory is immutable.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface GraphSessionFactory extends Disposable {
 

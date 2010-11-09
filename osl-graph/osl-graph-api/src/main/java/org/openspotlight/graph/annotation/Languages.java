@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
  * Adds metadata information related to languages that are associated with a node and link types. <br>
  * These languages can be used for search/index purpose.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

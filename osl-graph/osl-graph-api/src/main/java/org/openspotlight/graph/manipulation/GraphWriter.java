@@ -35,8 +35,8 @@ import org.openspotlight.graph.Node;
  * 
  * @see org.openspotlight.graph.SimpleGraphSession
  * @see org.openspotlight.graph.FullGraphSession
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface GraphWriter {
 

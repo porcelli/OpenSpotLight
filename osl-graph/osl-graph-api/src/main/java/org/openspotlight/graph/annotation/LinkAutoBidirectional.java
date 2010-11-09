@@ -32,8 +32,8 @@ import java.lang.annotation.Target;
  * allows auto-bidirectional bettwen a source and a target nodes (node1 -> node2) and later creates the same link with the same
  * type bettwen target and source (node2 -> node1) it will convert the original link to a bidirectional link (node1 <-> node2).
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

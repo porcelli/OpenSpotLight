@@ -61,16 +61,16 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
  * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
  * connection state. This implementation must not be shared between threads.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface StorageSession extends Disposable {
 
     /**
      * Defines the {@link StorageSession} flush behavior.
      * 
-     * @author porcelli
      * @author feuteston
+     * @author porcelli
      */
     static enum FlushMode {
         /**
@@ -87,8 +87,8 @@ public interface StorageSession extends Disposable {
     /**
      * Builder pattern that creates {@link NodeKey} instances.
      * 
-     * @author porcelli
      * @author feuteston
+     * @author porcelli
      */
     interface NodeKeyBuilder {
 
@@ -129,8 +129,8 @@ public interface StorageSession extends Disposable {
     /**
      * Interface that defines a set of operations available to execute for a {@link Partition}.
      * 
-     * @author porcelli
      * @author feuteston
+     * @author porcelli
      */
     interface PartitionMethods extends NodeFactory {
 

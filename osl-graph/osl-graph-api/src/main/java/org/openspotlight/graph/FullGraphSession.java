@@ -30,8 +30,8 @@ import org.openspotlight.graph.manipulation.GraphWriter;
  * <p>
  * <b>Important Note</b> its important to execute {@link #shutdown} method at end of its use.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface FullGraphSession extends SimpleGraphSession {
 

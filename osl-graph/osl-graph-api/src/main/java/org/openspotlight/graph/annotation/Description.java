@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * Offers a description for node and link types as well its properties. This description is stored as metadata.
  * 
  * @see org.openspotlight.graph.metadata.Metadata
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

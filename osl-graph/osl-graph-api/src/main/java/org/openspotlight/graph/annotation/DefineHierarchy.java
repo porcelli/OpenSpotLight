@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
  * <p>
  * All node types that extends the root node of an hierarchy are more specific nodes and as more specific they can be promoted.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

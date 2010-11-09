@@ -67,8 +67,8 @@ import org.openspotlight.log.LogableObject;
  * {@link org.openspotlight.graph.Context}.
  * </p>
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public abstract class Node implements Element, Comparable<Node>, LogableObject {
 

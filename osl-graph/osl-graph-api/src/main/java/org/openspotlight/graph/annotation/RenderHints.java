@@ -25,8 +25,8 @@ package org.openspotlight.graph.annotation;
  * pairs enabling define any rendering information. Its possible define several RenderHints for a specific node or link type.<br>
  * This information is stored as metadata associated to node and link types.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public @interface RenderHints {
 

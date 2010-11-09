@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
  * a recursive problem around metadata node and link types.
  * <p>
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

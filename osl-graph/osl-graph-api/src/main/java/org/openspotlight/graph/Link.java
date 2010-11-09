@@ -60,8 +60,8 @@ import org.openspotlight.graph.annotation.LinkAutoBidirectional;
  * </p>
  * <b>Important Note</b> Its a abstract class to avoid more than one type of element for a node.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public abstract class Link implements Element, Comparable<Link> {
 

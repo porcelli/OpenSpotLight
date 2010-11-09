@@ -24,8 +24,8 @@ package org.openspotlight.graph;
 /**
  * Defines the places, or the order of, where data can be retrieved from graph.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public enum GraphLocation {
     /**

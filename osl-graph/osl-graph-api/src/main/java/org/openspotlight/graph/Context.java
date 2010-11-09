@@ -26,8 +26,8 @@ package org.openspotlight.graph;
  * <p>
  * Context is also a good point of data partition of the graph.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public abstract class Context implements BaseIdentifer {
 

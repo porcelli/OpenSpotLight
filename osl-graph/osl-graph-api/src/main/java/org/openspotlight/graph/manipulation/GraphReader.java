@@ -42,8 +42,8 @@ import org.openspotlight.graph.query.QueryText;
  * 
  * @see org.openspotlight.graph.SimpleGraphSession
  * @see org.openspotlight.graph.FullGraphSession
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface GraphReader {
     /**

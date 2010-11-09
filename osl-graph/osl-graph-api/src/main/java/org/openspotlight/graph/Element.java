@@ -27,8 +27,8 @@ package org.openspotlight.graph;
  * <p>
  * Line references are a complex structure that defines regions in a artifact where the element is referenced.
  * 
- * @author porcelli
  * @author feuteston
+ * @author porcelli
  */
 public interface Element extends BaseIdentifer {
 
