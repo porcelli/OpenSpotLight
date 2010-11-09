@@ -67,29 +67,29 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.CompositeKeyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyContainsString;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyEndsWithString;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyStartsWithString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaBuilder;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.CompositeKeyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.NodeKeyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyContainsString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyEndsWithString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.CriteriaImpl.CriteriaBuilderImpl;
 import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.NodeFactory.NodeBuilder;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
 import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageLinkImpl;
 import org.openspotlight.storage.domain.StorageNode;
+import org.openspotlight.storage.domain.StorageNodeImpl;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 import org.openspotlight.storage.domain.key.NodeKeyImpl;
 import org.openspotlight.storage.domain.key.NodeKeyImpl.CompositeKeyImpl;
 import org.openspotlight.storage.domain.key.NodeKeyImpl.CompositeKeyImpl.SimpleKeyImpl;
-import org.openspotlight.storage.domain.node.StorageLinkImpl;
-import org.openspotlight.storage.domain.node.StorageNodeImpl;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -249,17 +249,19 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public CriteriaBuilder createCriteria() {
+        public NodeCriteriaBuilder createCriteria() {
             return new CriteriaBuilderImpl(partition);
         }
 
         @Override
-        public StorageNode createNewSimpleNode(final String... nodePaths) {
+        public StorageNode createNewSimpleNode(final String... nodeTypes) {
             StorageNode parent = null;
             NodeKey parentKey = null;
-            for (final String nodePath: nodePaths) {
-                parentKey = new NodeKeyImpl(new CompositeKeyImpl(Collections.<SimpleKey>emptySet(), nodePath),
-                                parentKey != null ? parentKey.getKeyAsString() : null, partition);
+            for (final String nodeType: nodeTypes) {
+                parentKey =
+                    new NodeKeyImpl(new CompositeKeyImpl(Collections.<SimpleKey>emptySet(), nodeType),
+                        parentKey != null ? parentKey.getKeyAsString() : null,
+                        partition);
                 parent = new StorageNodeImpl(parentKey, false);
                 handleNewItem(parent);
             }
@@ -314,12 +316,12 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public Iterable<StorageNode> search(final SearchCriteria criteria) {
+        public Iterable<StorageNode> search(final NodeCriteria criteria) {
             try {
                 if (!criteria.getPartition().equals(partition)) { throw new IllegalArgumentException(); }
                 boolean hasGlobal = false;
                 boolean hasOther = false;
-                for (final CriteriaItem item: criteria.getCriteriaItems()) {
+                for (final NodeCriteriaItem item: criteria.getCriteriaItems()) {
                     if (item instanceof PropertyCriteriaItem) {
                         hasOther = true;
                     } else if (item instanceof CompositeKeyCriteriaItem) {
@@ -344,7 +346,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public StorageNode searchUnique(
-                                                final SearchCriteria criteria) {
+                                                final NodeCriteria criteria) {
             try {
                 final Iterable<StorageNode> result = search(criteria);
                 if (result == null) { return null; }
@@ -457,7 +459,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     protected abstract void handleNewLink(Partition partition, StorageNode origin, StorageLink link)
         throws Exception;
 
-    protected abstract Iterable<StorageNode> internalFindByCriteria(Partition partition, SearchCriteria criteria)
+    protected abstract Iterable<StorageNode> internalFindByCriteria(Partition partition, NodeCriteria criteria)
         throws Exception;
 
     protected abstract Iterable<StorageNode> internalFindByType(Partition partition, String nodeType)

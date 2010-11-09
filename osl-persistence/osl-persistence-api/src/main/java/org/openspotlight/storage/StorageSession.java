@@ -50,7 +50,7 @@
 package org.openspotlight.storage;
 
 import org.openspotlight.common.Disposable;
-import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaBuilder;
 import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
@@ -85,7 +85,7 @@ public interface StorageSession extends Disposable {
     }
 
     /**
-     * Builder pattern that creates {@link NodeKey} instances.
+     * Builder that creates {@link NodeKey} instances.
      * 
      * @author feuteston
      * @author porcelli
@@ -93,7 +93,7 @@ public interface StorageSession extends Disposable {
     interface NodeKeyBuilder {
 
         /**
-         * TODO needs improvements Creates the {@link NodeKey} instance based on builder data.
+         * Creates the {@link NodeKey} instance based on builder data stack.
          * 
          * @return the node key instance
          */
@@ -117,7 +117,9 @@ public interface StorageSession extends Disposable {
         NodeKeyBuilder withParent(String parentKey);
 
         /**
-         * TODO needs improvements Pushes a new {@link NodeKey} into builder stack
+         * Pushes a new {@link NodeKey} into builder stack to define the parent characteristics. <br>
+         * <b>Note:</b> use this method once you already defined all data related to the node, once there is no way to pop the
+         * stack.
          * 
          * @param partition the parent partition
          * @param nodeType the parent node type
@@ -139,7 +141,7 @@ public interface StorageSession extends Disposable {
          * 
          * @return teh search criteria builder
          */
-        CriteriaBuilder createCriteria();
+        NodeCriteriaBuilder createCriteria();
 
         /**
          * Start creating a {@link NodeKey} using a builder pattern with a node type setted.
@@ -157,10 +159,14 @@ public interface StorageSession extends Disposable {
          */
         NodeBuilder createNodeWithType(String nodeType);
 
-        /*
-         * TODO doc here
+        /**
+         * Creates, if not exists, a node hierarchy using the parameter input for each node as a type into partition. <br>
+         * The hierarchy is based on input order, the first is higher.
+         * 
+         * @param nodeTypes node type for each element of hierarchy
+         * @return the last created node on hierarchy
          */
-        StorageNode createNewSimpleNode(String... nodePaths);
+        StorageNode createNewSimpleNode(String... nodeTypes);
 
         /**
          * Returns an iterable of nodes of a given type from partition.
@@ -176,7 +182,7 @@ public interface StorageSession extends Disposable {
          * @param criteria the search criteria
          * @return an iterable found of nodes, empty if not found
          */
-        Iterable<StorageNode> search(SearchCriteria criteria);
+        Iterable<StorageNode> search(NodeCriteria criteria);
 
         /**
          * Sugar method that executes the search and returns the first found node, or null if not found.
@@ -184,7 +190,7 @@ public interface StorageSession extends Disposable {
          * @param criteria the search criteria
          * @return the found node, or null if not found
          */
-        StorageNode searchUnique(SearchCriteria criteria);
+        StorageNode searchUnique(NodeCriteria criteria);
 
         /**
          * Returns an iterable of all node types stored into partition.

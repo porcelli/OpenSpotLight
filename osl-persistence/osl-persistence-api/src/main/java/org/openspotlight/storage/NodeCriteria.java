@@ -54,56 +54,56 @@ import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
-public interface SearchCriteria {
+public interface NodeCriteria {
 
-    public interface CriteriaBuilder {
+    public interface NodeCriteriaBuilder {
 
-        CriteriaBuilder and();
+        NodeCriteriaBuilder and();
 
-        CriteriaBuilder containsString(String value);
+        NodeCriteriaBuilder containsString(String value);
 
-        CriteriaBuilder endsWithString(String value);
+        NodeCriteriaBuilder endsWithString(String value);
 
-        CriteriaBuilder equalsTo(String value);
+        NodeCriteriaBuilder equalsTo(String value);
 
-        CriteriaBuilder startsWithString(String value);
+        NodeCriteriaBuilder startsWithString(String value);
 
-        CriteriaBuilder withLocalKey(CompositeKey localKey);
+        NodeCriteriaBuilder withLocalKey(CompositeKey localKey);
 
-        CriteriaBuilder withNodeType(String nodeName);
+        NodeCriteriaBuilder withNodeType(String nodeName);
 
-        CriteriaBuilder withProperty(String propertyName);
+        NodeCriteriaBuilder withProperty(String propertyName);
 
-        CriteriaBuilder withUniqueKey(NodeKey uniqueKey);
+        NodeCriteriaBuilder withUniqueKey(NodeKey uniqueKey);
 
-        CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
+        NodeCriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
 
-        SearchCriteria buildCriteria();
+        NodeCriteria buildCriteria();
     }
 
-    public interface CriteriaItem {
+    public interface NodeCriteriaItem {
 
-        public interface CompositeKeyCriteriaItem extends CriteriaItem {
+        public interface CompositeKeyCriteriaItem extends NodeCriteriaItem {
             CompositeKey getValue();
         }
 
-        public interface NodeKeyAsStringCriteriaItem extends CriteriaItem {
+        public interface NodeKeyAsStringCriteriaItem extends NodeCriteriaItem {
             String getKeyAsString();
 
         }
 
-        public interface NodeKeyCriteriaItem extends CriteriaItem {
+        public interface NodeKeyCriteriaItem extends NodeCriteriaItem {
             NodeKey getValue();
 
         }
 
-        public interface PropertyContainsString extends CriteriaItem {
+        public interface PropertyContainsString extends NodeCriteriaItem {
             String getPropertyName();
 
             String getValue();
         }
 
-        public interface PropertyCriteriaItem extends CriteriaItem {
+        public interface PropertyCriteriaItem extends NodeCriteriaItem {
 
             String getPropertyName();
 
@@ -111,13 +111,13 @@ public interface SearchCriteria {
 
         }
 
-        public interface PropertyEndsWithString extends CriteriaItem {
+        public interface PropertyEndsWithString extends NodeCriteriaItem {
             String getPropertyName();
 
             String getValue();
         }
 
-        public interface PropertyStartsWithString extends CriteriaItem {
+        public interface PropertyStartsWithString extends NodeCriteriaItem {
             String getPropertyName();
 
             String getValue();
@@ -126,7 +126,7 @@ public interface SearchCriteria {
         String getNodeType();
     }
 
-    Set<CriteriaItem> getCriteriaItems();
+    Set<NodeCriteriaItem> getCriteriaItems();
 
     String getNodeType();
 

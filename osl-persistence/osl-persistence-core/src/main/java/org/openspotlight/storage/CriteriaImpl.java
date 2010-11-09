@@ -52,20 +52,20 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 
 import java.util.Set;
 
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.CompositeKeyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyContainsString;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyEndsWithString;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyStartsWithString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.CompositeKeyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.NodeKeyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyContainsString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyEndsWithString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
 import com.google.common.collect.ImmutableSet;
 
-public class CriteriaImpl implements SearchCriteria {
+public class CriteriaImpl implements NodeCriteria {
 
     private static class LocalKeyCriteriaItemImpl implements
         CompositeKeyCriteriaItem {
@@ -413,7 +413,7 @@ public class CriteriaImpl implements SearchCriteria {
 
     }
 
-    public static class CriteriaBuilderImpl implements CriteriaBuilder {
+    public static class CriteriaBuilderImpl implements NodeCriteriaBuilder {
 
         private String          contains;
 
@@ -433,7 +433,7 @@ public class CriteriaImpl implements SearchCriteria {
         private String          transientPropertyValue;
         private NodeKey         transientUniqueKey;
 
-        Set<CriteriaItem>       items;
+        Set<NodeCriteriaItem>       items;
 
         public CriteriaBuilderImpl(final Partition partition) {
             this.partition = partition;
@@ -449,8 +449,8 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder and() {
-            CriteriaItem item = null;
+        public NodeCriteriaBuilder and() {
+            NodeCriteriaItem item = null;
             if (transientUniqueKey != null) {
                 breakIfNull(transientNodeType);
                 item = new UniqueKeyCriteriaItemImpl(transientUniqueKey, transientNodeType);
@@ -483,7 +483,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public SearchCriteria buildCriteria() {
+        public NodeCriteria buildCriteria() {
             and();
             final CriteriaImpl result = new CriteriaImpl(transientNodeType, items, partition);
 
@@ -491,7 +491,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder containsString(
+        public NodeCriteriaBuilder containsString(
                                               final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
@@ -504,7 +504,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder endsWithString(
+        public NodeCriteriaBuilder endsWithString(
                                               final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
@@ -516,7 +516,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder equalsTo(final String value) {
+        public NodeCriteriaBuilder equalsTo(final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
@@ -528,7 +528,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder startsWithString(
+        public NodeCriteriaBuilder startsWithString(
                                                 final String value) {
 
             breakIfNotNull(transientUniqueKey);
@@ -542,7 +542,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder withLocalKey(final CompositeKey localKey) {
+        public NodeCriteriaBuilder withLocalKey(final CompositeKey localKey) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyName);
             breakIfNotNull(transientPropertyValue);
@@ -556,14 +556,14 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder withNodeType(final String nodeType) {
+        public NodeCriteriaBuilder withNodeType(final String nodeType) {
             breakIfNotNull(transientNodeType);
             transientNodeType = nodeType;
             return this;
         }
 
         @Override
-        public CriteriaBuilder withProperty(
+        public NodeCriteriaBuilder withProperty(
                                             final String propertyName) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyValue);
@@ -576,7 +576,7 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder withUniqueKey(final NodeKey uniqueKey) {
+        public NodeCriteriaBuilder withUniqueKey(final NodeKey uniqueKey) {
 
             breakIfNotNull(transientLocalKey);
             breakIfNotNull(transientPropertyName);
@@ -591,20 +591,20 @@ public class CriteriaImpl implements SearchCriteria {
         }
 
         @Override
-        public CriteriaBuilder withUniqueKeyAsString(final String uniqueKeyAsString) {
+        public NodeCriteriaBuilder withUniqueKeyAsString(final String uniqueKeyAsString) {
             transientIdAsString = uniqueKeyAsString;
             and();
             return this;
         }
     }
 
-    private final Set<CriteriaItem> criteriaItems;
+    private final Set<NodeCriteriaItem> criteriaItems;
 
     private final String            nodeType;
 
     private final Partition         partition;
 
-    private CriteriaImpl(final String nodeType, final Set<CriteriaItem> criteriaItems, final Partition partition) {
+    private CriteriaImpl(final String nodeType, final Set<NodeCriteriaItem> criteriaItems, final Partition partition) {
         this.nodeType = nodeType;
         this.partition = partition;
         this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
@@ -635,7 +635,7 @@ public class CriteriaImpl implements SearchCriteria {
     }
 
     @Override
-    public Set<CriteriaItem> getCriteriaItems() {
+    public Set<NodeCriteriaItem> getCriteriaItems() {
         return criteriaItems;
     }
 

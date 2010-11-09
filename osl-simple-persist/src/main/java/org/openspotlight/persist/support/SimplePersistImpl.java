@@ -100,7 +100,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
-import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.NodeFactory;
@@ -1176,7 +1176,7 @@ public class SimplePersistImpl implements
             checkCondition("namesAndValues:sameSize",
                     propertyNames.length == propertyValues.length);
 
-            final CriteriaBuilder builder = currentSession
+            final NodeCriteriaBuilder builder = currentSession
                     .withPartition(currentPartition).createCriteria()
                     .withNodeType(internalGetNodeName(beanType));
             final Map<String, PropertyDescriptor> allDescriptors = createMapWith(PropertyUtils

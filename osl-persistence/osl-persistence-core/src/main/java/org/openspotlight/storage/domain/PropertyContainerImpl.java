@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.storage.domain.node;
+package org.openspotlight.storage.domain;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;

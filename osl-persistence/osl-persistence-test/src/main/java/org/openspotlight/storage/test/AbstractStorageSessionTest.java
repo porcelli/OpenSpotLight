@@ -71,9 +71,9 @@ import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Property;
+import org.openspotlight.storage.domain.PropertyImpl;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
-import org.openspotlight.storage.domain.node.PropertyImpl;
 
 import com.google.inject.Injector;
 

@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.storage.domain.node;
+package org.openspotlight.storage.domain;
 
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;

@@ -65,27 +65,27 @@ import org.openspotlight.common.CustomizedFormat;
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.storage.AbstractStorageSession;
-import org.openspotlight.storage.SearchCriteria;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.CompositeKeyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyContainsString;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyCriteriaItem;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyEndsWithString;
-import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyStartsWithString;
+import org.openspotlight.storage.NodeCriteria;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.CompositeKeyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.NodeKeyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyContainsString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyCriteriaItem;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyEndsWithString;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StringKeysSupport;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
+import org.openspotlight.storage.domain.PropertyImpl;
 import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageLinkImpl;
 import org.openspotlight.storage.domain.StorageNode;
+import org.openspotlight.storage.domain.StorageNodeImpl;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
-import org.openspotlight.storage.domain.node.PropertyImpl;
-import org.openspotlight.storage.domain.node.StorageLinkImpl;
-import org.openspotlight.storage.domain.node.StorageNodeImpl;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 
 import com.google.common.collect.ImmutableList;
@@ -554,14 +554,14 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
     }
 
     @Override
-    protected Set<StorageNode> internalFindByCriteria(final Partition partition, final SearchCriteria criteria)
+    protected Set<StorageNode> internalFindByCriteria(final Partition partition, final NodeCriteria criteria)
             throws Exception {
         final List<String> propertiesIntersection = newLinkedList();
         final List<String> uniqueIdsFromLocalOnes = newLinkedList();
         boolean first = true;
         final List<String> uniqueIds = newLinkedList();
         final JRedis jredis = factory.getFrom(partition);
-        for (final CriteriaItem c: criteria.getCriteriaItems()) {
+        for (final NodeCriteriaItem c: criteria.getCriteriaItems()) {
             if (c instanceof PropertyCriteriaItem) {
                 final PropertyCriteriaItem p = (PropertyCriteriaItem) c;
                 if (first) {

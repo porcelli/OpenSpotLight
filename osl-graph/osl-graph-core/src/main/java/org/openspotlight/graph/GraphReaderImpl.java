@@ -51,7 +51,7 @@ import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.QueryApi;
 import org.openspotlight.graph.query.QueryText;
-import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
+import org.openspotlight.storage.NodeCriteria.NodeCriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
@@ -109,7 +109,7 @@ public class GraphReaderImpl implements GraphReader {
                                                    final StorageSession session,
                                                    final ImmutableSet.Builder<Iterable<StorageNode>> resultBuilder,
                                                    final Partition partition, final Class<?> clzz) {
-        final CriteriaBuilder criteriaBuilder = session.withPartition(partition)
+        final NodeCriteriaBuilder criteriaBuilder = session.withPartition(partition)
             .createCriteria().withNodeType(clzz.getName());
         if (nodeName != null) {
             criteriaBuilder.withProperty(NodeAndLinkSupport.NAME).equalsTo(
