@@ -154,7 +154,7 @@ public interface StorageSession extends Disposable {
     }
 
     /**
-     * Defines the partition wich will be executed
+     * Defines the partition to be manipulated
      * 
      * @param partition the chosen partition
      * @return partition manipulation methods
