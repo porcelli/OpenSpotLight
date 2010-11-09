@@ -59,7 +59,7 @@ public class LoggedObjectInformation implements SimpleNodeType, Serializable {
             typeName = node.getClass().getInterfaces()[0].getName();
         } else if (object instanceof ArtifactSource) {
             final ArtifactSource node = (ArtifactSource) object;
-            friendlyDescription = node.getName();
+            friendlyDescription = node.getUrl();
             typeName = node.getClass().getName();
             uniqueId = null;
         } else if (object instanceof Artifact) {

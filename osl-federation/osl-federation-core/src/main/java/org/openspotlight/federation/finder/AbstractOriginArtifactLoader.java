@@ -117,7 +117,7 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
                 final Set<String> result = internalRetrieveOriginalNames(type, source, initialPath);
                 if (logger.isDebugEnabled()) {
                     logger.debug("returned " + Strings.bigCollectionsToString(result) + " for (" + type.getSimpleName() + ", "
-                                 + source.getName() + ", " + initialPath + ")");
+                        + source.getUrl() + ", " + initialPath + ")");
                 }
                 return result;
             } catch (final Exception e) {
@@ -219,7 +219,7 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
         }
         if (logger.isDebugEnabled()) {
             logger.debug("returned " + Strings.bigCollectionsToString(result) + " for (" + type.getSimpleName() + ", "
-                         + source.getName() + ", " + initialPath + ")");
+                + source.getUrl() + ", " + initialPath + ")");
         }
 
         return result;
@@ -248,8 +248,7 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
         try {
             final A result = fillSomeData(type, source, internalFindByPath(type, source, path, encoding));
             if (logger.isDebugEnabled()) {
-                logger
-                    .debug("returned " + result + " for (" + type.getSimpleName() + ", " + source.getName() + ", " + path + ")");
+                logger.debug("returned " + result + " for (" + type.getSimpleName() + ", " + source.getUrl() + ", " + path + ")");
             }
             return result;
         } catch (final Exception e) {

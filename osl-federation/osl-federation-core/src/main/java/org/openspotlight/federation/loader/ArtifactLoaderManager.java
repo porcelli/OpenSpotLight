@@ -311,7 +311,7 @@ public enum ArtifactLoaderManager {
                             logger.debug("for type "
                                     + type.getSimpleName()
                                     + " on artifact source "
-                                    + source.getName()
+                                    + source.getUrl()
                                     + " was loaded "
                                     + Strings
                                         .bigCollectionsToString(namesFromOrigin));
@@ -347,21 +347,21 @@ public enum ArtifactLoaderManager {
                             logger.debug("for type "
                                     + type.getSimpleName()
                                     + " on artifact source "
-                                    + source.getName()
+                                    + source.getUrl()
                                     + " was included "
                                     + Strings.bigCollectionsToString(result
                                         .getIncludedNames()));
                             logger.debug("for type "
                                     + type.getSimpleName()
                                     + " on artifact source "
-                                    + source.getName()
+                                    + source.getUrl()
                                     + " was ignored "
                                     + Strings.bigCollectionsToString(result
                                         .getIgnoredNames()));
                             logger.debug("for type "
                                     + type.getSimpleName()
                                     + " on artifact source "
-                                    + source.getName()
+                                    + source.getUrl()
                                     + " was excluded "
                                     + Strings.bigCollectionsToString(result
                                         .getExcludedNames()));
@@ -370,7 +370,7 @@ public enum ArtifactLoaderManager {
                 } else {
                     if (logger.isDebugEnabled()) {
                         logger.debug("ignoring " + type.getSimpleName()
-                                + " on artifact source " + source.getName());
+                                + " on artifact source " + source.getUrl());
                     }
                 }
             }
