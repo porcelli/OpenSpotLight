@@ -58,7 +58,7 @@ import org.openspotlight.graph.annotation.LinkAutoBidirectional;
  * <p>
  * Along with {@link org.openspotlight.graph.Node}, links are are the core of graph data model.
  * </p>
- * <b>Important Note</b> Its a abstract class to avoid more than one type of element for a node.
+ * <b>Important Note</b> Its a abstract class to avoid more than one type of element for a link.
  * 
  * @author feuteston
  * @author porcelli
@@ -76,16 +76,16 @@ public abstract class Link implements Element, Comparable<Link> {
      * This method returns the {@link LinkDirection}. But the {@link LinkDirection} itself could be promoted to
      * {@link LinkDirection#BIDIRECTIONAL} if the {@link Link} implementation is annotated with {@link LinkAutoBidirectional}
      * 
-     * @return the LinkType
+     * @return the link direction
      */
-    public abstract LinkDirection getLinkDirection();
+    public abstract LinkDirection getDirection();
 
     /**
      * Gets the raw Link Class. This is useful since the instances will be extended at runtime.
      * 
-     * @return
+     * @return the link type
      */
-    public abstract Class<? extends Link> getLinkType();
+    public abstract Class<? extends Link> getType();
 
     /**
      * A convenience operation that, given a node that is attached to this link, returns the other node. For example if node is a
@@ -95,8 +95,7 @@ public abstract class Link implements Element, Comparable<Link> {
      * @return the other node
      * @throws IllegalArgumentException if the given node is null or neither the source nor target node of this link
      */
-    public abstract Node getOtherSide(
-                                      Node node)
+    public abstract Node getOtherSide(Node node)
         throws IllegalArgumentException;
 
     /**
@@ -132,6 +131,5 @@ public abstract class Link implements Element, Comparable<Link> {
      * 
      * @param value the count
      */
-    public abstract void setCount(
-                                  int value);
+    public abstract void setCount(int value);
 }

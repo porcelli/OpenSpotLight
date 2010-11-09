@@ -80,6 +80,12 @@ public interface PropertyContainer {
     Partition getPartition();
 
     /**
+     * Invalidates the internal cache and, as the properties load is a lazy operation, will force reload its state during next
+     * access.
+     */
+    void forceReload();
+
+    /**
      * Returns all existing properties, or an empty {@link Set} if this element has no properties. <br>
      * In {@link StorageNode} case, this method returns also the {@link SimpleKey} entries.<br>
      * 

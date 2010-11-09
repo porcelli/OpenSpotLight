@@ -48,11 +48,11 @@
  */
 package org.openspotlight.storage.domain.node;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,11 +65,11 @@ import com.google.inject.internal.ImmutableSet;
 
 public abstract class PropertyContainerImpl implements PropertyContainer {
 
-    private static final long           TIMEOUT          = 60 * 1000;
+    private static final long             TIMEOUT          = 60 * 1000;
 
-    private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
+    protected final Map<String, Property> propertiesByName = newHashMap();
 
-    protected long                      lastLoad;
+    protected long                        lastLoad;
 
     protected PropertyContainerImpl(final boolean resetTimeout) {
         lastLoad = resetTimeout ? -1 : System.currentTimeMillis();
@@ -96,11 +96,6 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
 
     //TODO check if this method is really needed once the Property class handles the same consitency
     protected void verifyBeforeSet(final String propertyName) {}
-
-    public void forceReload() {
-        propertiesByName.clear();
-        lastLoad = -1;
-    }
 
     @Override
     public Set<Property> getProperties(final StorageSession session)
@@ -247,4 +242,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return currentProperty;
     }
 
+    @Override
+    public void forceReload() {
+        propertiesByName.clear();
+        lastLoad = -1;
+    }
 }

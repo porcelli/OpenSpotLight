@@ -97,8 +97,7 @@ public interface PropertyContainer {
      * @return the property value associated with the given key or the default value.
      * @throws IllegalArgumentException if any input param is null
      */
-    <V extends Serializable> V getPropertyValue(String key,
-                                                 V defaultValue)
+    <V extends Serializable> V getPropertyValue(String key, V defaultValue)
         throws IllegalArgumentException;
 
     /**
@@ -147,8 +146,7 @@ public interface PropertyContainer {
      * @param value the property value
      * @throws IllegalArgumentException if any input param is null
      */
-    <V extends Serializable> void setProperty(String key,
-                                               V value)
+    <V extends Serializable> void setProperty(String key, V value)
         throws IllegalArgumentException;
 
 }

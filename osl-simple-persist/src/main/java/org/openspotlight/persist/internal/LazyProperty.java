@@ -176,7 +176,7 @@ public final class LazyProperty<T> implements Serializable {
                                     .withUniqueKey(
                                                                                                                                                        parentKey)
                                     .buildCriteria()
-                                    .andFindUnique(
+                                    .andSearchUnique(
                                                                                                                                                                                                 simplePersist
                                                                                                                                                                                                     .getCurrentSession());
 

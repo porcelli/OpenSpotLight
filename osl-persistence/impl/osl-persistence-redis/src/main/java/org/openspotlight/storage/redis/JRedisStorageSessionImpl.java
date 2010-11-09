@@ -65,15 +65,15 @@ import org.openspotlight.common.CustomizedFormat;
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.storage.AbstractStorageSession;
-import org.openspotlight.storage.Criteria;
-import org.openspotlight.storage.Criteria.CriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.CompositeKeyCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
-import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
-import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
+import org.openspotlight.storage.SearchCriteria;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.CompositeKeyCriteriaItem;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.NodeKeyCriteriaItem;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyContainsString;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyCriteriaItem;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyEndsWithString;
+import org.openspotlight.storage.SearchCriteria.CriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StringKeysSupport;
@@ -424,7 +424,7 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
 
         final JRedis jredis = factory.getFrom(firstPartition);
         if (!jredis.sismember(SET_WITH_ALL_KEYS, firstParentKey)) { return null; }
-        NodeKeyBuilder keyBuilder = withPartition(firstPartition).createKey(
+        NodeKeyBuilder keyBuilder = withPartition(firstPartition).createNodeKeyWithType(
                 getNodeType(firstParentKey));
         final List<String> keyPropertyNames = listBytesToListString(jredis
                 .smembers(SET_WITH_NODE_PROPERTY_KEY_NAMES
@@ -530,9 +530,9 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
                                     final StorageLink link)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
-        jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getLinkType()),
+        jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()),
                 link.getKeyAsString());
-        jredis.srem(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getOrigin()
+        jredis.srem(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getSource()
                 .getKeyAsString()), link.getKeyAsString());
         jredis.srem(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget()
                 .getKeyAsString()), link.getKeyAsString());
@@ -544,9 +544,9 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
                                  final StorageNode origin, final StorageLink link)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
-        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getLinkType()),
+        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()),
                 link.getKeyAsString());
-        jredis.sadd(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getOrigin()
+        jredis.sadd(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getSource()
                 .getKeyAsString()), link.getKeyAsString());
         jredis.sadd(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget()
                 .getKeyAsString()), link.getKeyAsString());
@@ -554,8 +554,7 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
     }
 
     @Override
-    protected Set<StorageNode> internalFindByCriteria(
-                                                      final Partition partition, final Criteria criteria)
+    protected Set<StorageNode> internalFindByCriteria(final Partition partition, final SearchCriteria criteria)
             throws Exception {
         final List<String> propertiesIntersection = newLinkedList();
         final List<String> uniqueIdsFromLocalOnes = newLinkedList();
@@ -635,9 +634,8 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
             }
         }
         if (criteria.getCriteriaItems().size() == 0) {
-            final List<String> keys = listBytesToListString(jredis
-                    .smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(criteria
-                            .getNodeType())));
+            final List<String> keys =
+                listBytesToListString(jredis.smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(criteria.getNodeType())));
             uniqueIds.addAll(keys);
         }
 
@@ -660,8 +658,7 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
 
         final Set<StorageNode> nodeEntries = newHashSet();
         for (final String id: ids) {
-            final StorageNode nodeEntry = loadNodeOrReturnNull(id,
-                    criteria.getPartition());
+            final StorageNode nodeEntry = loadNodeOrReturnNull(id, criteria.getPartition());
             if (nodeEntry != null) {
                 nodeEntries.add(nodeEntry);
             }
@@ -798,12 +795,9 @@ public class JRedisStorageSessionImpl extends AbstractStorageSession<Nothing> {
     }
 
     @Override
-    protected StorageNode internalNodeEntryGetParent(final Partition partition,
-                                                     final StorageNode StorageNode)
+    protected StorageNode internalNodeEntryGetParent(final Partition partition, final StorageNode StorageNode)
         throws Exception {
-
-        final String parentKeyAsString = StorageNode.getKey()
-                .getParentKeyAsString();
+        final String parentKeyAsString = StorageNode.getKey().getParentKeyAsString();
         if (parentKeyAsString == null) { return null; }
         return loadNodeOrReturnNull(parentKeyAsString, partition);
     }

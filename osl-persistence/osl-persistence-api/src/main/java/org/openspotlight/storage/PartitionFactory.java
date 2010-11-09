@@ -61,11 +61,17 @@ public interface PartitionFactory {
     /**
      * Returns a partition based on its name. If parition name is not found, it'll be created.
      * 
-     * @param the partition name
+     * @param name the partition name
      * @return the partition
      */
     Partition getPartition(String name);
 
+    /**
+     * Returns a partition based on regular regular partition parameter. Creates the partition, if its not yet created.
+     * 
+     * @param parition the regular partition
+     * @return the partition
+     */
     Partition getPartition(RegularPartitions parition);
 
     /**
@@ -75,19 +81,41 @@ public interface PartitionFactory {
      */
     Partition[] getValues();
 
+    /**
+     * Most common partitions.
+     * 
+     * @author feuteston
+     * @author porcelli
+     */
     public enum RegularPartitions implements Partition {
 
+        /**
+         * Partition that stores federation related data
+         */
         FEDERATION("federation"),
+        /**
+         * Partition that stores line reference data
+         */
         LINE_REFERENCE("line_reference"),
+        /**
+         * Partition dedicated to store log data
+         */
         LOG("log"),
+        /**
+         * Parition that stored security related data
+         */
         SECURITY("security"),
+        /**
+         * Parition that stores syntax highlight data of federated artifacts
+         */
         SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION);
 
-        private RegularPartitions parent;
-        private String            partitionName;
+        private final RegularPartitions parent;
+        private final String            partitionName;
 
         RegularPartitions(final String partitionName) {
             this.partitionName = partitionName;
+            this.parent = null;
         }
 
         RegularPartitions(final String partitionName, final RegularPartitions parent) {
@@ -95,10 +123,18 @@ public interface PartitionFactory {
             this.parent = parent;
         }
 
+        /**
+         * Returns the parent partition.
+         * 
+         * @return the parent parition
+         */
         public RegularPartitions getParent() {
             return parent;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getPartitionName() {
             return partitionName;

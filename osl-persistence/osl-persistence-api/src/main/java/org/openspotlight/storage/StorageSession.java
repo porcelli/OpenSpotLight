@@ -50,7 +50,7 @@
 package org.openspotlight.storage;
 
 import org.openspotlight.common.Disposable;
-import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
 import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
@@ -93,7 +93,7 @@ public interface StorageSession extends Disposable {
     interface NodeKeyBuilder {
 
         /**
-         * Creates the {@link NodeKey} instance based on builder data.
+         * TODO needs improvements Creates the {@link NodeKey} instance based on builder data.
          * 
          * @return the node key instance
          */
@@ -117,7 +117,7 @@ public interface StorageSession extends Disposable {
         NodeKeyBuilder withParent(String parentKey);
 
         /**
-         * Pushes a new {@link NodeKey} into builder stack
+         * TODO needs improvements Pushes a new {@link NodeKey} into builder stack
          * 
          * @param partition the parent partition
          * @param nodeType the parent node type
@@ -127,29 +127,70 @@ public interface StorageSession extends Disposable {
     }
 
     /**
-     * Interface that defines a set of operations available to execute for a {@link Partition}.
+     * Interface that defines a set of operations available to execute into {@link Partition}s.
      * 
      * @author feuteston
      * @author porcelli
      */
     interface PartitionMethods extends NodeFactory {
 
+        /**
+         * Start creating a search criteria using a builder pattern.
+         * 
+         * @return teh search criteria builder
+         */
         CriteriaBuilder createCriteria();
 
-        NodeKeyBuilder createKey(String nodeType);
+        /**
+         * Start creating a {@link NodeKey} using a builder pattern with a node type setted.
+         * 
+         * @param nodeType the node type
+         * @return the node key builder
+         */
+        NodeKeyBuilder createNodeKeyWithType(String nodeType);
 
-        NodeKey createNewSimpleKey(String... nodePaths);
+        /**
+         * Start creating a {@link StorageNode} using a builder pattern with a node type setted.
+         * 
+         * @param nodeType the node type
+         * @return the node builder
+         */
+        NodeBuilder createNodeWithType(String nodeType);
 
+        /*
+         * TODO doc here
+         */
         StorageNode createNewSimpleNode(String... nodePaths);
 
-        NodeBuilder createWithType(String nodeType);
+        /**
+         * Returns an iterable of nodes of a given type from partition.
+         * 
+         * @param nodeType the node type
+         * @return an iterable of nodes, empty if not found
+         */
+        Iterable<StorageNode> getNodes(String nodeType);
 
-        Iterable<StorageNode> findByCriteria(Criteria criteria);
+        /**
+         * Search for nodes, stored into partition, that matches the seacrh criteria.
+         * 
+         * @param criteria the search criteria
+         * @return an iterable found of nodes, empty if not found
+         */
+        Iterable<StorageNode> search(SearchCriteria criteria);
 
-        Iterable<StorageNode> findByType(String nodeType);
+        /**
+         * Sugar method that executes the search and returns the first found node, or null if not found.
+         * 
+         * @param criteria the search criteria
+         * @return the found node, or null if not found
+         */
+        StorageNode searchUnique(SearchCriteria criteria);
 
-        StorageNode findUniqueByCriteria(Criteria criteria);
-
+        /**
+         * Returns an iterable of all node types stored into partition.
+         * 
+         * @return an iterable of all node types of partition, empty if not found
+         */
         Iterable<String> getAllNodeTypes();
     }
 
@@ -185,22 +226,94 @@ public interface StorageSession extends Disposable {
      */
     void discardTransient();
 
-    StorageLink addLink(StorageNode origin, StorageNode destiny, String name);
+    /**
+     * Adds an unidirectional link between the source and target nodes with the specified link type. <br>
+     * <b>Note</b> that if link already exists its not duplicated.
+     * <p>
+     * <b>Important Note:</b> If session is running in {@link FlushMode#EXPLICIT} mode, its necessary to execute the
+     * {@link #flushTransient()} method to effectivelly store it, otherwise its automatically stored.
+     * 
+     * @param source the source node
+     * @param target the target node
+     * @param type the link type
+     * @return the new, or already existing, link
+     */
+    StorageLink addLink(StorageNode source, StorageNode target, String type);
 
+    /**
+     * Removes, if exists, the paramenter link from storage.
+     * <p>
+     * <b>Important Note:</b> If session is running in {@link FlushMode#EXPLICIT} mode, its necessary to execute the
+     * {@link #flushTransient()} method to effectivelly store it, otherwise its automatically removed.
+     * 
+     * @param link the link to be removed
+     */
     void removeLink(StorageLink link);
 
-    void removeLink(StorageNode origin, StorageNode destiny, String name);
+    /**
+     * Removes, if exists, the link instance defined by input parameters from storage.
+     * <p>
+     * <b>Important Note:</b> If session is running in {@link FlushMode#EXPLICIT} mode, its necessary to execute the
+     * {@link #flushTransient()} method to effectivelly store it, otherwise its automatically removed.
+     * 
+     * @param source the source node
+     * @param target the target node
+     * @param type the link type
+     */
+    void removeLink(StorageNode source, StorageNode target, String type);
 
-    StorageLink getLink(StorageNode origin, StorageNode destiny, String type);
+    /**
+     * Returns a unique link instance defined by input parameters.
+     * 
+     * @param source the source node
+     * @param target the target node
+     * @param type the link type
+     * @return the link, or null if not found
+     */
+    StorageLink getLink(StorageNode source, StorageNode target, String type);
 
-    Iterable<StorageLink> findLinks(StorageNode origin);
+    /**
+     * Returns an iterable of link instances that matches the given source node.
+     * 
+     * @param source the source node
+     * @return an iterable of matched links, empty if not found
+     */
+    Iterable<StorageLink> getLinks(StorageNode source);
 
-    Iterable<StorageLink> findLinks(StorageNode origin, StorageNode destiny);
+    /**
+     * Returns an iterable of link instances that matches the link type of a given source node.
+     * 
+     * @param source the source node
+     * @param type the link type
+     * @return an iterable of matched links, empty if not found
+     */
+    Iterable<StorageLink> getLinks(StorageNode source, String type);
 
-    Iterable<StorageLink> findLinks(StorageNode origin, String type);
+    /**
+     * Returns an iterable of link instances of any type that matches the given source and target nodes.
+     * 
+     * @param source the source node
+     * @param target the target node
+     * @return an iterable of matched links, empty if not found
+     */
+    Iterable<StorageLink> getLinks(StorageNode source, StorageNode target);
 
+    /**
+     * Returns, if exists, a node based on its key.
+     * 
+     * @param key the node key
+     * @return the node, or null if not found
+     */
     StorageNode getNode(String key);
 
-    void removeNode(StorageNode StorageNode);
+    /**
+     * Removes the node and all its children and any link that its associated. <br>
+     * <p>
+     * <b>Important Note:</b> If session is running in {@link FlushMode#EXPLICIT} mode, its necessary to execute the
+     * {@link #flushTransient()} method to effectivelly store it, otherwise its automatically removed.
+     * 
+     * @param node the node to be removed
+     */
+    void removeNode(StorageNode node);
 
 }

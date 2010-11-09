@@ -49,7 +49,6 @@
 
 package org.openspotlight.storage.domain.node;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 
@@ -65,14 +64,13 @@ import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 
-public class StorageNodeImpl extends PropertyContainerImpl implements
-    StorageNode {
+public class StorageNodeImpl extends PropertyContainerImpl implements StorageNode {
 
     private static final long                                serialVersionUID      = -4545520206784316277L;
 
     private WeakReference<Iterable<StorageNode>>             childrenWeakReference = null;
 
-    private final WeakHashMap<Iterable<StorageNode>, String> namedChildrenWeakReference;
+    private final WeakHashMap<Iterable<StorageNode>, String> typedChildrenWeakReference;
 
     private final NodeKey                                    nodeKey;
 
@@ -82,40 +80,33 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
 
     private final Partition                                  partition;
 
-    private final Map<String, Property>                      propertiesByName;
-
     public StorageNodeImpl(final NodeKey uniqueKey, final boolean resetTimeout)
         throws IllegalArgumentException {
         this(uniqueKey, null, resetTimeout);
     }
 
-    public StorageNodeImpl(final NodeKey uniqueKey, final Set<Property> properties,
-                           final boolean resetTimeout)
+    public StorageNodeImpl(final NodeKey uniqueKey, final Set<Property> properties, final boolean resetTimeout)
         throws IllegalArgumentException {
         super(resetTimeout);
         nodeType = uniqueKey.getCompositeKey().getNodeType();
         if (nodeType == null) { throw new IllegalArgumentException(); }
         nodeKey = uniqueKey;
-        propertiesByName = newHashMap();
         if (properties != null) {
             for (final Property property: properties) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
         }
         partition = uniqueKey.getPartition();
-        namedChildrenWeakReference = new WeakHashMap<Iterable<StorageNode>, String>();
+        typedChildrenWeakReference = new WeakHashMap<Iterable<StorageNode>, String>();
     }
 
     @Override
-    protected void verifyBeforeSet(
-                                   final String propertyName) {
+    protected void verifyBeforeSet(final String propertyName) {
         if (nodeKey.getCompositeKey().getKeyNames().contains(propertyName)) { throw new IllegalStateException(); }
     }
 
     @Override
-    public NodeBuilder createWithType(
-                                      final StorageSession session,
-                                      final String type)
+    public NodeBuilder createWithType(final StorageSession session, final String type)
         throws IllegalArgumentException {
         checkNotNull("session", session);
         checkNotEmpty("type", type);
@@ -124,8 +115,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public boolean equals(
-                          final Object o) {
+    public boolean equals(final Object o) {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
@@ -138,12 +128,8 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public Iterable<StorageNode> getChildren(
-                                             final Partition partition,
-                                             final StorageSession session) {
-        Iterable<StorageNode> children = childrenWeakReference != null ? childrenWeakReference
-            .get()
-            : null;
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session) {
+        Iterable<StorageNode> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
         if (children == null) {
             children = getChildrenForcingReload(partition, session);
         }
@@ -151,15 +137,11 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public Iterable<StorageNode> getChildrenByType(
-                                                   final Partition partition,
-                                                   final StorageSession session,
-                                                   final String type) {
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session, final String type) {
 
         Iterable<StorageNode> thisChildren = null;
-        if (namedChildrenWeakReference.containsValue(type)) {
-            for (final Map.Entry<Iterable<StorageNode>, String> entry: namedChildrenWeakReference
-                .entrySet()) {
+        if (typedChildrenWeakReference.containsValue(type)) {
+            for (final Map.Entry<Iterable<StorageNode>, String> entry: typedChildrenWeakReference.entrySet()) {
                 if (type.equals(entry.getValue())) {
                     thisChildren = entry.getKey();
                     break;
@@ -168,33 +150,24 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
         }
 
         if (thisChildren == null) {
-            thisChildren = getChildrenByTypeForcingReload(partition, session,
-                type);
+            thisChildren = getChildrenForcingReload(partition, session, type);
         }
         return thisChildren;
     }
 
     @Override
-    public Iterable<StorageNode> getChildrenByTypeForcingReload(
-                                                                final Partition partition,
-                                                                final StorageSession session,
-                                                                final String type) {
+    public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session,
+                                                          final String type) {
         final Iterable<StorageNode> children =
-            ((AbstractStorageSession<?>) session)
-                .nodeEntryGetChildrenByType(
-                    partition, this, type);
-        namedChildrenWeakReference.put(children, type);
+            ((AbstractStorageSession<?>) session).nodeEntryGetChildrenByType(partition, this, type);
+        typedChildrenWeakReference.put(children, type);
         return children;
     }
 
     @Override
-    public Iterable<StorageNode> getChildrenForcingReload(
-                                                          final Partition partition,
-                                                          final StorageSession session) {
-        final Iterable<StorageNode> children =
-            ((AbstractStorageSession<?>) session).nodeEntryGetChildren(partition, this);
-        childrenWeakReference = new WeakReference<Iterable<StorageNode>>(
-            children);
+    public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session) {
+        final Iterable<StorageNode> children = ((AbstractStorageSession<?>) session).nodeEntryGetChildren(partition, this);
+        childrenWeakReference = new WeakReference<Iterable<StorageNode>>(children);
         return children;
     }
 
@@ -209,10 +182,8 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public StorageNode getParent(
-                                 final StorageSession session) {
-        StorageNode parent = parentWeakReference != null ? parentWeakReference
-            .get() : null;
+    public StorageNode getParent(final StorageSession session) {
+        StorageNode parent = parentWeakReference != null ? parentWeakReference.get() : null;
         if (parent == null) {
             parent = ((AbstractStorageSession<?>) session).nodeEntryGetParent(this);
             parentWeakReference = new WeakReference<StorageNode>(parent);
@@ -238,15 +209,13 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public void removeNode(
-                           final StorageSession session) {
+    public void remove(final StorageSession session) {
         session.removeNode(this);
     }
 
     @Override
     public String toString() {
-        return "StorageNodeImpl{" + "partition=" + partition
-            + ", nodeEntryName='" + nodeType + '\'' + ", uniqueKey="
-            + nodeKey + '}';
+        return "StorageNodeImpl{" + "partition=" + partition + ", nodeEntryName='" + nodeType + '\'' + ", uniqueKey=" + nodeKey
+            + '}';
     }
 }

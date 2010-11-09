@@ -52,28 +52,101 @@ package org.openspotlight.storage.domain;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
+/**
+ * The StorageNode is the base data structure that enables store any information. Any information can be modeled as a StorageNode
+ * using its unique identifiers or properties. <br>
+ * A StorageNode is uniquely identified by a {@link NodeKey}.
+ * <p>
+ * To secure the data consistency its not possible change the unique identifiers of a StorageNode. If you need so, you'll have to
+ * delete it and create a new one.
+ * </p>
+ * <p>
+ * A StorageNode defines any kind of information, to relate this data with other you'll have to create {@link StorageLink} to
+ * connect those nodes. <br>
+ * StorageNodes should be created using the {@link NodeBuilder}.
+ * </p>
+ * <p>
+ * Along with {@link StorageLink}, nodes are the core of persistence data model.
+ * </p>
+ * 
+ * @author feuteston
+ * @author porcelli
+ */
 public interface StorageNode extends StorageDataMarker, NodeFactory, PropertyContainer {
 
-    Iterable<StorageNode> getChildren(Partition partition,
-                                      StorageSession session);
-
-    Iterable<StorageNode> getChildrenByType(Partition partition,
-                                            StorageSession session, String type);
-
-    Iterable<StorageNode> getChildrenByTypeForcingReload(Partition partition,
-                                                         StorageSession session, String type);
-
-    Iterable<StorageNode> getChildrenForcingReload(Partition partition,
-                                                   StorageSession session);
-
+    /**
+     * Returns the {@link NodeKey}, wich defines uniquely the node.
+     * 
+     * @return the node key
+     * @see NodeKey
+     */
     NodeKey getKey();
 
+    /**
+     * Returns the parent node of the active one.
+     * 
+     * @param session the storage session
+     * @return the parent node, or null if node there is no parent
+     */
     StorageNode getParent(StorageSession session);
 
+    /**
+     * Returns the node type, in fact this is just a sugar method for {@link CompositeKey#getNodeType()}.
+     * 
+     * @return the node type
+     */
     String getType();
 
-    void removeNode(StorageSession session);
+    /**
+     * Returns an iterable of children nodes stored into specific partition.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param session the storage session
+     * @return an iterable of children nodes, or empty if not found
+     */
+    Iterable<StorageNode> getChildren(Partition partition, StorageSession session);
 
-    public void forceReload();
+    /**
+     * Returns an iterable of children nodes of a given type stored into specific partition.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param session the storage session
+     * @param type the node type
+     * @return an iterable of children nodes, or empty if not found
+     */
+    Iterable<StorageNode> getChildren(Partition partition, StorageSession session, String type);
+
+    /**
+     * Returns an iterable of children nodes stored into specific partition. <br>
+     * <b>Note</b> that this operation invalidates the internal cache and reload its result into it.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param session the storage session
+     * @return an iterable of children nodes, or empty if not found
+     */
+    Iterable<StorageNode> getChildrenForcingReload(Partition partition, StorageSession session);
+
+    /**
+     * Returns an iterable of children nodes of a given type stored into specific partition.<br>
+     * <b>Note</b> that this operation invalidates the internal cache and reload its result into it.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param session the storage session
+     * @param type the node type
+     * @return an iterable of children nodes, or empty if not found
+     */
+    Iterable<StorageNode> getChildrenForcingReload(Partition partition, StorageSession session, String type);
+
+    /**
+     * Removes the node and all its children and any link that its associated. <br>
+     * <p>
+     * <b>Important Note:</b> this is just a sugar method that, in fact, executes the
+     * {@link StorageSession#removeNode(StorageNode)}.
+     * 
+     * @param session the storage session
+     */
+    void remove(StorageSession session);
+
 }

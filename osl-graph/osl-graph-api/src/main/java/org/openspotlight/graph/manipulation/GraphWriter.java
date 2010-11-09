@@ -47,7 +47,6 @@
  * Boston, MA  02110-1301  USA
  */
 
-
 package org.openspotlight.graph.manipulation;
 
 import java.util.Collection;
@@ -82,9 +81,7 @@ public interface GraphWriter {
      * @return the added link
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> L addBidirectionalLink(Class<L> linkClass,
-                                                Node nodea,
-                                                Node nodeb)
+    <L extends Link> L addBidirectionalLink(Class<L> linkClass, Node nodea, Node nodeb)
         throws IllegalArgumentException;
 
     /**
@@ -108,9 +105,7 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addChildNode(Node parent,
-                                     Class<T> clazz,
-                                     String name)
+    <T extends Node> T addChildNode(Node parent, Class<T> clazz, String name)
         throws IllegalArgumentException;
 
     /**
@@ -147,11 +142,9 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addChildNode(Node parent,
-                                     Class<T> clazz,
-                                     String name,
-                                     Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
-                                     Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+    <T extends Node> T addChildNode(Node parent, Class<T> clazz, String name,
+                                    Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                    Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
         throws IllegalArgumentException;
 
     /**
@@ -169,9 +162,7 @@ public interface GraphWriter {
      * @return the added link
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> L addLink(Class<L> linkClass,
-                                   Node source,
-                                   Node target)
+    <L extends Link> L addLink(Class<L> linkClass, Node source, Node target)
         throws IllegalArgumentException;
 
     /**
@@ -194,9 +185,7 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addNode(Context context,
-                                Class<T> clazz,
-                                String name)
+    <T extends Node> T addNode(Context context, Class<T> clazz, String name)
         throws IllegalArgumentException;
 
     /**
@@ -232,11 +221,9 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addNode(Context context,
-                                Class<T> clazz,
-                                String name,
-                                Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
-                                Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+    <T extends Node> T addNode(Context context, Class<T> clazz, String name,
+                               Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                               Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
         throws IllegalArgumentException;
 
     /**
@@ -247,8 +234,7 @@ public interface GraphWriter {
      * @param target the target context
      * @throws IllegalArgumentException if any input param is null
      */
-    void copyNodeHierarchy(Node node,
-                            Context target)
+    void copyNodeHierarchy(Node node, Context target)
         throws IllegalArgumentException;
 
     /**
@@ -270,8 +256,7 @@ public interface GraphWriter {
      * @param target the target context
      * @throws IllegalArgumentException if any input param is null
      */
-    void moveNodeHierarchy(Node node,
-                            Context target)
+    void moveNodeHierarchy(Node node, Context target)
         throws IllegalArgumentException;
 
     /**
@@ -286,7 +271,7 @@ public interface GraphWriter {
 
     /**
      * Removes the link<br>
-     * <b>Note</b> that this operation cannot be undone.
+     * <b>Note</b> that this operation cannot be undo.
      * 
      * @param link the link
      * @throws IllegalArgumentException if the input param is null
@@ -311,7 +296,6 @@ public interface GraphWriter {
      * @param caption the caption
      * @throws IllegalArgumentException if any input param is null
      */
-    void setContextCaption(Context context,
-                            String caption)
+    void setContextCaption(Context context, String caption)
         throws IllegalArgumentException;
 }

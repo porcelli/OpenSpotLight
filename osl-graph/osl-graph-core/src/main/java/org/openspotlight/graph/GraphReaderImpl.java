@@ -51,7 +51,7 @@ import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.QueryApi;
 import org.openspotlight.graph.query.QueryText;
-import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
@@ -110,7 +110,7 @@ public class GraphReaderImpl implements GraphReader {
                                                    final ImmutableSet.Builder<Iterable<StorageNode>> resultBuilder,
                                                    final Partition partition, final Class<?> clzz) {
         final CriteriaBuilder criteriaBuilder = session.withPartition(partition)
-            .createCriteria().withNodeEntry(clzz.getName());
+            .createCriteria().withNodeType(clzz.getName());
         if (nodeName != null) {
             criteriaBuilder.withProperty(NodeAndLinkSupport.NAME).equalsTo(
                 nodeName);
@@ -128,7 +128,7 @@ public class GraphReaderImpl implements GraphReader {
                 .withProperty(NodeAndLinkSupport.CORRECT_CLASS).equals(
                     clzz.getName());
         }
-        resultBuilder.add(criteriaBuilder.buildCriteria().andFind(session));
+        resultBuilder.add(criteriaBuilder.buildCriteria().andSearch(session));
     }
 
     private final Iterable<Partition> filterGraphPartitions(
@@ -241,11 +241,11 @@ public class GraphReaderImpl implements GraphReader {
         if (parentStNode == null) {
             parentStNode = session.withPartition(partition).createCriteria()
                 .withUniqueKeyAsString(node.getId()).buildCriteria()
-                .andFindUnique(session);
+                .andSearchUnique(session);
         }
         Iterable<StorageNode> children;
         if (clazz != null) {
-            children = parentStNode.getChildrenByType(partition, session, clazz
+            children = parentStNode.getChildren(partition, session, clazz
                 .getName());
         } else {
             children = parentStNode.getChildren(partition, session);
@@ -317,7 +317,7 @@ public class GraphReaderImpl implements GraphReader {
                         }
                     } else {
                         final Iterable<StorageLink> found =
-                            session.findLinks(session.getNode(rawAnotherOriginId));
+                            session.getLinks(session.getNode(rawAnotherOriginId));
                         if (found != null) {
                             foundBidLinks.addAll(SLCollections.iterableToList(found));
                         }
@@ -332,14 +332,14 @@ public class GraphReaderImpl implements GraphReader {
                     .getId()), session.getNode(rawTarget
                     .getId()), linkType.getName()));
         } else if (rawTarget != null) {
-            links = session.findLinks(session.getNode(rawOrigin
+            links = session.getLinks(session.getNode(rawOrigin
                 .getId()), session.getNode(rawTarget.getId()));
         } else if (linkType != null) {
-            links = session.findLinks(session.getNode(rawOrigin
+            links = session.getLinks(session.getNode(rawOrigin
                 .getId()), linkType.getName());
 
         } else {
-            links = session.findLinks(session.getNode(rawOrigin
+            links = session.getLinks(session.getNode(rawOrigin
                 .getId()));
 
         }
@@ -353,8 +353,8 @@ public class GraphReaderImpl implements GraphReader {
                                         final StorageLink o)
                         throws Exception {
                         final Class<? extends Link> linkType = (Class<? extends Link>) Class
-                            .forName(o.getLinkType());
-                        final Node origin = findNode(o.getOrigin());
+                            .forName(o.getType());
+                        final Node origin = findNode(o.getSource());
                         final Node target = findNode(o.getTarget());
                         final Link result = NodeAndLinkSupport.createLink(
                             factory, session, linkType, origin,
@@ -368,7 +368,7 @@ public class GraphReaderImpl implements GraphReader {
                                                   final StorageLink o)
                     throws Exception {
                     try {
-                        final Class<?> clazz = Class.forName(o.getLinkType());
+                        final Class<?> clazz = Class.forName(o.getType());
                         if (!Link.class.isAssignableFrom(clazz)) {
                     return false;
                     }
@@ -591,15 +591,14 @@ public class GraphReaderImpl implements GraphReader {
     }
 
     @Override
-    public Context getContext(
-                              final String id) {
+    public Context getContext(final String id) {
         Context ctx = contextCache.get(id);
         if (ctx == null) {
             final StorageSession session = sessionProvider.get();
             final Partition partition = factory.getPartition(id);
             StorageNode contextNode = session.withPartition(partition)
-                .createCriteria().withNodeEntry(id).buildCriteria()
-                .andFindUnique(session);
+                .createCriteria().withNodeType(id).buildCriteria()
+                .andSearchUnique(session);
             String caption = null;
             final Map<String, Serializable> properties = new HashMap<String, Serializable>();
             int weigth;
@@ -793,7 +792,7 @@ public class GraphReaderImpl implements GraphReader {
         final Partition partition = factory.getPartition(contextId);
         final StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
-            .andFindUnique(session);
+            .andSearchUnique(session);
         if (parentStNode == null) { return null; }
         return convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
@@ -809,7 +808,7 @@ public class GraphReaderImpl implements GraphReader {
         final Partition partition = factory.getPartition(contextId);
         final StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
-            .andFindUnique(session);
+            .andSearchUnique(session);
         if (parentStNode == null) { return null; }
         return SLCollections.iterableOfOne(convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
@@ -825,7 +824,7 @@ public class GraphReaderImpl implements GraphReader {
             .getContextId());
         final StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(node.getId())
-            .buildCriteria().andFindUnique(session);
+            .buildCriteria().andSearchUnique(session);
 
         if (parentStNode == null) { return null; }
         return convertToSLNode(parentStNode.getKey()

@@ -100,7 +100,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
-import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.storage.SearchCriteria.CriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.NodeFactory;
@@ -559,7 +559,7 @@ public class SimplePersistImpl implements
         throws Exception {
         final String name = internalGetNodeName(descriptors.bean);
         final NodeFactory.NodeBuilder builder = currentSession.withPartition(
-                currentPartition).createWithType(name);
+                currentPartition).createNodeWithType(name);
 
         if (parentNode != null) {
             builder.withParent(parentNode);
@@ -608,7 +608,7 @@ public class SimplePersistImpl implements
             if (!SimpleNodeType.class.isAssignableFrom(nodeType)) { throw new IllegalStateException("wrong child type"); }
             final String childrenName = internalGetNodeName(nodeType);
             Iterable<StorageNode> children = iterableToList(node
-                    .getChildrenByType(currentPartition, currentSession,
+                    .getChildren(currentPartition, currentSession,
                             childrenName));
             children = filterChildrenWithProperty(children,
                     descriptor.getName());
@@ -766,7 +766,7 @@ public class SimplePersistImpl implements
                         beanBeenSaved, newNodeEntry);
             }
             context.allNodes.addAll(iterableToList(newNodeEntry
-                    .getChildrenByType(currentPartition, currentSession,
+                    .getChildren(currentPartition, currentSession,
                             internalGetNodeName(data.nodeType))));
         }
 
@@ -1178,7 +1178,7 @@ public class SimplePersistImpl implements
 
             final CriteriaBuilder builder = currentSession
                     .withPartition(currentPartition).createCriteria()
-                    .withNodeEntry(internalGetNodeName(beanType));
+                    .withNodeType(internalGetNodeName(beanType));
             final Map<String, PropertyDescriptor> allDescriptors = createMapWith(PropertyUtils
                     .getPropertyDescriptors(beanType));
 
@@ -1192,7 +1192,7 @@ public class SimplePersistImpl implements
                         Conversion.convert(propertyValues[i], String.class));
             }
             final Iterable<StorageNode> foundItems = builder.buildCriteria()
-                    .andFind(currentSession);
+                    .andSearch(currentSession);
 
             final IteratorBuilder.SimpleIteratorBuilder<T, StorageNode> b = IteratorBuilder
                     .<T, StorageNode>createIteratorBuilder();

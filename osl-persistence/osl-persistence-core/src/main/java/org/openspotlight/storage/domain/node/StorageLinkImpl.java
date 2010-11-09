@@ -49,33 +49,33 @@
 package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringKeysSupport;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 
-public class StorageLinkImpl extends PropertyContainerImpl implements
-        StorageLink {
+public class StorageLinkImpl extends PropertyContainerImpl implements StorageLink {
 
     private static final long serialVersionUID = -3462836679437486046L;
 
-    private final String      linkId;
+    private final String      linkKey;
 
     private final String      linkType;
 
-    private final StorageNode origin;
+    private final StorageNode source;
 
-    private final Partition   originPartition;
+    private final Partition   sourcePartition;
 
     private final StorageNode target;
 
-    public StorageLinkImpl(final String linkType, final StorageNode origin,
+    public StorageLinkImpl(final String linkType, final StorageNode source,
                            final StorageNode target, final boolean resetTimeout) {
         super(resetTimeout);
         this.linkType = linkType;
-        this.origin = origin;
+        this.source = source;
         this.target = target;
-        originPartition = origin.getPartition();
-        linkId = StringKeysSupport.buildLinkKeyAsString(linkType, origin, target);
+        sourcePartition = source.getPartition();
+        linkKey = StringKeysSupport.buildLinkKeyAsString(linkType, source, target);
     }
 
     @Override
@@ -87,32 +87,32 @@ public class StorageLinkImpl extends PropertyContainerImpl implements
 
     @Override
     public String getKeyAsString() {
-        return linkId;
+        return linkKey;
     }
 
     @Override
-    public String getLinkId() {
-        return linkId;
-    }
-
-    @Override
-    public String getLinkType() {
+    public String getType() {
         return linkType;
     }
 
     @Override
-    public StorageNode getOrigin() {
-        return origin;
+    public StorageNode getSource() {
+        return source;
     }
 
     @Override
     public Partition getPartition() {
-        return originPartition;
+        return sourcePartition;
     }
 
     @Override
     public StorageNode getTarget() {
         return target;
+    }
+
+    @Override
+    public void remove(final StorageSession session) {
+        session.removeLink(this);
     }
 
     @Override

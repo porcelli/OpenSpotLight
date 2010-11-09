@@ -57,8 +57,8 @@ import org.openspotlight.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.StorageNode;
 
 public class PersistentArtifactManagerImpl extends
@@ -106,12 +106,12 @@ public class PersistentArtifactManagerImpl extends
         final String nodeName = simplePersist.getInternalMethods().getNodeName(type);
         if (initialPath != null) {
             foundNodes = simplePersist.getPartitionMethods().createCriteria()
-                    .withNodeEntry(nodeName)
+                    .withNodeType(nodeName)
                     .withProperty(propertyNameAndPath[IDX_MAPPED])
                     .equalsTo(initialPath).buildCriteria()
-                    .andFind(simplePersist.getCurrentSession());
+                    .andSearch(simplePersist.getCurrentSession());
         } else {
-            foundNodes = simplePersist.getPartitionMethods().findByType(
+            foundNodes = simplePersist.getPartitionMethods().getNodes(
                     nodeName);
 
         }

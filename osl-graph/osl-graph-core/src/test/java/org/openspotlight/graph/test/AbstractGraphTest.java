@@ -1277,15 +1277,15 @@ public abstract class AbstractGraphTest {
         assertThat(oneLink.size(), is(1));
         assertThat(anotherLink.size(), is(1));
         assertThat(oneLink.iterator().next(), is(anotherLink.iterator().next()));
-        assertThat(anotherLink.iterator().next().getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
-        assertThat(oneLink.iterator().next().getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(anotherLink.iterator().next().getDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(oneLink.iterator().next().getDirection(), is(LinkDirection.BIDIRECTIONAL));
 
         final AutoBidLink link1 = writer.addLink(AutoBidLink.class,
             rootClass1Node, rootClass2Node);
         final AutoBidLink link2 = writer.addLink(AutoBidLink.class,
             rootClass2Node, rootClass1Node);
-        assertThat(link1.getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
-        assertThat(link2.getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(link1.getDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(link2.getDirection(), is(LinkDirection.BIDIRECTIONAL));
 
         assertThat(link1, is(link2));
         assertThat(oneLink.contains(link1), is(true));
@@ -1318,15 +1318,15 @@ public abstract class AbstractGraphTest {
         assertThat(oneLink.size(), is(1));
         assertThat(anotherLink.size(), is(1));
         assertThat(oneLink.iterator().next(), is(anotherLink.iterator().next()));
-        assertThat(anotherLink.iterator().next().getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
-        assertThat(oneLink.iterator().next().getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(anotherLink.iterator().next().getDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(oneLink.iterator().next().getDirection(), is(LinkDirection.BIDIRECTIONAL));
 
         final AutoBidLink link1 = writer.addLink(AutoBidLink.class,
             rootClass1Node, rootClass2Node);
         final AutoBidLink link2 = writer.addLink(AutoBidLink.class,
             rootClass2Node, rootClass1Node);
-        assertThat(link1.getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
-        assertThat(link2.getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(link1.getDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(link2.getDirection(), is(LinkDirection.BIDIRECTIONAL));
 
         assertThat(link1, is(link2));
         assertThat(oneLink.contains(link1), is(true));

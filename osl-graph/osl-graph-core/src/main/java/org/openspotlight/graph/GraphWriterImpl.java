@@ -169,13 +169,13 @@ public class GraphWriterImpl implements GraphWriter {
         session.flushTransient();
         for (final Link l: dirtyLinks) {
             final Link retrievedLink =
-                NodeAndLinkSupport.createLink(factory, sessionProvider.get(), l.getLinkType(), l.getSource(), l.getTarget(),
-                    l.getLinkDirection(),
+                NodeAndLinkSupport.createLink(factory, sessionProvider.get(), l.getType(), l.getSource(), l.getTarget(),
+                    l.getDirection(),
                     true);
             final PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> md =
                 (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink>) retrievedLink;
             final org.openspotlight.storage.domain.StorageLink cached = md.getCached();
-            cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, retrievedLink.getLinkDirection().name());
+            cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, retrievedLink.getDirection().name());
             NodeAndLinkSupport.writeTreeLineReference(session, factory, l);
             session.flushTransient();
         }

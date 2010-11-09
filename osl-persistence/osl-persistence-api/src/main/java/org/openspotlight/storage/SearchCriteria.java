@@ -54,13 +54,11 @@ import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
-public interface Criteria {
+public interface SearchCriteria {
 
     public interface CriteriaBuilder {
 
         CriteriaBuilder and();
-
-        Criteria buildCriteria();
 
         CriteriaBuilder containsString(String value);
 
@@ -72,13 +70,15 @@ public interface Criteria {
 
         CriteriaBuilder withLocalKey(CompositeKey localKey);
 
-        CriteriaBuilder withNodeEntry(String nodeName);
+        CriteriaBuilder withNodeType(String nodeName);
 
         CriteriaBuilder withProperty(String propertyName);
 
         CriteriaBuilder withUniqueKey(NodeKey uniqueKey);
 
         CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
+
+        SearchCriteria buildCriteria();
     }
 
     public interface CriteriaItem {
@@ -124,16 +124,15 @@ public interface Criteria {
         }
 
         String getNodeType();
-
     }
-
-    Iterable<StorageNode> andFind(StorageSession session);
-
-    StorageNode andFindUnique(StorageSession session);
 
     Set<CriteriaItem> getCriteriaItems();
 
     String getNodeType();
 
     Partition getPartition();
+
+    Iterable<StorageNode> andSearch(StorageSession session);
+
+    StorageNode andSearchUnique(StorageSession session);
 }

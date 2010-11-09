@@ -48,13 +48,58 @@
  */
 package org.openspotlight.storage.domain;
 
+import org.openspotlight.storage.StorageSession;
+
+/**
+ * The StorageLink is the way you correlate informations ({@link StorageNode} instances) in persitence. Any relationship between
+ * nodes are materialized by a creation of a link. <br>
+ * A Link is uniquely identified by three data: Type, Source and Target StorageNodes, and based on these data an algorithm is used
+ * to generate an unique id.
+ * <p>
+ * To secure the data consistency its not possible change the unique identifiers of a StorageLink. If you need so, you'll have to
+ * delete it and create a new one.
+ * </p>
+ * <p>
+ * StorageLinks should be created using {@link StorageSession#addLink(StorageNode, StorageNode, String)}.
+ * </p>
+ * <p>
+ * Along with {@link StorageNode}, links are are the core of persitence data model.
+ * </p>
+ * 
+ * @author feuteston
+ * @author porcelli
+ */
 public interface StorageLink extends StorageDataMarker, PropertyContainer {
 
-    String getLinkId();
+    /**
+     * Returns the link type
+     * 
+     * @return the link type
+     */
+    String getType();
 
-    String getLinkType();
+    /**
+     * Returns the source node of this link.
+     * 
+     * @return the source node
+     */
+    StorageNode getSource();
 
-    StorageNode getOrigin();
-
+    /**
+     * Returns the target node of this link.
+     * 
+     * @return the target node
+     */
     StorageNode getTarget();
+
+    /**
+     * Removes the link. <br>
+     * <p>
+     * <b>Important Note:</b> this is just a sugar method that, in fact, executes the
+     * {@link StorageSession#removeLink(StorageLink)}.
+     * 
+     * @param session the storage session
+     */
+    void remove(StorageSession session);
+
 }

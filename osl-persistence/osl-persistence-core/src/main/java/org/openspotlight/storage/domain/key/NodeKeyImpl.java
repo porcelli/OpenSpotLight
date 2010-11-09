@@ -317,8 +317,6 @@ public class NodeKeyImpl implements NodeKey {
 
     @Override
     public String toString() {
-        return "NodeKeyImpl{" +
-                "keyAsString='" + getKeyAsString() + '\'' +
-                '}';
+        return "NodeKeyImpl{ keyAsString='" + getKeyAsString() + '}';
     }
 }

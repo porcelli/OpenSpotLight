@@ -204,12 +204,12 @@ public class NodeAndLinkSupport {
         }
 
         @Override
-        public LinkDirection getLinkDirection() {
+        public LinkDirection getDirection() {
             return linkDirection;
         }
 
         @Override
-        public Class<? extends Link> getLinkType() {
+        public Class<? extends Link> getType() {
             return linkType;
         }
 
@@ -1097,11 +1097,11 @@ public class NodeAndLinkSupport {
 
         if (session != null) {
             internalNodeKey = session.withPartition(partition)
-                    .createKey(targetNodeType.getName())
+                    .createNodeKeyWithType(targetNodeType.getName())
                     .withSimpleKey(NAME, name).andCreate();
             node = session.withPartition(partition).createCriteria()
                     .withUniqueKey(internalNodeKey).buildCriteria()
-                    .andFindUnique(session);
+                    .andSearchUnique(session);
         } else {
             internalNodeKey = new NodeKeyBuilderImpl(targetNodeType.getName(),
                     partition).withSimpleKey(NAME, name)
@@ -1267,7 +1267,7 @@ public class NodeAndLinkSupport {
                         .getId());
                 internalNode = session
                         .withPartition(partition)
-                        .createWithType(
+                        .createNodeWithType(
                                 findTargetClass(node.getClass()).getName())
                         .withSimpleKey(NAME, node.getName())
                         .withParent(node.getParentId()).andCreate();
