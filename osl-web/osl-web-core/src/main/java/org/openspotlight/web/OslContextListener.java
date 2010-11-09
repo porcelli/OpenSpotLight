@@ -103,10 +103,10 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
 
-//            final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
-//            final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
-//            final int remotePort = Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer.parseInt(remotePortAsString);
-//            final long remoteGraphTimeout = Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long.parseLong(remoteGraphTimeoutAsString);
+            //            final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
+            //            final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
+            //            final int remotePort = Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer.parseInt(remotePortAsString);
+            //            final long remoteGraphTimeout = Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long.parseLong(remoteGraphTimeoutAsString);
 
             factory = injector.getInstance(ExecutionContextFactory.class);
 

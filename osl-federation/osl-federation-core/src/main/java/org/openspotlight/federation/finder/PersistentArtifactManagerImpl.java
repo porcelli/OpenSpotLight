@@ -70,12 +70,12 @@ public class PersistentArtifactManagerImpl extends
     private static final String[]                                                                    PROPERTY_NAME_ARTIFACT_PATH     =
                                                                                                                                          {
                                                                                                                                          "artifactCompleteName",
-        "mappedTo"                                                                                                                       };
+                                                                                                                                         "mappedTo"};
 
     private static final String[]                                                                    PROPERTY_NAME_OLD_ARTIFACT_PATH =
                                                                                                                                          {
                                                                                                                                          "originalName",
-        "mappedFrom"                                                                                                                     };
+                                                                                                                                         "mappedFrom"};
 
     private final String                                                                             repositoryName;
 

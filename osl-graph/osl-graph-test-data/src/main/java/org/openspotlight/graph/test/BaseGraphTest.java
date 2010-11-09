@@ -982,7 +982,7 @@ public abstract class BaseGraphTest {
         Iterable<Link> twoLinkTypes = reader.getLinks(javaClassNode1, null, LinkDirection.ANY);
 
         Assert.assertNotNull(twoLinkTypes);
-        
+
         assertLinksInOrder(bidLinks, simpleBidLink, simpleUniLinkClass);
 
         twoLinkTypes = reader.getLinks(javaClassNode1, javaMethodNode1,

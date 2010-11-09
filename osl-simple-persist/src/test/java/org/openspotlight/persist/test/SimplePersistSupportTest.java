@@ -192,9 +192,9 @@ public class SimplePersistSupportTest {
         obj1.setValue(5);
         StorageNode asJcr = simplePersist.convertBeanToNode(levelThree);
         LevelThreeObj anotherLevelThree = simplePersist.convertNodeToBean(asJcr);
-        
+
         assertThat(anotherLevelThree, IsNull.notNullValue());
-        
+
         obj1.setValue(4);
         asJcr = simplePersist.convertBeanToNode(levelThree);
         anotherLevelThree = simplePersist.convertNodeToBean(asJcr);

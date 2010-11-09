@@ -235,7 +235,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
     public void setGroup(Group group) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

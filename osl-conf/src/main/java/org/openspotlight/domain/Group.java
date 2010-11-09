@@ -327,7 +327,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     public void addArtifactMapping(ArtifactSourceMapping sourceMapping) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

@@ -67,17 +67,17 @@ import com.google.inject.Singleton;
 @Singleton
 public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLogger> {
 
-    private final Partition                partition = RegularPartitions.LOG;
+    private final Partition            partition = RegularPartitions.LOG;
 
-//    private final Provider<StorageSession> sessionProvider;
+    //    private final Provider<StorageSession> sessionProvider;
 
-    private final SimplePersistFactory     simplePersistFactory;
+    private final SimplePersistFactory simplePersistFactory;
 
     @Inject
     public DetailedLoggerProvider(
                                   final SimplePersistFactory simplePersistFactory, final Provider<StorageSession> sessionProvider) {
         this.simplePersistFactory = simplePersistFactory;
-//        this.sessionProvider = sessionProvider;
+        //        this.sessionProvider = sessionProvider;
     }
 
     @Override

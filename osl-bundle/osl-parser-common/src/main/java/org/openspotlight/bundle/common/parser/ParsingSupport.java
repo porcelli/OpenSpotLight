@@ -59,10 +59,10 @@ import org.openspotlight.persist.support.SimplePersistFactory;
  */
 public class ParsingSupport {
 
-//    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
+    //    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     public ParsingSupport(final SimplePersistFactory simplePersistFactory) {
-//        simplePersist = simplePersistFactory.createSimplePersist(RegularPartitions.LINE_REFERENCE);
+        //        simplePersist = simplePersistFactory.createSimplePersist(RegularPartitions.LINE_REFERENCE);
     }
 
     /**

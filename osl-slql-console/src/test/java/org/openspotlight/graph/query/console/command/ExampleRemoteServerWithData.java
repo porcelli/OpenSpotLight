@@ -253,8 +253,8 @@ public class ExampleRemoteServerWithData {
                             ExampleRedisConfig.EXAMPLE.getMappedServerConfig()),
                     new SimplePersistModule(), new GraphModule());
 
-//            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
-//            final User simpleUser = securityFactory.createUser("testUser");
+            //            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
+            //            final User simpleUser = securityFactory.createUser("testUser");
 
             final Collection<Class<?>> iFaces = loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = loadClasses("java-util-classes.txt");

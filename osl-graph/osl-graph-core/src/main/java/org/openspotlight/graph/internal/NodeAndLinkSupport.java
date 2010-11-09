@@ -308,9 +308,9 @@ public class NodeAndLinkSupport {
             propertyContainerImpl.removeProperty(key);
         }
 
-//        public void resetDirtyFlag() {
-//            propertyContainerImpl.resetDirtyFlag();
-//        }
+        //        public void resetDirtyFlag() {
+        //            propertyContainerImpl.resetDirtyFlag();
+        //        }
 
         @Override
         public void setCached(final StorageLink entry) {
@@ -529,9 +529,9 @@ public class NodeAndLinkSupport {
             propertyContainerImpl.removeProperty(key);
         }
 
-//        public void resetDirtyFlag() {
-//            propertyContainerImpl.resetDirtyFlag();
-//        }
+        //        public void resetDirtyFlag() {
+        //            propertyContainerImpl.resetDirtyFlag();
+        //        }
 
         @Override
         public void setCached(
