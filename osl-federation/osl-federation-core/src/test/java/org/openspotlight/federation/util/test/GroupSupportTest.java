@@ -82,7 +82,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(empty, null, repository);
@@ -109,7 +109,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(notEmpty, null,
@@ -149,7 +149,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(empty, oldRepository,
@@ -186,7 +186,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(notEmpty, oldRepository,
@@ -217,7 +217,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(empty, repository, null);
@@ -246,7 +246,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(notEmpty, repository,
@@ -286,7 +286,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         GroupSupport.findDifferencesOnAllRepositories(empty, oldRepository,
@@ -321,7 +321,7 @@ public class GroupSupportTest {
         newGroup.setName("1");
         repository.getGroups().add(newGroup);
         final Group newGroup2 = new Group();
-        newGroup2.setGroup(newGroup);
+        newGroup2.setParent(newGroup);
         newGroup2.setName("2");
         newGroup.getGroups().add(newGroup2);
         Assert.assertThat(

@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import org.junit.Test;
 import org.openspotlight.common.Triple;
 import org.openspotlight.domain.Repository;
+import org.openspotlight.domain.RepositoryBuilder;
 import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
@@ -21,9 +22,9 @@ public class AfterFederationTaskTest extends AbstractBundleTest {
 
     @Override
     public Repository createRepository() {
-        return Repository.newRepositoryNamed("repository")
-                .withGroup("group").withArtifactSource("source", "src", "/")
-                .withBundles("bundle", ExampleAfterFederationTask.class).andCreate();
+        return RepositoryBuilder.newRepositoryNamed("repository")
+                .withGroup("group").withArtifactSource("file://src", "/")
+                .withTasks(ExampleAfterFederationTask.class).andCreate();
     }
 
     @Test

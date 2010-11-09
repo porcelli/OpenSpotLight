@@ -93,10 +93,8 @@ public class ArtifactLoaderManagerTest {
                 .getFrom(RegularPartitions.FEDERATION).flushall();
         final GlobalSettings settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(250);
-        final String initialRawPath = Files
-                .getNormalizedFileName(new File("."));
-        final String initial = initialRawPath.substring(0,
-                initialRawPath.lastIndexOf('/'));
+        final String initialRawPath = Files.getNormalizedFileName(new File("."));
+        final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
         final String finalStr = initialRawPath.substring(initial.length());
         final ArtifactSource source = new ArtifactSource();
         final Repository repository = new Repository();
@@ -119,10 +117,8 @@ public class ArtifactLoaderManagerTest {
                 injector.getInstance(SimplePersistFactory.class), repository);
         final List<Class<? extends OriginArtifactLoader>> loaderRegistry = new ArrayList<Class<? extends OriginArtifactLoader>>();
         loaderRegistry.add(FileSystemOriginArtifactLoader.class);
-        ArtifactLoaderManager.INSTANCE.refreshResources(source,
-                provider, loaderRegistry);
-        final Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(
-                StringArtifact.class, null);
+        ArtifactLoaderManager.INSTANCE.refreshResources(source, provider, loaderRegistry);
+        final Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(StringArtifact.class, null);
         provider.closeResources();
         boolean hasAny = false;
 

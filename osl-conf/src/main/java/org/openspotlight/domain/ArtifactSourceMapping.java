@@ -217,4 +217,25 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
         this.to = to;
     }
 
+    public void addExcludes(String exclude) {
+        excludeds.add(exclude);
+    }
+
+    public void addIncludes(String include) {
+        includeds.add(include);
+    }
+
+    public void addTask(Class<? extends Callable<Void>> task) {
+        tasks.add(task);
+    }
+
+    public void setEncoding(String enconding) {
+        // TODO Auto-generated method stub
+    }
+
+    public void setGroup(Group group) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

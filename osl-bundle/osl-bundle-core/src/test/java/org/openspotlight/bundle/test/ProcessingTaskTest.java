@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import org.junit.Test;
 import org.openspotlight.common.Triple;
 import org.openspotlight.domain.Repository;
+import org.openspotlight.domain.RepositoryBuilder;
 import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
@@ -20,14 +21,14 @@ public class ProcessingTaskTest extends AbstractBundleTest {
 
     @Override
     public Repository createRepository() {
-        return Repository.newRepositoryNamed("repository")
-                .withGroup("group").withArtifactSource("source", "src", "/")
-                .withBundleConfig("bundle task 1", ExampleProcessingTask.class)
-                .withBundleConfig("bundle task 2", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 3", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 4", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 5", AnotherExampleProcessingTask.class)
-                .withBundleConfig("bundle task 6", AnotherOneExampleProcessingTask.class)
+        return RepositoryBuilder.newRepositoryNamed("repository")
+                .withGroup("group").withArtifactSource("file://src", "/")
+                .withTasks(ExampleProcessingTask.class)
+                .withTasks(AnotherExampleProcessingTask.class)
+                .withTasks(AnotherExampleProcessingTask.class)
+                .withTasks(AnotherExampleProcessingTask.class)
+                .withTasks(AnotherExampleProcessingTask.class)
+                .withTasks(AnotherOneExampleProcessingTask.class)
                 .andCreate();
     }
 

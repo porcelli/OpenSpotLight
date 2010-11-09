@@ -54,7 +54,6 @@ import static org.openspotlight.common.util.Arrays.of;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
@@ -69,70 +68,6 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 @Name("repository")
 public class Repository implements SimpleNodeType, Serializable {
-
-    public static class Builder {
-
-        private Group                 currentGroup;
-
-        private ArtifactSourceMapping currentMapping;
-
-        private final Repository      repository;
-
-        private Builder(final String name) {
-            repository = new Repository();
-            repository.setName(name);
-            repository.setActive(true);
-        }
-
-        public Repository andCreate() {
-            return repository;
-        }
-
-        public Builder withArtifactSource(final String artifactSourceName, final String rootFolder, final String initialLookup) {
-            final ArtifactSource source = new ArtifactSource();
-            source.setActive(true);
-            source.setName(artifactSourceName);
-            source.setInitialLookup(initialLookup);
-            source.setRootFolder(rootFolder);
-            final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-            mapping.getIncludeds().add("**/*");
-            source.getMappings().add(mapping);
-            currentGroup.getArtifactSources().add(source);
-            currentMapping = mapping;
-            return this;
-        }
-
-//        public Builder withBundleConfig(final String name, final Class<? extends Callable<Void>>... taskType) {
-//            final BundleConfig bundleProcessorType = new BundleConfig();
-//            bundleProcessorType.setActive(true);
-//            bundleProcessorType.setName(name);
-//            for (final Class<? extends Callable<Void>> t: taskType) {
-//                bundleProcessorType.getTasks().add(t);
-//            }
-//            currentMapping.getBundleConfig().add(bundleProcessorType);
-//            return this;
-//        }
-
-        public Builder withGroup(final String groupName) {
-            currentGroup = new Group();
-            currentGroup.setActive(true);
-            currentGroup.setName(groupName);
-            repository.getGroups().add(currentGroup);
-            return this;
-        }
-
-        public Builder withSubGroup(final String groupName) {
-
-            final Group group = new Group();
-            group.setActive(true);
-            group.setName(groupName);
-            currentGroup.getGroups().add(currentGroup);
-            group.setGroup(currentGroup);
-            currentGroup = group;
-            return this;
-        }
-
-    }
 
     public static interface GroupVisitor {
         public void visitGroup(Group group);
@@ -156,10 +91,6 @@ public class Repository implements SimpleNodeType, Serializable {
      * The name.
      */
     private String                 name;
-
-    public static Builder newRepositoryNamed(final String name) {
-        return new Builder(name);
-    }
 
     public void acceptGroupVisitor(final GroupVisitor visitor) {
         for (final Group entry: getGroups()) {
@@ -232,6 +163,10 @@ public class Repository implements SimpleNodeType, Serializable {
      */
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public void addGroup(Group group) {
+        groups.add(group);
     }
 
 }

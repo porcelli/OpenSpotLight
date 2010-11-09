@@ -48,10 +48,12 @@
  */
 package org.openspotlight.domain;
 
+import static com.google.common.collect.Maps.newHashMap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -87,7 +89,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     /**
      * The group.
      */
-    private transient Group                       group;
+    private transient Group                       parent;
 
     private List<Group>                           groups           = new ArrayList<Group>();
 
@@ -105,12 +107,22 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
 
+    private Map<String, String>                   properties       = newHashMap();
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
     /**
      * The type.
      */
-    private String                                type;
+    private String                    type;
 
-    private volatile transient String             uniqueName;
+    private volatile transient String uniqueName;
 
     public void acceptVisitor(final Repository.GroupVisitor visitor) {
         visitor.visitGroup(this);
@@ -123,7 +135,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     public boolean equals(final Object o) {
         if (!(o instanceof Group)) { return false; }
         final Group that = (Group) o;
-        final boolean result = Equals.eachEquality(Arrays.of(group, repository, name), Arrays.andOf(that.group, that.repository,
+        final boolean result =
+            Equals.eachEquality(Arrays.of(parent, repository, name), Arrays.andOf(that.parent, that.repository,
                 that.name));
         return result;
     }
@@ -143,8 +156,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
      * @return the group
      */
     @ParentProperty
-    public Group getGroup() {
-        return group;
+    public Group getParent() {
+        return parent;
     }
 
     public List<Group> getGroups() {
@@ -179,7 +192,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     @TransientProperty
     public Repository getRootRepository() {
-        return repository != null ? repository : getGroup().getRootRepository();
+        return repository != null ? repository : getParent().getRootRepository();
     }
 
     public List<Class<? extends Callable<Void>>> getTasks() {
@@ -198,7 +211,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     public String getUniqueName() {
         String result = uniqueName;
         if (result == null) {
-            result = (group != null ? group.getUniqueName() : repository.getName()) + "/" + getName();
+            result = (parent != null ? parent.getUniqueName() : repository.getName()) + "/" + getName();
             uniqueName = result;
         }
         return result;
@@ -208,7 +221,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(group, repository, name);
+            result = HashCodes.hashOf(parent, repository, name);
             hashCode = result;
         }
         return result;
@@ -245,8 +258,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
      * 
      * @param group the new group
      */
-    public void setGroup(final Group group) {
-        this.group = group;
+    public void setParent(final Group group) {
+        this.parent = group;
     }
 
     public void setGroups(final List<Group> groups) {
@@ -294,6 +307,27 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     @Override
     public String toUniqueJobString() {
         return getUniqueName();
+    }
+
+    public void addTask(Class<? extends Callable<Void>> task) {
+        tasks.add(task);
+    }
+
+    public void addProperty(String name, String value) {
+        properties.put(name, value);
+    }
+
+    public void addGroup(Group group) {
+        groups.add(group);
+    }
+
+    public void addArtifactSource(ArtifactSource artifactSource) {
+        artifactSources.add(artifactSource);
+    }
+
+    public void addArtifactMapping(ArtifactSourceMapping sourceMapping) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

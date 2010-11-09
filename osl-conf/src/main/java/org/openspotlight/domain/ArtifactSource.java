@@ -48,10 +48,13 @@
  */
 package org.openspotlight.domain;
 
+import static com.google.common.collect.Maps.newHashMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -90,23 +93,42 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
     /** The mappings. */
     private Set<ArtifactSourceMapping>            mappings         = new HashSet<ArtifactSourceMapping>();
 
-    /** The name. */
-    private String                                name;
-
     /** The repository. */
     private transient Repository                  repository;
 
-    private String                                rootFolder;
+    private String                                url;
 
     private List<Class<? extends Callable<Void>>> tasks            = new ArrayList<Class<? extends Callable<Void>>>();
+
+    private Map<String, String>                   properties       = newHashMap();
+
+    private transient Group                       group;
+
+    @TransientProperty
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
 
     @Override
     public boolean equals(final Object o) {
         if (!(o instanceof ArtifactSource)) { return false; }
         final ArtifactSource that = (ArtifactSource) o;
-        final boolean result = Equals.eachEquality(
-                Arrays.of(this.getClass(), name, repository),
-                Arrays.andOf(that.getClass(), that.name, that.repository));
+        final boolean result =
+            Equals.eachEquality(
+                Arrays.of(this.getClass(), url, repository),
+                Arrays.andOf(that.getClass(), that.url, that.repository));
         return result;
     }
 
@@ -143,8 +165,8 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
      * @return the name
      */
     @KeyProperty
-    public String getName() {
-        return name;
+    public String getUrl() {
+        return url;
     }
 
     /**
@@ -163,10 +185,6 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         return getRepository();
     }
 
-    public String getRootFolder() {
-        return rootFolder;
-    }
-
     public List<Class<? extends Callable<Void>>> getTasks() {
         return tasks;
     }
@@ -175,7 +193,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.getClass(), name, repository);
+            result = HashCodes.hashOf(this.getClass(), url, repository);
             hashCode = result;
         }
         return result;
@@ -233,13 +251,8 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         this.mappings = mappings;
     }
 
-    /**
-     * Sets the name.
-     * 
-     * @param name the new name
-     */
-    public void setName(final String name) {
-        this.name = name;
+    public void setUrl(final String url) {
+        this.url = url;
     }
 
     /**
@@ -251,18 +264,25 @@ public class ArtifactSource implements SimpleNodeType, Serializable, Schedulable
         this.repository = repository;
     }
 
-    public void setRootFolder(final String rootFolder) {
-        this.rootFolder = rootFolder;
-    }
-
     public void setTasks(final List<Class<? extends Callable<Void>>> tasks) {
         this.tasks = tasks;
     }
 
     @Override
     public String toUniqueJobString() {
-        return getRepository().getName() + ":" + getName() + ":"
-                + getInitialLookup();
+        return getRepository().getName() + ":" + getUrl() + ":" + getInitialLookup();
+    }
+
+    public void addTask(Class<? extends Callable<Void>> task) {
+        tasks.add(task);
+    }
+
+    public void addProperty(String name, String value) {
+        properties.put(name, value);
+    }
+
+    public void addArtifactMapping(ArtifactSourceMapping sourceMapping) {
+        mappings.add(sourceMapping);
     }
 
 }
