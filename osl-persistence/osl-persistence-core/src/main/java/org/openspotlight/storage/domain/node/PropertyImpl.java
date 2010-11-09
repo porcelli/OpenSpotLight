@@ -313,8 +313,7 @@ public class PropertyImpl implements Property {
     }
 
     @Override
-    public void setBytesValue(final StorageSession session,
-                               final byte[] value)
+    public void setBytesValue(final StorageSession session, final byte[] value)
         throws IllegalArgumentException, IllegalStateException {
         checkNotNull("session", session);
 

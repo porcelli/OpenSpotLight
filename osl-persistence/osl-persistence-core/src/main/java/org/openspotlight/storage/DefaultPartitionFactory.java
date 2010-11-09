@@ -49,8 +49,6 @@
 
 package org.openspotlight.storage;
 
-import org.openspotlight.storage.domain.RegularPartitions;
-
 import com.google.inject.Singleton;
 
 /**
@@ -60,7 +58,7 @@ import com.google.inject.Singleton;
 public class DefaultPartitionFactory implements PartitionFactory {
 
     @Override
-    public Partition getPartitionByName(final String name) {
+    public Partition getPartition(final String name) {
         return RegularPartitions.valueOf(name.toUpperCase());
     }
 

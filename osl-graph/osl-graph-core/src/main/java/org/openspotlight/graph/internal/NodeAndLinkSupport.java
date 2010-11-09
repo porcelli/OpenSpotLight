@@ -960,9 +960,9 @@ public class NodeAndLinkSupport {
         String linkId = null;
         if (session != null) {
             final StorageNode originAsSTNode = session
-                    .findNodeByStringKey(origin.getId());
+                    .getNode(origin.getId());
             final StorageNode targetAsSTNode = session
-                    .findNodeByStringKey(target.getId());
+                    .getNode(target.getId());
             if (originAsSTNode == null && createIfDontExists) { throw new IllegalStateException(); }
             if (originAsSTNode != null) {
                 if (clazz.isAnnotationPresent(LinkAutoBidirectional.class)
@@ -1091,7 +1091,7 @@ public class NodeAndLinkSupport {
                 .getPropertyDescriptors(clazz);
         StorageNode node = null;
         if (contextId == null) { throw new IllegalStateException(); }
-        final Partition partition = factory.getPartitionByName(contextId);
+        final Partition partition = factory.getPartition(contextId);
         NodeKey internalNodeKey;
         final Class<? extends Node> targetNodeType = findTargetClass(clazz);
 
@@ -1215,7 +1215,7 @@ public class NodeAndLinkSupport {
         Iterable<ArtifactLineReference> cached = asPropertyContainer
                 .getCachedLineReference(artifactId);
         if (cached == null) {
-            final Partition lineRefPartition = factory.getPartitionByName(e
+            final Partition lineRefPartition = factory.getPartition(e
                     .getContextId() + LINEREF_SUFIX);
             final StorageNode lineRefNode = session.withPartition(lineRefPartition)
                     .createNewSimpleNode(e.getId());
@@ -1263,7 +1263,7 @@ public class NodeAndLinkSupport {
             StorageNode internalNode = metadata
                     .getCached();
             if (internalNode == null) {
-                final Partition partition = factory.getPartitionByName(context
+                final Partition partition = factory.getPartition(context
                         .getId());
                 internalNode = session
                         .withPartition(partition)
@@ -1301,7 +1301,7 @@ public class NodeAndLinkSupport {
                                               final PartitionFactory factory, final Element e) {
         final TreeLineReference treeLineReferences = getTreeLineReferences(session,
                 factory, e, null);
-        final Partition lineRefPartition = factory.getPartitionByName(e
+        final Partition lineRefPartition = factory.getPartition(e
                 .getContextId() + LINEREF_SUFIX);
         final StorageNode lineRefNode = session.withPartition(lineRefPartition)
                 .createNewSimpleNode(e.getId());

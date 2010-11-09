@@ -50,8 +50,8 @@
 package org.openspotlight.graph.test;
 
 import org.openspotlight.graph.GraphModule;
+import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.mongodb.test.MongoModule;
 
 import com.google.inject.Guice;

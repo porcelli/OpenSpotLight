@@ -50,7 +50,7 @@
 package org.openspotlight.storage.redis.util;
 
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 
 import com.google.common.collect.ImmutableMap;

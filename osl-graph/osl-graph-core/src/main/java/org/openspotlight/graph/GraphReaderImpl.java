@@ -195,7 +195,7 @@ public class GraphReaderImpl implements GraphReader {
             .builder();
         final Iterable<Context> contexts = findContextsIfNecessary(initialContexts);
         for (final Context c: contexts) {
-            final Partition partition = factory.getPartitionByName(c.getId());
+            final Partition partition = factory.getPartition(c.getId());
             final Iterable<Class<?>> types = findTypesIfNecessary(clazz, session,
                 partition);
             for (final Class<?> clzz: types) {
@@ -232,7 +232,7 @@ public class GraphReaderImpl implements GraphReader {
                                                     final Node node,
                                                     final Class<?> clazz, final String name) {
         final StorageSession session = sessionProvider.get();
-        final Partition partition = factory.getPartitionByName(node
+        final Partition partition = factory.getPartition(node
             .getContextId());
         final PropertyContainerMetadata<StorageNode> md =
             (PropertyContainerMetadata<StorageNode>) node;
@@ -311,13 +311,13 @@ public class GraphReaderImpl implements GraphReader {
                     final String rawAnotherOriginId = StringKeysSupport.getOriginKeyAsStringFromLinkKey(linkId);
                     if (linkType != null) {
                         final StorageLink found =
-                            session.getLink(session.findNodeByStringKey(rawAnotherOriginId), stNode, linkType.getName());
+                            session.getLink(session.getNode(rawAnotherOriginId), stNode, linkType.getName());
                         if (found != null) {
                             foundBidLinks.add(found);
                         }
                     } else {
                         final Iterable<StorageLink> found =
-                            session.findLinks(session.findNodeByStringKey(rawAnotherOriginId));
+                            session.findLinks(session.getNode(rawAnotherOriginId));
                         if (found != null) {
                             foundBidLinks.addAll(SLCollections.iterableToList(found));
                         }
@@ -328,18 +328,18 @@ public class GraphReaderImpl implements GraphReader {
 
         if (rawTarget != null && linkType != null) {
             links = SLCollections.iterableOfOne(
-                session.getLink(session.findNodeByStringKey(rawOrigin
-                    .getId()), session.findNodeByStringKey(rawTarget
+                session.getLink(session.getNode(rawOrigin
+                    .getId()), session.getNode(rawTarget
                     .getId()), linkType.getName()));
         } else if (rawTarget != null) {
-            links = session.findLinks(session.findNodeByStringKey(rawOrigin
-                .getId()), session.findNodeByStringKey(rawTarget.getId()));
+            links = session.findLinks(session.getNode(rawOrigin
+                .getId()), session.getNode(rawTarget.getId()));
         } else if (linkType != null) {
-            links = session.findLinks(session.findNodeByStringKey(rawOrigin
+            links = session.findLinks(session.getNode(rawOrigin
                 .getId()), linkType.getName());
 
         } else {
-            links = session.findLinks(session.findNodeByStringKey(rawOrigin
+            links = session.findLinks(session.getNode(rawOrigin
                 .getId()));
 
         }
@@ -596,7 +596,7 @@ public class GraphReaderImpl implements GraphReader {
         Context ctx = contextCache.get(id);
         if (ctx == null) {
             final StorageSession session = sessionProvider.get();
-            final Partition partition = factory.getPartitionByName(id);
+            final Partition partition = factory.getPartition(id);
             StorageNode contextNode = session.withPartition(partition)
                 .createCriteria().withNodeEntry(id).buildCriteria()
                 .andFindUnique(session);
@@ -790,7 +790,7 @@ public class GraphReaderImpl implements GraphReader {
         throws IllegalArgumentException {
         final StorageSession session = sessionProvider.get();
         final String contextId = context.getId();
-        final Partition partition = factory.getPartitionByName(contextId);
+        final Partition partition = factory.getPartition(contextId);
         final StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
@@ -806,7 +806,7 @@ public class GraphReaderImpl implements GraphReader {
                                   final String id) {
         final StorageSession session = sessionProvider.get();
         final String contextId = StringKeysSupport.getPartitionName(id);
-        final Partition partition = factory.getPartitionByName(contextId);
+        final Partition partition = factory.getPartition(contextId);
         final StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
@@ -821,7 +821,7 @@ public class GraphReaderImpl implements GraphReader {
     public Node getParentNode(
                               final Node node) {
         final StorageSession session = sessionProvider.get();
-        final Partition partition = factory.getPartitionByName(node
+        final Partition partition = factory.getPartition(node
             .getContextId());
         final StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(node.getId())

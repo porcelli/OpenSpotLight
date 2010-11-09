@@ -64,7 +64,9 @@ public interface PartitionFactory {
      * @param the partition name
      * @return the partition
      */
-    Partition getPartitionByName(String name);
+    Partition getPartition(String name);
+
+    Partition getPartition(RegularPartitions parition);
 
     /**
      * Returns an array of all the available partitions.
@@ -72,4 +74,35 @@ public interface PartitionFactory {
      * @return available partitions
      */
     Partition[] getValues();
+
+    public enum RegularPartitions implements Partition {
+
+        FEDERATION("federation"),
+        LINE_REFERENCE("line_reference"),
+        LOG("log"),
+        SECURITY("security"),
+        SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION);
+
+        private RegularPartitions parent;
+        private String            partitionName;
+
+        RegularPartitions(final String partitionName) {
+            this.partitionName = partitionName;
+        }
+
+        RegularPartitions(final String partitionName, final RegularPartitions parent) {
+            this.partitionName = partitionName;
+            this.parent = parent;
+        }
+
+        public RegularPartitions getParent() {
+            return parent;
+        }
+
+        @Override
+        public String getPartitionName() {
+            return partitionName;
+        }
+    }
+
 }

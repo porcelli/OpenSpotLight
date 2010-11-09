@@ -55,31 +55,83 @@ import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 
 /**
  * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
  * connection state. This implementation must not be shared between threads.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 public interface StorageSession extends Disposable {
 
+    /**
+     * Defines the {@link StorageSession} flush behavior.
+     * 
+     * @author porcelli
+     * @author feuteston
+     */
     static enum FlushMode {
+        /**
+         * Data are automatically flushed into storage, wich means that its not necessary execute
+         * {@link StorageSession#flushTransient()} method.
+         */
         AUTO,
+        /**
+         * Its mandatory execute the {@link StorageSession#flushTransient()} method to flush data into storage.
+         */
         EXPLICIT
     }
 
+    /**
+     * Builder pattern that creates {@link NodeKey} instances.
+     * 
+     * @author porcelli
+     * @author feuteston
+     */
     interface NodeKeyBuilder {
 
+        /**
+         * Creates the {@link NodeKey} instance based on builder data.
+         * 
+         * @return the node key instance
+         */
         NodeKey andCreate();
 
-        NodeKeyBuilder withParent(Partition partition,
-                                       String nodeType);
+        /**
+         * Adds a new {@link SimpleKey} into stack.
+         * 
+         * @param keyName the key name
+         * @param value the key value
+         * @return self builder
+         */
+        NodeKeyBuilder withSimpleKey(String keyName, String value);
 
-        NodeKeyBuilder withParent(String parentId);
+        /**
+         * Sets the parent's key of the current {@link NodeKey}.
+         * 
+         * @param parentKey the parent key
+         * @return self builder
+         */
+        NodeKeyBuilder withParent(String parentKey);
 
-        NodeKeyBuilder withSimpleKey(String keyName,
-                                      String value);
+        /**
+         * Pushes a new {@link NodeKey} into builder stack
+         * 
+         * @param partition the parent partition
+         * @param nodeType the parent node type
+         * @return the pushed
+         */
+        NodeKeyBuilder withParent(Partition partition, String nodeType);
     }
 
+    /**
+     * Interface that defines a set of operations available to execute for a {@link Partition}.
+     * 
+     * @author porcelli
+     * @author feuteston
+     */
     interface PartitionMethods extends NodeFactory {
 
         CriteriaBuilder createCriteria();
@@ -101,38 +153,54 @@ public interface StorageSession extends Disposable {
         Iterable<String> getAllNodeTypes();
     }
 
-    StorageLink addLink(StorageNode origin,
-                         StorageNode destiny,
-                         String name);
+    /**
+     * Defines the partition wich will be executed
+     * 
+     * @param partition the chosen partition
+     * @return partition manipulation methods
+     */
+    PartitionMethods withPartition(Partition partition);
 
-    void discardTransient();
-
-    Iterable<StorageLink> findLinks(StorageNode origin);
-
-    Iterable<StorageLink> findLinks(StorageNode origin,
-                                     StorageNode destiny);
-
-    Iterable<StorageLink> findLinks(StorageNode origin,
-                                     String type);
-
-    StorageNode findNodeByStringKey(String key);
-
-    void flushTransient();
-
+    /**
+     * Returns the session's flush mode behavior.
+     * 
+     * @return the flush mode behavior
+     * @see FlushMode
+     */
     FlushMode getFlushMode();
 
-    StorageLink getLink(StorageNode origin,
-                         StorageNode destiny,
-                         String type);
+    /**
+     * Flush into storage the transient (not yet stored) data.<br>
+     * <b>Note</b> that this method just makes sense if session is running with {@link FlushMode#EXPLICIT} mode.
+     */
+    void flushTransient();
+
+    /**
+     * This method discard all transiente (not yet stored) data.<br>
+     * <b>Important Notes:</b><br>
+     * <ul>
+     * <li>this method has no undo, so be carefull
+     * <li>this method just makes sense if session is running with {@link FlushMode#EXPLICIT} mode.
+     * </ul>
+     */
+    void discardTransient();
+
+    StorageLink addLink(StorageNode origin, StorageNode destiny, String name);
 
     void removeLink(StorageLink link);
 
-    void removeLink(StorageNode origin,
-                     StorageNode destiny,
-                     String name);
+    void removeLink(StorageNode origin, StorageNode destiny, String name);
+
+    StorageLink getLink(StorageNode origin, StorageNode destiny, String type);
+
+    Iterable<StorageLink> findLinks(StorageNode origin);
+
+    Iterable<StorageLink> findLinks(StorageNode origin, StorageNode destiny);
+
+    Iterable<StorageLink> findLinks(StorageNode origin, String type);
+
+    StorageNode getNode(String key);
 
     void removeNode(StorageNode StorageNode);
-
-    PartitionMethods withPartition(Partition partition);
 
 }

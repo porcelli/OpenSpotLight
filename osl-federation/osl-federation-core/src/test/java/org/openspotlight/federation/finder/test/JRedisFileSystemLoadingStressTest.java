@@ -1,7 +1,7 @@
 package org.openspotlight.federation.finder.test;
 
+import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;

@@ -99,8 +99,7 @@ import com.google.common.collect.Multimap;
  */
 public abstract class AbstractStorageSession<R> implements StorageSession {
 
-    private final class NodeBuilderImpl implements
-        NodeFactory.NodeBuilder {
+    private final class NodeBuilderImpl implements NodeFactory.NodeBuilder {
 
         private final Set<String>    keyNames  = newHashSet();
 
@@ -134,7 +133,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey, parentKey, partition);
             final StorageNodeImpl result = new StorageNodeImpl(uniqueKey, false);
             if (getFlushMode().equals(FlushMode.AUTO)) {
-
                 AbstractStorageSession.this.handleNewItem(result);
             } else {
                 final R ref = AbstractStorageSession.this
@@ -188,8 +186,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         private final String             type;
 
-        private NodeKeyBuilderImpl(final String type,
-                                     final NodeKeyBuilderImpl child, final Partition partition) {
+        private NodeKeyBuilderImpl(final String type, final NodeKeyBuilderImpl child, final Partition partition) {
             this.type = type;
             this.child = child;
             this.partition = partition;
@@ -203,7 +200,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public NodeKey andCreate() {
-
             NodeKey currentKey = null;
             NodeKeyBuilderImpl currentBuilder = this;
             if (parentKey == null) {
@@ -227,28 +223,21 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public NodeKeyBuilder withParent(
-                                           final Partition newPartition,
-                                           final String nodeType) {
-            return new NodeKeyBuilderImpl(nodeType, this,
-                newPartition);
+        public NodeKeyBuilder withParent(final Partition newPartition, final String nodeType) {
+            return new NodeKeyBuilderImpl(nodeType, this, newPartition);
         }
 
         @Override
-        public NodeKeyBuilder withParent(
-                                           final String parentId) {
+        public NodeKeyBuilder withParent(final String parentId) {
             this.parentKey = parentId;
             return this;
         }
 
         @Override
-        public NodeKeyBuilder withSimpleKey(
-                                            final String propertyName,
-                                            final String value) {
+        public NodeKeyBuilder withSimpleKey(final String propertyName, final String value) {
             this.localEntries.add(new SimpleKeyImpl(propertyName, value));
             return this;
         }
-
     }
 
     public class PartitionMethodsImpl implements PartitionMethods {
@@ -271,31 +260,24 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public NodeKey createNewSimpleKey(
-                                            final String... nodePaths) {
+        public NodeKey createNewSimpleKey(final String... nodePaths) {
             NodeKey parentKey = null;
             for (final String path: nodePaths) {
                 parentKey =
-                    new NodeKeyImpl(
-                        new CompositeKeyImpl(Collections
-                            .<SimpleKey>emptySet(), path),
-                        parentKey
-                            .getKeyAsString(),
+                    new NodeKeyImpl(new CompositeKeyImpl(Collections.<SimpleKey>emptySet(), path), parentKey.getKeyAsString(),
                         partition);
             }
             return parentKey;
         }
 
         @Override
-        public StorageNode createNewSimpleNode(
-                                               final String... nodePaths) {
+        public StorageNode createNewSimpleNode(final String... nodePaths) {
             StorageNode parent = null;
             NodeKey parentKey = null;
             for (final String nodePath: nodePaths) {
-                parentKey = new NodeKeyImpl(new CompositeKeyImpl(Collections
-                    .<SimpleKey>emptySet(), nodePath),
-                    parentKey != null ? parentKey.getKeyAsString() : null,
-                    partition);
+                parentKey =
+                    new NodeKeyImpl(new CompositeKeyImpl(Collections.<SimpleKey>emptySet(), nodePath), parentKey != null
+                        ? parentKey.getKeyAsString() : null, partition);
                 parent = new StorageNodeImpl(parentKey, false);
                 handleNewItem(parent);
             }
@@ -415,33 +397,24 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         this.partitionFactory = partitionFactory;
     }
 
-    private void flushDirtyProperty(
-                                    final R reference,
-                                    final Property dirtyProperty) {
+    private void flushDirtyProperty(final R reference, final Property dirtyProperty) {
         try {
-
-            internalFlushSimpleProperty(reference, dirtyProperty.getParent()
-                .getPartition(), dirtyProperty);
-
+            internalFlushSimpleProperty(reference, dirtyProperty.getParent().getPartition(), dirtyProperty);
         } catch (final Exception e) {
             handleException(e);
         }
     }
 
-    private void handleNewItem(
-                               final StorageNode entry) {
+    private void handleNewItem(final StorageNode entry) {
         try {
             R reference;
             switch (getFlushMode()) {
                 case AUTO:
-                    reference = createNodeReferenceIfNecessary(entry.getKey()
-                        .getPartition(), entry);
-                    flushNewItem(reference, entry.getKey().getPartition(),
-                        entry);
+                    reference = createNodeReferenceIfNecessary(entry.getKey().getPartition(), entry);
+                    flushNewItem(reference, entry.getKey().getPartition(), entry);
                     break;
                 case EXPLICIT:
-                    reference = createNodeReferenceIfNecessary(entry.getKey()
-                        .getPartition(), entry);
+                    reference = createNodeReferenceIfNecessary(entry.getKey().getPartition(), entry);
                     newNodes.add(newPair(entry, reference));
                     break;
                 default:
@@ -484,110 +457,69 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    protected abstract R createLinkReferenceIfNecessary(
-                                                        Partition partition,
-                                                        StorageLink entry);
+    protected abstract R createLinkReferenceIfNecessary(Partition partition, StorageLink entry);
 
-    protected abstract R createNodeReferenceIfNecessary(
-                                                        Partition partition,
-                                                        StorageNode entry);
+    protected abstract R createNodeReferenceIfNecessary(Partition partition, StorageNode entry);
 
-    protected abstract void flushNewItem(
-                                         R reference,
-                                         Partition partition,
-                                         StorageNode entry)
+    protected abstract void flushNewItem(R reference, Partition partition, StorageNode entry)
         throws Exception;
 
-    protected abstract void flushRemovedItem(
-                                             Partition partition,
-                                             StorageNode entry)
+    protected abstract void flushRemovedItem(Partition partition, StorageNode entry)
         throws Exception;
 
-    protected abstract void flushRemovedLink(
-                                             Partition partition,
-                                             StorageLink link)
+    protected abstract void flushRemovedLink(Partition partition, StorageLink link)
         throws Exception;
 
-    protected void handleException(
-                                   final Exception e) {
+    protected void handleException(final Exception e) {
         if (e instanceof RuntimeException) { throw (RuntimeException) e; }
         throw new RuntimeException(e);
     }
 
-    protected abstract void handleNewLink(
-                                          Partition partition,
-                                          StorageNode origin,
-                                          StorageLink link)
+    protected abstract void handleNewLink(Partition partition, StorageNode origin, StorageLink link)
         throws Exception;
 
-    protected abstract Iterable<StorageNode> internalFindByCriteria(
-                                                                    Partition partition,
-                                                                    Criteria criteria)
+    protected abstract Iterable<StorageNode> internalFindByCriteria(Partition partition, Criteria criteria)
         throws Exception;
 
-    protected abstract Iterable<StorageNode> internalFindByType(
-                                                                Partition partition,
-                                                                String nodeType)
+    protected abstract Iterable<StorageNode> internalFindByType(Partition partition, String nodeType)
         throws Exception;
 
-    protected abstract Iterable<StorageLink> internalFindLinks(
-                                                               Partition partition,
-                                                               StorageNode origin,
-                                                               StorageNode destiny,
+    protected abstract Iterable<StorageLink> internalFindLinks(Partition partition, StorageNode origin, StorageNode destiny,
                                                                String type)
         throws Exception;
 
-    protected abstract void internalFlushSimpleProperty(
-                                                        R reference,
-                                                        Partition partition,
-                                                        Property dirtyProperty)
+    protected abstract void internalFlushSimpleProperty(R reference, Partition partition, Property dirtyProperty)
         throws Exception;
 
-    protected abstract Iterable<String> internalGetAllNodeTypes(
-                                                                Partition partition)
+    protected abstract Iterable<String> internalGetAllNodeTypes(Partition partition)
         throws Exception;
 
-    protected abstract Iterable<StorageNode> internalNodeEntryGetChildren(
-                                                                          Partition partition,
-                                                                          StorageNode StorageNode)
+    protected abstract Iterable<StorageNode> internalNodeEntryGetChildren(Partition partition, StorageNode StorageNode)
         throws Exception;
 
-    protected abstract Iterable<StorageNode> internalNodeEntryGetChildrenByType(
-                                                                                Partition partition,
-                                                                                StorageNode StorageNode,
+    protected abstract Iterable<StorageNode> internalNodeEntryGetChildrenByType(Partition partition, StorageNode StorageNode,
                                                                                 String type)
         throws Exception;
 
-    protected abstract StorageNode internalNodeEntryGetParent(
-                                                              Partition partition,
-                                                              StorageNode StorageNode)
+    protected abstract StorageNode internalNodeEntryGetParent(Partition partition, StorageNode StorageNode)
         throws Exception;
 
-    protected abstract Set<Property> internalPropertyContainerLoadProperties(
-                                                                             R reference,
-                                                                             Partition partition,
+    protected abstract Set<Property> internalPropertyContainerLoadProperties(R reference, Partition partition,
                                                                              PropertyContainer StorageNode)
         throws Exception;
 
-    protected abstract byte[] internalPropertyGetValue(
-                                                       Partition partition,
-                                                       Property stProperty)
+    protected abstract byte[] internalPropertyGetValue(Partition partition, Property stProperty)
         throws Exception;
 
-    protected abstract void internalSavePartitions(
-                                                   Partition... partitions)
+    protected abstract void internalSavePartitions(Partition... partitions)
         throws Exception;
 
     @Override
-    public StorageLink addLink(
-                               final StorageNode origin,
-                               final StorageNode target,
-                               final String type) {
+    public StorageLink addLink(final StorageNode origin, final StorageNode target, final String type) {
         final StorageLink link = new StorageLinkImpl(type, origin, target, true);
         if (getFlushMode().equals(FlushMode.AUTO)) {
             try {
-                this.handleNewLink(link.getOrigin().getPartition(), link
-                    .getOrigin(), link);
+                this.handleNewLink(link.getOrigin().getPartition(), link.getOrigin(), link);
             } catch (final Exception e) {
                 handleException(e);
             }
@@ -643,25 +575,20 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     @Override
-    public StorageNode findNodeByStringKey(
-                                           final String idAsString) {
-
-        final Partition partition = partitionFactory
-            .getPartitionByName(StringKeysSupport
-                .getPartitionName(idAsString));
-        return withPartition(partition).createCriteria().withUniqueKeyAsString(
-            idAsString).buildCriteria().andFindUnique(this);
+    public StorageNode getNode(final String idAsString) {
+        final Partition partition = partitionFactory.getPartition(StringKeysSupport.getPartitionName(idAsString));
+        return withPartition(partition).createCriteria().withUniqueKeyAsString(idAsString).buildCriteria().andFindUnique(this);
     }
 
     @Override
     public void flushTransient() {
+        if (getFlushMode() == FlushMode.AUTO) { return; }
         final Set<Partition> partitions = newHashSet();
         final Map<PropertyContainer, R> referenceMap = newHashMap();
         for (final Pair<StorageNode, R> newNode: newNodes) {
             try {
                 partitions.add(newNode.getK1().getKey().getPartition());
-                flushNewItem(newNode.getK2(), newNode.getK1().getKey()
-                    .getPartition(), newNode.getK1());
+                flushNewItem(newNode.getK2(), newNode.getK1().getKey().getPartition(), newNode.getK1());
                 referenceMap.put(newNode.getK1(), newNode.getK2());
             } catch (final Exception e) {
                 handleException(e);
@@ -673,13 +600,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             R reference = referenceMap.get(propertyContainer);
             if (reference == null) {
                 if (propertyContainer instanceof StorageNode) {
-                    reference = createNodeReferenceIfNecessary(
-                        propertyContainer.getPartition(),
-                        (StorageNode) propertyContainer);
+                    reference = createNodeReferenceIfNecessary(propertyContainer.getPartition(), (StorageNode) propertyContainer);
                 } else if (propertyContainer instanceof StorageLink) {
-                    reference = createLinkReferenceIfNecessary(
-                        propertyContainer.getPartition(),
-                        (StorageLink) propertyContainer);
+                    reference = createLinkReferenceIfNecessary(propertyContainer.getPartition(), (StorageLink) propertyContainer);
                 } else {
                     throw new IllegalStateException();
                 }
@@ -696,8 +619,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         for (final StorageNode removedNode: removedNodes) {
             try {
                 partitions.add(removedNode.getKey().getPartition());
-                flushRemovedItem(removedNode.getKey().getPartition(),
-                    removedNode);
+                flushRemovedItem(removedNode.getKey().getPartition(), removedNode);
             } catch (final Exception e) {
                 handleException(e);
             }
@@ -718,14 +640,11 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             }
         }
         try {
-
-            internalSavePartitions(partitions
-                .toArray(new Partition[partitions.size()]));
+            internalSavePartitions(partitions.toArray(new Partition[partitions.size()]));
         } catch (final Exception e) {
             handleException(e);
         }
         discardTransient();
-
     }
 
     @Override
@@ -734,24 +653,17 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     }
 
     @Override
-    public StorageLink getLink(
-                               final StorageNode origin,
-                               final StorageNode destiny,
-                               final String type) {
+    public StorageLink getLink(final StorageNode origin, final StorageNode destiny, final String type) {
         try {
-            return SLCollections.firstOf(internalFindLinks(origin
-                .getPartition(), origin, destiny, type));
+            return SLCollections.firstOf(internalFindLinks(origin.getPartition(), origin, destiny, type));
         } catch (final Exception e) {
             handleException(e);
             return null;
         }
     }
 
-    public NodeFactory.NodeBuilder nodeEntryCreateWithType(
-                                                           final StorageNode StorageNode,
-                                                           final String type) {
-        return withPartition(StorageNode.getPartition()).createWithType(
-            AbstractStorageSession.this, type)
+    public NodeFactory.NodeBuilder nodeEntryCreateWithType(final StorageNode StorageNode, final String type) {
+        return withPartition(StorageNode.getPartition()).createWithType(AbstractStorageSession.this, type)
             .withParent(StorageNode);
     }
 

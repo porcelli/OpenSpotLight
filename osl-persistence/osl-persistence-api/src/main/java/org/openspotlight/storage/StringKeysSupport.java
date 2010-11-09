@@ -211,7 +211,7 @@ public final class StringKeysSupport {
      */
     public static Partition getPartition(final String nodeKey,
                                          final PartitionFactory factory) {
-        return factory.getPartitionByName(getPartitionName(nodeKey));
+        return factory.getPartition(getPartitionName(nodeKey));
     }
 
     /**

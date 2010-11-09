@@ -192,9 +192,7 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     }
 
     @Override
-    public Property setSimpleProperty(final StorageSession session,
-                                       final String name,
-                                       final byte[] value)
+    public Property setSimpleProperty(final StorageSession session, final String name, final byte[] value)
         throws IllegalArgumentException, IllegalStateException {
         checkNotNull("session", session);
         checkNotEmpty("name", name);

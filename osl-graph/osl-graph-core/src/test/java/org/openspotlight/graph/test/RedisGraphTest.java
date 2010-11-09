@@ -53,8 +53,8 @@ import java.util.Map;
 
 import org.openspotlight.graph.GraphModule;
 import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
@@ -120,7 +120,7 @@ public class RedisGraphTest extends AbstractGraphTest {
                                                                     .<Partition, JRedisServerDetail>builder()
                                                                     .put(
 
-                                                                    RegularPartitions.FACTORY.getPartitionByName("graph"),
+                                                                    RegularPartitions.FACTORY.getPartition("graph"),
                                                                         JRedisServerConfigExample.GRAPH)
                                                                     .put(
                                                                         RegularPartitions.FEDERATION,

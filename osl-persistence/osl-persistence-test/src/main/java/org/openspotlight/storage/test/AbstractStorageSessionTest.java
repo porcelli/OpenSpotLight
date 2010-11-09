@@ -91,7 +91,7 @@ public abstract class AbstractStorageSessionTest {
         public static final PartitionFactory FACTORY = new PartitionFactory() {
 
                                                          @Override
-                                                         public Partition getPartitionByName(final String name) {
+                                                         public Partition getPartition(final String name) {
                                                              return ExamplePartition.valueOf(name.toUpperCase());
                                                          }
 

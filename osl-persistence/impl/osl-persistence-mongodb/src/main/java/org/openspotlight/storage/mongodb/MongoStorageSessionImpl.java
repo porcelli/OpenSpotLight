@@ -634,7 +634,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                             final String targetId = StringKeysSupport
                                     .getTargeyKeyAsStringFromLinkKey(o);
                             final Partition targetPartition = partitionFactory
-                                    .getPartitionByName(StringKeysSupport
+                                    .getPartition(StringKeysSupport
                                             .getPartitionName(targetId));
 
                             foundTarget = withPartition(targetPartition)
