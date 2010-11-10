@@ -75,7 +75,8 @@ import org.openspotlight.storage.domain.PropertyContainer;
 public class PropertyImpl implements Property {
 
     /**
-     * Internal structure that holds property values.
+     * Internal structure that holds property values.<br>
+     * This class uses {@link Reference} to optimize memory use.
      * 
      * @author feuteston
      * @author porcelli
@@ -92,6 +93,34 @@ public class PropertyImpl implements Property {
 
         private Reference<String>      weakValueAsString;
 
+        /**
+         * Creates a {@link SoftReference} for input parameter.
+         * 
+         * @param <T> type of input param
+         * @param t input to be enclosed by soft reference
+         * @return the soft reference
+         */
+        private <T> Reference<T> asSoftRef(final T t) {
+            return t != null ? new SoftReference<T>(t) : null;
+        }
+
+        /**
+         * Returns the reference value
+         * 
+         * @param <T> type of input param
+         * @param ref input to extract the value
+         * @return value, or null if content were garbage collected
+         */
+        private <T> T getSoftValue(final Reference<T> ref) {
+            return ref != null ? ref.get() : null;
+        }
+
+        /**
+         * Converts an {@link InputStream} to a byte array
+         * 
+         * @param is value to be converted
+         * @return value converted to byte array
+         */
         private byte[] asBytes(final InputStream is) {
             if (is == null) { return null; }
             try {
@@ -106,41 +135,64 @@ public class PropertyImpl implements Property {
             }
         }
 
+        /**
+         * Converts a String to a byte array
+         * 
+         * @param s value to be converted
+         * @return value converted to byte array
+         */
         private byte[] asBytes(final String s) {
             return s != null ? s.getBytes() : null;
         }
 
+        /**
+         * Converts a byte array to {@link InputStream}
+         * 
+         * @param b value to be converted
+         * @return value converted to input stream
+         */
         private InputStream asStream(final byte[] b) {
             return b != null ? new ByteArrayInputStream(b) : null;
         }
 
+        /**
+         * Converts a byte array to String
+         * 
+         * @param b value to be converted
+         * @return value converted to string
+         */
         private String asString(final byte[] b) {
             return b != null ? new String(b) : null;
         }
 
-        private <T> Reference<T> asWeakRef(final T t) {
-            return t != null ? new SoftReference<T>(t) : null;
-        }
-
-        private <T> T getWeakValue(final Reference<T> ref) {
-            return ref != null ? ref.get() : null;
-        }
-
+        /**
+         * Reset internal fields that stores values
+         */
         private void nullEverything() {
             weakValueAsString = null;
             weakValueAsStream = null;
             realValue = null;
         }
 
+        /**
+         * Returns the property value as byte array.
+         * 
+         * @return the value as byte array
+         */
         public byte[] getValueAsBytes() {
             return realValue;
         }
 
+        /**
+         * Returns the property value as {@link InputStream}.
+         * 
+         * @return the value as input stream
+         */
         public InputStream getValueAsStream() {
-            InputStream value = getWeakValue(weakValueAsStream);
+            InputStream value = getSoftValue(weakValueAsStream);
             if (value == null) {
                 value = asStream(realValue);
-                weakValueAsStream = asWeakRef(value);
+                weakValueAsStream = asSoftRef(value);
             }
             if (value != null && value.markSupported()) {
                 try {
@@ -152,11 +204,16 @@ public class PropertyImpl implements Property {
             return value;
         }
 
+        /**
+         * Returns the property value as String.
+         * 
+         * @return the value as string
+         */
         public String getValueAsString() {
-            String value = getWeakValue(weakValueAsString);
+            String value = getSoftValue(weakValueAsString);
             if (value == null) {
                 value = asString(realValue);
-                weakValueAsString = asWeakRef(value);
+                weakValueAsString = asSoftRef(value);
             }
             return value;
         }
@@ -179,29 +236,55 @@ public class PropertyImpl implements Property {
             return loaded;
         }
 
+        /**
+         * Sets the dirty
+         * 
+         * @param dirty true if changed, false otherwise
+         */
         public void setDirty(final boolean dirty) {
             this.dirty = dirty;
         }
 
+        /**
+         * Sets the loaded.
+         * 
+         * @param loaded true if loaded, false otherwise
+         */
         public void setLoaded(final boolean loaded) {
             this.loaded = loaded;
         }
 
-        public void setValue(final byte[] value) {
+        /**
+         * Sets the property value in String format. Null is an accepted value. <br>
+         * 
+         * @param value the property value
+         */
+        public void setValue(final String value) {
             nullEverything();
-            realValue = value;
+            realValue = asBytes(value);
+            weakValueAsString = asSoftRef(value);
         }
 
+        /**
+         * Sets the property value using {@link InputStream} format. Null is an accepted value. <br>
+         * 
+         * @param value the property value
+         */
         public void setValue(final InputStream value) {
             nullEverything();
             realValue = asBytes(value);
         }
 
-        public void setValue(final String value) {
+        /**
+         * Sets the property value in byte array format. Null is an accepted value. <br>
+         * 
+         * @param value the property value
+         */
+        public void setValue(final byte[] value) {
             nullEverything();
-            realValue = asBytes(value);
-            weakValueAsString = asWeakRef(value);
+            realValue = value;
         }
+
     }
 
     private final boolean           indexed;
