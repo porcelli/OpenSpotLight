@@ -79,13 +79,27 @@ public interface Property {
     String getPropertyName();
 
     /**
-     * Returns the property value as byte array.
+     * Checks if this property is indexed. Only indexed properties are searchable.
+     * 
+     * @return true is indexed, false otherwise
+     */
+    boolean isIndexed();
+
+    /**
+     * Checks if this property is a key.
+     * 
+     * @return true is indexed, false otherwise
+     */
+    boolean isKey();
+
+    /**
+     * Returns the property value as String.
      * 
      * @param session the storage session
-     * @return the value as byte array
+     * @return the value as string
      * @throws IllegalArgumentException if input param is null
      */
-    byte[] getValueAsBytes(StorageSession session)
+    String getValueAsString(StorageSession session)
         throws IllegalArgumentException;
 
     /**
@@ -99,32 +113,7 @@ public interface Property {
         throws IllegalArgumentException;
 
     /**
-     * Returns the property value as String.
-     * 
-     * @param session the storage session
-     * @return the value as string
-     * @throws IllegalArgumentException if input param is null
-     */
-    String getValueAsString(StorageSession session)
-        throws IllegalArgumentException;
-
-    /**
-     * Checks if this property is indexed. Only indexed properties are searchable.
-     * 
-     * @return true is indexed, false otherwise
-     */
-    boolean isIndexed();
-
-    /**
-     * Checks if this property is a key.
-     * 
-     * @return true is indexed, false otherwise
-     */
-    //TODO: needs more info about what is this key!
-    boolean isKey();
-
-    /**
-     * Sets the property value in byte array format. Null is an accepted value. <br>
+     * Sets the property value in String format. Null is an accepted value. <br>
      * 
      * @param session the storage session
      * @param value the property value
@@ -132,7 +121,17 @@ public interface Property {
      * @throws IllegalStateException if try to set a property that is also a
      *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
      */
-    void setBytesValue(StorageSession session, byte[] value)
+    void setStringValue(StorageSession session, String value)
+        throws IllegalArgumentException;
+
+    /**
+     * Returns the property value as byte array.
+     * 
+     * @param session the storage session
+     * @return the value as byte array
+     * @throws IllegalArgumentException if input param is null
+     */
+    byte[] getValueAsBytes(StorageSession session)
         throws IllegalArgumentException;
 
     /**
@@ -150,7 +149,7 @@ public interface Property {
         throws IllegalArgumentException;
 
     /**
-     * Sets the property value in String format. Null is an accepted value. <br>
+     * Sets the property value in byte array format. Null is an accepted value. <br>
      * 
      * @param session the storage session
      * @param value the property value
@@ -158,7 +157,7 @@ public interface Property {
      * @throws IllegalStateException if try to set a property that is also a
      *         {@link org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey}
      */
-    void setStringValue(StorageSession session, String value)
+    void setBytesValue(StorageSession session, byte[] value)
         throws IllegalArgumentException;
 
 }

@@ -63,6 +63,12 @@ import org.openspotlight.storage.domain.PropertyContainer;
 
 import com.google.inject.internal.ImmutableSet;
 
+/**
+ * Internal (default) implementation of {@link PropertyContainer}. <br>
+ * 
+ * @author feuteston
+ * @author porcelli
+ */
 public abstract class PropertyContainerImpl implements PropertyContainer {
 
     private static final long             TIMEOUT          = 60 * 1000;
@@ -75,18 +81,27 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         lastLoad = resetTimeout ? -1 : System.currentTimeMillis();
     }
 
+    /**
+     * Load properties only if internal cache is empty
+     * 
+     * @param session the storage session
+     */
     private void loadPropertiesOnce(final StorageSession session) {
         if (propertiesByName.isEmpty()) {
             reloadProperties(session);
         }
     }
 
+    /**
+     * Invalidate cache and force to load all properties into it
+     * 
+     * @param session the storage session
+     */
     private void reloadProperties(final StorageSession session) {
         final boolean tooOld = lastLoad < (System.currentTimeMillis() + TIMEOUT);
         final boolean empty = propertiesByName.isEmpty();
         if (tooOld && empty) {
-            final Set<Property> result =
-                ((AbstractStorageSession<?>) session).propertyContainerLoadProperties(this);
+            final Set<Property> result = ((AbstractStorageSession<?>) session).propertyContainerLoadProperties(this);
             for (final Property property: result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
@@ -97,6 +112,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     //TODO check if this method is really needed once the Property class handles the same consitency
     protected void verifyBeforeSet(final String propertyName) {}
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<Property> getProperties(final StorageSession session)
         throws IllegalArgumentException {
@@ -106,6 +124,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return ImmutableSet.copyOf(propertiesByName.values());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Property getProperty(final StorageSession session,
                                  final String name)
@@ -122,6 +143,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<String> getPropertyNames(final StorageSession session)
         throws IllegalArgumentException {
@@ -131,6 +155,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getPropertyValueAsBytes(final StorageSession session,
                                           final String name)
@@ -143,6 +170,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getPropertyValueAsStream(final StorageSession session,
                                                 final String name)
@@ -155,6 +185,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getPropertyValueAsString(final StorageSession session,
                                            final String name)
@@ -167,6 +200,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Property setIndexedProperty(final StorageSession session,
                                         final String name,
@@ -186,6 +222,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return currentProperty;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Property setSimpleProperty(final StorageSession session, final String name, final byte[] value)
         throws IllegalArgumentException, IllegalStateException {
@@ -204,6 +243,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Property setSimpleProperty(final StorageSession session,
                                        final String name,
@@ -223,6 +265,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return currentProperty;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Property setSimpleProperty(final StorageSession session,
                                        final String name,
@@ -242,6 +287,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return currentProperty;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void forceReload() {
         propertiesByName.clear();

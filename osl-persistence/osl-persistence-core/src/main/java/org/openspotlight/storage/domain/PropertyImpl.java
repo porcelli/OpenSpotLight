@@ -66,11 +66,20 @@ import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
 
 /**
- * Created by IntelliJ IDEA. User: feuteston Date: 29/03/2010 Time: 08:49:51 To change this template use File | Settings | File
- * Templates.
+ * Internal (default) implementation of {@link Property}. <br>
+ * In this implementation the property values are loaded lazy once requested.
+ * 
+ * @author feuteston
+ * @author porcelli
  */
 public class PropertyImpl implements Property {
 
+    /**
+     * Internal structure that holds property values.
+     * 
+     * @author feuteston
+     * @author porcelli
+     */
     private class PropertyValue {
 
         private boolean                dirty;
@@ -152,10 +161,20 @@ public class PropertyImpl implements Property {
             return value;
         }
 
+        /**
+         * Checks if property value is modified.
+         * 
+         * @return true if changed, false otherwise
+         */
         public boolean isDirty() {
             return dirty;
         }
 
+        /**
+         * Checks if property value is loaded.
+         * 
+         * @return true if loaded, false otherwise
+         */
         public boolean isLoaded() {
             return loaded;
         }
@@ -202,105 +221,69 @@ public class PropertyImpl implements Property {
         this.key = key;
     }
 
-    public static PropertyImpl createIndexed(final String name,
-                                                final PropertyContainer parent) {
-        final PropertyImpl property = new PropertyImpl(name, parent, true, false);
-        return property;
-    }
-
-    public static PropertyImpl createKey(final String name,
-                                            final PropertyContainer parent) {
+    /**
+     * Factory method that produces a property that is also a key
+     * 
+     * @param name the property/key name
+     * @param parent the property container reference
+     * @return a new instance
+     */
+    public static PropertyImpl createKey(final String name, final PropertyContainer parent) {
         final PropertyImpl property = new PropertyImpl(name, parent, true, true);
         return property;
     }
 
-    public static PropertyImpl createSimple(final String name,
-                                               final PropertyContainer parent) {
+    /**
+     * Factory method that produces an indexed property.
+     * 
+     * @param name the property name
+     * @param parent the property container reference
+     * @return a new instance
+     */
+    public static PropertyImpl createIndexed(final String name, final PropertyContainer parent) {
+        final PropertyImpl property = new PropertyImpl(name, parent, true, false);
+        return property;
+    }
+
+    /**
+     * Factory method that produces a regular property.
+     * 
+     * @param name the property name
+     * @param parent the property container reference
+     * @return a new instance
+     */
+    public static PropertyImpl createSimple(final String name, final PropertyContainer parent) {
         final PropertyImpl property = new PropertyImpl(name, parent, false, false);
         return property;
     }
 
+    /**
+     * Refresh the property value if its not dirty and not already loaded.
+     * 
+     * @param session the storage session
+     */
     private void refreshPropertyIfNecessary(final StorageSession session) {
         if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
             propertyValue.setValue(((AbstractStorageSession<?>) session).propertyGetValue(this));
             propertyValue.setLoaded(true);
             propertyValue.setDirty(false);
         }
-
     }
 
-    private void verifyBeforeSet(final String propertyName) {
+    /**
+     * Checks if property can be setted. <br>
+     * For now the unique restrition is that properties that also are keys can't be setted.
+     * 
+     * @throws IllegalStateException if property can't be setted
+     */
+    private void verifyBeforeSet()
+        throws IllegalStateException {
         if (key) { throw new IllegalStateException(); }
     }
 
-    @Override
-    public PropertyContainer getParent() {
-        return parent;
-    }
-
-    @Override
-    public String getPropertyName() {
-        return name;
-    }
-
-    public byte[] getTransientValueAsBytes(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        return propertyValue.getValueAsBytes();
-    }
-
-    public InputStream getTransientValueAsStream(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        return propertyValue.getValueAsStream();
-    }
-
-    public String getTransientValueAsString(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        return propertyValue.getValueAsString();
-    }
-
-    @Override
-    public byte[] getValueAsBytes(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        refreshPropertyIfNecessary(session);
-        return propertyValue.getValueAsBytes();
-    }
-
-    @Override
-    public InputStream getValueAsStream(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        refreshPropertyIfNecessary(session);
-        return propertyValue.getValueAsStream();
-    }
-
-    @Override
-    public String getValueAsString(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
-        refreshPropertyIfNecessary(session);
-        return propertyValue.getValueAsString();
-    }
-
-    @Override
-    public boolean isIndexed() {
-        return indexed;
-    }
-
-    @Override
-    public boolean isKey() {
-        return key;
-    }
-
+    /**
+     * Clean property value, if its not dirty, when the value is bigger than 255 bytes.
+     */
     public void removeTransientValueIfExpensive() {
         if (!key && !propertyValue.isDirty() && propertyValue.isLoaded()) {
             if (propertyValue.getValueAsBytes() != null) {
@@ -312,19 +295,94 @@ public class PropertyImpl implements Property {
         }
     }
 
-    @Override
-    public void setBytesValue(final StorageSession session, final byte[] value)
-        throws IllegalArgumentException, IllegalStateException {
+    /**
+     * Returns the transient property value as String. <br>
+     * <b>Note:</b> the unique difference of this operation from {@link #getValueAsString(StorageSession)} is that this method
+     * does not try to reload the property value.
+     * 
+     * @param session the storage session
+     * @return the transient value
+     * @throws IllegalArgumentException if input param is null
+     */
+    public String getTransientValueAsString(final StorageSession session)
+        throws IllegalArgumentException {
         checkNotNull("session", session);
 
-        verifyBeforeSet(name);
-        propertyValue.setDirty(true);
-        propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        return propertyValue.getValueAsString();
     }
 
-    public void setBytesValueOnLoad(final StorageSession session,
-                                     final byte[] value)
+    /**
+     * Returns the transient property value as Stream. <br>
+     * <b>Note:</b> the unique difference of this operation from {@link #getValueAsStream(StorageSession)} is that this method
+     * does not try to reload the property value.
+     * 
+     * @param session the storage session
+     * @return the transient value
+     * @throws IllegalArgumentException if input param is null
+     */
+    public InputStream getTransientValueAsStream(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        return propertyValue.getValueAsStream();
+    }
+
+    /**
+     * Returns the transient property value as byte array. <br>
+     * <b>Note:</b> the unique difference of this operation from {@link #getValueAsBytes(StorageSession)} is that this method does
+     * not try to reload the property value.
+     * 
+     * @param session the storage session
+     * @return the transient value
+     * @throws IllegalArgumentException if input param is null
+     */
+    public byte[] getTransientValueAsBytes(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        return propertyValue.getValueAsBytes();
+    }
+
+    /**
+     * Initialize the property value
+     * 
+     * @param session the storage session
+     * @param value the value to be loaded
+     * @throws IllegalArgumentException if input param is null
+     */
+    public void setStringValueOnLoad(final StorageSession session, final String value)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        propertyValue.setValue(value);
+        propertyValue.setDirty(false);
+        propertyValue.setLoaded(true);
+
+    }
+
+    /**
+     * Initialize the property value
+     * 
+     * @param session the storage session
+     * @param value the value to be loaded
+     * @throws IllegalArgumentException if input param is null
+     */
+    public void setStreamValueOnLoad(final StorageSession session, final InputStream value) {
+        checkNotNull("session", session);
+
+        propertyValue.setValue(value);
+        propertyValue.setDirty(false);
+        propertyValue.setLoaded(true);
+    }
+
+    /**
+     * Initialize the property value
+     * 
+     * @param session the storage session
+     * @param value the value to be loaded
+     * @throws IllegalArgumentException if input param is null
+     */
+    public void setBytesValueOnLoad(final StorageSession session, final byte[] value)
         throws IllegalArgumentException {
         checkNotNull("session", session);
 
@@ -333,48 +391,115 @@ public class PropertyImpl implements Property {
         propertyValue.setLoaded(true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setStreamValue(final StorageSession session,
-                                final InputStream value)
-        throws IllegalArgumentException, IllegalStateException {
-        checkNotNull("session", session);
-
-        verifyBeforeSet(name);
-        propertyValue.setDirty(true);
-        propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+    public PropertyContainer getParent() {
+        return parent;
     }
 
-    public void setStreamValueOnLoad(final StorageSession session,
-                                      final InputStream value) {
-        checkNotNull("session", session);
-
-        propertyValue.setValue(value);
-        propertyValue.setDirty(false);
-        propertyValue.setLoaded(true);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPropertyName() {
+        return name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isIndexed() {
+        return indexed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isKey() {
+        return key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getValueAsString(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getValueAsStream(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsStream();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] getValueAsBytes(final StorageSession session)
+        throws IllegalArgumentException {
+        checkNotNull("session", session);
+
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsBytes();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setStringValue(final StorageSession session,
                                 final String value)
         throws IllegalArgumentException, IllegalStateException {
         checkNotNull("session", session);
 
-        verifyBeforeSet(name);
+        verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
-    public void setStringValueOnLoad(final StorageSession session,
-                                      final String value)
-        throws IllegalArgumentException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStreamValue(final StorageSession session,
+                                final InputStream value)
+        throws IllegalArgumentException, IllegalStateException {
         checkNotNull("session", session);
 
+        verifyBeforeSet();
+        propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        propertyValue.setDirty(false);
-        propertyValue.setLoaded(true);
-
+        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBytesValue(final StorageSession session, final byte[] value)
+        throws IllegalArgumentException, IllegalStateException {
+        checkNotNull("session", session);
+
+        verifyBeforeSet();
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
 }

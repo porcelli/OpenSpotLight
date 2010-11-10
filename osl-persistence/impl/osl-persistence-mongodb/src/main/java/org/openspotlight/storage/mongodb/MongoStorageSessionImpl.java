@@ -687,8 +687,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
             ensureIndexed(partition, collectionName, INDEXED,
                     dirtyProperty.getPropertyName(), null);
             objName = INDEXED;
-            value = ((PropertyImpl) dirtyProperty)
-                    .getTransientValueAsString(this);
+            value = ((PropertyImpl) dirtyProperty).getTransientValueAsString(this);
             if (value == null) {
                 value = NULL_VALUE;
             }
@@ -788,21 +787,18 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                     .builder();
             for (final SimpleKey entry: nodeEntry.getKey().getCompositeKey()
                     .getKeys()) {
-                final PropertyImpl p = PropertyImpl.createKey(
-                        entry.getKeyName(), propertyContainer);
+                final PropertyImpl p = PropertyImpl.createKey(entry.getKeyName(), propertyContainer);
                 (p).setStringValueOnLoad(this, entry.getValue());
                 builder.add(p);
             }
-            final DBObject reference = possibleReference == null ? createNodeReferenceIfNecessary(
-                    partition, nodeEntry) : possibleReference;
+            final DBObject reference =
+                possibleReference == null ? createNodeReferenceIfNecessary(partition, nodeEntry) : possibleReference;
             final DBObject indexed = (DBObject) reference.get(INDEXED);
-            final List<String> keyNames = (List<String>) reference
-                    .get(KEY_NAMES);
+            final List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
             if (indexed != null) {
                 for (final String s: indexed.keySet()) {
                     if (!keyNames.contains(s)) {
-                        final PropertyImpl p = PropertyImpl.createIndexed(s,
-                                propertyContainer);
+                        final PropertyImpl p = PropertyImpl.createIndexed(s, propertyContainer);
                         String value = (String) indexed.get(s);
                         if (NULL_VALUE.equals(value)) {
                             value = null;
