@@ -64,6 +64,12 @@ import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 
+/**
+ * Internal (default) implementation of {@link StorageNode}.
+ * 
+ * @author feuteston
+ * @author porcelli
+ */
 public class StorageNodeImpl extends PropertyContainerImpl implements StorageNode {
 
     private static final long                                serialVersionUID      = -4545520206784316277L;
@@ -100,11 +106,17 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         typedChildrenWeakReference = new WeakHashMap<Iterable<StorageNode>, String>();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void verifyBeforeSet(final String propertyName) {
         if (nodeKey.getCompositeKey().getKeyNames().contains(propertyName)) { throw new IllegalStateException(); }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NodeBuilder createWithType(final StorageSession session, final String type)
         throws IllegalArgumentException {
@@ -114,6 +126,9 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryCreateWithType(this, type);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
@@ -121,12 +136,13 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
 
         final StorageNodeImpl that = (StorageNodeImpl) o;
 
-        if (nodeType != null ? !nodeType.equals(that.nodeType)
-            : that.nodeType != null) { return false; }
-        return !(nodeKey != null ? !nodeKey.equals(that.nodeKey)
-            : that.nodeKey != null);
+        if (nodeType != null ? !nodeType.equals(that.nodeType) : that.nodeType != null) { return false; }
+        return !(nodeKey != null ? !nodeKey.equals(that.nodeKey) : that.nodeKey != null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session) {
         Iterable<StorageNode> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
@@ -136,6 +152,9 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return children;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session, final String type) {
 
@@ -155,6 +174,9 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return thisChildren;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session,
                                                           final String type) {
@@ -164,6 +186,9 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return children;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session) {
         final Iterable<StorageNode> children = ((AbstractStorageSession<?>) session).nodeEntryGetChildren(partition, this);
@@ -171,16 +196,25 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return children;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NodeKey getKey() {
         return nodeKey;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getKeyAsString() {
         return getKey().getKeyAsString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StorageNode getParent(final StorageSession session) {
         StorageNode parent = parentWeakReference != null ? parentWeakReference.get() : null;
@@ -191,16 +225,25 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return parent;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Partition getPartition() {
         return getKey().getPartition();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getType() {
         return nodeType;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int result = nodeType != null ? nodeType.hashCode() : 0;
@@ -208,14 +251,20 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(final StorageSession session) {
         session.removeNode(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
-        return "StorageNodeImpl{" + "partition=" + partition + ", nodeEntryName='" + nodeType + '\'' + ", uniqueKey=" + nodeKey
+        return "StorageNodeImpl{partition=" + partition + ", nodeEntryName='" + nodeType + "', uniqueKey=" + nodeKey
             + '}';
     }
 }

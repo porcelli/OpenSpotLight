@@ -54,6 +54,12 @@ import org.openspotlight.storage.StringKeysSupport;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 
+/**
+ * Internal (default) implementation of {@link StorageLink}.
+ * 
+ * @author feuteston
+ * @author porcelli
+ */
 public class StorageLinkImpl extends PropertyContainerImpl implements StorageLink {
 
     private static final long serialVersionUID = -3462836679437486046L;
@@ -78,6 +84,9 @@ public class StorageLinkImpl extends PropertyContainerImpl implements StorageLin
         linkKey = StringKeysSupport.buildLinkKeyAsString(linkType, source, target);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (o == this) { return true; }
@@ -85,36 +94,57 @@ public class StorageLinkImpl extends PropertyContainerImpl implements StorageLin
         return getKeyAsString().equals(((StorageLink) o).getKeyAsString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getKeyAsString() {
         return linkKey;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getType() {
         return linkType;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StorageNode getSource() {
         return source;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Partition getPartition() {
         return sourcePartition;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StorageNode getTarget() {
         return target;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(final StorageSession session) {
         session.removeLink(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return getKeyAsString().hashCode();

@@ -60,8 +60,10 @@ import com.google.inject.Provider;
  * This is a Guice provider used for thread locals variables. It is mandatory to use the {com.google.inject.Singleton} annotation
  * on the class that implement this interface. Also if this provider implementation depends on other Thread locals, inject the
  * provider instead of the instance.
- * <p/>
- * Created by User: feu - Date: Mar 23, 2010 - Time: 4:43:42 PM
+ * 
+ * @author feuteston
+ * @author porcelli
+ * @param <T> the type that will be instantiated
  */
 public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable {
 
@@ -69,8 +71,16 @@ public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable 
 
     private final ThreadLocal<T>   threadLocal     = new ThreadLocal<T>();
 
+    /**
+     * Creates a new instance of <T>
+     * 
+     * @return the new instance
+     */
     protected abstract T createInstance();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void closeResources() {
         List<Disposable> disposables;
@@ -83,6 +93,9 @@ public abstract class ThreadLocalProvider<T> implements Provider<T>, Disposable 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public T get() {
         T t = threadLocal.get();

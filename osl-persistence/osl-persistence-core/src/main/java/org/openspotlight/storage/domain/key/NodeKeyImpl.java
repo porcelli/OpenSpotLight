@@ -64,12 +64,27 @@ import org.openspotlight.storage.StringKeysSupport;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
+ * Internal (default) implementation of {@link NodeKey}.
+ * 
+ * @author feuteston
+ * @author porcelli
  */
 public class NodeKeyImpl implements NodeKey {
 
+    /**
+     * Internal (default) implementation of {@link CompositeKey}.
+     * 
+     * @author feuteston
+     * @author porcelli
+     */
     public static class CompositeKeyImpl implements CompositeKey {
 
+        /**
+         * Internal (default) implementation of {@link SimpleKey}
+         * 
+         * @author feuteston
+         * @author porcelli
+         */
         public static class SimpleKeyImpl implements SimpleKey {
 
             private static final long serialVersionUID = -1370685091918627295L;
@@ -90,12 +105,18 @@ public class NodeKeyImpl implements NodeKey {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public int compareTo(final SimpleKey o) {
                 final int result = propertyName.compareTo(o.getKeyName());
                 return result;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public boolean equals(final Object o) {
                 if (this == o) { return true; }
@@ -110,28 +131,37 @@ public class NodeKeyImpl implements NodeKey {
                 return true;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public String getKeyName() {
                 return propertyName;
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public String getValue() {
                 return value;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public int hashCode() {
                 return hashCode;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public String toString() {
-                return "SimpleKeyImpl{" +
-                        ", value=" + value +
-                        ", propertyName='" + propertyName + '\'' +
-                        '}';
+                return "SimpleKeyImpl{ value=" + value + ", propertyName='" + propertyName + '}';
             }
 
         }
@@ -167,6 +197,9 @@ public class NodeKeyImpl implements NodeKey {
 
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int compareTo(final CompositeKey o) {
             int result = getNodeType().compareTo(o.getNodeType());
@@ -190,6 +223,9 @@ public class NodeKeyImpl implements NodeKey {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean equals(final Object o) {
             if (this == o) { return true; }
@@ -204,6 +240,9 @@ public class NodeKeyImpl implements NodeKey {
             return true;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getKeyAsString() {
             String value = keyAsString;
@@ -214,21 +253,33 @@ public class NodeKeyImpl implements NodeKey {
             return value;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Set<String> getKeyNames() {
             return entryNames;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Set<SimpleKey> getKeys() {
             return entries;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getNodeType() {
             return nodeType;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
             return hashCode;
@@ -260,6 +311,9 @@ public class NodeKeyImpl implements NodeKey {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(final NodeKey that) {
         if (this == null && that == null) { return 0; }
@@ -270,6 +324,9 @@ public class NodeKeyImpl implements NodeKey {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
@@ -285,11 +342,17 @@ public class NodeKeyImpl implements NodeKey {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompositeKey getCompositeKey() {
         return localKey;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getKeyAsString() {
         String value = keyAsString;
@@ -300,21 +363,33 @@ public class NodeKeyImpl implements NodeKey {
         return value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getParentKeyAsString() {
         return parentKeyAsString;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Partition getPartition() {
         return partition;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return hashCode;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "NodeKeyImpl{ keyAsString='" + getKeyAsString() + '}';

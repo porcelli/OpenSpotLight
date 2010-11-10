@@ -93,8 +93,8 @@ public interface NodeFactory {
          * @throws IllegalStateException if parent key already added on builder
          * @throws IllegalArgumentException if input param is null or empty
          */
-        NodeBuilder withParent(String parentAsString)
-            throws IllegalArgumentException;
+        NodeBuilder withParent(String parentKey)
+            throws IllegalArgumentException, IllegalStateException;
 
         /**
          * Add to the builder a simple key-value pair.
