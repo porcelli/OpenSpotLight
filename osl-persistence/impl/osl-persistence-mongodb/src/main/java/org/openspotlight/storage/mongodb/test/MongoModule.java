@@ -52,6 +52,8 @@ package org.openspotlight.storage.mongodb.test;
 import org.openspotlight.storage.DefaultPartitionFactory;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.StorageSessionProvider;
+import org.openspotlight.storage.engine.StorageEngineBind;
 import org.openspotlight.storage.mongodb.MongoMaxCacheSize;
 
 import com.google.inject.AbstractModule;
@@ -85,7 +87,8 @@ public class MongoModule extends AbstractModule {
         bind(PartitionFactory.class).toInstance(factory);
         bind(Mongo.class).toInstance(mongo);
         bind(StorageSession.FlushMode.class).toInstance(flushMode);
-        bind(StorageSession.class).toProvider(MongoStorageSessionProvider.class);
+        bind(StorageSession.class).toProvider(StorageSessionProvider.class);
+        bind(StorageEngineBind.class).toProvider(MongoStorageSessionProvider.class);
         bind(int.class).annotatedWith(MongoMaxCacheSize.class).toInstance(256);
 
     }

@@ -61,32 +61,32 @@ import org.openspotlight.storage.domain.StorageNode;
 
 public interface StorageEngineBind<R> extends Disposable {
 
-    R createLinkReferenceIfNecessary(Partition partition, StorageLink entry);
+    R createLinkReference(StorageLink link);
 
-    R createNodeReferenceIfNecessary(Partition partition, StorageNode entry);
+    R createNodeReference(StorageNode node);
 
-    void flushNewItem(R reference, Partition partition, StorageNode entry)
+    void flushNewItem(R reference, StorageNode node)
         throws Exception;
 
-    void flushRemovedItem(Partition partition, StorageNode entry)
+    void flushRemovedItem(StorageNode node)
         throws Exception;
 
-    void flushRemovedLink(Partition partition, StorageLink link)
+    void flushRemovedLink(StorageLink link)
         throws Exception;
 
-    void handleNewLink(Partition partition, StorageNode origin, StorageLink link)
+    void handleNewLink(StorageNode source, StorageLink link)
         throws Exception;
 
-    Iterable<StorageNode> findByCriteria(Partition partition, NodeCriteria criteria)
+    Iterable<StorageNode> search(NodeCriteria criteria)
         throws Exception;
 
-    Iterable<StorageNode> findByType(Partition partition, String nodeType)
+    Iterable<StorageNode> getNodes(Partition partition, String type)
         throws Exception;
 
-    Iterable<StorageLink> findLinks(Partition partition, StorageNode origin, StorageNode destiny, String type)
+    Iterable<StorageLink> getLinks(StorageNode source, StorageNode target, String type)
         throws Exception;
 
-    void flushSimpleProperty(R reference, Partition partition, Property dirtyProperty)
+    void flushSimpleProperty(R reference, Partition partition, Property property)
         throws Exception;
 
     Iterable<String> getAllNodeTypes(Partition partition)
@@ -95,19 +95,19 @@ public interface StorageEngineBind<R> extends Disposable {
     StorageNode getNode(String key)
         throws Exception;
 
-    Iterable<StorageNode> getChildren(Partition partition, StorageNode StorageNode)
+    Iterable<StorageNode> getChildren(StorageNode node)
         throws Exception;
 
-    Iterable<StorageNode> getChildrenByType(Partition partition, StorageNode StorageNode, String type)
+    Iterable<StorageNode> getChildren(StorageNode node, String type)
         throws Exception;
 
-    StorageNode getParent(Partition partition, StorageNode StorageNode)
+    StorageNode getParent(StorageNode node)
         throws Exception;
 
-    Set<Property> loadProperties(R reference, Partition partition, PropertyContainer StorageNode)
+    Set<Property> loadProperties(PropertyContainer element)
         throws Exception;
 
-    byte[] getPropertyValue(Partition partition, Property stProperty)
+    byte[] getPropertyValue(Partition partition, Property property)
         throws Exception;
 
     void savePartitions(Partition... partitions)

@@ -59,6 +59,7 @@ import static org.openspotlight.common.util.SLCollections.iterableToList;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -90,14 +91,22 @@ public abstract class AbstractStorageSessionTest {
 
         public static final PartitionFactory FACTORY = new PartitionFactory() {
 
+                                                         List<Partition> internalPartitions = null;
+
                                                          @Override
                                                          public Partition getPartition(final String name) {
                                                              return ExamplePartition.valueOf(name.toUpperCase());
                                                          }
 
                                                          @Override
-                                                         public Partition[] getValues() {
-                                                             return ExamplePartition.values();
+                                                         public Iterable<Partition> getValues() {
+                                                             if (internalPartitions == null) {
+                                                                 internalPartitions = new ArrayList<Partition>();
+                                                                 for (ExamplePartition part: ExamplePartition.values()) {
+                                                                     internalPartitions.add(part);
+                                                                 }
+                                                             }
+                                                             return internalPartitions;
                                                          }
                                                      };
 

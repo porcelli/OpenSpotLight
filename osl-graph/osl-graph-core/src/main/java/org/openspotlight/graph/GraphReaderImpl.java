@@ -141,8 +141,7 @@ public class GraphReaderImpl implements GraphReader {
     private Iterable<Context> findContextsIfNecessary(
                                                       Iterable<Context> contexts) {
         if (contexts == null || !contexts.iterator().hasNext()) {
-            final Iterable<Partition> partitions = filterGraphPartitions(factory
-                .getValues());
+            final Iterable<Partition> partitions = filterGraphPartitions(factory.getValues());
             final ImmutableSet.Builder<Context> builder = ImmutableSet.builder();
             for (final Partition p: partitions) {
                 builder.add(getContext(p.getPartitionName()));

@@ -158,8 +158,7 @@ public class SLCollections {
         return v;
     }
 
-    public static <T> Iterable<T> iterableOf(
-                                             final T... ts) {
+    public static <T> Iterable<T> iterableOf(final T... ts) {
         final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
         for (final T tn: ts) {
             builder.add(tn);
@@ -167,8 +166,7 @@ public class SLCollections {
         return builder.build();
     }
 
-    public static <T> Iterable<T> iterableOf(
-                                             final T t, final T... ts) {
+    public static <T> Iterable<T> iterableOf(final T t, final T... ts) {
         final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
         builder.add(t);
         if (ts != null) {
@@ -179,8 +177,7 @@ public class SLCollections {
         return builder.build();
     }
 
-    public static <T> Iterable<T> iterableOfAll(
-                                                final Iterable<Iterable<T>> iterables) {
+    public static <T> Iterable<T> iterableOfAll(final Iterable<Iterable<T>> iterables) {
         return new Iterable<T>() {
 
             IteratorNextState nextState = IteratorNextState.RESET;

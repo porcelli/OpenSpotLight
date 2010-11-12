@@ -204,12 +204,10 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
             this.indexed = indexed;
         }
 
-        public PropertyImpl createProperty(final String name,
-                                           final PropertyContainer parent) {
+        public PropertyImpl createProperty(final String name, final PropertyContainer parent) {
             if (isKey()) { return PropertyImpl.createKey(name, parent); }
             if (isIndexed()) { return PropertyImpl.createIndexed(name, parent); }
             return PropertyImpl.createSimple(name, parent);
-
         }
 
         public String getSetName(final String uniqueId) {
@@ -238,7 +236,7 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     private static final CustomizedFormat KEY_WITH_PARENT_UNIQUE_ID            = new CustomizedFormat("nuid: :prt-uid");
     private static final CustomizedFormat KEY_WITH_PROPERTY_VALUE              = new CustomizedFormat("nuid: :pname: :value");
     private static final CustomizedFormat SET_WITH_ALL_DEPENDENT_KEYS          = new CustomizedFormat("nuid: :dependent-keys");
-    private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_ORIGIN        = new CustomizedFormat("lorigin: :uids");
+    private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_SOURCE        = new CustomizedFormat("lorigin: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_TARGET        = new CustomizedFormat("ltarget: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_TYPE          = new CustomizedFormat("ltype: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LOCAL_KEYS              = new CustomizedFormat("lkeys: :uids");
@@ -271,49 +269,36 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
         return idsAsString;
     }
 
-    private void flushRemoved(final Partition partition,
-                              final PropertyContainer entry, final String entryName)
+    private void flushRemoved(final PropertyContainer entry, final String entryName)
             throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
+        final JRedis jredis = factory.getFrom(entry.getPartition());
 
         final String uniqueKey = entry.getKeyAsString();
         jredis.srem(SET_WITH_ALL_KEYS, uniqueKey);
         if (entryName != null) {
-            jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entryName),
-                    uniqueKey);
+            jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entryName), uniqueKey);
         }
-        final String simpleProperties = SET_WITH_NODE_PROPERTY_SIMPLE_NAMES
-                .format(uniqueKey);
-        final String keyProperties = SET_WITH_NODE_PROPERTY_KEY_NAMES
-                .format(uniqueKey);
-        final String indexedProperties = SET_WITH_NODE_PROPERTY_INDEXED_NAMES
-                .format(uniqueKey);
+        final String simpleProperties = SET_WITH_NODE_PROPERTY_SIMPLE_NAMES.format(uniqueKey);
+        final String keyProperties = SET_WITH_NODE_PROPERTY_KEY_NAMES.format(uniqueKey);
+        final String indexedProperties = SET_WITH_NODE_PROPERTY_INDEXED_NAMES.format(uniqueKey);
         final List<String> allPropertyNames = newLinkedList();
-        allPropertyNames.addAll(listBytesToListString(jredis
-                .smembers(simpleProperties)));
-        allPropertyNames.addAll(listBytesToListString(jredis
-                .smembers(keyProperties)));
-        allPropertyNames.addAll(listBytesToListString(jredis
-                .smembers(indexedProperties)));
+        allPropertyNames.addAll(listBytesToListString(jredis.smembers(simpleProperties)));
+        allPropertyNames.addAll(listBytesToListString(jredis.smembers(keyProperties)));
+        allPropertyNames.addAll(listBytesToListString(jredis.smembers(indexedProperties)));
         for (final String s: allPropertyNames) {
-            jredis.del(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(uniqueKey, s),
-                    KEY_WITH_PROPERTY_VALUE.format(uniqueKey, s));
+            jredis.del(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(uniqueKey, s), KEY_WITH_PROPERTY_VALUE.format(uniqueKey, s));
         }
-        jredis.del(simpleProperties, keyProperties, indexedProperties,
-                SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
-                KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey));
+        jredis.del(simpleProperties, keyProperties, indexedProperties, SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
+            KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey));
 
-        final String dependentKeys = SET_WITH_ALL_DEPENDENT_KEYS
-                .format(uniqueKey);
-        final List<String> keys = listBytesToListString(jredis
-                .smembers(dependentKeys));
+        final String dependentKeys = SET_WITH_ALL_DEPENDENT_KEYS.format(uniqueKey);
+        final List<String> keys = listBytesToListString(jredis.smembers(dependentKeys));
 
         for (final String key: keys) {
             if (key.contains(uniqueKey)) {
                 jredis.del(key);
             } else {
-                final List<String> possibleValues = listBytesToListString(jredis
-                        .smembers(key));
+                final List<String> possibleValues = listBytesToListString(jredis.smembers(key));
                 for (final String possibleValue: possibleValues) {
                     if (possibleValue.contains(uniqueKey)) {
                         jredis.srem(key, possibleValue);
@@ -323,36 +308,26 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
             }
         }
         jredis.del(dependentKeys);
-
     }
 
-    private void internalFlushSimplePropertyAndCreateIndex(
-                                                           final JRedisLoggedExecution exec, final Partition partition,
+    private void internalFlushSimplePropertyAndCreateIndex(final JRedisLoggedExecution exec, final Partition partition,
                                                            final String propertyName, final byte[] propertyValue,
                                                            final String uniqueKey, final PropertyType propertyType)
             throws Exception {
-
         final JRedis jredis = factory.getFrom(partition);
         final String setName = propertyType.getSetName(uniqueKey);
         exec.sadd(setName, propertyName);
-        final String valueKey = KEY_WITH_PROPERTY_VALUE.format(uniqueKey,
-                propertyName);
+        final String valueKey = KEY_WITH_PROPERTY_VALUE.format(uniqueKey, propertyName);
         if (propertyType.isIndexed()) {
-            final String stripped = stripString(propertyValue != null ? new String(
-                    propertyValue) : null);
+            final String stripped = stripString(propertyValue != null ? new String(propertyValue) : null);
             if (jredis.exists(valueKey)) {
                 final String existent = stripString(toStr(jredis.get(valueKey)));
                 if (!existent.equals(stripped)) {
-                    jredis.srem(
-                            SET_WITH_INDEX_ENTRY.format(existent, propertyName),
-                            uniqueKey);
-                    exec.sadd(
-                            SET_WITH_INDEX_ENTRY.format(stripped, propertyName),
-                            uniqueKey);
+                    jredis.srem(SET_WITH_INDEX_ENTRY.format(existent, propertyName), uniqueKey);
+                    exec.sadd(SET_WITH_INDEX_ENTRY.format(stripped, propertyName), uniqueKey);
                 }
             } else {
-                exec.sadd(SET_WITH_INDEX_ENTRY.format(stripped, propertyName),
-                        uniqueKey);
+                exec.sadd(SET_WITH_INDEX_ENTRY.format(stripped, propertyName), uniqueKey);
             }
         }
         if (propertyValue != null) {
@@ -362,34 +337,27 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
         }
     }
 
-    private Collection<String> keysFromProperty(final JRedis jredis,
-                                                final String nodeEntryName, final String propertyName,
+    private Collection<String> keysFromProperty(final JRedis jredis, final String nodeEntryName, final String propertyName,
                                                 final SearchType equal, final String value)
         throws Exception {
-        if (!SearchType.EQUAL.equals(equal)) { throw new UnsupportedOperationException("Finding by " + equal
-                    + " isn't supported"); }
+        if (!SearchType.EQUAL.equals(equal)) { throw new UnsupportedOperationException("Finding by " + equal + " isn't supported"); }
 
         final ImmutableList.Builder<String> builder = ImmutableList.builder();
         final String transientValueAsString = stripString(value);
-        final List<String> ids = listBytesToListString(jredis
-                .smembers(SET_WITH_INDEX_ENTRY.format(transientValueAsString,
-                        propertyName)));
+        final List<String> ids =
+            listBytesToListString(jredis.smembers(SET_WITH_INDEX_ENTRY.format(transientValueAsString, propertyName)));
         for (final String id: ids) {
-            String propertyValue = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE
-                    .format(id, propertyName)));
+            String propertyValue = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(id, propertyName)));
             if (propertyValue == null) {
                 propertyValue = "null";
             }
             boolean needsToAdd = false;
             switch (equal) {
                 case EQUAL:
-                    needsToAdd = stripString(propertyValue).equals(
-                        transientValueAsString);
+                    needsToAdd = stripString(propertyValue).equals(transientValueAsString);
                     break;
-
             }
             if (nodeEntryName != null && needsToAdd) {
-
                 final String name = getNodeType(id);
                 if (!nodeEntryName.equals(name)) {
                     needsToAdd = false;
@@ -405,12 +373,7 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
 
     public StorageNode getNode(final String key)
         throws Exception {
-        return internalGetNode(key, StringKeysSupport.getPartition(key, partitionFactory));
-    }
-
-    public StorageNode internalGetNode(final String key, final Partition partition)
-        throws Exception {
-
+        Partition partition = StringKeysSupport.getPartition(key, partitionFactory);
         final JRedis jredis = factory.getFrom(partition);
         if (!jredis.sismember(SET_WITH_ALL_KEYS, key)) { return null; }
 
@@ -432,25 +395,21 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
         return nodeEntry;
     }
 
-    private Property loadProperty(final Partition partition,
-                                  final PropertyContainer StorageNode, final String parentKey,
-                                  final String propertyName, final PropertyType type)
+    private Property loadProperty(final PropertyContainer node, final String key, final String propertyName,
+                                  final PropertyType type)
             throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
+        final JRedis jredis = factory.getFrom(node.getPartition());
 
-        final Property property = type
-                .createProperty(propertyName, StorageNode);
+        final Property property = type.createProperty(propertyName, node);
         if (type.isKey()) {
-            final String value = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE
-                    .format(parentKey, propertyName)));
+            final String value = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(key, propertyName)));
             ((PropertyImpl) property).setStringValueOnLoad(value);
         }
         return property;
     }
 
     private String stripString(final String transientValueAsString) {
-        return transientValueAsString == null ? "null" : transientValueAsString
-                .replaceAll("[ ]|[\n]|[\t]|[\r]", "-");
+        return transientValueAsString == null ? "null" : transientValueAsString.replaceAll("[ ]|[\n]|[\t]|[\r]", "-");
     }
 
     public final StorageNode createFoundEntryWithKey(final NodeKey uniqueKey) {
@@ -458,165 +417,129 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public Nothing createLinkReferenceIfNecessary(final Partition partition,
-                                                     final StorageLink entry) {
+    public Nothing createLinkReference(final StorageLink entry) {
         return Nothing.NOTHING;
     }
 
     @Override
-    public Nothing createNodeReferenceIfNecessary(final Partition partition,
-                                                     final StorageNode entry) {
+    public Nothing createNodeReference(final StorageNode entry) {
         return Nothing.NOTHING;
     }
 
     @Override
-    public void flushNewItem(final Nothing reference,
-                                final Partition partition, final StorageNode entry)
+    public void flushNewItem(final Nothing reference, final StorageNode entry)
             throws Exception {
         final String uniqueKey = entry.getKey().getKeyAsString();
-        final JRedis jredis = factory.getFrom(partition);
-        final JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(
-                uniqueKey, jredis);
+        final JRedis jredis = factory.getFrom(entry.getPartition());
+        final JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(uniqueKey, jredis);
         jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
-        jredisExec.sadd(
-                SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entry.getType()),
-                uniqueKey);
+        jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entry.getType()), uniqueKey);
         jredis.sadd(SET_WITH_ALL_KEY_NAMES, entry.getType());
         final String parentKeyAsString = entry.getKey().getParentKeyAsString();
         if (parentKeyAsString != null) {
-            jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey),
-                    parentKeyAsString);
+            jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey), parentKeyAsString);
 
-            jredisExec.sadd(
-                    SET_WITH_NODE_CHILDREN_KEYS.format(parentKeyAsString),
-                    uniqueKey);
-            jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(
-                    parentKeyAsString, entry.getType()), uniqueKey);
+            jredisExec.sadd(SET_WITH_NODE_CHILDREN_KEYS.format(parentKeyAsString), uniqueKey);
+            jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(parentKeyAsString, entry.getType()), uniqueKey);
         }
-        final String localKey = entry.getKey().getCompositeKey()
-                .getKeyAsString();
+        final String localKey = entry.getKey().getCompositeKey().getKeyAsString();
         jredisExec.sadd(SET_WITH_ALL_LOCAL_KEYS.format(localKey), uniqueKey);
         for (final SimpleKey k: entry.getKey().getCompositeKey().getKeys()) {
-            internalFlushSimplePropertyAndCreateIndex(jredisExec, partition,
-                    k.getKeyName(), k.getValue() != null ? k.getValue()
-                            .getBytes() : null, uniqueKey, PropertyType.KEY);
-
+            internalFlushSimplePropertyAndCreateIndex(jredisExec, entry.getPartition(), k.getKeyName(),
+                k.getValue() != null ? k.getValue().getBytes() : null, uniqueKey, PropertyType.KEY);
         }
     }
 
     @Override
-    public void flushRemovedItem(final Partition partition,
-                                    final StorageNode entry)
+    public void flushRemovedItem(final StorageNode entry)
         throws Exception {
-        flushRemoved(partition, entry, entry.getType());
+        flushRemoved(entry, entry.getType());
     }
 
     @Override
-    public void flushRemovedLink(final Partition partition,
-                                    final StorageLink link)
+    public void flushRemovedLink(final StorageLink link)
         throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
-        jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()),
-                link.getKeyAsString());
-        jredis.srem(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getSource()
-                .getKeyAsString()), link.getKeyAsString());
-        jredis.srem(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget()
-                .getKeyAsString()), link.getKeyAsString());
-        flushRemoved(partition, link, null);
+        final JRedis jredis = factory.getFrom(link.getPartition());
+        jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()), link.getKeyAsString());
+        jredis.srem(SET_WITH_ALL_LINKS_FOR_SOURCE.format(link.getSource().getKeyAsString()), link.getKeyAsString());
+        jredis.srem(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget().getKeyAsString()), link.getKeyAsString());
+        flushRemoved(link, null);
     }
 
     @Override
-    public void handleNewLink(final Partition partition,
-                                 final StorageNode origin, final StorageLink link)
+    public void handleNewLink(final StorageNode source, final StorageLink link)
         throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
-        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()),
-                link.getKeyAsString());
-        jredis.sadd(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getSource()
-                .getKeyAsString()), link.getKeyAsString());
-        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget()
-                .getKeyAsString()), link.getKeyAsString());
-
+        final JRedis jredis = factory.getFrom(source.getPartition());
+        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()), link.getKeyAsString());
+        jredis.sadd(SET_WITH_ALL_LINKS_FOR_SOURCE.format(link.getSource().getKeyAsString()), link.getKeyAsString());
+        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget().getKeyAsString()), link.getKeyAsString());
     }
 
     @Override
-    public Set<StorageNode> findByCriteria(final Partition partition, final NodeCriteria criteria)
+    public Set<StorageNode> search(final NodeCriteria criteria)
             throws Exception {
         final List<String> propertiesIntersection = newLinkedList();
         final List<String> uniqueIdsFromLocalOnes = newLinkedList();
         boolean first = true;
         final List<String> uniqueIds = newLinkedList();
-        final JRedis jredis = factory.getFrom(partition);
+        final JRedis jredis = factory.getFrom(criteria.getPartition());
         for (final NodeCriteriaItem c: criteria.getCriteriaItems()) {
             if (c instanceof PropertyCriteriaItem) {
                 final PropertyCriteriaItem p = (PropertyCriteriaItem) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.EQUAL, p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.EQUAL, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.EQUAL, p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.EQUAL, p.getValue()));
                 }
             }
             if (c instanceof PropertyContainsString) {
                 final PropertyContainsString p = (PropertyContainsString) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.STRING_CONTAINS, p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.STRING_CONTAINS, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.STRING_CONTAINS, p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.STRING_CONTAINS, p.getValue()));
                 }
             }
             if (c instanceof PropertyStartsWithString) {
                 final PropertyStartsWithString p = (PropertyStartsWithString) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.STRING_STARTS_WITH, p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.STRING_STARTS_WITH, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.STRING_STARTS_WITH, p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.STRING_STARTS_WITH, p.getValue()));
                 }
             }
             if (c instanceof PropertyEndsWithString) {
                 final PropertyEndsWithString p = (PropertyEndsWithString) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.STRING_ENDS_WITH, p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.STRING_ENDS_WITH, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFromProperty(jredis,
-                            p.getNodeType(), p.getPropertyName(),
-                            SearchType.STRING_ENDS_WITH, p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeType(), p.getPropertyName(),
+                        SearchType.STRING_ENDS_WITH, p.getValue()));
                 }
             }
             if (c instanceof NodeKeyCriteriaItem) {
                 final NodeKeyCriteriaItem uniqueCriteria = (NodeKeyCriteriaItem) c;
                 uniqueIds.add(uniqueCriteria.getValue().getKeyAsString());
-
             }
             if (c instanceof NodeKeyAsStringCriteriaItem) {
                 final NodeKeyAsStringCriteriaItem uniqueCriteria = (NodeKeyAsStringCriteriaItem) c;
                 uniqueIds.add(uniqueCriteria.getKeyAsString());
-
             }
             if (c instanceof CompositeKeyCriteriaItem) {
                 final CompositeKeyCriteriaItem uniqueCriteria = (CompositeKeyCriteriaItem) c;
-                final String localHash = uniqueCriteria.getValue()
-                        .getKeyAsString();
-                uniqueIdsFromLocalOnes.addAll(listBytesToListString(jredis
-                        .smembers(SET_WITH_ALL_LOCAL_KEYS.format(localHash))));
-
+                final String localHash = uniqueCriteria.getValue().getKeyAsString();
+                uniqueIdsFromLocalOnes.addAll(listBytesToListString(jredis.smembers(SET_WITH_ALL_LOCAL_KEYS.format(localHash))));
             }
         }
         if (criteria.getCriteriaItems().size() == 0) {
@@ -626,7 +549,7 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
         }
 
         if (!uniqueIds.isEmpty() && !propertiesIntersection.isEmpty()) { throw new IllegalArgumentException(
-                    "criteria with unique ids can't be used with other criteria types"); }
+            "criteria with unique ids can't be used with other criteria types"); }
 
         List<String> ids;
         if (uniqueIds.isEmpty()) {
@@ -644,7 +567,7 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
 
         final Set<StorageNode> nodeEntries = newHashSet();
         for (final String id: ids) {
-            final StorageNode nodeEntry = internalGetNode(id, criteria.getPartition());
+            final StorageNode nodeEntry = getNode(id);
             if (nodeEntry != null) {
                 nodeEntries.add(nodeEntry);
             }
@@ -654,16 +577,14 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public Set<StorageNode> findByType(final Partition partition,
-                                                  final String type)
+    public Set<StorageNode> getNodes(final Partition partition, final String type)
         throws Exception {
 
         final JRedis jRedis = factory.getFrom(partition);
         final List<String> ids = listBytesToListString(jRedis.smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(type)));
-        final ImmutableSet.Builder<StorageNode> builder = ImmutableSet
-                .<StorageNode>builder();
+        final ImmutableSet.Builder<StorageNode> builder = ImmutableSet.<StorageNode>builder();
         for (final String id: ids) {
-            final StorageNode loadedNode = internalGetNode(id, partition);
+            final StorageNode loadedNode = getNode(id);
             if (loadedNode != null) {
                 builder.add(loadedNode);
             }
@@ -673,67 +594,47 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<StorageLink> findLinks(
-                                                      final Partition partition, final StorageNode origin,
-                                                      final StorageNode destiny, final String name)
+    public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target, final String type)
         throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
-        final List<String> linkIds = listBytesToListString(jredis
-                .smembers(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(origin
-                        .getKeyAsString())));
-        if (destiny != null) {
-            final List<String> newIds = listBytesToListString(jredis
-                    .smembers(SET_WITH_ALL_LINKS_FOR_TARGET.format(destiny
-                            .getKeyAsString())));
+        final JRedis jredis = factory.getFrom(source.getPartition());
+        final List<String> linkIds =
+            listBytesToListString(jredis.smembers(SET_WITH_ALL_LINKS_FOR_SOURCE.format(source.getKeyAsString())));
+        if (target != null) {
+            final List<String> newIds =
+                listBytesToListString(jredis.smembers(SET_WITH_ALL_LINKS_FOR_TARGET.format(target.getKeyAsString())));
             linkIds.retainAll(newIds);
         }
-        if (name != null) {
-            final List<String> newIds = listBytesToListString(jredis
-                    .smembers(SET_WITH_ALL_LINKS_FOR_TYPE.format(name)));
+        if (type != null) {
+            final List<String> newIds = listBytesToListString(jredis.smembers(SET_WITH_ALL_LINKS_FOR_TYPE.format(type)));
             linkIds.retainAll(newIds);
         }
         if (linkIds.size() == 0) { return Collections.emptyList(); }
-        return IteratorBuilder.<StorageLink, String>createIteratorBuilder()
-                .withItems(linkIds)
+        return IteratorBuilder.<StorageLink, String>createIteratorBuilder().withItems(linkIds)
                 .withConverter(new Converter<StorageLink, String>() {
-
                     @Override
                     public StorageLink convert(final String o)
                         throws Exception {
-                        final StorageNode originNode = JRedisStorageSessionImpl.this
-                                .internalGetNode(StringKeysSupport
-                                        .getOriginKeyAsStringFromLinkKey(o),
-                                        partition);
-                        final String targetId = StringKeysSupport
-                                .getTargeyKeyAsStringFromLinkKey(o);
-                        final Partition targetPartition = StringKeysSupport
-                                .getPartition(targetId, partitionFactory);
-                        final StorageNode targetNode = JRedisStorageSessionImpl.this
-                                .internalGetNode(targetId, targetPartition);
+                        final StorageNode originNode =
+                            JRedisStorageSessionImpl.this.getNode(StringKeysSupport.getOriginKeyAsStringFromLinkKey(o));
+                        final String targetId = StringKeysSupport.getTargeyKeyAsStringFromLinkKey(o);
+                        final StorageNode targetNode = JRedisStorageSessionImpl.this.getNode(targetId);
 
-                        return new StorageLinkImpl(StringKeysSupport
-                                .getLinkTypeFromLinkKey(o), originNode,
-                                targetNode, true);
+                        return new StorageLinkImpl(StringKeysSupport.getLinkTypeFromLinkKey(o), originNode, targetNode, true);
                     }
                 }).andBuild();
     }
 
     @Override
-    public void flushSimpleProperty(final Nothing reference,
-                                               final Partition partition, final Property dirtyProperty)
+    public void flushSimpleProperty(final Nothing reference, final Partition partition, final Property property)
             throws Exception {
         final JRedis jredis = factory.getFrom(partition);
-        final String uniqueKey = dirtyProperty.getParent().getKeyAsString();
-        final JRedisLoggedExecution jredisExecution = new JRedisLoggedExecution(
-                uniqueKey, jredis);
-        final PropertyType type = dirtyProperty.isKey() ? PropertyType.KEY
-                : (dirtyProperty.isIndexed() ? PropertyType.INDEXED
-                        : PropertyType.SIMPLE);
+        final String uniqueKey = property.getParent().getKeyAsString();
+        final JRedisLoggedExecution jredisExecution = new JRedisLoggedExecution(uniqueKey, jredis);
+        final PropertyType type =
+            property.isKey() ? PropertyType.KEY : (property.isIndexed() ? PropertyType.INDEXED : PropertyType.SIMPLE);
 
-        internalFlushSimplePropertyAndCreateIndex(jredisExecution, partition,
-                dirtyProperty.getPropertyName(),
-                ((PropertyImpl) dirtyProperty).getTransientValueAsBytes(),
-                uniqueKey, type);
+        internalFlushSimplePropertyAndCreateIndex(jredisExecution, partition, property.getPropertyName(),
+            ((PropertyImpl) property).getTransientValueAsBytes(), uniqueKey, type);
 
     }
 
@@ -745,32 +646,26 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public Set<StorageNode> getChildren(
-                                                            final Partition partition, final StorageNode StorageNode)
+    public Set<StorageNode> getChildren(final StorageNode node)
             throws Exception {
-        return getChildrenByType(partition, StorageNode, null);
+        return getChildren(node, null);
     }
 
     @Override
-    public Set<StorageNode> getChildrenByType(
-                                                                  final Partition partition, final StorageNode StorageNode,
-                                                                  final String type)
+    public Set<StorageNode> getChildren(final StorageNode node, final String type)
         throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
+        final JRedis jredis = factory.getFrom(node.getPartition());
 
-        final String parentKey = StorageNode.getKey().getKeyAsString();
-        final String keyName = type == null ? SET_WITH_NODE_CHILDREN_KEYS
-                .format(parentKey) : SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(
-                parentKey, type);
-        final List<String> childrenKeys = listBytesToListString(jredis
-                .smembers(keyName));
-        final ImmutableSet.Builder<StorageNode> builder = ImmutableSet
-                .builder();
+        final String parentKey = node.getKey().getKeyAsString();
+        final String keyName =
+            type == null ? SET_WITH_NODE_CHILDREN_KEYS.format(parentKey) : SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(parentKey,
+                type);
+        final List<String> childrenKeys = listBytesToListString(jredis.smembers(keyName));
+        final ImmutableSet.Builder<StorageNode> builder = ImmutableSet.builder();
         for (final String id: childrenKeys) {
             final Partition childPartition = getPartition(id, partitionFactory);
-            if (partition.equals(childPartition)) {
-                final StorageNode loadedNode = internalGetNode(id,
-                        childPartition);
+            if (node.getPartition().equals(childPartition)) {
+                final StorageNode loadedNode = getNode(id);
                 if (loadedNode != null) {
                     builder.add(loadedNode);
                 }
@@ -780,30 +675,26 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public StorageNode getParent(final Partition partition, final StorageNode node)
+    public StorageNode getParent(final StorageNode node)
         throws Exception {
         final String parentKeyAsString = node.getKey().getParentKeyAsString();
         if (parentKeyAsString == null) { return null; }
-        return internalGetNode(parentKeyAsString, partition);
+        return getNode(parentKeyAsString);
     }
 
     @Override
-    public Set<Property> loadProperties(
-                                                                    final Nothing reference, final Partition partition,
-                                                                    final PropertyContainer storageNode)
+    public Set<Property> loadProperties(final PropertyContainer element)
         throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
+        final JRedis jredis = factory.getFrom(element.getPartition());
         final Set<Property> result = newHashSet();
 
-        final String parentKey = storageNode.getKeyAsString();
+        final String parentKey = element.getKeyAsString();
         for (final PropertyType type: PropertyType.values()) {
             final String properties = type.getSetName(parentKey);
             if (jredis.exists(properties)) {
-                final List<String> propertyNames = listBytesToListString(jredis
-                        .smembers(properties));
+                final List<String> propertyNames = listBytesToListString(jredis.smembers(properties));
                 for (final String propertyName: propertyNames) {
-                    final Property property = loadProperty(partition,
-                            storageNode, parentKey, propertyName, type);
+                    final Property property = loadProperty(element, parentKey, propertyName, type);
                     if (property != null) {
                         result.add(property);
                     }
@@ -814,15 +705,12 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public byte[] getPropertyValue(final Partition partition,
-                                              final Property stProperty)
+    public byte[] getPropertyValue(final Partition partition, final Property property)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
-        final String uniqueKey = stProperty.getParent().getKeyAsString();
-        final byte[] propertyValue = jredis.get(KEY_WITH_PROPERTY_VALUE.format(
-                uniqueKey, stProperty.getPropertyName()));
+        final String uniqueKey = property.getParent().getKeyAsString();
+        final byte[] propertyValue = jredis.get(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, property.getPropertyName()));
         return propertyValue;
-
     }
 
     @Override

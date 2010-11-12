@@ -55,6 +55,8 @@ import org.openspotlight.storage.DefaultPartitionFactory;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.StorageSessionProvider;
+import org.openspotlight.storage.engine.StorageEngineBind;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
@@ -88,11 +90,10 @@ public class JRedisStorageModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(PartitionFactory.class).toInstance(partitionFactory);
-        bind(StorageSession.class).toProvider(JRedisStorageSessionProvider.class);
+        bind(StorageSession.class).toProvider(StorageSessionProvider.class);
+        bind(StorageEngineBind.class).toProvider(JRedisStorageSessionProvider.class);
         bind(StorageSession.FlushMode.class).toInstance(flushMode);
-        bind(new TypeLiteral<Map<Partition, JRedisServerDetail>>() {
-            })
-                .toInstance(mappedServerConfig);
+        bind(new TypeLiteral<Map<Partition, JRedisServerDetail>>() {}).toInstance(mappedServerConfig);
         bind(JRedisFactory.class).to(JRedisFacoryImpl.class);
         bind(boolean.class).annotatedWith(StartRedisLocally.class).toInstance(true);
     }

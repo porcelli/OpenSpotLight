@@ -134,7 +134,7 @@ public class StorageSessionImpl<R> implements StorageSession {
             if (getFlushMode().equals(FlushMode.AUTO)) {
                 StorageSessionImpl.this.handleNewItem(result);
             } else {
-                final R ref = storageEngine.createNodeReferenceIfNecessary(partition, result);
+                final R ref = storageEngine.createNodeReference(result);
                 final Pair<StorageNode, R> pair = newPair((StorageNode) result, ref);
                 StorageSessionImpl.this.newNodes.add(pair);
             }
@@ -269,7 +269,7 @@ public class StorageSessionImpl<R> implements StorageSession {
         @Override
         public Iterable<StorageNode> getNodes(final String nodeType) {
             try {
-                return storageEngine.findByType(partition, nodeType);
+                return storageEngine.getNodes(partition, nodeType);
             } catch (final Exception e) {
                 handleException(e);
                 return null;
@@ -301,7 +301,7 @@ public class StorageSessionImpl<R> implements StorageSession {
                     }
                     if (hasOther && hasGlobal) { throw new IllegalArgumentException(); }
                 }
-                return storageEngine.findByCriteria(criteria.getPartition(), criteria);
+                return storageEngine.search(criteria);
             } catch (final Exception e) {
                 handleException(e);
                 return null;
@@ -347,7 +347,7 @@ public class StorageSessionImpl<R> implements StorageSession {
     private final Set<StorageNode>                      removedNodes     = newLinkedHashSet();
 
     public StorageSessionImpl(final FlushMode flushMode, final PartitionFactory partitionFactory,
-                                 final StorageEngineBind<R> storageEngine) {
+                              final StorageEngineBind<R> storageEngine) {
         if (flushMode == null) { throw new NullPointerException(); }
         if (partitionFactory == null) { throw new NullPointerException(); }
         this.flushMode = flushMode;
@@ -368,11 +368,11 @@ public class StorageSessionImpl<R> implements StorageSession {
             R reference;
             switch (getFlushMode()) {
                 case AUTO:
-                    reference = storageEngine.createNodeReferenceIfNecessary(entry.getKey().getPartition(), entry);
-                    storageEngine.flushNewItem(reference, entry.getKey().getPartition(), entry);
+                    reference = storageEngine.createNodeReference(entry);
+                    storageEngine.flushNewItem(reference, entry);
                     break;
                 case EXPLICIT:
-                    reference = storageEngine.createNodeReferenceIfNecessary(entry.getKey().getPartition(), entry);
+                    reference = storageEngine.createNodeReference(entry);
                     newNodes.add(newPair(entry, reference));
                     break;
                 default:
@@ -387,7 +387,7 @@ public class StorageSessionImpl<R> implements StorageSession {
         try {
             switch (getFlushMode()) {
                 case AUTO:
-                    storageEngine.flushRemovedItem(entry.getKey().getPartition(), entry);
+                    storageEngine.flushRemovedItem(entry);
                     break;
                 case EXPLICIT:
                     removedNodes.add(entry);
@@ -398,14 +398,10 @@ public class StorageSessionImpl<R> implements StorageSession {
         }
     }
 
-    private void searchItemsToRemove(final StorageNode StorageNode, final List<StorageNode> removedItems) {
-        removedItems.add(StorageNode);
-        final Iterable<Partition> partitions =
-            SLCollections.iterableOf(StorageNode
-                .getKey().getPartition(),
-                partitionFactory.getValues());
-        for (final Partition p: partitions) {
-            final Iterable<StorageNode> children = StorageNode.getChildren(p, this);
+    private void searchItemsToRemove(final StorageNode node, final List<StorageNode> removedItems) {
+        removedItems.add(node);
+        for (final Partition p: partitionFactory.getValues()) {
+            final Iterable<StorageNode> children = node.getChildren(p, this);
             for (final StorageNode e: children) {
                 searchItemsToRemove(e, removedItems);
             }
@@ -422,23 +418,21 @@ public class StorageSessionImpl<R> implements StorageSession {
             .withParent(StorageNode);
     }
 
-    public Iterable<StorageNode> nodeEntryGetChildren(
-                                                      final Partition partition,
-                                                      final StorageNode StorageNode) {
+    public Iterable<StorageNode> nodeEntryGetChildren(final Partition partition, final StorageNode node) {
         try {
-            return storageEngine.getChildren(partition, StorageNode);
+            return storageEngine.getChildren(node);
         } catch (final Exception e) {
             handleException(e);
         }
         return null;
     }
 
-    public Iterable<StorageNode> nodeEntryGetChildrenByType(final Partition partition, final StorageNode StorageNode,
+    public Iterable<StorageNode> nodeEntryGetChildrenByType(final Partition partition, final StorageNode node,
                                                             final String type) {
-        if (!partition.equals(StorageNode.getKey().getPartition())) { throw new IllegalArgumentException(
+        if (!partition.equals(node.getPartition())) { throw new IllegalArgumentException(
             "wrong partition for this node entry"); }
         try {
-            return storageEngine.getChildrenByType(partition, StorageNode, type);
+            return storageEngine.getChildren(node, type);
         } catch (final Exception e) {
             handleException(e);
         }
@@ -447,7 +441,7 @@ public class StorageSessionImpl<R> implements StorageSession {
 
     public StorageNode nodeEntryGetParent(final StorageNode node) {
         try {
-            return storageEngine.getParent(node.getPartition(), node);
+            return storageEngine.getParent(node);
         } catch (final Exception e) {
             handleException(e);
         }
@@ -456,7 +450,7 @@ public class StorageSessionImpl<R> implements StorageSession {
 
     public Set<Property> propertyContainerLoadProperties(final PropertyContainer storageNode) {
         try {
-            return storageEngine.loadProperties(null, storageNode.getPartition(), storageNode);
+            return storageEngine.loadProperties(storageNode);
         } catch (final Exception e) {
             handleException(e);
         }
@@ -489,12 +483,12 @@ public class StorageSessionImpl<R> implements StorageSession {
         final StorageLink link = new StorageLinkImpl(type, source, target, true);
         if (getFlushMode().equals(FlushMode.AUTO)) {
             try {
-                storageEngine.handleNewLink(link.getSource().getPartition(), link.getSource(), link);
+                storageEngine.handleNewLink(link.getSource(), link);
             } catch (final Exception e) {
                 handleException(e);
             }
         } else {
-            final R ref = storageEngine.createLinkReferenceIfNecessary(source.getPartition(), link);
+            final R ref = storageEngine.createLinkReference(link);
             final Pair<StorageLink, R> pair = newPair(link, ref);
             StorageSessionImpl.this.newLinks.add(pair);
         }
@@ -522,7 +516,7 @@ public class StorageSessionImpl<R> implements StorageSession {
         for (final Pair<StorageNode, R> newNode: newNodes) {
             try {
                 partitions.add(newNode.getK1().getKey().getPartition());
-                storageEngine.flushNewItem(newNode.getK2(), newNode.getK1().getKey().getPartition(), newNode.getK1());
+                storageEngine.flushNewItem(newNode.getK2(), newNode.getK1());
                 referenceMap.put(newNode.getK1(), newNode.getK2());
             } catch (final Exception e) {
                 handleException(e);
@@ -534,13 +528,9 @@ public class StorageSessionImpl<R> implements StorageSession {
             R reference = referenceMap.get(propertyContainer);
             if (reference == null) {
                 if (propertyContainer instanceof StorageNode) {
-                    reference =
-                        storageEngine.createNodeReferenceIfNecessary(propertyContainer.getPartition(),
-                            (StorageNode) propertyContainer);
+                    reference = storageEngine.createNodeReference((StorageNode) propertyContainer);
                 } else if (propertyContainer instanceof StorageLink) {
-                    reference =
-                        storageEngine.createLinkReferenceIfNecessary(propertyContainer.getPartition(),
-                            (StorageLink) propertyContainer);
+                    reference = storageEngine.createLinkReference((StorageLink) propertyContainer);
                 } else {
                     throw new IllegalStateException();
                 }
@@ -557,21 +547,21 @@ public class StorageSessionImpl<R> implements StorageSession {
         for (final StorageNode removedNode: removedNodes) {
             try {
                 partitions.add(removedNode.getKey().getPartition());
-                storageEngine.flushRemovedItem(removedNode.getKey().getPartition(), removedNode);
+                storageEngine.flushRemovedItem(removedNode);
             } catch (final Exception e) {
                 handleException(e);
             }
         }
         for (final Pair<StorageLink, R> p: this.newLinks) {
             try {
-                storageEngine.handleNewLink(p.getK1().getPartition(), p.getK1().getSource(), p.getK1());
+                storageEngine.handleNewLink(p.getK1().getSource(), p.getK1());
             } catch (final Exception e) {
                 handleException(e);
             }
         }
         for (final StorageLink link: this.removedLinks) {
             try {
-                storageEngine.flushRemovedLink(link.getPartition(), link);
+                storageEngine.flushRemovedLink(link);
             } catch (final Exception e) {
                 handleException(e);
             }
@@ -598,7 +588,7 @@ public class StorageSessionImpl<R> implements StorageSession {
     @Override
     public StorageLink getLink(final StorageNode source, final StorageNode target, final String type) {
         try {
-            return SLCollections.firstOf(storageEngine.findLinks(source.getPartition(), source, target, type));
+            return SLCollections.firstOf(storageEngine.getLinks(source, target, type));
         } catch (final Exception e) {
             handleException(e);
             return null;
@@ -611,7 +601,7 @@ public class StorageSessionImpl<R> implements StorageSession {
     @Override
     public Iterable<StorageLink> getLinks(final StorageNode source) {
         try {
-            return storageEngine.findLinks(source.getPartition(), source, null, null);
+            return storageEngine.getLinks(source, null, null);
         } catch (final Exception e) {
             handleException(e);
             return null;
@@ -624,7 +614,7 @@ public class StorageSessionImpl<R> implements StorageSession {
     @Override
     public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target) {
         try {
-            return storageEngine.findLinks(source.getPartition(), source, target, null);
+            return storageEngine.getLinks(source, target, null);
         } catch (final Exception e) {
             handleException(e);
             return null;
@@ -637,7 +627,7 @@ public class StorageSessionImpl<R> implements StorageSession {
     @Override
     public Iterable<StorageLink> getLinks(final StorageNode source, final String type) {
         try {
-            return storageEngine.findLinks(source.getPartition(), source, null, type);
+            return storageEngine.getLinks(source, null, type);
         } catch (final Exception e) {
             handleException(e);
             return null;
@@ -661,7 +651,7 @@ public class StorageSessionImpl<R> implements StorageSession {
         try {
             switch (getFlushMode()) {
                 case AUTO:
-                    storageEngine.flushRemovedLink(link.getPartition(), link);
+                    storageEngine.flushRemovedLink(link);
                     break;
                 case EXPLICIT:
                     removedLinks.add(link);

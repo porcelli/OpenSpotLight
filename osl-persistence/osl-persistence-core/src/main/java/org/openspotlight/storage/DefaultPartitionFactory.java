@@ -56,20 +56,50 @@ import com.google.inject.Singleton;
 @Singleton
 public class DefaultPartitionFactory implements PartitionFactory {
 
-    private final Set<Partition> x = null;
+    private static class CustomPartition implements Partition {
+
+        private final String partitionName;
+
+        public CustomPartition(final String partitionName) {
+            this.partitionName = partitionName;
+        }
+
+        @Override
+        public String getPartitionName() {
+            return partitionName;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) { return true; }
+            if (!(o instanceof Partition)) { return false; }
+            final Partition that = (Partition) o;
+            return partitionName.equals(that.getPartitionName());
+        }
+
+        @Override
+        public int hashCode() {
+            return partitionName.hashCode();
+        }
+    }
+
+    private final Set<Partition> partitions = null;
 
     @Override
     public Partition getPartition(final String name) {
-        return RegularPartitions.valueOf(name.toUpperCase());
+        Partition partition = null;
+        try {
+            partition = RegularPartitions.valueOf(name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            partition = new CustomPartition(name);
+        }
+        partitions.add(partition);
+        return partition;
     }
 
     @Override
-    public Partition[] getValues() {
-        return RegularPartitions.values();
+    public Iterable<Partition> getValues() {
+        return partitions;
     }
 
-    @Override
-    public Partition getPartition(RegularPartitions parition) {
-        return null;
-    }
 }

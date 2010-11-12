@@ -67,19 +67,11 @@ public interface PartitionFactory {
     Partition getPartition(String name);
 
     /**
-     * Returns a partition based on regular regular partition parameter. Creates the partition, if its not yet created.
-     * 
-     * @param parition the regular partition
-     * @return the partition
-     */
-    Partition getPartition(RegularPartitions parition);
-
-    /**
      * Returns an array of all the available partitions.
      * 
      * @return available partitions
      */
-    Partition[] getValues();
+    Iterable<Partition> getValues();
 
     /**
      * Most common partitions.

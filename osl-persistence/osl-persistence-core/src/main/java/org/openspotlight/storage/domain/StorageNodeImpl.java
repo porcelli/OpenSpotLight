@@ -157,7 +157,6 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
      */
     @Override
     public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session, final String type) {
-
         Iterable<StorageNode> thisChildren = null;
         if (typedChildrenWeakReference.containsValue(type)) {
             for (final Map.Entry<Iterable<StorageNode>, String> entry: typedChildrenWeakReference.entrySet()) {
