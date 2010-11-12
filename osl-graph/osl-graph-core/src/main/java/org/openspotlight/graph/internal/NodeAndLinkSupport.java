@@ -100,7 +100,7 @@ import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.LinkAutoBidirectional;
 import org.openspotlight.graph.annotation.TransientProperty;
-import org.openspotlight.storage.AbstractStorageSession.NodeKeyBuilderImpl;
+import org.openspotlight.storage.StorageSessionImpl.NodeKeyBuilderImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;

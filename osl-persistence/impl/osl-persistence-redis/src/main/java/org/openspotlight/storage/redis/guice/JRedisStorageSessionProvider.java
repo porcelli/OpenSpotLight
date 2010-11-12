@@ -51,8 +51,9 @@ package org.openspotlight.storage.redis.guice;
 
 import org.openspotlight.guice.ThreadLocalProvider;
 import org.openspotlight.storage.PartitionFactory;
-import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.engine.StorageEngineBind;
 import org.openspotlight.storage.redis.JRedisStorageSessionImpl;
+import org.openspotlight.storage.redis.JRedisStorageSessionImpl.Nothing;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -61,23 +62,18 @@ import com.google.inject.Singleton;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
  */
 @Singleton
-public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
-    private final JRedisFactory            factory;
-
-    private final StorageSession.FlushMode flushMode;
-
-    private final PartitionFactory         partitionFactory;
+public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageEngineBind<Nothing>> {
+    private final JRedisFactory    factory;
+    private final PartitionFactory partitionFactory;
 
     @Inject
-    public JRedisStorageSessionProvider(final StorageSession.FlushMode flushMode, final JRedisFactory factory,
-                                        final PartitionFactory partitionFactory) {
-        this.flushMode = flushMode;
+    public JRedisStorageSessionProvider(final JRedisFactory factory, final PartitionFactory partitionFactory) {
         this.factory = factory;
         this.partitionFactory = partitionFactory;
     }
 
     @Override
-    protected StorageSession createInstance() {
-        return new JRedisStorageSessionImpl(flushMode, factory, partitionFactory);
+    protected StorageEngineBind<Nothing> createInstance() {
+        return new JRedisStorageSessionImpl(factory, partitionFactory);
     }
 }

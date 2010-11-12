@@ -74,7 +74,6 @@ import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.common.collection.IteratorBuilder.SimpleIteratorBuilder;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.storage.AbstractStorageSession;
 import org.openspotlight.storage.NodeCriteria;
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem;
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.CompositeKeyCriteriaItem;
@@ -84,6 +83,8 @@ import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyContainsS
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyCriteriaItem;
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem.PropertyStartsWithString;
+import org.openspotlight.storage.NodeKeyBuilder;
+import org.openspotlight.storage.NodeKeyBuilderImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StringKeysSupport;
@@ -96,6 +97,8 @@ import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.StorageNodeImpl;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
+import org.openspotlight.storage.engine.StorageEngineBind;
+import org.openspotlight.storage.StorageSession.FlushMode;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -116,17 +119,25 @@ import com.mongodb.gridfs.GridFSInputFile;
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
-public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
+public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
+
     private static final String                                    _                = "_";
-    private static final String                                    ID               = "_id", LOCAL_ID = "node_local_id",
-            PARENT_ID = "node_parent_id", KEY_NAMES = "node_key_names",
-            PROPERTIES = "node_properties", INDEXED = "node_indexed",
-            LINKS = "links", NODE_TYPE = "node_type";
+    private static final String                                    ID               = "_id";
+    private static final String                                    LOCAL_ID         = "node_local_id";
+    private static final String                                    PARENT_ID        = "node_parent_id";
+    private static final String                                    KEY_NAMES        = "node_key_names";
+    private static final String                                    PROPERTIES       = "node_properties";
+    private static final String                                    INDEXED          = "node_indexed";
+    private static final String                                    LINKS            = "links";
+    private static final String                                    NODE_TYPE        = "node_type";
     private static final String                                    NULL_VALUE       = "!!!NULL!!!";
-    private final Map<Pair<String, String>, DBCollection>          collectionsMap   = newHashMap();
-    private final Map<String, GridFS>                              gridFSMap;
+
+    private final FlushMode                                        flushMode;
     private final int                                              maxCacheSize;
     private final Mongo                                            mongo;
+
+    private final Map<Pair<String, String>, DBCollection>          collectionsMap   = newHashMap();
+    private final Map<String, GridFS>                              gridFSMap;
 
     private final LinkedList<Pair<NodeKey, DBObject>>              objectCache      = newLinkedList();
 
@@ -140,15 +151,14 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     Set<String>                                                    allIndexes       = newHashSet();
 
     @Inject
-    public MongoStorageSessionImpl(final Mongo mongo,
-                                   final FlushMode flushMode,
-                                   final PartitionFactory partitionFactory, final int maxCacheSize) {
-        super(flushMode, partitionFactory);
+    public MongoStorageSessionImpl(final Mongo mongo, final FlushMode flushMode, final PartitionFactory partitionFactory,
+                                   final int maxCacheSize) {
         this.partitionFactory = partitionFactory;
         this.maxCacheSize = maxCacheSize;
         partitionMap = newHashMap();
         this.mongo = mongo;
         gridFSMap = newHashMap();
+        this.flushMode = flushMode;
     }
 
     private static String beforeRegex(final String s) {
@@ -161,8 +171,8 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
         final DBObject keyAsDbObj = (DBObject) dbObject.get(INDEXED);
         final List<String> keyNames = (List<String>) dbObject.get(KEY_NAMES);
 
-        final NodeKeyBuilder keyBuilder = withPartition(partition).createNodeKeyWithType(
-                (String) dbObject.get(NODE_TYPE));
+        NodeKeyBuilder keyBuilder = new NodeKeyBuilderImpl((String) dbObject.get(NODE_TYPE), partition);
+
         for (final String s: keyAsDbObj.keySet()) {
             if (keyNames.contains(s)) {
                 String valueAsString = convert(keyAsDbObj.get(s), String.class);
@@ -207,12 +217,9 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
             throw new IllegalStateException();
         }
 
-        final Pair<StorageNode, DBObject> p = Pair
-                .<StorageNode, DBObject>newPair(node, null,
-                        Pair.PairEqualsMode.K1);
+        final Pair<StorageNode, DBObject> p = Pair.<StorageNode, DBObject>newPair(node, null, Pair.PairEqualsMode.K1);
         if (transientObjects.get(partition).contains(p)) {
-            for (final Pair<StorageNode, DBObject> pair: transientObjects
-                    .get(partition)) {
+            for (final Pair<StorageNode, DBObject> pair: transientObjects.get(partition)) {
                 if (pair.equals(p)) {
                     basicDBObject = pair.getK2();
                     break;
@@ -224,15 +231,13 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
         key = node.getKey();
         collectionName = node.getType();
 
-        final Pair<NodeKey, DBObject> p1 = newPair(key, null,
-                Pair.PairEqualsMode.K1);
+        final Pair<NodeKey, DBObject> p1 = newPair(key, null, Pair.PairEqualsMode.K1);
         final int idx = objectCache.indexOf(p1);
         if (idx != -1) {
             basicDBObject = objectCache.get(idx).getK2();
         }
         if (basicDBObject == null) {
-            final DBCollection coll = getCachedCollection(partition,
-                    collectionName);
+            final DBCollection coll = getCachedCollection(partition, collectionName);
             final BasicDBObject queryObject = new BasicDBObject();
             queryObject.put(ID, key.getKeyAsString());
             basicDBObject = coll.findOne(queryObject);
@@ -240,8 +245,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                 basicDBObject = new BasicDBObject();
                 basicDBObject.put(ID, key.getKeyAsString());
             }
-            objectCache.addFirst(newPair(key, basicDBObject,
-                    Pair.PairEqualsMode.K1));
+            objectCache.addFirst(newPair(key, basicDBObject, Pair.PairEqualsMode.K1));
             if (objectCache.size() > maxCacheSize) {
                 objectCache.removeLast();
             }
@@ -351,11 +355,11 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected DBObject createLinkReferenceIfNecessary(
+    public DBObject createLinkReferenceIfNecessary(
                                                       final Partition partition, final StorageLink link) {
-        final StorageNode origin = link.getSource();
+        final StorageNode source = link.getSource();
         final DBObject nodeRef = createNodeReferenceIfNecessary(partition,
-                origin);
+                source);
         DBObject linkRef = null;
         @SuppressWarnings("unchecked")
         List<DBObject> links = (List<DBObject>) nodeRef.get(LINKS);
@@ -384,7 +388,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected DBObject createNodeReferenceIfNecessary(
+    public DBObject createNodeReferenceIfNecessary(
                                                       final Partition partition, final StorageNode entry) {
         final DBObject basicDBObject = findReferenceOrReturnNull(partition,
                 entry);
@@ -398,8 +402,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected void flushNewItem(final DBObject reference,
-                                final Partition partition, final StorageNode entry)
+    public void flushNewItem(final DBObject reference, final Partition partition, final StorageNode entry)
             throws Exception {
         reference.put(LOCAL_ID, entry.getKey().getCompositeKey()
                 .getKeyAsString());
@@ -425,7 +428,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
         reference.put(KEY_NAMES, keyNames);
         reference.put(INDEXED, key);
         reference.put(NODE_TYPE, uniqueId.getCompositeKey().getNodeType());
-        if (FlushMode.AUTO.equals(getFlushMode())) {
+        if (FlushMode.AUTO.equals(flushMode)) {
             final DBCollection col = getCachedCollection(partition,
                     entry.getType());
             col.save(reference);
@@ -440,7 +443,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected void flushRemovedItem(final Partition partition,
+    public void flushRemovedItem(final Partition partition,
                                     final StorageNode entry)
         throws Exception {
         final DBCollection collection = getCachedCollection(partition,
@@ -450,7 +453,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected void flushRemovedLink(final Partition partition,
+    public void flushRemovedLink(final Partition partition,
                                     final StorageLink link) {
         final DBObject basicDBObject = findReferenceOrReturnNull(partition,
                 link.getSource());
@@ -470,22 +473,22 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected void handleNewLink(final Partition partition,
-                                 final StorageNode origin, final StorageLink link)
+    public void handleNewLink(final Partition partition,
+                                 final StorageNode source, final StorageLink link)
         throws Exception {
         createLinkReferenceIfNecessary(partition, link);
-        if (getFlushMode().equals(FlushMode.AUTO)) {
+        if (flushMode.equals(FlushMode.AUTO)) {
             final DBObject nodeRef = createNodeReferenceIfNecessary(partition,
-                    origin);
+                    source);
             final DBCollection col = getCachedCollection(partition,
-                    origin.getType());
+                    source.getType());
             col.save(nodeRef);
 
         }
     }
 
     @Override
-    protected Iterable<StorageNode> internalFindByCriteria(final Partition partition, final NodeCriteria criteria)
+    public Iterable<StorageNode> findByCriteria(final Partition partition, final NodeCriteria criteria)
             throws Exception {
 
         final DBObject criteriaAsObj = new BasicDBObject();
@@ -560,14 +563,13 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                 return convertToNode(partition, nodeEntry);
             }
         });
-        final Iterable<StorageNode> result = b.withItems(
-                SLCollections.<DBObject>iterableOfAll(dbCursors)).andBuild();
+        final Iterable<StorageNode> result = b.withItems(SLCollections.<DBObject>iterableOfAll(dbCursors)).andBuild();
         return result;
 
     }
 
     @Override
-    protected Iterable<StorageNode> internalFindByType(
+    public Iterable<StorageNode> findByType(
                                                        final Partition partition, final String nodeType)
         throws Exception {
         final DBCursor cursor = getCachedCollection(partition, nodeType).find();
@@ -580,38 +582,28 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected Iterable<StorageLink> internalFindLinks(
-                                                      final Partition partition, final StorageNode origin,
-                                                      final StorageNode destiny, final String name) {
+    public Iterable<StorageLink> findLinks(final Partition partition, final StorageNode source,
+                                                   final StorageNode target, final String type) {
         final Builder<String> rawItems = ImmutableList.builder();
-        final DBObject basicDBObject = findReferenceOrReturnNull(partition,
-                origin);
+        final DBObject basicDBObject = findReferenceOrReturnNull(partition, source);
         if (basicDBObject != null) {
             @SuppressWarnings("unchecked")
-            final List<DBObject> links = (List<DBObject>) basicDBObject
-                    .get(LINKS);
+            final List<DBObject> links = (List<DBObject>) basicDBObject.get(LINKS);
             if (links != null) {
                 for (final DBObject possibleLink: links) {
                     final String linkId = (String) possibleLink.get(ID);
-                    if (name != null && destiny != null) {
-                        if (StringKeysSupport.getLinkTypeFromLinkKey(linkId)
-                                .equals(name)
-                                && StringKeysSupport
-                                        .getTargeyKeyAsStringFromLinkKey(linkId)
-                                        .equals(destiny.getKeyAsString())) {
+                    if (type != null && target != null) {
+                        if (StringKeysSupport.getLinkTypeFromLinkKey(linkId).equals(type) &&
+                            StringKeysSupport.getTargeyKeyAsStringFromLinkKey(linkId).equals(target.getKeyAsString())) {
                             rawItems.add(linkId);
                         }
-
-                    } else if (name != null) {
-                        if (StringKeysSupport.getLinkTypeFromLinkKey(linkId)
-                                .equals(name)) {
+                    } else if (type != null) {
+                        if (StringKeysSupport.getLinkTypeFromLinkKey(linkId).equals(type)) {
                             rawItems.add(linkId);
                         }
-                    } else if (destiny != null) {
-                        if (StringKeysSupport.getTargeyKeyAsStringFromLinkKey(
-                                linkId).equals(destiny.getKeyAsString())) {
+                    } else if (target != null) {
+                        if (StringKeysSupport.getTargeyKeyAsStringFromLinkKey(linkId).equals(target.getKeyAsString())) {
                             rawItems.add(linkId);
-
                         }
                     } else {
                         rawItems.add(linkId);
@@ -619,43 +611,35 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                 }
             }
         }
+
         @SuppressWarnings("unchecked")
         final SimpleIteratorBuilder<StorageLink, String> result = IteratorBuilder
                 .<StorageLink, String>createIteratorBuilder()
                 .withItems(rawItems.build())
                 .withConverter(new Converter<StorageLink, String>() {
-
                     @Override
                     public StorageLink convert(final String o)
                         throws Exception {
-                        StorageNode foundTarget = destiny;
+                        StorageNode foundTarget = target;
                         if (foundTarget == null) {
-                            final String targetId = StringKeysSupport
-                                    .getTargeyKeyAsStringFromLinkKey(o);
-                            final Partition targetPartition = partitionFactory
-                                    .getPartition(StringKeysSupport
-                                            .getPartitionName(targetId));
+                            final String targetId = StringKeysSupport.getTargeyKeyAsStringFromLinkKey(o);
+                            final Partition targetPartition =
+                                partitionFactory.getPartition(StringKeysSupport.getPartitionName(targetId));
 
-                            foundTarget = withPartition(targetPartition)
-                                    .createCriteria()
-                                    .withUniqueKeyAsString(targetId)
-                                    .buildCriteria()
-                                    .andSearchUnique(MongoStorageSessionImpl.this);
+                            foundTarget = internalGetNode(targetId, targetPartition);
                             if (foundTarget == null) {
                                 throw new IllegalStateException();
                             }
                         }
-                        final String foundName = StringKeysSupport
-                                .getLinkTypeFromLinkKey(o);
-                        return new StorageLinkImpl(foundName, origin,
-                                foundTarget, true);
+                        final String foundName = StringKeysSupport.getLinkTypeFromLinkKey(o);
+                        return new StorageLinkImpl(foundName, source, foundTarget, true);
                     }
                 });
         return result.andBuild();
     }
 
     @Override
-    protected void internalFlushSimpleProperty(
+    public void flushSimpleProperty(
                                                final DBObject possibleReference, final Partition partition,
                                                final Property dirtyProperty)
         throws Exception {
@@ -687,14 +671,13 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
             ensureIndexed(partition, collectionName, INDEXED,
                     dirtyProperty.getPropertyName(), null);
             objName = INDEXED;
-            value = ((PropertyImpl) dirtyProperty).getTransientValueAsString(this);
+            value = ((PropertyImpl) dirtyProperty).getTransientValueAsString();
             if (value == null) {
                 value = NULL_VALUE;
             }
         } else if (!dirtyProperty.isKey()) {
             objName = PROPERTIES;
-            value = ((PropertyImpl) dirtyProperty)
-                    .getTransientValueAsBytes(this);
+            value = ((PropertyImpl) dirtyProperty).getTransientValueAsBytes();
         }
         if (objName == null) { return; }
         DBObject obj = (DBObject) reference.get(objName);
@@ -717,7 +700,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                 throw new IllegalStateException();
             }
 
-            if (FlushMode.AUTO.equals(getFlushMode())) {
+            if (FlushMode.AUTO.equals(flushMode)) {
                 getCachedCollection(partition, nodeEntry.getType()).save(
                         reference);
             } else {
@@ -733,7 +716,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected Iterable<String> internalGetAllNodeTypes(final Partition partition) {
+    public Iterable<String> getAllNodeTypes(final Partition partition) {
         final HashSet<String> set = new HashSet<String>();
         set.addAll(getCachedDbForPartition(partition).getCollectionNames());
         set.remove("system.indexes");
@@ -741,8 +724,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected Iterable<StorageNode> internalNodeEntryGetChildren(
-                                                                 final Partition partition, final StorageNode StorageNode)
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageNode StorageNode)
             throws Exception {
         if (StorageNode == null) { return emptySet(); }
         return internalGetChildren(partition, StorageNode, null);
@@ -750,7 +732,24 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected Iterable<StorageNode> internalNodeEntryGetChildrenByType(
+    public StorageNode getNode(String key)
+        throws Exception {
+        return internalGetNode(key, getPartition(key, partitionFactory));
+    }
+
+    public StorageNode internalGetNode(String key, Partition partition)
+        throws Exception {
+        final String nodeType = getNodeType(key);
+        final BasicDBObject parameter = new BasicDBObject();
+        parameter.put(ID, key);
+        final DBCollection collection = getCachedCollection(partition, nodeType);
+        final DBObject result = collection.findOne(parameter);
+        return convertToNode(partition, result);
+
+    }
+
+    @Override
+    public Iterable<StorageNode> getChildrenByType(
                                                                        final Partition initialPartition,
                                                                        final StorageNode StorageNode,
                                                                        final String type)
@@ -760,23 +759,15 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected StorageNode internalNodeEntryGetParent(final Partition partition,
-                                                     final StorageNode StorageNode)
+    public StorageNode getParent(final Partition partition, final StorageNode StorageNode)
         throws Exception {
         final String parentKey = StorageNode.getKey().getParentKeyAsString();
         if (parentKey == null) { return null; }
-        final Partition parentPartition = getPartition(parentKey, partitionFactory);
-        final String parentName = getNodeType(parentKey);
-        final BasicDBObject parameter = new BasicDBObject();
-        parameter.put(ID, parentKey);
-        final DBCollection collection = getCachedCollection(parentPartition,
-                parentName);
-        final DBObject result = collection.findOne(parameter);
-        return convertToNode(parentPartition, result);
+        return getNode(parentKey);
     }
 
     @Override
-    protected Set<Property> internalPropertyContainerLoadProperties(
+    public Set<Property> loadProperties(
                                                                     final DBObject possibleReference, final Partition partition,
                                                                     final PropertyContainer propertyContainer)
         throws Exception {
@@ -788,7 +779,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
             for (final SimpleKey entry: nodeEntry.getKey().getCompositeKey()
                     .getKeys()) {
                 final PropertyImpl p = PropertyImpl.createKey(entry.getKeyName(), propertyContainer);
-                (p).setStringValueOnLoad(this, entry.getValue());
+                (p).setStringValueOnLoad(entry.getValue());
                 builder.add(p);
             }
             final DBObject reference =
@@ -803,7 +794,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                         if (NULL_VALUE.equals(value)) {
                             value = null;
                         }
-                        (p).setStringValueOnLoad(this, value);
+                        (p).setStringValueOnLoad(value);
                         builder.add(p);
                     }
                 }
@@ -835,7 +826,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
                     if (NULL_VALUE.equals(value)) {
                         value = null;
                     }
-                    (p).setStringValueOnLoad(this, value);
+                    (p).setStringValueOnLoad(value);
                     builder.add(p);
                 }
             }
@@ -856,7 +847,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected byte[] internalPropertyGetValue(final Partition partition,
+    public byte[] getPropertyValue(final Partition partition,
                                               final Property stProperty)
         throws Exception {
         byte[] value = null;
@@ -911,7 +902,7 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
     }
 
     @Override
-    protected void internalSavePartitions(final Partition... partitions)
+    public void savePartitions(final Partition... partitions)
             throws Exception {
         for (final Partition partition: partitions) {
             for (final Pair<StorageNode, DBObject> p: transientObjects
@@ -954,7 +945,6 @@ public class MongoStorageSessionImpl extends AbstractStorageSession<DBObject> {
         final GridFSInputFile file = fs.createFile(value);
         file.setFilename(key);
         file.save();
-
     }
 
 }

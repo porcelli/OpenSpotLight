@@ -47,39 +47,32 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.persist.support;
+package org.openspotlight.storage;
 
-import org.openspotlight.common.Disposable;
-import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.StorageNode;
+import org.openspotlight.guice.ThreadLocalProvider;
+import org.openspotlight.storage.StorageSession.FlushMode;
+import org.openspotlight.storage.engine.StorageEngineBind;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
-/**
- * Created by User: feu - Date: Apr 20, 2010 - Time: 9:58:43 AM
- */
 @Singleton
-public class SimplePersistFactoryImpl implements SimplePersistFactory {
+public class StorageSessionProvider<R> extends ThreadLocalProvider<StorageSession> {
 
-    private final Provider<StorageSession> sessionProvider;
+    private final FlushMode            flushMode;
+    private final PartitionFactory     partitionFactory;
+    private final StorageEngineBind<R> storageEngine;
 
     @Inject
-    public SimplePersistFactoryImpl(final Provider<StorageSession> sessionProvider) {
-        this.sessionProvider = sessionProvider;
+    public StorageSessionProvider(final StorageSession.FlushMode flushMode, final PartitionFactory partitionFactory,
+                                  final StorageEngineBind<R> storageEngine) {
+        this.flushMode = flushMode;
+        this.partitionFactory = partitionFactory;
+        this.storageEngine = storageEngine;
     }
 
     @Override
-    public void closeResources() {
-        if (sessionProvider instanceof Disposable) {
-            ((Disposable) sessionProvider).closeResources();
-        }
-    }
-
-    @Override
-    public SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(final Partition partition) {
-        return new SimplePersistImpl(sessionProvider.get(), partition);
+    protected StorageSession createInstance() {
+        return new StorageSessionImpl<R>(flushMode, partitionFactory, storageEngine);
     }
 }

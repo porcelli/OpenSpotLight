@@ -65,10 +65,9 @@ import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
 import com.google.common.collect.ImmutableSet;
 
-public class CriteriaImpl implements NodeCriteria {
+public class NodeCriteriaImpl implements NodeCriteria {
 
-    private static class LocalKeyCriteriaItemImpl implements
-        CompositeKeyCriteriaItem {
+    private static class LocalKeyCriteriaItemImpl implements CompositeKeyCriteriaItem {
         private final String       nodeType;
 
         private final CompositeKey value;
@@ -433,7 +432,7 @@ public class CriteriaImpl implements NodeCriteria {
         private String          transientPropertyValue;
         private NodeKey         transientUniqueKey;
 
-        Set<NodeCriteriaItem>       items;
+        Set<NodeCriteriaItem>   items;
 
         public CriteriaBuilderImpl(final Partition partition) {
             this.partition = partition;
@@ -485,14 +484,14 @@ public class CriteriaImpl implements NodeCriteria {
         @Override
         public NodeCriteria buildCriteria() {
             and();
-            final CriteriaImpl result = new CriteriaImpl(transientNodeType, items, partition);
+            final NodeCriteriaImpl result = new NodeCriteriaImpl(transientNodeType, items, partition);
 
             return result;
         }
 
         @Override
         public NodeCriteriaBuilder containsString(
-                                              final String value) {
+                                                  final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
@@ -505,7 +504,7 @@ public class CriteriaImpl implements NodeCriteria {
 
         @Override
         public NodeCriteriaBuilder endsWithString(
-                                              final String value) {
+                                                  final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
@@ -529,7 +528,7 @@ public class CriteriaImpl implements NodeCriteria {
 
         @Override
         public NodeCriteriaBuilder startsWithString(
-                                                final String value) {
+                                                    final String value) {
 
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
@@ -564,7 +563,7 @@ public class CriteriaImpl implements NodeCriteria {
 
         @Override
         public NodeCriteriaBuilder withProperty(
-                                            final String propertyName) {
+                                                final String propertyName) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyValue);
             breakIfNotNull(transientLocalKey);
@@ -600,11 +599,11 @@ public class CriteriaImpl implements NodeCriteria {
 
     private final Set<NodeCriteriaItem> criteriaItems;
 
-    private final String            nodeType;
+    private final String                nodeType;
 
-    private final Partition         partition;
+    private final Partition             partition;
 
-    private CriteriaImpl(final String nodeType, final Set<NodeCriteriaItem> criteriaItems, final Partition partition) {
+    private NodeCriteriaImpl(final String nodeType, final Set<NodeCriteriaItem> criteriaItems, final Partition partition) {
         this.nodeType = nodeType;
         this.partition = partition;
         this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
@@ -625,7 +624,7 @@ public class CriteriaImpl implements NodeCriteria {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
-        final CriteriaImpl that = (CriteriaImpl) o;
+        final NodeCriteriaImpl that = (NodeCriteriaImpl) o;
 
         if (criteriaItems != null ? !criteriaItems.equals(that.criteriaItems) : that.criteriaItems != null) { return false; }
         if (nodeType != null ? !nodeType.equals(that.nodeType) : that.nodeType != null) { return false; }

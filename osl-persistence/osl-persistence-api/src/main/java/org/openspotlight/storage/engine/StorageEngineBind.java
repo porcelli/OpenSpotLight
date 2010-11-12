@@ -47,39 +47,70 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.persist.support;
+package org.openspotlight.storage.engine;
+
+import java.util.Set;
 
 import org.openspotlight.common.Disposable;
+import org.openspotlight.storage.NodeCriteria;
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.Property;
+import org.openspotlight.storage.domain.PropertyContainer;
+import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
+public interface StorageEngineBind<R> extends Disposable {
 
-/**
- * Created by User: feu - Date: Apr 20, 2010 - Time: 9:58:43 AM
- */
-@Singleton
-public class SimplePersistFactoryImpl implements SimplePersistFactory {
+    R createLinkReferenceIfNecessary(Partition partition, StorageLink entry);
 
-    private final Provider<StorageSession> sessionProvider;
+    R createNodeReferenceIfNecessary(Partition partition, StorageNode entry);
 
-    @Inject
-    public SimplePersistFactoryImpl(final Provider<StorageSession> sessionProvider) {
-        this.sessionProvider = sessionProvider;
-    }
+    void flushNewItem(R reference, Partition partition, StorageNode entry)
+        throws Exception;
 
-    @Override
-    public void closeResources() {
-        if (sessionProvider instanceof Disposable) {
-            ((Disposable) sessionProvider).closeResources();
-        }
-    }
+    void flushRemovedItem(Partition partition, StorageNode entry)
+        throws Exception;
 
-    @Override
-    public SimplePersistCapable<StorageNode, StorageSession> createSimplePersist(final Partition partition) {
-        return new SimplePersistImpl(sessionProvider.get(), partition);
-    }
+    void flushRemovedLink(Partition partition, StorageLink link)
+        throws Exception;
+
+    void handleNewLink(Partition partition, StorageNode origin, StorageLink link)
+        throws Exception;
+
+    Iterable<StorageNode> findByCriteria(Partition partition, NodeCriteria criteria)
+        throws Exception;
+
+    Iterable<StorageNode> findByType(Partition partition, String nodeType)
+        throws Exception;
+
+    Iterable<StorageLink> findLinks(Partition partition, StorageNode origin, StorageNode destiny, String type)
+        throws Exception;
+
+    void flushSimpleProperty(R reference, Partition partition, Property dirtyProperty)
+        throws Exception;
+
+    Iterable<String> getAllNodeTypes(Partition partition)
+        throws Exception;
+
+    StorageNode getNode(String key)
+        throws Exception;
+
+    Iterable<StorageNode> getChildren(Partition partition, StorageNode StorageNode)
+        throws Exception;
+
+    Iterable<StorageNode> getChildrenByType(Partition partition, StorageNode StorageNode, String type)
+        throws Exception;
+
+    StorageNode getParent(Partition partition, StorageNode StorageNode)
+        throws Exception;
+
+    Set<Property> loadProperties(R reference, Partition partition, PropertyContainer StorageNode)
+        throws Exception;
+
+    byte[] getPropertyValue(Partition partition, Property stProperty)
+        throws Exception;
+
+    void savePartitions(Partition... partitions)
+        throws Exception;
+
 }

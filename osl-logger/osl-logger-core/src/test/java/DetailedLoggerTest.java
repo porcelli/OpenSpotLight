@@ -140,9 +140,8 @@ public class DetailedLoggerTest {
 
         simplePersist = simplePersistFactory
                 .createSimplePersist(RegularPartitions.LOG);
-        loggerProvider = new DetailedLoggerProvider(simplePersistFactory,
-                autoFlushInjector
-                        .getInstance(JRedisStorageSessionProvider.class));
+        loggerProvider =
+            new DetailedLoggerProvider(simplePersistFactory, autoFlushInjector.getInstance(JRedisStorageSessionProvider.class));
 
     }
 

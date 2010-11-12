@@ -74,8 +74,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
     private final SimplePersistFactory simplePersistFactory;
 
     @Inject
-    public DetailedLoggerProvider(
-                                  final SimplePersistFactory simplePersistFactory, final Provider<StorageSession> sessionProvider) {
+    public DetailedLoggerProvider(final SimplePersistFactory simplePersistFactory, final Provider<StorageSession> sessionProvider) {
         this.simplePersistFactory = simplePersistFactory;
         //        this.sessionProvider = sessionProvider;
     }

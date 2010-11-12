@@ -86,8 +86,7 @@ public class MongoModule extends AbstractModule {
         bind(Mongo.class).toInstance(mongo);
         bind(StorageSession.FlushMode.class).toInstance(flushMode);
         bind(StorageSession.class).toProvider(MongoStorageSessionProvider.class);
-        bind(int.class)
-                       .annotatedWith(MongoMaxCacheSize.class).toInstance(256);
+        bind(int.class).annotatedWith(MongoMaxCacheSize.class).toInstance(256);
 
     }
 }

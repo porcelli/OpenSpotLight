@@ -49,13 +49,14 @@
 
 package org.openspotlight.storage;
 
+import java.util.Set;
+
 import com.google.inject.Singleton;
 
-/**
- * Created by User: feu - Date: Jun 14, 2010 - Time: 3:30:12 PM
- */
 @Singleton
 public class DefaultPartitionFactory implements PartitionFactory {
+
+    private final Set<Partition> x = null;
 
     @Override
     public Partition getPartition(final String name) {
@@ -65,5 +66,10 @@ public class DefaultPartitionFactory implements PartitionFactory {
     @Override
     public Partition[] getValues() {
         return RegularPartitions.values();
+    }
+
+    @Override
+    public Partition getPartition(RegularPartitions parition) {
+        return null;
     }
 }

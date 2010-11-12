@@ -60,7 +60,7 @@ import java.lang.ref.SoftReference;
 
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.storage.AbstractStorageSession;
+import org.openspotlight.storage.StorageSessionImpl;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
@@ -347,7 +347,7 @@ public class PropertyImpl implements Property {
      */
     private void refreshPropertyIfNecessary(final StorageSession session) {
         if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
-            propertyValue.setValue(((AbstractStorageSession<?>) session).propertyGetValue(this));
+            propertyValue.setValue(((StorageSessionImpl<?>) session).propertyGetValue(this));
             propertyValue.setLoaded(true);
             propertyValue.setDirty(false);
         }
@@ -383,14 +383,9 @@ public class PropertyImpl implements Property {
      * <b>Note:</b> the unique difference of this operation from {@link #getValueAsString(StorageSession)} is that this method
      * does not try to reload the property value.
      * 
-     * @param session the storage session
      * @return the transient value
-     * @throws IllegalArgumentException if input param is null
      */
-    public String getTransientValueAsString(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
+    public String getTransientValueAsString() {
         return propertyValue.getValueAsString();
     }
 
@@ -399,14 +394,9 @@ public class PropertyImpl implements Property {
      * <b>Note:</b> the unique difference of this operation from {@link #getValueAsStream(StorageSession)} is that this method
      * does not try to reload the property value.
      * 
-     * @param session the storage session
      * @return the transient value
-     * @throws IllegalArgumentException if input param is null
      */
-    public InputStream getTransientValueAsStream(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
+    public InputStream getTransientValueAsStream() {
         return propertyValue.getValueAsStream();
     }
 
@@ -415,28 +405,19 @@ public class PropertyImpl implements Property {
      * <b>Note:</b> the unique difference of this operation from {@link #getValueAsBytes(StorageSession)} is that this method does
      * not try to reload the property value.
      * 
-     * @param session the storage session
      * @return the transient value
-     * @throws IllegalArgumentException if input param is null
      */
-    public byte[] getTransientValueAsBytes(final StorageSession session)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
+    public byte[] getTransientValueAsBytes() {
         return propertyValue.getValueAsBytes();
     }
 
     /**
      * Initialize the property value
      * 
-     * @param session the storage session
      * @param value the value to be loaded
-     * @throws IllegalArgumentException if input param is null
      */
-    public void setStringValueOnLoad(final StorageSession session, final String value)
+    public void setStringValueOnLoad(final String value)
         throws IllegalArgumentException {
-        checkNotNull("session", session);
-
         propertyValue.setValue(value);
         propertyValue.setDirty(false);
         propertyValue.setLoaded(true);
@@ -446,13 +427,10 @@ public class PropertyImpl implements Property {
     /**
      * Initialize the property value
      * 
-     * @param session the storage session
      * @param value the value to be loaded
      * @throws IllegalArgumentException if input param is null
      */
-    public void setStreamValueOnLoad(final StorageSession session, final InputStream value) {
-        checkNotNull("session", session);
-
+    public void setStreamValueOnLoad(final InputStream value) {
         propertyValue.setValue(value);
         propertyValue.setDirty(false);
         propertyValue.setLoaded(true);
@@ -461,14 +439,9 @@ public class PropertyImpl implements Property {
     /**
      * Initialize the property value
      * 
-     * @param session the storage session
      * @param value the value to be loaded
-     * @throws IllegalArgumentException if input param is null
      */
-    public void setBytesValueOnLoad(final StorageSession session, final byte[] value)
-        throws IllegalArgumentException {
-        checkNotNull("session", session);
-
+    public void setBytesValueOnLoad(final byte[] value) {
         propertyValue.setValue(value);
         propertyValue.setDirty(false);
         propertyValue.setLoaded(true);
@@ -554,7 +527,7 @@ public class PropertyImpl implements Property {
         verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        ((StorageSessionImpl<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
     /**
@@ -569,7 +542,7 @@ public class PropertyImpl implements Property {
         verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        ((StorageSessionImpl<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
     /**
@@ -583,6 +556,6 @@ public class PropertyImpl implements Property {
         verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        ((AbstractStorageSession<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        ((StorageSessionImpl<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 }

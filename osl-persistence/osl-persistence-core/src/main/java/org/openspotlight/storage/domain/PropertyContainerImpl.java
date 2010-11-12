@@ -56,7 +56,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.storage.AbstractStorageSession;
+import org.openspotlight.storage.StorageSessionImpl;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
@@ -101,7 +101,7 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         final boolean tooOld = lastLoad < (System.currentTimeMillis() + TIMEOUT);
         final boolean empty = propertiesByName.isEmpty();
         if (tooOld && empty) {
-            final Set<Property> result = ((AbstractStorageSession<?>) session).propertyContainerLoadProperties(this);
+            final Set<Property> result = ((StorageSessionImpl<?>) session).propertyContainerLoadProperties(this);
             for (final Property property: result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }

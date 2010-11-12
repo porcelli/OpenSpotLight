@@ -62,12 +62,11 @@ public final class DetailedLoggerImpl implements DetailedLogger {
 
     private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-    public DetailedLoggerImpl(
-                              final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+    public DetailedLoggerImpl(final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
         try {
             this.simplePersist = simplePersist;
-            rootNode = this.simplePersist.getCurrentSession()
-                    .withPartition(this.simplePersist.getCurrentPartition())
+            rootNode =
+                this.simplePersist.getCurrentSession().withPartition(this.simplePersist.getCurrentPartition())
                     .createNewSimpleNode("log");
 
         } catch (final Exception e) {

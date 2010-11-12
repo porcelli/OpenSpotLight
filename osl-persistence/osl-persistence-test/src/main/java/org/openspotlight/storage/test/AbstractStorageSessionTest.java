@@ -2016,7 +2016,7 @@ public abstract class AbstractStorageSessionTest {
                 .equalsTo("name")
                                         .buildCriteria().andSearchUnique(session);
 
-        assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty")).getTransientValueAsString(session),
+        assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty")).getTransientValueAsString(),
             is("value"));
 
         assertThat(newNode.getPropertyValueAsString(session, "stringProperty"), is("value"));
@@ -2080,7 +2080,7 @@ public abstract class AbstractStorageSessionTest {
         newNode.setSimpleProperty(session, "stringProperty", "value");
 
         assertThat(((PropertyImpl) newNode.getProperty(session, "stringProperty"))
-                          .getTransientValueAsString(session),
+                          .getTransientValueAsString(),
                    is("value"));
 
         assertThat(loadedNode1.getPropertyValueAsString(session, "stringProperty"),

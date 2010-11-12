@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.openspotlight.storage.AbstractStorageSession;
+import org.openspotlight.storage.StorageSessionImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Property;
@@ -123,7 +123,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         checkNotNull("session", session);
         checkNotEmpty("type", type);
 
-        return ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryCreateWithType(this, type);
+        return ((StorageSessionImpl<?>) session.withPartition(partition)).nodeEntryCreateWithType(this, type);
     }
 
     /**
@@ -181,7 +181,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session,
                                                           final String type) {
         final Iterable<StorageNode> children =
-            ((AbstractStorageSession<?>) session).nodeEntryGetChildrenByType(partition, this, type);
+            ((StorageSessionImpl<?>) session).nodeEntryGetChildrenByType(partition, this, type);
         typedChildrenWeakReference.put(children, type);
         return children;
     }
@@ -191,7 +191,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
      */
     @Override
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session) {
-        final Iterable<StorageNode> children = ((AbstractStorageSession<?>) session).nodeEntryGetChildren(partition, this);
+        final Iterable<StorageNode> children = ((StorageSessionImpl<?>) session).nodeEntryGetChildren(partition, this);
         childrenWeakReference = new WeakReference<Iterable<StorageNode>>(children);
         return children;
     }
@@ -219,7 +219,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
     public StorageNode getParent(final StorageSession session) {
         StorageNode parent = parentWeakReference != null ? parentWeakReference.get() : null;
         if (parent == null) {
-            parent = ((AbstractStorageSession<?>) session).nodeEntryGetParent(this);
+            parent = ((StorageSessionImpl<?>) session).nodeEntryGetParent(this);
             parentWeakReference = new WeakReference<StorageNode>(parent);
         }
         return parent;
