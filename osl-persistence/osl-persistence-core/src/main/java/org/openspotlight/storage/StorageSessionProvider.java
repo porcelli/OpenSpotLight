@@ -59,13 +59,13 @@ import com.google.inject.Singleton;
 @Singleton
 public class StorageSessionProvider extends ThreadLocalProvider<StorageSession> {
 
-    private final FlushMode            flushMode;
-    private final PartitionFactory     partitionFactory;
-    private final StorageEngineBind<?> storageEngine;
+    private final FlushMode         flushMode;
+    private final PartitionFactory  partitionFactory;
+    private final StorageEngineBind storageEngine;
 
     @Inject
     public StorageSessionProvider(final StorageSession.FlushMode flushMode, final PartitionFactory partitionFactory,
-                                  final StorageEngineBind<?> storageEngine) {
+                                  final StorageEngineBind storageEngine) {
         this.flushMode = flushMode;
         this.partitionFactory = partitionFactory;
         this.storageEngine = storageEngine;

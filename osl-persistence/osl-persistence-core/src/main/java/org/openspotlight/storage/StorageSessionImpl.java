@@ -93,6 +93,7 @@ import org.openspotlight.storage.engine.StorageEngineBind;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.inject.Inject;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
@@ -346,6 +347,7 @@ public class StorageSessionImpl<R> implements StorageSession {
 
     private final Set<StorageNode>                      removedNodes     = newLinkedHashSet();
 
+    @Inject
     public StorageSessionImpl(final FlushMode flushMode, final PartitionFactory partitionFactory,
                               final StorageEngineBind<R> storageEngine) {
         if (flushMode == null) { throw new NullPointerException(); }
