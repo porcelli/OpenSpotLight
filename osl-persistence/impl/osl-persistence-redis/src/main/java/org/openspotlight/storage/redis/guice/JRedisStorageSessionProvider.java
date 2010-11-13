@@ -62,7 +62,7 @@ import com.google.inject.Singleton;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
  */
 @Singleton
-public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageEngineBind<Nothing>> {
+public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageEngineBind<Nothing, Nothing>> {
     private final JRedisFactory    factory;
     private final PartitionFactory partitionFactory;
 
@@ -73,7 +73,7 @@ public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageEng
     }
 
     @Override
-    protected StorageEngineBind<Nothing> createInstance() {
+    protected StorageEngineBind<Nothing, Nothing> createInstance() {
         return new JRedisStorageSessionImpl(factory, partitionFactory);
     }
 }

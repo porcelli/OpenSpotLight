@@ -57,8 +57,9 @@ import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 
 /**
- * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
- * connection state. This implementation must not be shared between threads.
+ * This is an abstraction of a current state of storage session. The implementation classes must not store any kind of connection
+ * state. This implementation must not be shared between threads.<br>
+ * <b>Important</b> to note that this type cares about caching and efficient resources management.
  * 
  * @author feuteston
  * @author porcelli
@@ -103,16 +104,20 @@ public interface StorageSession extends Disposable {
          * 
          * @param nodeType the node type
          * @return the node key builder
+         * @throws IllegalArgumentException if input param is null or empty
          */
-        NodeKeyBuilder createNodeKeyWithType(String nodeType);
+        NodeKeyBuilder createNodeKeyWithType(String nodeType)
+            throws IllegalArgumentException;
 
         /**
          * Start creating a {@link StorageNode} using a builder pattern with a node type setted.
          * 
          * @param nodeType the node type
          * @return the node builder
+         * @throws IllegalArgumentException if the input param is empty or null
          */
-        NodeBuilder createNodeWithType(String nodeType);
+        NodeBuilder createNodeWithType(String nodeType)
+            throws IllegalArgumentException;
 
         /**
          * Creates, if not exists, a node hierarchy using the parameter input for each node as a type into partition. <br>
@@ -120,39 +125,57 @@ public interface StorageSession extends Disposable {
          * 
          * @param nodeTypes node type for each element of hierarchy
          * @return the last created node on hierarchy
+         * @throws IllegalArgumentException if the input param is empty or null
+         * @throws RuntimeException if a storage related exception occur
          */
-        StorageNode createNewSimpleNode(String... nodeTypes);
+        StorageNode createNewSimpleNode(String... nodeTypes)
+            throws RuntimeException, IllegalArgumentException;
 
         /**
          * Returns an iterable of nodes of a given type from partition.
          * 
          * @param nodeType the node type
          * @return an iterable of nodes, empty if not found
+         * @throws IllegalArgumentException if the input param is empty or null
+         * @throws RuntimeException if a storage related exception occur
          */
-        Iterable<StorageNode> getNodes(String nodeType);
+        Iterable<StorageNode> getNodes(String nodeType)
+            throws RuntimeException;
 
         /**
-         * Search for nodes, stored into partition, that matches the seacrh criteria.
+         * Search for nodes that matches the search criteria.
          * 
          * @param criteria the search criteria
          * @return an iterable found of nodes, empty if not found
+         * @throws RuntimeException if a storage related exception occur
+         * @throws IllegalArgumentException if input param is null
+         * @throws IllegalStateException if criteria partition is different from active partition or if has key and property
+         *         criteria all at once
          */
-        Iterable<StorageNode> search(NodeCriteria criteria);
+        Iterable<StorageNode> search(NodeCriteria criteria)
+            throws RuntimeException, IllegalArgumentException, IllegalStateException;
 
         /**
          * Sugar method that executes the search and returns the first found node, or null if not found.
          * 
          * @param criteria the search criteria
          * @return the found node, or null if not found
+         * @throws RuntimeException if a storage related exception occur
+         * @throws IllegalArgumentException if input param is null
+         * @throws IllegalStateException if criteria partition is different from active partition or if has key and property
+         *         criteria all at once
          */
-        StorageNode searchUnique(NodeCriteria criteria);
+        StorageNode searchUnique(NodeCriteria criteria)
+            throws RuntimeException, IllegalArgumentException, IllegalStateException;
 
         /**
          * Returns an iterable of all node types stored into partition.
          * 
          * @return an iterable of all node types of partition, empty if not found
+         * @throws RuntimeException if a storage related exception occur
          */
-        Iterable<String> getAllNodeTypes();
+        Iterable<String> getAllNodeTypes()
+            throws RuntimeException;
     }
 
     /**
@@ -160,6 +183,7 @@ public interface StorageSession extends Disposable {
      * 
      * @param partition the chosen partition
      * @return partition manipulation methods
+     * @throws IllegalArgumentException if input param is null
      */
     PartitionMethods withPartition(Partition partition);
 
@@ -174,8 +198,11 @@ public interface StorageSession extends Disposable {
     /**
      * Flush into storage the transient (not yet stored) data.<br>
      * <b>Note</b> that this method just makes sense if session is running with {@link FlushMode#EXPLICIT} mode.
+     * 
+     * @throws RuntimeException if a storage related exception occur
      */
-    void flushTransient();
+    void flushTransient()
+        throws RuntimeException;
 
     /**
      * This method discard all transiente (not yet stored) data.<br>
@@ -198,8 +225,11 @@ public interface StorageSession extends Disposable {
      * @param target the target node
      * @param type the link type
      * @return the new, or already existing, link
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if any input param is null or empty
      */
-    StorageLink addLink(StorageNode source, StorageNode target, String type);
+    StorageLink addLink(StorageNode source, StorageNode target, String type)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Removes, if exists, the paramenter link from storage.
@@ -208,8 +238,11 @@ public interface StorageSession extends Disposable {
      * {@link #flushTransient()} method to effectivelly store it, otherwise its automatically removed.
      * 
      * @param link the link to be removed
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if input param is null
      */
-    void removeLink(StorageLink link);
+    void removeLink(StorageLink link)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Removes, if exists, the link instance defined by input parameters from storage.
@@ -220,8 +253,11 @@ public interface StorageSession extends Disposable {
      * @param source the source node
      * @param target the target node
      * @param type the link type
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if any input param is null or empty
      */
-    void removeLink(StorageNode source, StorageNode target, String type);
+    void removeLink(StorageNode source, StorageNode target, String type)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Returns a unique link instance defined by input parameters.
@@ -230,16 +266,22 @@ public interface StorageSession extends Disposable {
      * @param target the target node
      * @param type the link type
      * @return the link, or null if not found
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if any input param is null or empty
      */
-    StorageLink getLink(StorageNode source, StorageNode target, String type);
+    StorageLink getLink(StorageNode source, StorageNode target, String type)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Returns an iterable of link instances that matches the given source node.
      * 
      * @param source the source node
      * @return an iterable of matched links, empty if not found
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if input param is null
      */
-    Iterable<StorageLink> getLinks(StorageNode source);
+    Iterable<StorageLink> getLinks(StorageNode source)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Returns an iterable of link instances that matches the link type of a given source node.
@@ -247,8 +289,11 @@ public interface StorageSession extends Disposable {
      * @param source the source node
      * @param type the link type
      * @return an iterable of matched links, empty if not found
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if any input param is null or empty
      */
-    Iterable<StorageLink> getLinks(StorageNode source, String type);
+    Iterable<StorageLink> getLinks(StorageNode source, String type)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Returns an iterable of link instances of any type that matches the given source and target nodes.
@@ -256,16 +301,22 @@ public interface StorageSession extends Disposable {
      * @param source the source node
      * @param target the target node
      * @return an iterable of matched links, empty if not found
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if any input param is null
      */
-    Iterable<StorageLink> getLinks(StorageNode source, StorageNode target);
+    Iterable<StorageLink> getLinks(StorageNode source, StorageNode target)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Returns, if exists, a node based on its key.
      * 
      * @param key the node key
      * @return the node, or null if not found
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if input param is null or empty
      */
-    StorageNode getNode(String key);
+    StorageNode getNode(String key)
+        throws RuntimeException, IllegalArgumentException;
 
     /**
      * Removes the node and all its children and any link that its associated. <br>
@@ -274,7 +325,10 @@ public interface StorageSession extends Disposable {
      * {@link #flushTransient()} method to effectivelly store it, otherwise its automatically removed.
      * 
      * @param node the node to be removed
+     * @throws RuntimeException if a storage related exception occur
+     * @throws IllegalArgumentException if input param is null
      */
-    void removeNode(StorageNode node);
+    void removeNode(StorageNode node)
+        throws RuntimeException, IllegalArgumentException;
 
 }

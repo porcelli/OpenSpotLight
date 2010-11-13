@@ -49,13 +49,29 @@
 
 package org.openspotlight.storage;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.Set;
 
 import com.google.inject.Singleton;
 
+/**
+ * Internal (default) implementation of {@link PartitionFactory}.
+ * 
+ * @author feuteston
+ * @author porcelli
+ */
 @Singleton
 public class DefaultPartitionFactory implements PartitionFactory {
 
+    private final Set<Partition> partitions = newHashSet();
+
+    /**
+     * Internal (default) implementation of {@link Partition} for those partitions that aren't {@link RegularPartitions}.
+     * 
+     * @author feuteston
+     * @author porcelli
+     */
     private static class CustomPartition implements Partition {
 
         private final String partitionName;
@@ -64,11 +80,17 @@ public class DefaultPartitionFactory implements PartitionFactory {
             this.partitionName = partitionName;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getPartitionName() {
             return partitionName;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean equals(final Object o) {
             if (o == this) { return true; }
@@ -77,14 +99,18 @@ public class DefaultPartitionFactory implements PartitionFactory {
             return partitionName.equals(that.getPartitionName());
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
             return partitionName.hashCode();
         }
     }
 
-    private final Set<Partition> partitions = null;
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Partition getPartition(final String name) {
         Partition partition = null;
@@ -97,6 +123,9 @@ public class DefaultPartitionFactory implements PartitionFactory {
         return partition;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<Partition> getValues() {
         return partitions;

@@ -123,7 +123,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
         checkNotNull("session", session);
         checkNotEmpty("type", type);
 
-        return ((StorageSessionImpl<?>) session.withPartition(partition)).nodeEntryCreateWithType(this, type);
+        return ((StorageSessionImpl<?, ?>) session).createNode(partition, this, type);
     }
 
     /**
@@ -180,7 +180,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session,
                                                           final String type) {
         final Iterable<StorageNode> children =
-            ((StorageSessionImpl<?>) session).nodeEntryGetChildrenByType(partition, this, type);
+            ((StorageSessionImpl<?, ?>) session).getChildren(partition, this, type);
         typedChildrenWeakReference.put(children, type);
         return children;
     }
@@ -190,7 +190,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
      */
     @Override
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session) {
-        final Iterable<StorageNode> children = ((StorageSessionImpl<?>) session).nodeEntryGetChildren(partition, this);
+        final Iterable<StorageNode> children = ((StorageSessionImpl<?, ?>) session).getChildren(partition, this);
         childrenWeakReference = new WeakReference<Iterable<StorageNode>>(children);
         return children;
     }
@@ -218,7 +218,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
     public StorageNode getParent(final StorageSession session) {
         StorageNode parent = parentWeakReference != null ? parentWeakReference.get() : null;
         if (parent == null) {
-            parent = ((StorageSessionImpl<?>) session).nodeEntryGetParent(this);
+            parent = ((StorageSessionImpl<?, ?>) session).getParent(this);
             parentWeakReference = new WeakReference<StorageNode>(parent);
         }
         return parent;

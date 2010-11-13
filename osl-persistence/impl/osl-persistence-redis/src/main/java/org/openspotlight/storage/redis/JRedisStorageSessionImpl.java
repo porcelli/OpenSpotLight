@@ -52,6 +52,8 @@ package org.openspotlight.storage.redis;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.storage.StringKeysSupport.getNodeType;
 import static org.openspotlight.storage.StringKeysSupport.getPartition;
 
@@ -99,7 +101,7 @@ import com.google.inject.Inject;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
 
-public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
+public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing, Nothing> {
 
     public enum Nothing {
         NOTHING
@@ -372,7 +374,9 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     public StorageNode getNode(final String key)
-        throws Exception {
+        throws Exception, IllegalStateException {
+        checkNotEmpty("key", key);
+
         Partition partition = StringKeysSupport.getPartition(key, partitionFactory);
         final JRedis jredis = factory.getFrom(partition);
         if (!jredis.sismember(SET_WITH_ALL_KEYS, key)) { return null; }
@@ -417,48 +421,60 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public Nothing createLinkReference(final StorageLink entry) {
+    public Nothing createLinkReference(final StorageLink link)
+        throws IllegalStateException {
+        checkNotNull("link", link);
         return Nothing.NOTHING;
     }
 
     @Override
-    public Nothing createNodeReference(final StorageNode entry) {
+    public Nothing createNodeReference(final StorageNode node)
+        throws IllegalStateException {
+        checkNotNull("node", node);
+
         return Nothing.NOTHING;
     }
 
     @Override
-    public void flushNewItem(final Nothing reference, final StorageNode entry)
-            throws Exception {
-        final String uniqueKey = entry.getKey().getKeyAsString();
-        final JRedis jredis = factory.getFrom(entry.getPartition());
+    public void persistNode(final Nothing reference, final StorageNode node)
+            throws Exception, IllegalStateException {
+        checkNotNull("reference", reference);
+        checkNotNull("node", node);
+
+        final String uniqueKey = node.getKey().getKeyAsString();
+        final JRedis jredis = factory.getFrom(node.getPartition());
         final JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(uniqueKey, jredis);
         jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
-        jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entry.getType()), uniqueKey);
-        jredis.sadd(SET_WITH_ALL_KEY_NAMES, entry.getType());
-        final String parentKeyAsString = entry.getKey().getParentKeyAsString();
+        jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(node.getType()), uniqueKey);
+        jredis.sadd(SET_WITH_ALL_KEY_NAMES, node.getType());
+        final String parentKeyAsString = node.getKey().getParentKeyAsString();
         if (parentKeyAsString != null) {
             jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey), parentKeyAsString);
 
             jredisExec.sadd(SET_WITH_NODE_CHILDREN_KEYS.format(parentKeyAsString), uniqueKey);
-            jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(parentKeyAsString, entry.getType()), uniqueKey);
+            jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(parentKeyAsString, node.getType()), uniqueKey);
         }
-        final String localKey = entry.getKey().getCompositeKey().getKeyAsString();
+        final String localKey = node.getKey().getCompositeKey().getKeyAsString();
         jredisExec.sadd(SET_WITH_ALL_LOCAL_KEYS.format(localKey), uniqueKey);
-        for (final SimpleKey k: entry.getKey().getCompositeKey().getKeys()) {
-            internalFlushSimplePropertyAndCreateIndex(jredisExec, entry.getPartition(), k.getKeyName(),
+        for (final SimpleKey k: node.getKey().getCompositeKey().getKeys()) {
+            internalFlushSimplePropertyAndCreateIndex(jredisExec, node.getPartition(), k.getKeyName(),
                 k.getValue() != null ? k.getValue().getBytes() : null, uniqueKey, PropertyType.KEY);
         }
     }
 
     @Override
-    public void flushRemovedItem(final StorageNode entry)
-        throws Exception {
-        flushRemoved(entry, entry.getType());
+    public void deleteNode(final StorageNode node)
+        throws Exception, IllegalArgumentException {
+        checkNotNull("node", node);
+
+        flushRemoved(node, node.getType());
     }
 
     @Override
-    public void flushRemovedLink(final StorageLink link)
-        throws Exception {
+    public void deleteLink(final StorageLink link)
+        throws Exception, IllegalStateException {
+        checkNotNull("link", link);
+
         final JRedis jredis = factory.getFrom(link.getPartition());
         jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()), link.getKeyAsString());
         jredis.srem(SET_WITH_ALL_LINKS_FOR_SOURCE.format(link.getSource().getKeyAsString()), link.getKeyAsString());
@@ -467,9 +483,11 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public void handleNewLink(final StorageNode source, final StorageLink link)
-        throws Exception {
-        final JRedis jredis = factory.getFrom(source.getPartition());
+    public void persistLink(final StorageLink link)
+        throws Exception, IllegalStateException {
+        checkNotNull("link", link);
+
+        final JRedis jredis = factory.getFrom(link.getSource().getPartition());
         jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getType()), link.getKeyAsString());
         jredis.sadd(SET_WITH_ALL_LINKS_FOR_SOURCE.format(link.getSource().getKeyAsString()), link.getKeyAsString());
         jredis.sadd(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget().getKeyAsString()), link.getKeyAsString());
@@ -477,7 +495,9 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
 
     @Override
     public Set<StorageNode> search(final NodeCriteria criteria)
-            throws Exception {
+            throws Exception, IllegalStateException {
+        checkNotNull("criteria", criteria);
+
         final List<String> propertiesIntersection = newLinkedList();
         final List<String> uniqueIdsFromLocalOnes = newLinkedList();
         boolean first = true;
@@ -578,7 +598,9 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
 
     @Override
     public Set<StorageNode> getNodes(final Partition partition, final String type)
-        throws Exception {
+        throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+        checkNotEmpty("type", type);
 
         final JRedis jRedis = factory.getFrom(partition);
         final List<String> ids = listBytesToListString(jRedis.smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(type)));
@@ -595,7 +617,9 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     @SuppressWarnings("unchecked")
     @Override
     public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target, final String type)
-        throws Exception {
+        throws Exception, IllegalStateException {
+        checkNotNull("source", source);
+
         final JRedis jredis = factory.getFrom(source.getPartition());
         final List<String> linkIds =
             listBytesToListString(jredis.smembers(SET_WITH_ALL_LINKS_FOR_SOURCE.format(source.getKeyAsString())));
@@ -625,34 +649,60 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public void flushSimpleProperty(final Nothing reference, final Partition partition, final Property property)
-            throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
+    public void setNodeProperty(Nothing reference, Property property)
+        throws Exception, IllegalStateException {
+        flushSimpleProperty(reference, property);
+    }
+
+    @Override
+    public void setLinkProperty(Nothing reference, Property property)
+        throws Exception, IllegalStateException {
+        flushSimpleProperty(reference, property);
+    }
+
+    private void flushSimpleProperty(final Nothing reference, final Property property)
+            throws Exception, IllegalStateException {
+        checkNotNull("property", property);
+
+        final JRedis jredis = factory.getFrom(property.getParent().getPartition());
         final String uniqueKey = property.getParent().getKeyAsString();
         final JRedisLoggedExecution jredisExecution = new JRedisLoggedExecution(uniqueKey, jredis);
         final PropertyType type =
             property.isKey() ? PropertyType.KEY : (property.isIndexed() ? PropertyType.INDEXED : PropertyType.SIMPLE);
 
-        internalFlushSimplePropertyAndCreateIndex(jredisExecution, partition, property.getPropertyName(),
-            ((PropertyImpl) property).getTransientValueAsBytes(), uniqueKey, type);
-
+        internalFlushSimplePropertyAndCreateIndex(jredisExecution, property.getParent().getPartition(),
+            property.getPropertyName(), ((PropertyImpl) property).getTransientValueAsBytes(), uniqueKey, type);
     }
 
     @Override
     public Iterable<String> getAllNodeTypes(final Partition partition)
-            throws Exception {
+            throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+
         final JRedis jredis = factory.getFrom(partition);
         return listBytesToListString(jredis.smembers(SET_WITH_ALL_KEY_NAMES));
     }
 
     @Override
-    public Set<StorageNode> getChildren(final StorageNode node)
-            throws Exception {
-        return getChildren(node, null);
+    public Set<StorageNode> getChildren(final Partition partition, final StorageNode node)
+            throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+        checkNotNull("node", node);
+
+        return internalGetChildren(partition, node, null);
     }
 
     @Override
-    public Set<StorageNode> getChildren(final StorageNode node, final String type)
+    public Set<StorageNode> getChildren(final Partition partition, final StorageNode node, final String type)
+        throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+        checkNotNull("node", node);
+        checkNotEmpty("type", type);
+
+        return internalGetChildren(partition, node, type);
+    }
+
+    private Set<StorageNode> internalGetChildren(final Partition partition, final StorageNode node, final String type)
         throws Exception {
         final JRedis jredis = factory.getFrom(node.getPartition());
 
@@ -664,7 +714,7 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
         final ImmutableSet.Builder<StorageNode> builder = ImmutableSet.builder();
         for (final String id: childrenKeys) {
             final Partition childPartition = getPartition(id, partitionFactory);
-            if (node.getPartition().equals(childPartition)) {
+            if (partition.equals(childPartition)) {
                 final StorageNode loadedNode = getNode(id);
                 if (loadedNode != null) {
                     builder.add(loadedNode);
@@ -676,15 +726,19 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
 
     @Override
     public StorageNode getParent(final StorageNode node)
-        throws Exception {
+        throws Exception, IllegalStateException {
+        checkNotNull("node", node);
+
         final String parentKeyAsString = node.getKey().getParentKeyAsString();
         if (parentKeyAsString == null) { return null; }
         return getNode(parentKeyAsString);
     }
 
     @Override
-    public Set<Property> loadProperties(final PropertyContainer element)
-        throws Exception {
+    public Set<Property> getProperties(final PropertyContainer element)
+        throws Exception, IllegalStateException {
+        checkNotNull("element", element);
+
         final JRedis jredis = factory.getFrom(element.getPartition());
         final Set<Property> result = newHashSet();
 
@@ -705,17 +759,20 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     }
 
     @Override
-    public byte[] getPropertyValue(final Partition partition, final Property property)
-        throws Exception {
-        final JRedis jredis = factory.getFrom(partition);
+    public byte[] getPropertyValue(final Property property)
+        throws Exception, IllegalStateException {
+        checkNotNull("property", property);
+
+        final JRedis jredis = factory.getFrom(property.getParent().getPartition());
         final String uniqueKey = property.getParent().getKeyAsString();
         final byte[] propertyValue = jredis.get(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, property.getPropertyName()));
         return propertyValue;
     }
 
     @Override
-    public void savePartitions(final Partition... partitions)
+    public void save(final Partition... partitions)
             throws Exception {
+
         for (final Partition p: partitions) {
             factory.getFrom(p).save();
         }
@@ -725,4 +782,5 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing> {
     public void closeResources() {
         factory.closeResources();
     }
+
 }

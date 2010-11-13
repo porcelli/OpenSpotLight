@@ -1778,7 +1778,7 @@ public abstract class AbstractStorageSessionTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionWhenFindingWithUniqueAndOtherAttributes()
             throws Exception {
         final StorageSession session = autoFlushInjector

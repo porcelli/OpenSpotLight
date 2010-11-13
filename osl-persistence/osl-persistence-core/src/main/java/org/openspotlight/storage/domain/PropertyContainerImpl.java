@@ -101,7 +101,7 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         final boolean tooOld = lastLoad < (System.currentTimeMillis() + TIMEOUT);
         final boolean empty = propertiesByName.isEmpty();
         if (tooOld && empty) {
-            final Set<Property> result = ((StorageSessionImpl<?>) session).propertyContainerLoadProperties(this);
+            final Set<Property> result = ((StorageSessionImpl<?,?>) session).getProperties(this);
             for (final Property property: result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }

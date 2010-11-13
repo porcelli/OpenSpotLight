@@ -71,8 +71,10 @@ public interface NodeFactory {
          * Creates the {@link StorageNode}.
          * 
          * @return the new storage node
+         * @throws RuntimeException if a storage related exception occur
          */
-        StorageNode andCreate();
+        StorageNode andCreate()
+            throws RuntimeException;
 
         /**
          * Add to the builder a parent reference.

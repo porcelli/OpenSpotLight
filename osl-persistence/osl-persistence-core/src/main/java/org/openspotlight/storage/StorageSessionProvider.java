@@ -56,7 +56,14 @@ import org.openspotlight.storage.engine.StorageEngineBind;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+/**
+ * Implementation of {@link StorageSession} provider.
+ * 
+ * @author porcelli
+ * @author feuteston
+ */
 @Singleton
+@SuppressWarnings("rawtypes")
 public class StorageSessionProvider extends ThreadLocalProvider<StorageSession> {
 
     private final FlushMode         flushMode;
@@ -75,6 +82,7 @@ public class StorageSessionProvider extends ThreadLocalProvider<StorageSession> 
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     protected StorageSession createInstance() {
         return new StorageSessionImpl(flushMode, partitionFactory, storageEngine);
     }

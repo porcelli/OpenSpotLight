@@ -1103,9 +1103,7 @@ public class NodeAndLinkSupport {
                     .withUniqueKey(internalNodeKey).buildCriteria()
                     .andSearchUnique(session);
         } else {
-            internalNodeKey = new NodeKeyBuilderImpl(targetNodeType.getName(),
-                    partition).withSimpleKey(NAME, name)
-                    .andCreate();
+            internalNodeKey = new NodeKeyBuilderImpl(targetNodeType.getName(), partition).withSimpleKey(NAME, name).andCreate();
         }
 
         for (final PropertyDescriptor d: descriptors) {

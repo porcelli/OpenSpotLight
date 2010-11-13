@@ -347,7 +347,7 @@ public class PropertyImpl implements Property {
      */
     private void refreshPropertyIfNecessary(final StorageSession session) {
         if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
-            propertyValue.setValue(((StorageSessionImpl<?>) session).propertyGetValue(this));
+            propertyValue.setValue(((StorageSessionImpl<?, ?>) session).getPropertyValue(this));
             propertyValue.setLoaded(true);
             propertyValue.setDirty(false);
         }
@@ -527,7 +527,7 @@ public class PropertyImpl implements Property {
         verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        ((StorageSessionImpl<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        ((StorageSessionImpl<?, ?>) session).setPropertyValue(this, propertyValue.getValueAsBytes());
     }
 
     /**
@@ -542,7 +542,7 @@ public class PropertyImpl implements Property {
         verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        ((StorageSessionImpl<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        ((StorageSessionImpl<?, ?>) session).setPropertyValue(this, propertyValue.getValueAsBytes());
     }
 
     /**
@@ -556,6 +556,6 @@ public class PropertyImpl implements Property {
         verifyBeforeSet();
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
-        ((StorageSessionImpl<?>) session).propertySetProperty(this, propertyValue.getValueAsBytes());
+        ((StorageSessionImpl<?, ?>) session).setPropertyValue(this, propertyValue.getValueAsBytes());
     }
 }

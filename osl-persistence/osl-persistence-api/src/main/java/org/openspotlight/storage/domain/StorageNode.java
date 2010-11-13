@@ -85,7 +85,7 @@ public interface StorageNode extends StorageDataMarker, NodeFactory, PropertyCon
     NodeKey getKey();
 
     /**
-     * Returns the parent node of the active one.
+     * Returns the parent node
      * 
      * @param session the storage session
      * @return the parent node, or null if node there is no parent
@@ -113,7 +113,7 @@ public interface StorageNode extends StorageDataMarker, NodeFactory, PropertyCon
      * 
      * @param partition the partion to lookup for children nodes
      * @param session the storage session
-     * @param type the node type
+     * @param type the node type filter
      * @return an iterable of children nodes, or empty if not found
      */
     Iterable<StorageNode> getChildren(Partition partition, StorageSession session, String type);

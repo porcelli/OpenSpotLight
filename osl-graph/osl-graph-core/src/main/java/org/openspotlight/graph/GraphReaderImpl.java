@@ -131,17 +131,10 @@ public class GraphReaderImpl implements GraphReader {
         resultBuilder.add(criteriaBuilder.buildCriteria().andSearch(session));
     }
 
-    private final Iterable<Partition> filterGraphPartitions(
-                                                            final Partition[] partition) {
-        // TODO filter
-        return SLCollections.iterableOf(partition);
-
-    }
-
     private Iterable<Context> findContextsIfNecessary(
                                                       Iterable<Context> contexts) {
         if (contexts == null || !contexts.iterator().hasNext()) {
-            final Iterable<Partition> partitions = filterGraphPartitions(factory.getValues());
+            final Iterable<Partition> partitions = factory.getValues();
             final ImmutableSet.Builder<Context> builder = ImmutableSet.builder();
             for (final Partition p: partitions) {
                 builder.add(getContext(p.getPartitionName()));
@@ -331,15 +324,11 @@ public class GraphReaderImpl implements GraphReader {
                     .getId()), session.getNode(rawTarget
                     .getId()), linkType.getName()));
         } else if (rawTarget != null) {
-            links = session.getLinks(session.getNode(rawOrigin
-                .getId()), session.getNode(rawTarget.getId()));
+            links = session.getLinks(session.getNode(rawOrigin.getId()), session.getNode(rawTarget.getId()));
         } else if (linkType != null) {
-            links = session.getLinks(session.getNode(rawOrigin
-                .getId()), linkType.getName());
-
+            links = session.getLinks(session.getNode(rawOrigin.getId()), linkType.getName());
         } else {
-            links = session.getLinks(session.getNode(rawOrigin
-                .getId()));
+            links = session.getLinks(session.getNode(rawOrigin.getId()));
 
         }
 

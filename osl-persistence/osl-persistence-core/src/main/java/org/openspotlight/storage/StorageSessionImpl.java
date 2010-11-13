@@ -49,6 +49,7 @@
 
 package org.openspotlight.storage;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
@@ -58,14 +59,11 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.Pair;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaBuilder;
 import org.openspotlight.storage.NodeCriteria.NodeCriteriaItem;
@@ -96,9 +94,14 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 
 /**
- * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
+ * Internal (default) implementation of {@link StorageSession}.
+ * 
+ * @author feuteston
+ * @author porcelli
+ * @param <RN> storage engine specific type that represents a node
+ * @param <RL> storage engine specific type that represents a link
  */
-public class StorageSessionImpl<R> implements StorageSession {
+public class StorageSessionImpl<RN, RL> implements StorageSession {
 
     /**
      * Internal (default) implementation of {@link NodeFactory.NodeBuilder}.
@@ -106,7 +109,7 @@ public class StorageSessionImpl<R> implements StorageSession {
      * @author feuteston
      * @author porcelli
      */
-    private final class NodeBuilderImpl implements NodeFactory.NodeBuilder {
+    private final class NodeBuilderImpl implements NodeBuilder {
 
         private final Set<String>    keyNames  = newHashSet();
 
@@ -127,16 +130,17 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public StorageNode andCreate() {
+        public StorageNode andCreate()
+            throws RuntimeException {
             final CompositeKeyImpl localKey = new CompositeKeyImpl(keys, type);
 
             final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey, parentKey, partition);
             final StorageNodeImpl result = new StorageNodeImpl(uniqueKey, false);
             if (getFlushMode().equals(FlushMode.AUTO)) {
-                StorageSessionImpl.this.handleNewItem(result);
+                StorageSessionImpl.this.persistNode(result);
             } else {
-                final R ref = storageEngine.createNodeReference(result);
-                final Pair<StorageNode, R> pair = newPair((StorageNode) result, ref);
+                final RN ref = storageEngine.createNodeReference(result);
+                final Pair<StorageNode, RN> pair = newPair((StorageNode) result, ref);
                 StorageSessionImpl.this.newNodes.add(pair);
             }
             return result;
@@ -158,7 +162,7 @@ public class StorageSessionImpl<R> implements StorageSession {
          */
         @Override
         public NodeBuilder withParent(final String key) {
-            checkNotEmpty("parentAsString", key);
+            checkNotEmpty("key", key);
 
             if (this.parentKey != null) { throw new IllegalStateException(); }
             this.parentKey = key;
@@ -207,7 +211,10 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public StorageNode createNewSimpleNode(final String... nodeTypes) {
+        public StorageNode createNewSimpleNode(final String... nodeTypes)
+            throws RuntimeException, IllegalStateException {
+            checkNotEmpty("nodeTypes", nodeTypes);
+
             StorageNode parent = null;
             NodeKey parentKey = null;
             for (final String nodeType: nodeTypes) {
@@ -216,7 +223,7 @@ public class StorageSessionImpl<R> implements StorageSession {
                         parentKey != null ? parentKey.getKeyAsString() : null,
                         partition);
                 parent = new StorageNodeImpl(parentKey, false);
-                handleNewItem(parent);
+                persistNode(parent);
             }
 
             return parent;
@@ -226,7 +233,10 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public NodeKeyBuilder createNodeKeyWithType(final String nodeType) {
+        public NodeKeyBuilder createNodeKeyWithType(final String nodeType)
+            throws IllegalArgumentException {
+            checkNotEmpty("nodeType", nodeType);
+
             return new NodeKeyBuilderImpl(nodeType, partition);
         }
 
@@ -234,7 +244,8 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public NodeFactory.NodeBuilder createNodeWithType(final String type) {
+        public NodeFactory.NodeBuilder createNodeWithType(final String type)
+            throws IllegalArgumentException {
             checkNotEmpty("type", type);
 
             return this.createWithType(StorageSessionImpl.this, type);
@@ -256,21 +267,10 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public Iterable<String> getAllNodeTypes() {
+        public Iterable<String> getAllNodeTypes()
+            throws RuntimeException {
             try {
                 return storageEngine.getAllNodeTypes(partition);
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Iterable<StorageNode> getNodes(final String nodeType) {
-            try {
-                return storageEngine.getNodes(partition, nodeType);
             } catch (final Exception e) {
                 handleException(e);
                 return null;
@@ -281,9 +281,28 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public Iterable<StorageNode> search(final NodeCriteria criteria) {
+        public Iterable<StorageNode> getNodes(final String type)
+            throws RuntimeException, IllegalArgumentException {
+            checkNotEmpty("type", type);
+
             try {
-                if (!criteria.getPartition().equals(partition)) { throw new IllegalArgumentException(); }
+                return storageEngine.getNodes(partition, type);
+            } catch (final Exception e) {
+                handleException(e);
+                return null;
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Iterable<StorageNode> search(final NodeCriteria criteria)
+            throws RuntimeException, IllegalArgumentException, IllegalStateException {
+            checkNotNull("criteria", criteria);
+
+            try {
+                if (!criteria.getPartition().equals(partition)) { throw new IllegalStateException(); }
                 boolean hasGlobal = false;
                 boolean hasOther = false;
                 for (final NodeCriteriaItem item: criteria.getCriteriaItems()) {
@@ -300,7 +319,7 @@ public class StorageSessionImpl<R> implements StorageSession {
                     } else if (item instanceof NodeKeyCriteriaItem) {
                         hasGlobal = true;
                     }
-                    if (hasOther && hasGlobal) { throw new IllegalArgumentException(); }
+                    if (hasOther && hasGlobal) { throw new IllegalStateException(); }
                 }
                 return storageEngine.search(criteria);
             } catch (final Exception e) {
@@ -313,14 +332,15 @@ public class StorageSessionImpl<R> implements StorageSession {
          * {@inheritDoc}
          */
         @Override
-        public StorageNode searchUnique(final NodeCriteria criteria) {
+        public StorageNode searchUnique(final NodeCriteria criteria)
+            throws RuntimeException, IllegalArgumentException, IllegalStateException {
+            checkNotNull("criteria", criteria);
             try {
                 final Iterable<StorageNode> result = search(criteria);
                 if (result == null) { return null; }
                 final Iterator<StorageNode> it = result.iterator();
                 if (!it.hasNext()) { return null; }
                 return it.next();
-
             } catch (final Exception e) {
                 handleException(e);
                 return null;
@@ -329,27 +349,29 @@ public class StorageSessionImpl<R> implements StorageSession {
 
     }
 
-    private final FlushMode                             flushMode;
+    private final FlushMode                        flushMode;
 
-    private final PartitionFactory                      partitionFactory;
+    private final PartitionFactory                 partitionFactory;
 
-    private final StorageEngineBind<R>                  storageEngine;
+    private final StorageEngineBind<RN, RL>        storageEngine;
 
-    private final Map<Partition, PartitionMethods>      partitionMethods = newHashMap();
+    private final Map<Partition, PartitionMethods> partitionMethods    = newHashMap();
 
-    private final Multimap<PropertyContainer, Property> dirtyProperties  = ArrayListMultimap.create();
+    private final Multimap<StorageNode, Property>  dirtyNodeProperties = ArrayListMultimap.create();
 
-    private final Set<Pair<StorageLink, R>>             newLinks         = newLinkedHashSet();
+    private final Multimap<StorageLink, Property>  dirtyLinkProperties = ArrayListMultimap.create();
 
-    private final Set<Pair<StorageNode, R>>             newNodes         = newLinkedHashSet();
+    private final Set<Pair<StorageLink, RL>>       newLinks            = newLinkedHashSet();
 
-    private final Set<StorageLink>                      removedLinks     = newLinkedHashSet();
+    private final Set<Pair<StorageNode, RN>>       newNodes            = newLinkedHashSet();
 
-    private final Set<StorageNode>                      removedNodes     = newLinkedHashSet();
+    private final Set<StorageLink>                 removedLinks        = newLinkedHashSet();
+
+    private final Set<StorageNode>                 removedNodes        = newLinkedHashSet();
 
     @Inject
     public StorageSessionImpl(final FlushMode flushMode, final PartitionFactory partitionFactory,
-                              final StorageEngineBind<R> storageEngine) {
+                              final StorageEngineBind<RN, RL> storageEngine) {
         if (flushMode == null) { throw new NullPointerException(); }
         if (partitionFactory == null) { throw new NullPointerException(); }
         this.flushMode = flushMode;
@@ -357,91 +379,204 @@ public class StorageSessionImpl<R> implements StorageSession {
         this.storageEngine = storageEngine;
     }
 
-    private void flushDirtyProperty(final R reference, final Property dirtyProperty) {
-        try {
-            storageEngine.flushSimpleProperty(reference, dirtyProperty.getParent().getPartition(), dirtyProperty);
-        } catch (final Exception e) {
-            handleException(e);
-        }
-    }
-
-    private void handleNewItem(final StorageNode entry) {
-        try {
-            R reference;
-            switch (getFlushMode()) {
-                case AUTO:
-                    reference = storageEngine.createNodeReference(entry);
-                    storageEngine.flushNewItem(reference, entry);
-                    break;
-                case EXPLICIT:
-                    reference = storageEngine.createNodeReference(entry);
-                    newNodes.add(newPair(entry, reference));
-                    break;
-                default:
-                    throw new IllegalStateException();
-            }
-        } catch (final Exception e) {
-            handleException(e);
-        }
-    }
-
-    private void handleRemovedItem(final StorageNode entry) {
-        try {
-            switch (getFlushMode()) {
-                case AUTO:
-                    storageEngine.flushRemovedItem(entry);
-                    break;
-                case EXPLICIT:
-                    removedNodes.add(entry);
-                    break;
-            }
-        } catch (final Exception e) {
-            handleException(e);
-        }
-    }
-
-    private void searchItemsToRemove(final StorageNode node, final List<StorageNode> removedItems) {
-        removedItems.add(node);
-        for (final Partition p: partitionFactory.getValues()) {
-            final Iterable<StorageNode> children = node.getChildren(p, this);
-            for (final StorageNode e: children) {
-                searchItemsToRemove(e, removedItems);
-            }
-        }
-    }
-
-    private void handleException(final Exception e) {
+    /**
+     * Utility method that trows the input as a {@link RuntimeException}. If input is not an instance of {@link RuntimeException}
+     * it wraps the input into a new one.
+     * 
+     * @param e parameter exception
+     * @throws RuntimeException always throwed
+     */
+    private void handleException(final Exception e)
+        throws RuntimeException {
         if (e instanceof RuntimeException) { throw (RuntimeException) e; }
         throw new RuntimeException(e);
     }
 
-    public NodeFactory.NodeBuilder nodeEntryCreateWithType(final StorageNode StorageNode, final String type) {
-        return withPartition(StorageNode.getPartition()).createWithType(StorageSessionImpl.this, type)
-            .withParent(StorageNode);
+    /**
+     * Serializes the property invoking storage engine {@link StorageEngineBind#setNodeProperty(Object, Property)} operation.
+     * 
+     * @param reference the engine specific representation of the node
+     * @param property the property to be serialized
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if property param is null
+     */
+    private void serializeNodeProperty(final RN reference, final Property property)
+        throws RuntimeException, IllegalArgumentException {
+        try {
+            checkNotNull("property", property);
+            storageEngine.setNodeProperty(reference, property);
+        } catch (final Exception e) {
+            handleException(e);
+        }
     }
 
-    public Iterable<StorageNode> nodeEntryGetChildren(final Partition partition, final StorageNode node) {
+    /**
+     * Serializes the property invoking storage engine {@link StorageEngineBind#setLinkProperty(Object, Property)} operation.
+     * 
+     * @param reference the engine specific representation of the link
+     * @param property the property to be serialized
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if property param is null
+     */
+    private void serializeLinkProperty(final RL reference, final Property property)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("property", property);
         try {
-            return storageEngine.getChildren(node);
+            storageEngine.setLinkProperty(reference, property);
+        } catch (final Exception e) {
+            handleException(e);
+        }
+    }
+
+    /**
+     * Persists the input node.<br>
+     * If this session operates in {@link FlushMode#AUTO} mode, it persists the node directly into storage engine, otherwise it
+     * keep it in memory.
+     * 
+     * @param node the node to be persisted
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    private void persistNode(final StorageNode node)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("node", node);
+        try {
+            RN reference;
+            switch (getFlushMode()) {
+                case AUTO:
+                    reference = storageEngine.createNodeReference(node);
+                    storageEngine.persistNode(reference, node);
+                    break;
+                case EXPLICIT:
+                    reference = storageEngine.createNodeReference(node);
+                    newNodes.add(newPair(node, reference));
+                    break;
+            }
+        } catch (final Exception e) {
+            handleException(e);
+        }
+    }
+
+    /**
+     * Deletes the input node.<br>
+     * If this session operates in {@link FlushMode#AUTO} mode, it deletes the node directly from storage engine, otherwise it
+     * keep this operation to be executed later (on {@link #flushTransient()}).
+     * 
+     * @param node the node to be deleted
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    private void deleteNode(final StorageNode node)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("node", node);
+        try {
+            switch (getFlushMode()) {
+                case AUTO:
+                    storageEngine.deleteNode(node);
+                    break;
+                case EXPLICIT:
+                    removedNodes.add(node);
+                    break;
+            }
+        } catch (final Exception e) {
+            handleException(e);
+        }
+    }
+
+    /**
+     * Collects children from input node and store into parameter list.
+     * 
+     * @param node the node to collect its children
+     * @param collectedChildrenList list that all collected children references will be added
+     * @throws IllegalArgumentException if any input param is null
+     */
+    private void collectChildren(final StorageNode node, final List<StorageNode> collectedChildrenList)
+        throws IllegalArgumentException {
+        checkNotNull("node", node);
+        checkNotNull("removedItems", collectedChildrenList);
+
+        collectedChildrenList.add(node);
+        for (final Partition p: partitionFactory.getValues()) {
+            final Iterable<StorageNode> children = node.getChildren(p, this);
+            for (final StorageNode e: children) {
+                collectChildren(e, collectedChildrenList);
+            }
+        }
+    }
+
+    /**
+     * Creates a new {@link NodeBuilder} based on input params.
+     * 
+     * @param partition the partition where node should be stored
+     * @param parent the parent node
+     * @param type the node type to be created
+     * @return a node builder filled with input params
+     * @throws IllegalArgumentException if any input param is null or empty
+     */
+    public NodeBuilder createNode(final Partition partition, final StorageNode parent, final String type)
+        throws IllegalArgumentException {
+        checkNotNull("partition", partition);
+        checkNotNull("parent", parent);
+        checkNotEmpty("type", type);
+        return withPartition(partition).createWithType(StorageSessionImpl.this, type).withParent(parent);
+    }
+
+    /**
+     * Query storage engine and returns an iterable of children nodes of the input node stored into specific partition.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param node the node to get its children
+     * @return an iterable of children nodes, or empty if not found
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if any input param is null
+     */
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageNode node)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("partition", partition);
+        checkNotNull("node", node);
+        try {
+            return storageEngine.getChildren(partition, node);
         } catch (final Exception e) {
             handleException(e);
         }
         return null;
     }
 
-    public Iterable<StorageNode> nodeEntryGetChildrenByType(final Partition partition, final StorageNode node,
-                                                            final String type) {
-        if (!partition.equals(node.getPartition())) { throw new IllegalArgumentException(
-            "wrong partition for this node entry"); }
+    /**
+     * Query storage engine and returns an iterable of children nodes of the input node restricted by a given type and stored into
+     * specific partition.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param node the node to get its children
+     * @param type the node type filter
+     * @return an iterable of children nodes, or empty if not found
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if any input param is null or empty
+     */
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageNode node, final String type)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("partition", partition);
+        checkNotNull("node", node);
+        checkNotEmpty("type", type);
         try {
-            return storageEngine.getChildren(node, type);
+            return storageEngine.getChildren(partition, node, type);
         } catch (final Exception e) {
             handleException(e);
         }
         return null;
     }
 
-    public StorageNode nodeEntryGetParent(final StorageNode node) {
+    /**
+     * Query storage engine and returns the parent node of the input.
+     * 
+     * @param node the input node to get parent from
+     * @return parent node, or null if there is no parent
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    public StorageNode getParent(final StorageNode node)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("node", node);
         try {
             return storageEngine.getParent(node);
         } catch (final Exception e) {
@@ -450,48 +585,93 @@ public class StorageSessionImpl<R> implements StorageSession {
         return null;
     }
 
-    public Set<Property> propertyContainerLoadProperties(final PropertyContainer storageNode) {
+    /**
+     * Query storage engine and returns all existing properties, or an empty {@link Set}, of the input element. <br>
+     * 
+     * @param element element to get properties from
+     * @return all properties of the input element
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    public Set<Property> getProperties(final PropertyContainer element)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("element", element);
         try {
-            return storageEngine.loadProperties(storageNode);
+            return storageEngine.getProperties(element);
         } catch (final Exception e) {
             handleException(e);
         }
         return null;
     }
 
-    public byte[] propertyGetValue(final Property stProperty) {
+    /**
+     * Query storage engine to return the property value as byte array.
+     * 
+     * @param property the input property to get value from
+     * @return the value as byte array
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    public byte[] getPropertyValue(final Property property)
+        throws RuntimeException {
+        checkNotNull("property", property);
         try {
-            return storageEngine.getPropertyValue(stProperty.getParent().getPartition(), stProperty);
+            return storageEngine.getPropertyValue(property);
         } catch (final Exception e) {
             handleException(e);
         }
         return null;
     }
 
-    public void propertySetProperty(final Property stProperty, final byte[] value) {
-        if (flushMode.equals(FlushMode.AUTO)) {
-            flushDirtyProperty(null, stProperty);
-        } else {
-            dirtyProperties.put(stProperty.getParent(), stProperty);
-        }
+    /**
+     * Sets the property value. <br>
+     * If this session operates in {@link FlushMode#AUTO} mode, it stores the value directly into storage engine, otherwise it
+     * keep the value in memory.
+     * 
+     * @param property property to be setted
+     * @param value the value to be stored
+     * @throws RuntimeException if there is any exception on storage engine during this operation
+     * @throws IllegalArgumentException if property param is null
+     */
+    public void setPropertyValue(final Property property, final byte[] value)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("property", property);
 
+        if (property.getParent() instanceof StorageNode) {
+            if (flushMode.equals(FlushMode.AUTO)) {
+                serializeNodeProperty(null, property);
+            } else {
+                dirtyNodeProperties.put((StorageNode) property.getParent(), property);
+            }
+        } else if (property.getParent() instanceof StorageLink) {
+            if (flushMode.equals(FlushMode.AUTO)) {
+                serializeLinkProperty(null, property);
+            } else {
+                dirtyLinkProperties.put((StorageLink) property.getParent(), property);
+            }
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public StorageLink addLink(final StorageNode source, final StorageNode target, final String type) {
+    public StorageLink addLink(final StorageNode source, final StorageNode target, final String type)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("source", source);
+        checkNotNull("target", target);
+        checkNotEmpty("type", type);
+
         final StorageLink link = new StorageLinkImpl(type, source, target, true);
         if (getFlushMode().equals(FlushMode.AUTO)) {
             try {
-                storageEngine.handleNewLink(link.getSource(), link);
+                storageEngine.persistLink(link);
             } catch (final Exception e) {
                 handleException(e);
             }
         } else {
-            final R ref = storageEngine.createLinkReference(link);
-            final Pair<StorageLink, R> pair = newPair(link, ref);
+            final RL ref = storageEngine.createLinkReference(link);
+            final Pair<StorageLink, RL> pair = newPair(link, ref);
             StorageSessionImpl.this.newLinks.add(pair);
         }
         return link;
@@ -504,72 +684,82 @@ public class StorageSessionImpl<R> implements StorageSession {
     public void discardTransient() {
         this.newNodes.clear();
         this.removedNodes.clear();
-        this.dirtyProperties.clear();
+        this.dirtyNodeProperties.clear();
+        this.dirtyLinkProperties.clear();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void flushTransient() {
+    public void flushTransient()
+        throws RuntimeException {
         if (getFlushMode() == FlushMode.AUTO) { return; }
         final Set<Partition> partitions = newHashSet();
-        final Map<PropertyContainer, R> referenceMap = newHashMap();
-        for (final Pair<StorageNode, R> newNode: newNodes) {
+        final Map<StorageNode, RN> referenceNodeMap = newHashMap();
+        final Map<StorageLink, RL> referenceLinkMap = newHashMap();
+
+        for (final Pair<StorageNode, RN> newNode: newNodes) {
             try {
                 partitions.add(newNode.getK1().getKey().getPartition());
-                storageEngine.flushNewItem(newNode.getK2(), newNode.getK1());
-                referenceMap.put(newNode.getK1(), newNode.getK2());
+                storageEngine.persistNode(newNode.getK2(), newNode.getK1());
+                referenceNodeMap.put(newNode.getK1(), newNode.getK2());
             } catch (final Exception e) {
                 handleException(e);
             }
         }
-        for (final PropertyContainer propertyContainer: dirtyProperties.keySet()) {
-            partitions.add(propertyContainer.getPartition());
-
-            R reference = referenceMap.get(propertyContainer);
-            if (reference == null) {
-                if (propertyContainer instanceof StorageNode) {
-                    reference = storageEngine.createNodeReference((StorageNode) propertyContainer);
-                } else if (propertyContainer instanceof StorageLink) {
-                    reference = storageEngine.createLinkReference((StorageLink) propertyContainer);
-                } else {
-                    throw new IllegalStateException();
-                }
+        for (final Pair<StorageLink, RL> link: this.newLinks) {
+            try {
+                storageEngine.persistLink(link.getK1());
+                referenceLinkMap.put(link.getK1(), link.getK2());
+            } catch (final Exception e) {
+                handleException(e);
             }
-            for (final Property data: dirtyProperties.get(propertyContainer)) {
+        }
+
+        for (final StorageNode node: dirtyNodeProperties.keySet()) {
+            partitions.add(node.getPartition());
+
+            RN reference = referenceNodeMap.get(node);
+            for (final Property data: dirtyNodeProperties.get(node)) {
                 try {
-                    flushDirtyProperty(reference, data);
+                    serializeNodeProperty(reference, data);
                 } catch (final Exception e) {
                     handleException(e);
                 }
             }
-
         }
+
+        for (final StorageLink link: dirtyLinkProperties.keySet()) {
+            partitions.add(link.getPartition());
+
+            RL reference = referenceLinkMap.get(link);
+            for (final Property data: dirtyLinkProperties.get(link)) {
+                try {
+                    serializeLinkProperty(reference, data);
+                } catch (final Exception e) {
+                    handleException(e);
+                }
+            }
+        }
+
         for (final StorageNode removedNode: removedNodes) {
             try {
                 partitions.add(removedNode.getKey().getPartition());
-                storageEngine.flushRemovedItem(removedNode);
-            } catch (final Exception e) {
-                handleException(e);
-            }
-        }
-        for (final Pair<StorageLink, R> p: this.newLinks) {
-            try {
-                storageEngine.handleNewLink(p.getK1().getSource(), p.getK1());
+                storageEngine.deleteNode(removedNode);
             } catch (final Exception e) {
                 handleException(e);
             }
         }
         for (final StorageLink link: this.removedLinks) {
             try {
-                storageEngine.flushRemovedLink(link);
+                storageEngine.deleteLink(link);
             } catch (final Exception e) {
                 handleException(e);
             }
         }
         try {
-            storageEngine.savePartitions(partitions.toArray(new Partition[partitions.size()]));
+            storageEngine.save(partitions.toArray(new Partition[partitions.size()]));
         } catch (final Exception e) {
             handleException(e);
         }
@@ -588,7 +778,11 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public StorageLink getLink(final StorageNode source, final StorageNode target, final String type) {
+    public StorageLink getLink(final StorageNode source, final StorageNode target, final String type)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("source", source);
+        checkNotNull("target", target);
+        checkNotEmpty("type", type);
         try {
             return SLCollections.firstOf(storageEngine.getLinks(source, target, type));
         } catch (final Exception e) {
@@ -601,7 +795,10 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public Iterable<StorageLink> getLinks(final StorageNode source) {
+    public Iterable<StorageLink> getLinks(final StorageNode source)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("source", source);
+
         try {
             return storageEngine.getLinks(source, null, null);
         } catch (final Exception e) {
@@ -614,7 +811,10 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target) {
+    public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("source", source);
+        checkNotNull("target", target);
         try {
             return storageEngine.getLinks(source, target, null);
         } catch (final Exception e) {
@@ -627,7 +827,10 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public Iterable<StorageLink> getLinks(final StorageNode source, final String type) {
+    public Iterable<StorageLink> getLinks(final StorageNode source, final String type)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("source", source);
+        checkNotEmpty("type", type);
         try {
             return storageEngine.getLinks(source, null, type);
         } catch (final Exception e) {
@@ -640,7 +843,9 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public StorageNode getNode(final String key) {
+    public StorageNode getNode(final String key)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotEmpty("key", key);
         final Partition partition = partitionFactory.getPartition(StringKeysSupport.getPartitionName(key));
         return withPartition(partition).createCriteria().withUniqueKeyAsString(key).buildCriteria().andSearchUnique(this);
     }
@@ -649,11 +854,13 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public void removeLink(final StorageLink link) {
+    public void removeLink(final StorageLink link)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("link", link);
         try {
             switch (getFlushMode()) {
                 case AUTO:
-                    storageEngine.flushRemovedLink(link);
+                    storageEngine.deleteLink(link);
                     break;
                 case EXPLICIT:
                     removedLinks.add(link);
@@ -668,7 +875,12 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public void removeLink(final StorageNode source, final StorageNode target, final String type) {
+    public void removeLink(final StorageNode source, final StorageNode target, final String type)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("source", source);
+        checkNotNull("target", target);
+        checkNotNull("type", type);
+
         removeLink(new StorageLinkImpl(type, source, target, false));
     }
 
@@ -676,12 +888,15 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public void removeNode(final StorageNode node) {
-        final List<StorageNode> removedItems = new LinkedList<StorageNode>();
-        searchItemsToRemove(node, removedItems);
+    public void removeNode(final StorageNode node)
+        throws RuntimeException, IllegalArgumentException {
+        checkNotNull("node", node);
+
+        final List<StorageNode> removedItems = newLinkedList();
+        collectChildren(node, removedItems);
         Collections.reverse(removedItems);
         for (final StorageNode r: removedItems) {
-            handleRemovedItem(r);
+            deleteNode(r);
         }
     }
 
@@ -689,7 +904,10 @@ public class StorageSessionImpl<R> implements StorageSession {
      * {@inheritDoc}
      */
     @Override
-    public PartitionMethods withPartition(final Partition partition) {
+    public PartitionMethods withPartition(final Partition partition)
+        throws IllegalArgumentException {
+        checkNotNull("partition", partition);
+
         PartitionMethods result = partitionMethods.get(partition);
         if (result == null) {
             result = new PartitionMethodsImpl(partition);

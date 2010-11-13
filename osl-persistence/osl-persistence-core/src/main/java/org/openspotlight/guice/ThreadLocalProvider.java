@@ -58,8 +58,8 @@ import com.google.inject.Provider;
 
 /**
  * This is a Guice provider used for thread locals variables. It is mandatory to use the {com.google.inject.Singleton} annotation
- * on the class that implement this interface. Also if this provider implementation depends on other Thread locals, inject the
- * provider instead of the instance.
+ * on the class that extends this type. Also if this provider implementation depends on other Thread locals, inject the provider
+ * instead of the instance.
  * 
  * @author feuteston
  * @author porcelli

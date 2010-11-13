@@ -55,6 +55,8 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static org.openspotlight.common.Pair.newPair;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.storage.StringKeysSupport.getNodeType;
 import static org.openspotlight.storage.StringKeysSupport.getPartition;
@@ -87,6 +89,7 @@ import org.openspotlight.storage.NodeKeyBuilder;
 import org.openspotlight.storage.NodeKeyBuilderImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession.FlushMode;
 import org.openspotlight.storage.StringKeysSupport;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
@@ -98,7 +101,6 @@ import org.openspotlight.storage.domain.StorageNodeImpl;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 import org.openspotlight.storage.engine.StorageEngineBind;
-import org.openspotlight.storage.StorageSession.FlushMode;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -119,7 +121,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
-public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
+public class MongoStorageSessionImpl implements StorageEngineBind<DBObject, DBObject> {
 
     private static final String                                    _                = "_";
     private static final String                                    ID               = "_id";
@@ -307,7 +309,7 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
         return partition.getPartitionName() + _ + nodeEntry.getKey().getKeyAsString() + _ + dirtyProperty.getPropertyName();
     }
 
-    private Iterable<StorageNode> internalGetChildren(final StorageNode node, final String type)
+    private Iterable<StorageNode> internalGetChildren(final Partition partition, final StorageNode node, final String type)
             throws Exception {
         final BasicDBObject baseDbObj = new BasicDBObject();
         baseDbObj.put(PARENT_ID, node.getKey().getKeyAsString());
@@ -315,11 +317,11 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
         if (type != null) {
             names.add(type);
         } else {
-            names.addAll(getCachedDbForPartition(node.getPartition()).getCollectionNames());
+            names.addAll(getCachedDbForPartition(partition).getCollectionNames());
         }
         final List<Iterable<DBObject>> dbCursors = newLinkedList();
         for (final String s: names.build()) {
-            final DBCursor resultAsDbObject = getCachedCollection(node.getPartition(), s).find(baseDbObj);
+            final DBCursor resultAsDbObject = getCachedCollection(partition, s).find(baseDbObj);
             dbCursors.add(resultAsDbObject);
         }
 
@@ -328,14 +330,17 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
             @Override
             public StorageNode convert(final DBObject nodeEntry)
                     throws Exception {
-                return convertToNode(node.getPartition(), nodeEntry);
+                return convertToNode(partition, nodeEntry);
             }
         });
         return b.withItems(SLCollections.<DBObject>iterableOfAll(dbCursors)).andBuild();
     }
 
     @Override
-    public DBObject createLinkReference(final StorageLink link) {
+    public DBObject createLinkReference(final StorageLink link)
+        throws IllegalStateException {
+        checkNotNull("link", link);
+
         final StorageNode source = link.getSource();
         final DBObject nodeRef = createNodeReference(source);
         DBObject linkRef = null;
@@ -366,7 +371,9 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public DBObject createNodeReference(final StorageNode node) {
+    public DBObject createNodeReference(final StorageNode node)
+        throws IllegalStateException {
+        checkNotNull("node", node);
         final DBObject basicDBObject = findReferenceOrReturnNull(node);
         final Pair<StorageNode, DBObject> p = Pair.<StorageNode, DBObject>newPair(node, basicDBObject, Pair.PairEqualsMode.K1);
         if (!transientObjects.get(node.getPartition()).contains(p)) {
@@ -376,8 +383,11 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public void flushNewItem(final DBObject reference, final StorageNode node)
-            throws Exception {
+    public void persistNode(final DBObject reference, final StorageNode node)
+            throws Exception, IllegalStateException {
+        checkNotNull("reference", reference);
+        checkNotNull("node", node);
+
         reference.put(LOCAL_ID, node.getKey().getCompositeKey().getKeyAsString());
         ensureIndexed(node.getPartition(), node.getType(), null, LOCAL_ID, null);
 
@@ -409,14 +419,19 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public void flushRemovedItem(final StorageNode node)
-        throws Exception {
+    public void deleteNode(final StorageNode node)
+        throws Exception, IllegalArgumentException {
+        checkNotNull("node", node);
+
         final DBCollection collection = getCachedCollection(node.getPartition(), node.getType());
         collection.remove(new BasicDBObject(ID, node.getKey().getKeyAsString()));
     }
 
     @Override
-    public void flushRemovedLink(final StorageLink link) {
+    public void deleteLink(final StorageLink link)
+        throws Exception, IllegalStateException {
+        checkNotNull("link", link);
+
         final DBObject basicDBObject = findReferenceOrReturnNull(link.getSource());
         if (basicDBObject != null) {
             @SuppressWarnings("unchecked")
@@ -433,19 +448,22 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public void handleNewLink(final StorageNode source, final StorageLink link)
-        throws Exception {
+    public void persistLink(final StorageLink link)
+        throws Exception, IllegalStateException {
+        checkNotNull("link", link);
+
         createLinkReference(link);
         if (flushMode.equals(FlushMode.AUTO)) {
-            final DBObject nodeRef = createNodeReference(source);
-            final DBCollection col = getCachedCollection(source.getPartition(), source.getType());
+            final DBObject nodeRef = createNodeReference(link.getSource());
+            final DBCollection col = getCachedCollection(link.getSource().getPartition(), link.getSource().getType());
             col.save(nodeRef);
         }
     }
 
     @Override
     public Iterable<StorageNode> search(final NodeCriteria criteria)
-            throws Exception {
+            throws Exception, IllegalStateException {
+        checkNotNull("criteria", criteria);
 
         final DBObject criteriaAsObj = new BasicDBObject();
 
@@ -506,10 +524,12 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public Iterable<StorageNode> getNodes(
-                                                       final Partition partition, final String nodeType)
-        throws Exception {
-        final DBCursor cursor = getCachedCollection(partition, nodeType).find();
+    public Iterable<StorageNode> getNodes(final Partition partition, final String type)
+        throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+        checkNotEmpty("type", type);
+
+        final DBCursor cursor = getCachedCollection(partition, type).find();
         final ImmutableSet.Builder<StorageNode> builder = ImmutableSet
                 .builder();
         while (cursor.hasNext()) {
@@ -519,7 +539,10 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target, final String type) {
+    public Iterable<StorageLink> getLinks(final StorageNode source, final StorageNode target, final String type)
+        throws Exception, IllegalStateException {
+        checkNotNull("source", source);
+
         final Builder<String> rawItems = ImmutableList.builder();
         final DBObject basicDBObject = findReferenceOrReturnNull(source);
         if (basicDBObject != null) {
@@ -575,19 +598,32 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public void flushSimpleProperty(final DBObject possibleReference, final Partition partition, final Property dirtyProperty)
+    public void setNodeProperty(DBObject reference, Property property)
+        throws Exception, IllegalStateException {
+        flushSimpleProperty(reference, property);
+    }
+
+    @Override
+    public void setLinkProperty(DBObject reference, Property property)
+        throws Exception, IllegalStateException {
+        flushSimpleProperty(reference, property);
+    }
+
+    private void flushSimpleProperty(final DBObject ref, final Property property)
         throws Exception {
+        checkNotNull("property", property);
+
         DBObject reference;
         String collectionName;
-        if (possibleReference != null) {
-            reference = possibleReference;
+        if (ref != null) {
+            reference = ref;
             collectionName = StringKeysSupport.getNodeType((String) reference.get(ID));
-        } else if (dirtyProperty.getParent() instanceof StorageNode) {
-            reference = createNodeReference((StorageNode) dirtyProperty.getParent());
-            collectionName = ((StorageNode) dirtyProperty.getParent()).getType();
-        } else if (dirtyProperty.getParent() instanceof StorageLink) {
-            reference = createLinkReference((StorageLink) dirtyProperty.getParent());
-            collectionName = ((StorageLink) dirtyProperty.getParent()).getSource().getType();
+        } else if (property.getParent() instanceof StorageNode) {
+            reference = createNodeReference((StorageNode) property.getParent());
+            collectionName = ((StorageNode) property.getParent()).getType();
+        } else if (property.getParent() instanceof StorageLink) {
+            reference = createLinkReference((StorageLink) property.getParent());
+            collectionName = ((StorageLink) property.getParent()).getSource().getType();
         } else {
             throw new IllegalStateException();
         }
@@ -595,16 +631,17 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
         String objName = null;
         Object value = null;
 
-        if (dirtyProperty.isIndexed()) {
-            ensureIndexed(partition, collectionName, INDEXED, dirtyProperty.getPropertyName(), null);
+        if (property.isIndexed()) {
+            ensureIndexed(property.getParent().getPartition(), collectionName, INDEXED, property.getPropertyName(),
+                null);
             objName = INDEXED;
-            value = ((PropertyImpl) dirtyProperty).getTransientValueAsString();
+            value = ((PropertyImpl) property).getTransientValueAsString();
             if (value == null) {
                 value = NULL_VALUE;
             }
-        } else if (!dirtyProperty.isKey()) {
+        } else if (!property.isKey()) {
             objName = PROPERTIES;
-            value = ((PropertyImpl) dirtyProperty).getTransientValueAsBytes();
+            value = ((PropertyImpl) property).getTransientValueAsBytes();
         }
         if (objName == null) { return; }
         DBObject obj = (DBObject) reference.get(objName);
@@ -613,32 +650,35 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
             reference.put(objName, obj);
         }
         if (value instanceof byte[] && isBiggerThan4mb((byte[]) value)) {
-            obj.put(getBigPropertyName(dirtyProperty), true);
+            obj.put(getBigPropertyName(property), true);
         } else {
-            obj.removeField(getBigPropertyName(dirtyProperty));
-            obj.put(dirtyProperty.getPropertyName(), value);
+            obj.removeField(getBigPropertyName(property));
+            obj.put(property.getPropertyName(), value);
             StorageNode nodeEntry;
-            if (dirtyProperty.getParent() instanceof StorageNode) {
-                nodeEntry = (StorageNode) dirtyProperty.getParent();
-            } else if (dirtyProperty.getParent() instanceof StorageLink) {
-                nodeEntry = ((StorageLink) dirtyProperty.getParent()).getSource();
+            if (property.getParent() instanceof StorageNode) {
+                nodeEntry = (StorageNode) property.getParent();
+            } else if (property.getParent() instanceof StorageLink) {
+                nodeEntry = ((StorageLink) property.getParent()).getSource();
             } else {
                 throw new IllegalStateException();
             }
 
             if (FlushMode.AUTO.equals(flushMode)) {
-                getCachedCollection(partition, nodeEntry.getType()).save(reference);
+                getCachedCollection(property.getParent().getPartition(), nodeEntry.getType()).save(reference);
             } else {
                 final Pair<StorageNode, DBObject> p = newPair(nodeEntry, reference, Pair.PairEqualsMode.K1);
-                if (!transientObjects.get(partition).contains(p)) {
-                    transientObjects.put(partition, p);
+                if (!transientObjects.get(property.getParent().getPartition()).contains(p)) {
+                    transientObjects.put(property.getParent().getPartition(), p);
                 }
             }
         }
     }
 
     @Override
-    public Iterable<String> getAllNodeTypes(final Partition partition) {
+    public Iterable<String> getAllNodeTypes(final Partition partition)
+        throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+
         final HashSet<String> set = new HashSet<String>();
         set.addAll(getCachedDbForPartition(partition).getCollectionNames());
         set.remove("system.indexes");
@@ -646,16 +686,19 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public Iterable<StorageNode> getChildren(final StorageNode node)
-            throws Exception {
-        if (node == null) { return emptySet(); }
-        return internalGetChildren(node, null);
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageNode node)
+            throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+        checkNotNull("node", node);
 
+        return internalGetChildren(partition, node, null);
     }
 
     @Override
     public StorageNode getNode(String key)
-        throws Exception {
+        throws Exception, IllegalStateException {
+        checkNotEmpty("key", key);
+
         return internalGetNode(key, getPartition(key, partitionFactory));
     }
 
@@ -671,29 +714,35 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public Iterable<StorageNode> getChildren(final StorageNode node, final String type)
-        throws Exception {
-        if (node == null) { return emptySet(); }
-        return internalGetChildren(node, type);
+    public Iterable<StorageNode> getChildren(final Partition partition, final StorageNode node, final String type)
+        throws Exception, IllegalStateException {
+        checkNotNull("partition", partition);
+        checkNotNull("node", node);
+        checkNotEmpty("type", type);
+
+        return internalGetChildren(partition, node, type);
     }
 
     @Override
     public StorageNode getParent(final StorageNode node)
-        throws Exception {
+        throws Exception, IllegalStateException {
+        checkNotNull("node", node);
+
         final String parentKey = node.getKey().getParentKeyAsString();
         if (parentKey == null) { return null; }
         return getNode(parentKey);
     }
 
     @Override
-    public Set<Property> loadProperties(final PropertyContainer propertyContainer)
-        throws Exception {
+    public Set<Property> getProperties(final PropertyContainer element)
+        throws Exception, IllegalStateException {
+        checkNotNull("element", element);
 
-        if (propertyContainer instanceof StorageNode) {
-            final StorageNode node = (StorageNode) propertyContainer;
+        if (element instanceof StorageNode) {
+            final StorageNode node = (StorageNode) element;
             final ImmutableSet.Builder<Property> builder = ImmutableSet.builder();
             for (final SimpleKey entry: node.getKey().getCompositeKey().getKeys()) {
-                final PropertyImpl p = PropertyImpl.createKey(entry.getKeyName(), propertyContainer);
+                final PropertyImpl p = PropertyImpl.createKey(entry.getKeyName(), element);
                 (p).setStringValueOnLoad(entry.getValue());
                 builder.add(p);
             }
@@ -703,7 +752,7 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
             if (indexed != null) {
                 for (final String s: indexed.keySet()) {
                     if (!keyNames.contains(s)) {
-                        final PropertyImpl p = PropertyImpl.createIndexed(s, propertyContainer);
+                        final PropertyImpl p = PropertyImpl.createIndexed(s, element);
                         String value = (String) indexed.get(s);
                         if (NULL_VALUE.equals(value)) {
                             value = null;
@@ -718,21 +767,21 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
             if (properties != null) {
                 for (final String s: properties.keySet()) {
                     final PropertyImpl p = PropertyImpl.createSimple(s,
-                            propertyContainer);
+                            element);
                     builder.add(p);
                 }
             }
 
             return builder.build();
 
-        } else if (propertyContainer instanceof StorageLink) {
-            final StorageLink linkEntry = (StorageLink) propertyContainer;
+        } else if (element instanceof StorageLink) {
+            final StorageLink linkEntry = (StorageLink) element;
             final ImmutableSet.Builder<Property> builder = ImmutableSet.builder();
             final DBObject reference = createLinkReference(linkEntry);
             final DBObject indexed = (DBObject) reference.get(INDEXED);
             if (indexed != null) {
                 for (final String s: indexed.keySet()) {
-                    final PropertyImpl p = PropertyImpl.createIndexed(s, propertyContainer);
+                    final PropertyImpl p = PropertyImpl.createIndexed(s, element);
                     String value = (String) indexed.get(s);
                     if (NULL_VALUE.equals(value)) {
                         value = null;
@@ -745,7 +794,7 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
             final DBObject properties = (DBObject) reference.get(PROPERTIES);
             if (properties != null) {
                 for (final String s: properties.keySet()) {
-                    final PropertyImpl p = PropertyImpl.createSimple(s, propertyContainer);
+                    final PropertyImpl p = PropertyImpl.createSimple(s, element);
                     builder.add(p);
                 }
             }
@@ -757,8 +806,10 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public byte[] getPropertyValue(final Partition partition, final Property property)
-        throws Exception {
+    public byte[] getPropertyValue(final Property property)
+        throws Exception, IllegalStateException {
+        checkNotNull("property", property);
+
         byte[] value = null;
         if (property.isKey()) {
             final StorageNode parent = (StorageNode) property.getParent();
@@ -788,7 +839,7 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
                     if (innerObj != null) {
                         final Boolean isBig = (Boolean) innerObj.get(getBigPropertyName(property));
                         if (Boolean.TRUE.equals(isBig)) {
-                            value = readAsGridFS(partition, property);
+                            value = readAsGridFS(property.getParent().getPartition(), property);
                         } else {
                             value = (byte[]) innerObj.get(property.getPropertyName());
                         }
@@ -803,8 +854,9 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
     }
 
     @Override
-    public void savePartitions(final Partition... partitions)
+    public void save(final Partition... partitions)
             throws Exception {
+
         for (final Partition partition: partitions) {
             for (final Pair<StorageNode, DBObject> p: transientObjects.get(partition)) {
                 final StorageNode n = p.getK1();
@@ -835,14 +887,14 @@ public class MongoStorageSessionImpl implements StorageEngineBind<DBObject> {
         return baos.toByteArray();
     }
 
-    public void storeInGridFS(final Partition partition,
-                              final Property property, final byte[] value)
-        throws Exception {
-        final String key = getFileName(partition, property);
-        final GridFS fs = getCachedGridFSForPartition(partition);
-        final GridFSInputFile file = fs.createFile(value);
-        file.setFilename(key);
-        file.save();
-    }
+    //    public void storeInGridFS(final Partition partition,
+    //                              final Property property, final byte[] value)
+    //        throws Exception {
+    //        final String key = getFileName(partition, property);
+    //        final GridFS fs = getCachedGridFSForPartition(partition);
+    //        final GridFSInputFile file = fs.createFile(value);
+    //        file.setFilename(key);
+    //        file.save();
+    //    }
 
 }

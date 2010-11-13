@@ -54,63 +54,232 @@ import java.util.Set;
 import org.openspotlight.common.Disposable;
 import org.openspotlight.storage.NodeCriteria;
 import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
 import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.StorageNode;
 
-public interface StorageEngineBind<R> extends Disposable {
+/**
+ * Interface that defines engine speficic operations. This type is is injected into {@link StorageSession}.<br>
+ * Those types that implements this type does not have to care about caching or related operations, once this is already cared by
+ * {@link StorageSession}. <br>
+ * 
+ * @author porcelli
+ * @author feuteston
+ * @param <RN> engine specific type that represents a node
+ * @param <RL> engine specific type that represents a link
+ */
+public interface StorageEngineBind<RN, RL> extends Disposable {
 
-    R createLinkReference(StorageLink link);
+    /**
+     * Creates an engine specific type that represents the input param.
+     * 
+     * @param link the input link
+     * @return engine specific representation of the input link
+     * @throws IllegalArgumentException if input param is null
+     */
+    RL createLinkReference(StorageLink link)
+        throws IllegalStateException;
 
-    R createNodeReference(StorageNode node);
+    /**
+     * Creates an engine specific type that represents the input param.
+     * 
+     * @param node the input node
+     * @return engine specific representation of the input node
+     * @throws IllegalArgumentException if input param is null
+     */
+    RN createNodeReference(StorageNode node)
+        throws IllegalStateException;
 
-    void flushNewItem(R reference, StorageNode node)
-        throws Exception;
+    /**
+     * Persist the input node into storage engine
+     * 
+     * @param reference the engine specific node reference
+     * @param node the node to be persisted
+     * @throws Exception if there is some problem regarding storage engine operation
+     * @throws IllegalArgumentException if any input param is null
+     */
+    void persistNode(RN reference, StorageNode node)
+        throws Exception, IllegalStateException;
 
-    void flushRemovedItem(StorageNode node)
-        throws Exception;
+    /**
+     * Deletes the input node from storage engine.
+     * 
+     * @param node the node to be removed
+     * @throws Exception if there is some problem regarding storage engine operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    void deleteNode(StorageNode node)
+        throws Exception, IllegalStateException;
 
-    void flushRemovedLink(StorageLink link)
-        throws Exception;
+    /**
+     * Persist the input link into storage engine
+     * 
+     * @param link the link to be persisted
+     * @throws Exception if there is some problem regarding storage engine operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    void persistLink(StorageLink link)
+        throws Exception, IllegalStateException;
 
-    void handleNewLink(StorageNode source, StorageLink link)
-        throws Exception;
+    /**
+     * Deletes the input link from storage engine.
+     * 
+     * @param link the link to be removed
+     * @throws Exception if there is some problem regarding storage engine operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    void deleteLink(StorageLink link)
+        throws Exception, IllegalStateException;
 
+    /**
+     * Search for nodes that matches the search criteria.
+     * 
+     * @param criteria the search criteria
+     * @return an iterable found of nodes, empty if not found
+     * @throws Exception if there is some problem regarding storage engine operation
+     * @throws IllegalArgumentException if input param is null
+     */
     Iterable<StorageNode> search(NodeCriteria criteria)
-        throws Exception;
+        throws Exception, IllegalStateException;
 
+    /**
+     * Returns an iterable of nodes of a given type from input partition.
+     * 
+     * @param partition the partition to be scanned
+     * @param type the node type
+     * @return an iterable of nodes, empty if not found
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if any input param is null or empty
+     */
     Iterable<StorageNode> getNodes(Partition partition, String type)
-        throws Exception;
+        throws Exception, IllegalStateException;
 
+    /**
+     * Returns an iterable of link instances that matches the input param.
+     * 
+     * @param source the source node
+     * @param target the target node, can be null
+     * @param type the link type, can be null
+     * @return an iterable of matched links, empty if not found
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if source param is null
+     */
     Iterable<StorageLink> getLinks(StorageNode source, StorageNode target, String type)
-        throws Exception;
+        throws Exception, IllegalStateException;
 
-    void flushSimpleProperty(R reference, Partition partition, Property property)
-        throws Exception;
+    /**
+     * Sets (or creates if does not exists) the property for the given reference node. <br>
+     * Null is an accepted property value. <br>
+     * 
+     * @param nodeRef the engine specific node reference
+     * @param property the property to be setted
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if property param is null
+     */
+    void setNodeProperty(RN nodeRef, Property property)
+        throws Exception, IllegalStateException;
 
+    /**
+     * Sets (or creates if does not exists) the property for the given reference link. <br>
+     * Null is an accepted property value. <br>
+     * 
+     * @param linkRef the engine specific link reference
+     * @param property the property to be setted
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if property param is null
+     */
+    void setLinkProperty(RL linkRef, Property property)
+        throws Exception, IllegalStateException;
+
+    /**
+     * Returns an iterable of all node types stored into given partition.
+     * 
+     * @param partition the partion to lookup for node types
+     * @return an iterable of all node types of the given partition, empty if not found
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
     Iterable<String> getAllNodeTypes(Partition partition)
-        throws Exception;
+        throws Exception, IllegalStateException;
 
+    /**
+     * Returns, if exists, a node based on its key.
+     * 
+     * @param key the node key
+     * @return the node, or null if not found
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if input param is null or empty
+     */
     StorageNode getNode(String key)
-        throws Exception;
+        throws Exception, IllegalStateException;
 
-    Iterable<StorageNode> getChildren(StorageNode node)
-        throws Exception;
+    /**
+     * Returns an iterable of children nodes of the input node stored into specific partition.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param node the node to get its children
+     * @return an iterable of children nodes, or empty if not found
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if any input param is null
+     */
+    Iterable<StorageNode> getChildren(Partition partition, StorageNode node)
+        throws Exception, IllegalStateException;
 
-    Iterable<StorageNode> getChildren(StorageNode node, String type)
-        throws Exception;
+    /**
+     * Returns an iterable of children nodes of the input node restricted by a given type and stored into specific partition.
+     * 
+     * @param partition the partion to lookup for children nodes
+     * @param node the node to get its children
+     * @param type the node type filter
+     * @return an iterable of children nodes, or empty if not found
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if any input param is null
+     */
+    Iterable<StorageNode> getChildren(Partition partition, StorageNode node, String type)
+        throws Exception, IllegalStateException;
 
+    /**
+     * Returns the parent node of the input.
+     * 
+     * @param node the input node to get parent from
+     * @return parent node, or null if there is no parent
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
     StorageNode getParent(StorageNode node)
-        throws Exception;
+        throws Exception, IllegalStateException;
 
-    Set<Property> loadProperties(PropertyContainer element)
-        throws Exception;
+    /**
+     * Returns all existing properties, or an empty {@link Set}, of the input element. <br>
+     * 
+     * @param element the input element to get properties from
+     * @return all properties of this element
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    Set<Property> getProperties(PropertyContainer element)
+        throws Exception, IllegalStateException;
 
-    byte[] getPropertyValue(Partition partition, Property property)
-        throws Exception;
+    /**
+     * Returns the property value as byte array.
+     * 
+     * @param property the input property to get value from
+     * @return the value as byte array
+     * @throws Exception if there is any exception during this operation
+     * @throws IllegalArgumentException if input param is null
+     */
+    byte[] getPropertyValue(Property property)
+        throws Exception, IllegalStateException;
 
-    void savePartitions(Partition... partitions)
+    /**
+     * Persist any data that is not yet persisted.
+     * 
+     * @param partitions patitions to be saved
+     * @throws Exception if there is any exception during this operation
+     */
+    void save(Partition... partitions)
         throws Exception;
 
 }
