@@ -79,7 +79,11 @@ public class MongoModule extends AbstractModule {
     public MongoModule(final StorageSession.FlushMode flushMode, final Mongo mongo, final PartitionFactory factory) {
         this.flushMode = flushMode;
         this.mongo = mongo;
-        this.factory = factory;
+        if (factory == null) {
+            this.factory = new DefaultPartitionFactory();
+        } else {
+            this.factory = factory;
+        }
     }
 
     @Override

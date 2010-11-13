@@ -59,7 +59,7 @@ package org.openspotlight.storage;
 public interface PartitionFactory {
 
     /**
-     * Returns a partition based on its name. If parition name is not found, it'll be created.
+     * Returns a partition based on its name. If Partition name is not found, it'll be created.
      * 
      * @param name the partition name
      * @return the partition
@@ -94,11 +94,11 @@ public interface PartitionFactory {
          */
         LOG("log"),
         /**
-         * Parition that stored security related data
+         * Partition that stored security related data
          */
         SECURITY("security"),
         /**
-         * Parition that stores syntax highlight data of federated artifacts
+         * Partition that stores syntax highlight data of federated artifacts
          */
         SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION);
 
@@ -118,7 +118,7 @@ public interface PartitionFactory {
         /**
          * Returns the parent partition.
          * 
-         * @return the parent parition
+         * @return the parent partition
          */
         public RegularPartitions getParent() {
             return parent;

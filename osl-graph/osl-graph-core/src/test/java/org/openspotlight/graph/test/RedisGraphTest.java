@@ -52,7 +52,9 @@ package org.openspotlight.graph.test;
 import java.util.Map;
 
 import org.openspotlight.graph.GraphModule;
+import org.openspotlight.storage.DefaultPartitionFactory;
 import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
@@ -64,6 +66,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class RedisGraphTest extends AbstractGraphTest {
+
+    private PartitionFactory partitionFactory = new DefaultPartitionFactory();
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
 
@@ -116,25 +120,20 @@ public class RedisGraphTest extends AbstractGraphTest {
         }
     }
 
-    final Map<Partition, JRedisServerDetail> mappedServerConfig = ImmutableMap
-                                                                    .<Partition, JRedisServerDetail>builder()
-                                                                    .put(
-
-                                                                    RegularPartitions.FACTORY.getPartition("graph"),
-                                                                        JRedisServerConfigExample.GRAPH)
-                                                                    .put(
-                                                                        RegularPartitions.FEDERATION,
-                                                                        JRedisServerConfigExample.FEDERATION)
-                                                                    .put(
-                                                                        RegularPartitions.LINE_REFERENCE,
-                                                                        JRedisServerConfigExample.LINE_REFERENCE)
-                                                                    .put(
-                                                                        RegularPartitions.LOG, JRedisServerConfigExample.LOG)
-                                                                    .put(
-                                                                        RegularPartitions.SECURITY,
-                                                                        JRedisServerConfigExample.SECURITY)
-                                                                    .put(RegularPartitions.SYNTAX_HIGHLIGHT,
-                                                                        JRedisServerConfigExample.SYNTAX_HIGHLIGHT).build();
+    final Map<Partition, JRedisServerDetail> mappedServerConfig =
+                                                                    ImmutableMap
+                                                                        .<Partition, JRedisServerDetail>builder()
+                                                                        .put(partitionFactory.getPartition("graph"),
+                                                                            JRedisServerConfigExample.GRAPH)
+                                                                        .put(RegularPartitions.FEDERATION,
+                                                                            JRedisServerConfigExample.FEDERATION)
+                                                                        .put(RegularPartitions.LINE_REFERENCE,
+                                                                            JRedisServerConfigExample.LINE_REFERENCE)
+                                                                        .put(RegularPartitions.LOG, JRedisServerConfigExample.LOG)
+                                                                        .put(RegularPartitions.SECURITY,
+                                                                            JRedisServerConfigExample.SECURITY)
+                                                                        .put(RegularPartitions.SYNTAX_HIGHLIGHT,
+                                                                            JRedisServerConfigExample.SYNTAX_HIGHLIGHT).build();
 
     @Override
     protected void clearData()
@@ -148,9 +147,8 @@ public class RedisGraphTest extends AbstractGraphTest {
     @Override
     protected Injector createInjector()
         throws Exception {
-        return Guice.createInjector(new JRedisStorageModule(
-                StorageSession.FlushMode.AUTO, mappedServerConfig, RegularPartitions.FACTORY),
-                new GraphModule());
+        return Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO, mappedServerConfig, partitionFactory),
+            new GraphModule());
     }
 
 }

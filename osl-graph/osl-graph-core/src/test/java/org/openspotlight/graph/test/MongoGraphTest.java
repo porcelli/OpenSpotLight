@@ -50,7 +50,6 @@
 package org.openspotlight.graph.test;
 
 import org.openspotlight.graph.GraphModule;
-import org.openspotlight.storage.PartitionFactory.RegularPartitions;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.mongodb.test.MongoModule;
 
@@ -87,8 +86,7 @@ public class MongoGraphTest extends AbstractGraphTest {
     @Override
     protected Injector createInjector()
         throws Exception {
-        return Guice.createInjector(new MongoModule(
-                                                    StorageSession.FlushMode.EXPLICIT, mongo, RegularPartitions.FACTORY),
+        return Guice.createInjector(new MongoModule(StorageSession.FlushMode.EXPLICIT, mongo, null),
             new GraphModule());
     }
 

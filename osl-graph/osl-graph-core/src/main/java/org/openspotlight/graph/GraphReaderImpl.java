@@ -853,7 +853,7 @@ public class GraphReaderImpl implements GraphReader {
                                                   final Class<T> clazz,
                                                   final boolean returnSubTypes)
         throws IllegalArgumentException {
-        final Iterable<Partition> partitions = filterGraphPartitions(factory.getValues());
+        final Iterable<Partition> partitions = factory.getValues();
         final LinkedList<Context> contexts = new LinkedList<Context>();
         for (final Partition p: partitions) {
             contexts.add(getContext(p.getPartitionName()));

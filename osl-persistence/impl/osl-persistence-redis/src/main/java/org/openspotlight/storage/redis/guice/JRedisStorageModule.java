@@ -84,7 +84,11 @@ public class JRedisStorageModule extends AbstractModule {
                                final PartitionFactory partitionFactory) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
-        this.partitionFactory = partitionFactory;
+        if (partitionFactory == null) {
+            this.partitionFactory = new DefaultPartitionFactory();
+        } else {
+            this.partitionFactory = partitionFactory;
+        }
     }
 
     @Override
