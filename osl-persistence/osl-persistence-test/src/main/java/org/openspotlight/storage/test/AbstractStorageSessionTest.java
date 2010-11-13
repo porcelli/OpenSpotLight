@@ -596,63 +596,41 @@ public abstract class AbstractStorageSessionTest {
     @Test
     public void shouldCreateHierarchyAndLoadChildrenNodes() {
 
-        final StorageSession session = autoFlushInjector
-                                                  .getInstance(StorageSession.class);
+        final StorageSession session = autoFlushInjector.getInstance(StorageSession.class);
 
-        final StorageNode root = session.withPartition(ExamplePartition.DEFAULT)
-                                  .createNodeWithType("root").withSimpleKey("sequence", "1")
-                                  .withSimpleKey("name", "name").andCreate();
+        final StorageNode root =
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("root").withSimpleKey("sequence", "1")
+                .withSimpleKey("name", "name").andCreate();
         final StorageNode child1 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createNodeWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "1")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("child").withParent(root)
+                .withSimpleKey("sequence", "1").withSimpleKey("name", "name").andCreate();
         final StorageNode child2 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createNodeWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "2")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("child").withParent(root)
+                .withSimpleKey("sequence", "2")
+                .withSimpleKey("name", "name").andCreate();
+        final StorageNode child2a =
+            session.withPartition(ExamplePartition.SECOND).createNodeWithType("child").withParent(root)
+                .withSimpleKey("sequence", "2").withSimpleKey("name", "name").andCreate();
         final StorageNode child3 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createNodeWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "3")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("child").withParent(root)
+                .withSimpleKey("sequence", "3").withSimpleKey("name", "name").andCreate();
         final StorageNode child4 =
-            session.withPartition(ExamplePartition.DEFAULT)
-                                    .createNodeWithType("child").withParent(root).withSimpleKey(
-                                                                                           "sequence", "4")
-                .withSimpleKey("name", "name")
-                                    .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("child").withParent(root)
+                .withSimpleKey("sequence", "4").withSimpleKey("name", "name").andCreate();
         final StorageNode childAnotherType1 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createNodeWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "1").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("childAnotherType").withParent(root)
+                .withSimpleKey("sequence", "1").withSimpleKey("name", "name").andCreate();
         final StorageNode childAnotherType2 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createNodeWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "2").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("childAnotherType").withParent(root)
+                .withSimpleKey("sequence", "2").withSimpleKey("name", "name").andCreate();
         final StorageNode childAnotherType3 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createNodeWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "3").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("childAnotherType").withParent(root)
+                .withSimpleKey("sequence", "3").withSimpleKey("name", "name").andCreate();
         final StorageNode childAnotherType4 =
-            session.withPartition(
-                                                              ExamplePartition.DEFAULT).createNodeWithType("childAnotherType")
-                                               .withParent(root).withSimpleKey("sequence", "4").withSimpleKey(
-                                                                                                            "name", "name")
-                .andCreate();
+            session.withPartition(ExamplePartition.DEFAULT).createNodeWithType("childAnotherType").withParent(root)
+                .withSimpleKey("sequence", "4").withSimpleKey("name", "name").andCreate();
 
-        final List<StorageNode> allChildren = iterableToList(root.getChildren(
-                                                                        ExamplePartition.DEFAULT, session));
+        final List<StorageNode> allChildren = iterableToList(root.getChildren(ExamplePartition.DEFAULT, session));
         assertThat(allChildren.size(), is(8));
         assertThat(allChildren.contains(child1), is(true));
         assertThat(allChildren.contains(child2), is(true));
@@ -663,10 +641,12 @@ public abstract class AbstractStorageSessionTest {
         assertThat(allChildren.contains(childAnotherType3), is(true));
         assertThat(allChildren.contains(childAnotherType4), is(true));
 
+        final List<StorageNode> allChildren2 = iterableToList(root.getChildren(ExamplePartition.SECOND, session));
+        assertThat(allChildren2.size(), is(1));
+        assertThat(allChildren2.contains(child2a), is(true));
+
         final List<StorageNode> childrenType2 =
-            iterableToList(root.getChildren(
-                                                                               ExamplePartition.DEFAULT, session,
-                "childAnotherType"));
+            iterableToList(root.getChildren(ExamplePartition.DEFAULT, session, "childAnotherType"));
 
         assertThat(childrenType2.size(), is(4));
         assertThat(childrenType2.contains(childAnotherType1), is(true));
@@ -674,15 +654,13 @@ public abstract class AbstractStorageSessionTest {
         assertThat(childrenType2.contains(childAnotherType3), is(true));
         assertThat(childrenType2.contains(childAnotherType4), is(true));
 
-        final List<StorageNode> childrenType1 = iterableToList(root.getChildren(
-                                                                               ExamplePartition.DEFAULT, session, "child"));
+        final List<StorageNode> childrenType1 = iterableToList(root.getChildren(ExamplePartition.DEFAULT, session, "child"));
 
         assertThat(childrenType1.size(), is(4));
         assertThat(childrenType1.contains(child1), is(true));
         assertThat(childrenType1.contains(child2), is(true));
         assertThat(childrenType1.contains(child3), is(true));
         assertThat(childrenType1.contains(child4), is(true));
-
     }
 
     @Test

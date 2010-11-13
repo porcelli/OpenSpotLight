@@ -72,19 +72,22 @@ import org.openspotlight.storage.domain.key.NodeKey;
  */
 public class StorageNodeImpl extends PropertyContainerImpl implements StorageNode {
 
-    private static final long                                serialVersionUID      = -4545520206784316277L;
+    private static final long                                                        serialVersionUID           =
+                                                                                                                    -4545520206784316277L;
 
-    private WeakReference<Iterable<StorageNode>>             childrenWeakReference = null;
+    private WeakHashMap<Partition, WeakReference<Iterable<StorageNode>>>             childrenWeakReference      =
+                                                                                                                    new WeakHashMap<Partition, WeakReference<Iterable<StorageNode>>>();
 
-    private final WeakHashMap<Iterable<StorageNode>, String> typedChildrenWeakReference;
+    private final WeakHashMap<Partition, WeakHashMap<Iterable<StorageNode>, String>> typedChildrenWeakReference =
+                                                                                                                    new WeakHashMap<Partition, WeakHashMap<Iterable<StorageNode>, String>>();
 
-    private final NodeKey                                    nodeKey;
+    private final NodeKey                                                            nodeKey;
 
-    private final String                                     nodeType;
+    private final String                                                             nodeType;
 
-    private WeakReference<StorageNode>                       parentWeakReference   = null;
+    private WeakReference<StorageNode>                                               parentWeakReference        = null;
 
-    private final Partition                                  partition;
+    private final Partition                                                          partition;
 
     public StorageNodeImpl(final NodeKey uniqueKey, final boolean resetTimeout)
         throws IllegalArgumentException {
@@ -103,7 +106,6 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
             }
         }
         partition = uniqueKey.getPartition();
-        typedChildrenWeakReference = new WeakHashMap<Iterable<StorageNode>, String>();
     }
 
     /**
@@ -145,7 +147,8 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
      */
     @Override
     public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session) {
-        Iterable<StorageNode> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
+        Iterable<StorageNode> children =
+            childrenWeakReference.get(partition) != null ? childrenWeakReference.get(partition).get() : null;
         if (children == null) {
             children = getChildrenForcingReload(partition, session);
         }
@@ -158,8 +161,8 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
     @Override
     public Iterable<StorageNode> getChildren(final Partition partition, final StorageSession session, final String type) {
         Iterable<StorageNode> thisChildren = null;
-        if (typedChildrenWeakReference.containsValue(type)) {
-            for (final Map.Entry<Iterable<StorageNode>, String> entry: typedChildrenWeakReference.entrySet()) {
+        if (typedChildrenWeakReference.containsKey(partition) && typedChildrenWeakReference.get(partition).containsValue(type)) {
+            for (final Map.Entry<Iterable<StorageNode>, String> entry: typedChildrenWeakReference.get(partition).entrySet()) {
                 if (type.equals(entry.getValue())) {
                     thisChildren = entry.getKey();
                     break;
@@ -181,7 +184,10 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
                                                           final String type) {
         final Iterable<StorageNode> children =
             ((StorageSessionImpl<?, ?>) session).getChildren(partition, this, type);
-        typedChildrenWeakReference.put(children, type);
+        WeakHashMap<Iterable<StorageNode>, String> newTypedChildrenWeakReference =
+            new WeakHashMap<Iterable<StorageNode>, String>();
+        newTypedChildrenWeakReference.put(children, type);
+        typedChildrenWeakReference.put(partition, newTypedChildrenWeakReference);
         return children;
     }
 
@@ -191,7 +197,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements StorageNod
     @Override
     public Iterable<StorageNode> getChildrenForcingReload(final Partition partition, final StorageSession session) {
         final Iterable<StorageNode> children = ((StorageSessionImpl<?, ?>) session).getChildren(partition, this);
-        childrenWeakReference = new WeakReference<Iterable<StorageNode>>(children);
+        childrenWeakReference.put(partition, new WeakReference<Iterable<StorageNode>>(children));
         return children;
     }
 

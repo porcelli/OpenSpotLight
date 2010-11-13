@@ -704,7 +704,7 @@ public class JRedisStorageSessionImpl implements StorageEngineBind<Nothing, Noth
 
     private Set<StorageNode> internalGetChildren(final Partition partition, final StorageNode node, final String type)
         throws Exception {
-        final JRedis jredis = factory.getFrom(node.getPartition());
+        final JRedis jredis = factory.getFrom(partition);
 
         final String parentKey = node.getKey().getKeyAsString();
         final String keyName =
